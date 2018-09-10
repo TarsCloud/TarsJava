@@ -12,3 +12,8 @@
 | distributedContext | Source code implementation of Java language framework's distributed context       |
 | protobuf           | Source code implementation of pb protocol support        |
 | spring             | Source code implementation of spring framework support      |
+
+
+###  Environmental dependence
+- JDK1.8 or above
+- Maven 2.2.1 or above
