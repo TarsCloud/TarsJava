@@ -91,7 +91,7 @@ public class SpringBootAppContext extends BaseAppContext {
 
         ServerConfig serverCfg = ConfigurationManager.getInstance().getServerConfig();
 
-        homeName = bean.getClass().getAnnotation(TarsServant.class).value();
+        homeName = AnnotationUtils.getAnnotation(bean.getClass(), TarsServant.class).name();
         if (StringUtils.isEmpty(homeName)) {
             throw new RuntimeException("servant name is null.");
         }
