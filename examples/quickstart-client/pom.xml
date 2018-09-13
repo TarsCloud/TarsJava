@@ -15,7 +15,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.tencent.tars</groupId>
-			<artifactId>tars-client</artifactId>
+			<artifactId>tars-core</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
 	</dependencies>
