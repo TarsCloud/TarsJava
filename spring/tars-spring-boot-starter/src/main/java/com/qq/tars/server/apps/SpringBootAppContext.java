@@ -31,6 +31,7 @@ import com.qq.tars.spring.annotation.TarsListener;
 import com.qq.tars.spring.annotation.TarsServant;
 import org.springframework.aop.framework.Advised;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.annotation.AnnotationUtils;
 
 import java.util.Map;
 
