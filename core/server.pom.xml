@@ -73,13 +73,6 @@
 						<include>com/qq/tars/support/trace/**</include>
 					</includes>
 				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>org.codehaus.plexus</groupId>
-						<artifactId>plexus-compiler-javac</artifactId>
-						<version>1.8.1</version>
-					</dependency>
-				</dependencies>
 			</plugin>
 
 			<plugin>
