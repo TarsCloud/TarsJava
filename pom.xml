@@ -2,7 +2,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
@@ -19,10 +18,19 @@
     <url>https://github.com/TarsCloud/Tars</url>
     <licenses>
         <license>
-            <name>BSD 3-Clause License</name>
+            <name>The BSD 3-Clause License</name>
             <url>https://opensource.org/licenses/BSD-3-Clause</url>
         </license>
     </licenses>
+    <developers>
+        <developer>
+            <name>tencent</name>
+            <email>tars@tencent.com</email>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
 
     <scm>
         <url>https://github.com/TarsCloud/Tars</url>
@@ -47,6 +55,7 @@
 
         <maven_compiler_plugin_version>3.7.0</maven_compiler_plugin_version>
         <maven_source_plugin_version>3.0.1</maven_source_plugin_version>
+        <maven_javadoc_plugin_version>3.0.1</maven_javadoc_plugin_version>
         <maven_jar_plugin_version>3.1.0</maven_jar_plugin_version>
         <maven_war_plugin_version>3.2.2</maven_war_plugin_version>
         <maven_install_plugin_version>2.5.2</maven_install_plugin_version>
@@ -95,7 +104,19 @@
                         </archive>
                     </configuration>
                 </plugin>
-
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${maven_javadoc_plugin_version}}</version>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
