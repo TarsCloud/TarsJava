@@ -55,7 +55,7 @@
 
         <maven_compiler_plugin_version>3.7.0</maven_compiler_plugin_version>
         <maven_source_plugin_version>3.0.1</maven_source_plugin_version>
-        <maven_javadoc_plugin_version>3.0.1</maven_javadoc_plugin_version>
+        <maven_javadoc_plugin_version>2.9</maven_javadoc_plugin_version>
         <maven_jar_plugin_version>3.1.0</maven_jar_plugin_version>
         <maven_war_plugin_version>3.2.2</maven_war_plugin_version>
         <maven_install_plugin_version>2.5.2</maven_install_plugin_version>
@@ -69,23 +69,11 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>${maven_source_plugin_version}</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <attach>true</attach>
-                    <archive>
-                        <manifestEntries>
-                            <Built-By>mvn</Built-By>
-                            <Built-Time>${maven.build.timestamp}</Built-Time>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven_javadoc_plugin_version}</version>
             </plugin>
         </plugins>
 
@@ -107,13 +95,16 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>${maven_javadoc_plugin_version}}</version>
+                    <version>${maven_javadoc_plugin_version}</version>
                     <executions>
                         <execution>
-                            <phase>package</phase>
+                            <id>attach-javadocs</id>
                             <goals>
                                 <goal>jar</goal>
                             </goals>
+                            <configuration>
+                                <additionalparam>-Xdoclint:none</additionalparam>
+                            </configuration>
                         </execution>
                     </executions>
                 </plugin>
@@ -121,6 +112,23 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
                     <version>${maven_source_plugin_version}</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar-no-fork</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <attach>true</attach>
+                        <archive>
+                            <manifestEntries>
+                                <Built-By>mvn</Built-By>
+                                <Built-Time>${maven.build.timestamp}</Built-Time>
+                            </manifestEntries>
+                        </archive>
+                    </configuration>
                 </plugin>
 
                 <plugin>
