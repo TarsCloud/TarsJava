@@ -20,11 +20,13 @@ import com.qq.tars.rpc.common.InvokeContext;
 import com.qq.tars.rpc.common.Invoker;
 import com.qq.tars.rpc.common.Url;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public abstract class AbstractInvoker<T> implements Invoker<T> {
 
     private final Url url;
     private final Class<T> api;
-    private volatile boolean available = true;
+    private volatile AtomicBoolean available = new AtomicBoolean(true);
     private volatile boolean destroyed = false;
 
     public AbstractInvoker(Class<T> api, Url url) {
@@ -44,11 +46,11 @@ public abstract class AbstractInvoker<T> implements Invoker<T> {
     }
 
     public boolean isAvailable() {
-        return !isDestroyed() && available;
+        return !isDestroyed() && available.get();
     }
 
     protected void setAvailable(boolean available) {
-        this.available = available;
+        this.available.set(available);
     }
 
     public void destroy() {

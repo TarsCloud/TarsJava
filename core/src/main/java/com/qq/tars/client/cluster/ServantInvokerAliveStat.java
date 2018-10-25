@@ -27,7 +27,7 @@ import com.qq.tars.common.util.Constants;
 public class ServantInvokerAliveStat {
 
     private final String identity;
-    private AtomicBoolean lastCallSucess = new AtomicBoolean();
+    private AtomicBoolean lastCallSucess = new AtomicBoolean(true);
     private long timeout_startTime = 0;
     private long frequenceFailInvoke = 0;
     private long frequenceFailInvoke_startTime = 0;

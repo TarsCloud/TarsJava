@@ -57,6 +57,11 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
         filters = AppContextManager.getInstance().getAppContext() == null ? null : AppContextManager.getInstance().getAppContext().getFilters(FilterKind.CLIENT);
     }
 
+    @Override
+    protected void setAvailable(boolean available) {
+        super.setAvailable(available);
+    }
+
     protected Object doInvokeServant(final ServantInvokeContext inv) throws Throwable {
         long begin = System.currentTimeMillis();
 
@@ -85,8 +90,8 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
             }
             throw e;
         } finally {
-            setAvailable(ServantnvokerAliveChecker.isAlive(getUrl(), config, ret));
             if (!isAsync) {
+                setAvailable(ServantnvokerAliveChecker.isAlive(getUrl(), config, ret));
                 InvokeStatHelper.getInstance().addProxyStat(objName).addInvokeTime(config.getModuleName(), objName, config.getSetDivision(), inv.getMethodName(), getUrl().getHost(), getUrl().getPort(), ret, System.currentTimeMillis() - begin);
             }
         }
@@ -182,7 +187,7 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
         	
         }
         FilterChain filterChain = new TarsClientFilterChain(filters, objName, FilterKind.CLIENT, client, 1, 
-        		new TarsCallbackWrapper(config, request.getFunctionName(), getUrl().getHost(), getUrl().getPort(), request.getBornTime(), request, callback));
+        		new TarsCallbackWrapper(config, request.getFunctionName(), getUrl().getHost(), getUrl().getPort(), request.getBornTime(), request, callback, this));
         filterChain.doFilter(request, response);
     }
 
