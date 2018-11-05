@@ -66,8 +66,15 @@ public class PropertyReportHelper {
         private String moduleName;
 
         public PropertyReporter(String moduleName, String propRptName, Policy[] policies) {
-            this.moduleName = moduleName;
             this.propRptName = propRptName;
+
+            if (ConfigurationManager.getInstance().getCommunicatorConfig().isEnableSet()) {
+                String[] sets = ConfigurationManager.getInstance().getCommunicatorConfig().getSetDivision().split("\\.");
+                this.moduleName = moduleName + "." + sets[0] + sets[1] + sets[2];
+            } else {
+                this.moduleName = moduleName;
+            }
+
             Map<String, Policy> map = new HashMap<String, Policy>();
             for (Policy policy : policies)
                 map.put(policy.desc(), policy);
