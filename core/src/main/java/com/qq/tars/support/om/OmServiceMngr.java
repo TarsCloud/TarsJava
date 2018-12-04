@@ -1,13 +1,13 @@
 /**
  * Tencent is pleased to support the open source community by making Tars available.
- *
+ * <p>
  * Copyright (C) 2016 THL A29 Limited, a Tencent company. All rights reserved.
- *
+ * <p>
  * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- *
+ * <p>
  * https://opensource.org/licenses/BSD-3-Clause
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -16,26 +16,21 @@
 
 package com.qq.tars.support.om;
 
-import java.lang.management.GarbageCollectorMXBean;
-import java.lang.management.ManagementFactory;
-
 import com.qq.tars.client.Communicator;
 import com.qq.tars.client.CommunicatorFactory;
-import com.qq.tars.server.ServerVersion;
+import com.qq.tars.common.ClientVersion;
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.support.config.ConfigHelper;
 import com.qq.tars.support.node.NodeHelper;
 import com.qq.tars.support.notify.NotifyHelper;
 import com.qq.tars.support.property.CommonPropertyPolicy;
-import com.qq.tars.support.property.JvmPropertyPolicy.GCNumCount;
-import com.qq.tars.support.property.JvmPropertyPolicy.GCTimeSum;
-import com.qq.tars.support.property.JvmPropertyPolicy.MemoryHeapCommittedAvg;
-import com.qq.tars.support.property.JvmPropertyPolicy.MemoryHeapMaxAvg;
-import com.qq.tars.support.property.JvmPropertyPolicy.MemoryHeapUsedAvg;
-import com.qq.tars.support.property.JvmPropertyPolicy.ThreadNumAvg;
+import com.qq.tars.support.property.JvmPropertyPolicy.*;
 import com.qq.tars.support.property.PropertyReportHelper;
 import com.qq.tars.support.property.PropertyReportHelper.Policy;
 import com.qq.tars.support.trace.TarsTraceZipkinConfiguration;
+
+import java.lang.management.GarbageCollectorMXBean;
+import java.lang.management.ManagementFactory;
 
 public class OmServiceMngr {
 
@@ -56,7 +51,7 @@ public class OmServiceMngr {
         NodeHelper.getInstance().setNodeInfo(communicator, app, serverName);
         NotifyHelper.getInstance().setNotifyInfo(communicator, app, serverName);
         PropertyReportHelper.getInstance().setPropertyInfo(communicator, modualName);
-        NodeHelper.getInstance().reportVersion(ServerVersion.getVersion());
+        NodeHelper.getInstance().reportVersion(ClientVersion.getVersion());
 
         Policy avgPolicy = new CommonPropertyPolicy.Avg();
         Policy maxPolicy = new CommonPropertyPolicy.Max();

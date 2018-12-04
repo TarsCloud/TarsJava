@@ -1,13 +1,13 @@
 /**
  * Tencent is pleased to support the open source community by making Tars available.
- *
+ * <p>
  * Copyright (C) 2016 THL A29 Limited, a Tencent company. All rights reserved.
- *
+ * <p>
  * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- *
+ * <p>
  * https://opensource.org/licenses/BSD-3-Clause
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -16,18 +16,17 @@
 
 package com.qq.tars.support.stat;
 
+import com.qq.tars.common.util.Constants;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.qq.tars.common.util.Constants;
-
 public class ProxyStat {
 
-    private ConcurrentHashMap<ProxyStatHead, ProxyStatBody> stat = new ConcurrentHashMap<ProxyStatHead, ProxyStatBody>();
-
     public static final List<Integer> DEFAULT_TIME_STAT_INTERVAL = new ArrayList<Integer>();
+
     static {
         DEFAULT_TIME_STAT_INTERVAL.add(5);
         DEFAULT_TIME_STAT_INTERVAL.add(10);
@@ -42,6 +41,8 @@ public class ProxyStat {
         DEFAULT_TIME_STAT_INTERVAL.add(10000);
         DEFAULT_TIME_STAT_INTERVAL.add(100000);
     }
+
+    private ConcurrentHashMap<ProxyStatHead, ProxyStatBody> stat = new ConcurrentHashMap<ProxyStatHead, ProxyStatBody>();
 
     public void setTimeStatInterval(ProxyStatHead head, List<Integer> timeStatInterval) {
         if (stat.containsKey(head)) {
@@ -68,15 +69,16 @@ public class ProxyStat {
         }
     }
 
-    public void addInvokeTime(String moduleName, String objectName, String setDivision, String methodName,
-                              String slaveIp, int slavePort, int result, long costTimeMill) {
-        ProxyStatHead head = ProxyStatUtils.getHead(moduleName, objectName, methodName, ProxyStatUtils.getLocalIP(), slaveIp, slavePort, result, null, null, null, setDivision);
+    public void addInvokeTimeByClient(String masterName, String slaveName, String slaveSetName, String slaveSetArea, String slaveSetID, String methodName,
+                                      String slaveIp, int slavePort, int result, long costTimeMill) {
+        ProxyStatHead head = new ProxyStatHead(masterName, slaveName, methodName, ProxyStatUtils.getLocalIP(), slaveIp, slavePort, result, slaveSetName, slaveSetArea, slaveSetID, "");
         addInvokeTime(head, costTimeMill, result);
     }
 
-    public void addInvokeTime(String moduleName, String objectName, String setDivision, String methodName,
-                              String masterIp, String slaveIp, int slavePort, int result, long costTimeMill) {
-        ProxyStatHead head = ProxyStatUtils.getHead(moduleName, objectName, methodName, masterIp, slaveIp, slavePort, result, null, null, null, setDivision);
+    public void addInvokeTimeByServer(String masterName, String application, String server, String slaveSetName, String slaveSetArea, String slaveSetID, String methodName,
+                                      String masterIp, String slaveIp, int slavePort, int result, long costTimeMill) {
+        String slaveName = slaveSetName != null ? String.format("%s.%s.%s%s%s", application, server, slaveSetName, slaveSetArea, slaveSetID) : String.format("%s.%s", application, server);
+        ProxyStatHead head = new ProxyStatHead(masterName, slaveName, methodName, masterIp, slaveIp, slavePort, result, slaveSetName, slaveSetArea, slaveSetID, "");
         addInvokeTime(head, costTimeMill, result);
     }
 

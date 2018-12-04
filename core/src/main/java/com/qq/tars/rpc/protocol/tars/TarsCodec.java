@@ -1,13 +1,13 @@
 /**
  * Tencent is pleased to support the open source community by making Tars available.
- *
+ * <p>
  * Copyright (C) 2016 THL A29 Limited, a Tencent company. All rights reserved.
- *
+ * <p>
  * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- *
+ * <p>
  * https://opensource.org/licenses/BSD-3-Clause
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -38,7 +38,6 @@ import com.qq.tars.rpc.protocol.ServantResponse;
 import com.qq.tars.rpc.protocol.tars.support.AnalystManager;
 import com.qq.tars.rpc.protocol.tup.UniAttribute;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.util.*;
@@ -107,7 +106,7 @@ public class TarsCodec extends Codec {
     protected byte[] encodeResult(TarsServantResponse response, String charsetName) {
         TarsServantRequest request = response.getRequest();
         if (TarsHelper.isPing(request.getFunctionName())) {
-            return new byte[] {};
+            return new byte[]{};
         }
 
         TarsOutputStream ajos = new TarsOutputStream();
@@ -431,7 +430,7 @@ public class TarsCodec extends Codec {
         }
         TarsInputStream is = response.getInputStream();
 
-        byte[] data = is.read(new byte[] {}, 6, true);
+        byte[] data = is.read(new byte[]{}, 6, true);
         TarsInputStream jis = new TarsInputStream(data);
         jis.setServerEncoding(response.getCharsetName());
 
@@ -490,13 +489,13 @@ public class TarsCodec extends Codec {
     }
 
     public Object[] decodeCallbackArgs(TarsServantResponse response) throws ProtocolException {
-        byte[] data = response.getInputStream().read(new byte[] {}, 6, true);
+        byte[] data = response.getInputStream().read(new byte[]{}, 6, true);
 
         TarsServantRequest request = response.getRequest();
 
         TarsMethodInfo methodInfo = null;
-        Map<Method, TarsMethodInfo> map = AnalystManager.getInstance().getMethodMap(request.getServantName());
-        for (Iterator<Map.Entry<Method, TarsMethodInfo>> it = map.entrySet().iterator(); it.hasNext();) {
+        Map<Method, TarsMethodInfo> map = AnalystManager.getInstance().getMethodMap(request.getApi());
+        for (Iterator<Map.Entry<Method, TarsMethodInfo>> it = map.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<Method, TarsMethodInfo> entry = it.next();
             if (entry.getKey().getName().equals(request.getFunctionName())) {
                 methodInfo = entry.getValue();

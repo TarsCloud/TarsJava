@@ -1,13 +1,13 @@
 /**
  * Tencent is pleased to support the open source community by making Tars available.
- *
+ * <p>
  * Copyright (C) 2016 THL A29 Limited, a Tencent company. All rights reserved.
- *
+ * <p>
  * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- *
+ * <p>
  * https://opensource.org/licenses/BSD-3-Clause
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -16,11 +16,11 @@
 
 package com.qq.tars.client;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 import com.qq.tars.common.util.Config;
 import com.qq.tars.common.util.Constants;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class CommunicatorConfig {
 
@@ -43,6 +43,9 @@ public class CommunicatorConfig {
 
     private boolean enableSet = false;
     private String setDivision = null;
+    private String setName;
+    private String setArea;
+    private String setID;
 
     private int connections = Constants.default_connections;
     private int connectTimeout = Constants.default_connect_timeout;
@@ -57,6 +60,16 @@ public class CommunicatorConfig {
     private String dataPath;
 
     public CommunicatorConfig() {
+    }
+
+    public static CommunicatorConfig load(String confFile) throws FileNotFoundException, IOException {
+        CommunicatorConfig cfg = new CommunicatorConfig();
+        cfg.load(Config.parseFile(confFile));
+        return cfg;
+    }
+
+    public static CommunicatorConfig getDefault() {
+        return new CommunicatorConfig();
     }
 
     public CommunicatorConfig load(Config conf) {
@@ -85,6 +98,14 @@ public class CommunicatorConfig {
             setDivision = null;
         }
 
+
+        if (enableSet && setDivision != null) {
+            String[] tmp = setDivision.split("\\.");
+            setName = tmp[0];
+            setArea = tmp[1];
+            setID = tmp[2];
+        }
+
         connections = conf.getInt("/tars/application/client<connections>", Constants.default_connections);
         connectTimeout = conf.getInt("/tars/application/client<connect-timeout>", Constants.default_connect_timeout);
         corePoolSize = conf.getInt("/tars/application/client<corepoolsize>", Constants.default_core_pool_size);
@@ -93,12 +114,6 @@ public class CommunicatorConfig {
         queueSize = conf.getInt("/tars/application/client<queuesize>", Constants.default_queue_size);
         charsetName = conf.get("/tars/application/client<charsetname>", Constants.default_charset_name);
         return this;
-    }
-
-    public static CommunicatorConfig load(String confFile) throws FileNotFoundException, IOException {
-        CommunicatorConfig cfg = new CommunicatorConfig();
-        cfg.load(Config.parseFile(confFile));
-        return cfg;
     }
 
     public String getLocator() {
@@ -239,7 +254,25 @@ public class CommunicatorConfig {
 
     public CommunicatorConfig setSetDivision(String setDivision) {
         this.setDivision = setDivision;
+        if (setDivision != null) {
+            String[] tmp = setDivision.split(".");
+            setName = tmp[0];
+            setArea = tmp[1];
+            setID = tmp[2];
+        }
         return this;
+    }
+
+    public String getSetName() {
+        return setName;
+    }
+
+    public String getSetArea() {
+        return setArea;
+    }
+
+    public String getSetID() {
+        return setID;
     }
 
     public int getConnections() {
@@ -332,10 +365,6 @@ public class CommunicatorConfig {
         return this;
     }
 
-    public static CommunicatorConfig getDefault() {
-        return new CommunicatorConfig();
-    }
-
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -362,6 +391,35 @@ public class CommunicatorConfig {
 
     @Override
     public String toString() {
-        return String.format("CommunicatorConfig [locator=%s, syncInvokeTimeout=%s, asyncInvokeTimeout=%s, refreshEndpointInterval=%s, reportInterval=%s, stat=%s, property=%s, sampleRate=%s, maxSampleCount=%s, sendThread=%s, recvThread=%s, asyncThread=%s, moduleName=%s, enableSet=%s, setDivision=%s, connections=%s, connectTimeout=%s, corePoolSize=%s, maxPoolSize=%s, keepAliveTime=%s, queueSize=%s, charsetName=%s, logPath=%s, logLevel=%s, dataPath=%s]", locator, syncInvokeTimeout, asyncInvokeTimeout, refreshEndpointInterval, reportInterval, stat, property, sampleRate, maxSampleCount, sendThread, recvThread, asyncThread, moduleName, enableSet, setDivision, connections, connectTimeout, corePoolSize, maxPoolSize, keepAliveTime, queueSize, charsetName, logPath, logLevel, dataPath);
+        return "CommunicatorConfig{" +
+                "locator='" + locator + '\'' +
+                ", syncInvokeTimeout=" + syncInvokeTimeout +
+                ", asyncInvokeTimeout=" + asyncInvokeTimeout +
+                ", refreshEndpointInterval=" + refreshEndpointInterval +
+                ", reportInterval=" + reportInterval +
+                ", stat='" + stat + '\'' +
+                ", property='" + property + '\'' +
+                ", sampleRate=" + sampleRate +
+                ", maxSampleCount=" + maxSampleCount +
+                ", sendThread=" + sendThread +
+                ", recvThread=" + recvThread +
+                ", asyncThread=" + asyncThread +
+                ", moduleName='" + moduleName + '\'' +
+                ", enableSet=" + enableSet +
+                ", setDivision='" + setDivision + '\'' +
+                ", setName='" + setName + '\'' +
+                ", setArea='" + setArea + '\'' +
+                ", setID='" + setID + '\'' +
+                ", connections=" + connections +
+                ", connectTimeout=" + connectTimeout +
+                ", corePoolSize=" + corePoolSize +
+                ", maxPoolSize=" + maxPoolSize +
+                ", keepAliveTime=" + keepAliveTime +
+                ", queueSize=" + queueSize +
+                ", charsetName='" + charsetName + '\'' +
+                ", logPath='" + logPath + '\'' +
+                ", logLevel='" + logLevel + '\'' +
+                ", dataPath='" + dataPath + '\'' +
+                '}';
     }
 }

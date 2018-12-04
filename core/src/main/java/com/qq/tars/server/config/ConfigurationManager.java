@@ -1,13 +1,13 @@
 /**
  * Tencent is pleased to support the open source community by making Tars available.
- *
+ * <p>
  * Copyright (C) 2016 THL A29 Limited, a Tencent company. All rights reserved.
- *
+ * <p>
  * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- *
+ * <p>
  * https://opensource.org/licenses/BSD-3-Clause
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -16,11 +16,11 @@
 
 package com.qq.tars.server.config;
 
-import java.io.IOException;
-
 import com.qq.tars.client.CommunicatorConfig;
 import com.qq.tars.common.util.Config;
 import com.qq.tars.common.util.StringUtils;
+
+import java.io.IOException;
 
 public class ConfigurationManager {
 
@@ -112,7 +112,7 @@ public class ConfigurationManager {
             if (e instanceof ConfigurationException) {
                 throw new ConfigurationException("contains invalid config|key=" + key + ", value=" + value, e);
             } else {
-                throw new ConfigurationException("error occurred on load server config");
+                throw new ConfigurationException("error occurred on load server config", e);
             }
         }
     }

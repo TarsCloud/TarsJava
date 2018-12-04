@@ -1,13 +1,13 @@
 /**
  * Tencent is pleased to support the open source community by making Tars available.
- *
+ * <p>
  * Copyright (C) 2016 THL A29 Limited, a Tencent company. All rights reserved.
- *
+ * <p>
  * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- *
+ * <p>
  * https://opensource.org/licenses/BSD-3-Clause
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -16,6 +16,7 @@
 
 package com.qq.tars.server.core;
 
+import com.qq.tars.client.CommunicatorConfig;
 import com.qq.tars.common.Filter;
 import com.qq.tars.common.FilterChain;
 import com.qq.tars.common.FilterKind;
@@ -48,117 +49,9 @@ import java.util.Random;
 
 public class TarsServantProcessor extends Processor {
 
-    private Logger flowLogger = Logger.getLogger("tarsserver.log", LogType.LOCAL);
-
     private static final String FLOW_SEP_FLAG = "|";
-
     private static final Random rand = new Random(System.currentTimeMillis());
-
-    @Override
-    public Response process(Request req, Session session) {
-//        AppContainer container = null;
-        TarsServantRequest request = null;
-        TarsServantResponse response = null;
-        ServantHomeSkeleton skeleton = null;
-        Object value = null;
-        AppContext appContext = null;
-        ClassLoader oldClassLoader = null;
-        int waitingTime = -1;
-        long startTime = req.getProcessTime();
-        String remark = "";
-
-        try {
-            oldClassLoader = Thread.currentThread().getContextClassLoader();
-            request = (TarsServantRequest) req;
-            response = createResponse(request, session);
-            response.setTicketNumber(req.getTicketNumber());
-
-            if (response.getRet() != TarsHelper.SERVERSUCCESS || TarsHelper.isPing(request.getFunctionName())) {
-                return response;
-            }
-            int maxWaitingTimeInQueue = ConfigurationManager.getInstance().getServerConfig().getServantAdapterConfMap().get(request.getServantName()).getQueueTimeout();
-            waitingTime = (int) (startTime - req.getBornTime());
-            if (waitingTime > maxWaitingTimeInQueue) {
-                throw new TarsException("Wait too long, server busy.");
-            }
-
-//            container = ContainerManager.getContainer(AppContainer.class);
-            Context<?, ?> context = ContextManager.registerContext(request, response);
-            context.setAttribute(Context.INTERNAL_START_TIME, startTime);
-            context.setAttribute(Context.INTERNAL_CLIENT_IP, session.getRemoteIp());
-//            context.setAttribute(Context.INTERNAL_APP_NAME, container.getDefaultAppContext().name());
-            context.setAttribute(Context.INTERNAL_SERVICE_NAME, request.getServantName());
-            context.setAttribute(Context.INTERNAL_METHOD_NAME, request.getFunctionName());
-            context.setAttribute(Context.INTERNAL_SESSION_DATA, session);
-            
-            DistributedContext distributedContext = DistributedContextManager.getDistributedContext();
-            distributedContext.put(DyeingSwitch.REQ, request);
-            distributedContext.put(DyeingSwitch.RES, response);
-            distributedContext.put(TraceManager.INTERNAL_SERVANT_NAME, request.getServantName());
-
-            appContext = AppContextManager.getInstance().getAppContext();
-            if (appContext == null) throw new RuntimeException("failed to find the application named:[ROOT]");
-
-//            Thread.currentThread().setContextClassLoader(appContext.getAppContextClassLoader());
-            preInvokeSkeleton();
-            skeleton = appContext.getCapHomeSkeleton(request.getServantName());
-            if (skeleton == null) throw new RuntimeException("failed to find the servant named[" + request.getServantName() + "]");
-            List<Filter> filters = AppContextManager.getInstance().getAppContext().getFilters(FilterKind.SERVER);
-            FilterChain filterChain = new TarsServerFilterChain(filters, request.getServantName(), FilterKind.SERVER, skeleton);
-            filterChain.doFilter(request, response);
-        } catch (Throwable cause) {
-            cause.printStackTrace();
-            System.out.println("ERROR: " + cause.getMessage());
-
-            if (response.isAsyncMode()) {
-                try {
-                    Context<TarsServantRequest, TarsServantResponse> context = ContextManager.getContext();
-                    AsyncContext aContext = context.getAttribute(AsyncContext.PORTAL_CAP_ASYNC_CONTEXT_ATTRIBUTE);
-                    if (aContext != null) aContext.writeException(cause);
-                } catch (Exception ex) {
-                    System.out.println("ERROR: " + ex.getMessage());
-                }
-            } else {
-                response.setResult(null);
-                response.setCause(cause);
-                response.setRet(TarsHelper.SERVERUNKNOWNERR);
-                remark = cause.toString();
-            }
-        } finally {
-            if (oldClassLoader != null) {
-                Thread.currentThread().setContextClassLoader(oldClassLoader);
-            }
-            ContextManager.releaseContext();
-            if (!response.isAsyncMode()) {
-                printServiceFlowLog(flowLogger, request, response.getRet(), (System.currentTimeMillis() - startTime), remark);
-            }
-            postInvokeSkeleton();
-            OmServiceMngr.getInstance().reportWaitingTimeProperty(waitingTime);
-            reportServerStat(request, response, startTime);
-        }
-        return response;
-    }
-
-    private void reportServerStat(TarsServantRequest request, TarsServantResponse response, long startTime) {
-        if (request.getVersion() == TarsHelper.VERSION2 || request.getVersion() == TarsHelper.VERSION3) {
-            reportServerStat(Constants.TARS_TUP_CLIENT, request, response, startTime);
-        } else if (request.getMessageType() == TarsHelper.ONEWAY) {
-            reportServerStat(Constants.TARS_ONE_WAY_CLIENT, request, response, startTime);
-        }
-    }
-
-    private void reportServerStat(String moduleName, TarsServantRequest request, TarsServantResponse response,
-                                  long startTime) {
-        ServerConfig serverConfig = ConfigurationManager.getInstance().getServerConfig();
-        ServantAdapterConfig servantAdapterConfig = serverConfig.getServantAdapterConfMap().get(request.getServantName());
-        if (servantAdapterConfig == null) {
-            return;
-        }
-        Endpoint serverEndpoint = servantAdapterConfig.getEndpoint();
-        String masterIp = request.getIoSession().getRemoteIp();
-        int result = response.getRet() == TarsHelper.SERVERSUCCESS ? Constants.INVOKE_STATUS_SUCC : Constants.INVOKE_STATUS_EXEC;
-        InvokeStatHelper.getInstance().addProxyStat(request.getServantName()).addInvokeTime(moduleName, request.getServantName(), serverConfig.getCommunicatorConfig().getSetDivision(), request.getFunctionName(), (masterIp == null ? "0.0.0.0" : masterIp), serverEndpoint.host(), serverEndpoint.port(), result, (System.currentTimeMillis() - startTime));
-    }
+    private Logger flowLogger = Logger.getLogger("tarsserver.log", LogType.LOCAL);
 
     public static void printServiceFlowLog(Logger logger, TarsServantRequest request, int status, long cost,
                                            String remark) {
@@ -209,6 +102,114 @@ public class TarsServantProcessor extends Processor {
         return shortParam.replaceAll(" ", "_").replaceAll(" ", "_").replaceAll("\n", "+").replace(',', '，').replace('(', '（').replace(')', '）');
     }
 
+    @Override
+    public Response process(Request req, Session session) {
+//        AppContainer container = null;
+        TarsServantRequest request = null;
+        TarsServantResponse response = null;
+        ServantHomeSkeleton skeleton = null;
+        Object value = null;
+        AppContext appContext = null;
+        ClassLoader oldClassLoader = null;
+        int waitingTime = -1;
+        long startTime = req.getProcessTime();
+        String remark = "";
+
+        try {
+            oldClassLoader = Thread.currentThread().getContextClassLoader();
+            request = (TarsServantRequest) req;
+            response = createResponse(request, session);
+            response.setTicketNumber(req.getTicketNumber());
+
+            if (response.getRet() != TarsHelper.SERVERSUCCESS || TarsHelper.isPing(request.getFunctionName())) {
+                return response;
+            }
+            int maxWaitingTimeInQueue = ConfigurationManager.getInstance().getServerConfig().getServantAdapterConfMap().get(request.getServantName()).getQueueTimeout();
+            waitingTime = (int) (startTime - req.getBornTime());
+            if (waitingTime > maxWaitingTimeInQueue) {
+                throw new TarsException("Wait too long, server busy.");
+            }
+
+//            container = ContainerManager.getContainer(AppContainer.class);
+            Context<?, ?> context = ContextManager.registerContext(request, response);
+            context.setAttribute(Context.INTERNAL_START_TIME, startTime);
+            context.setAttribute(Context.INTERNAL_CLIENT_IP, session.getRemoteIp());
+//            context.setAttribute(Context.INTERNAL_APP_NAME, container.getDefaultAppContext().name());
+            context.setAttribute(Context.INTERNAL_SERVICE_NAME, request.getServantName());
+            context.setAttribute(Context.INTERNAL_METHOD_NAME, request.getFunctionName());
+            context.setAttribute(Context.INTERNAL_SESSION_DATA, session);
+
+            DistributedContext distributedContext = DistributedContextManager.getDistributedContext();
+            distributedContext.put(DyeingSwitch.REQ, request);
+            distributedContext.put(DyeingSwitch.RES, response);
+            distributedContext.put(TraceManager.INTERNAL_SERVANT_NAME, request.getServantName());
+
+            appContext = AppContextManager.getInstance().getAppContext();
+            if (appContext == null) throw new RuntimeException("failed to find the application named:[ROOT]");
+
+//            Thread.currentThread().setContextClassLoader(appContext.getAppContextClassLoader());
+            preInvokeSkeleton();
+            skeleton = appContext.getCapHomeSkeleton(request.getServantName());
+            if (skeleton == null)
+                throw new RuntimeException("failed to find the servant named[" + request.getServantName() + "]");
+            List<Filter> filters = AppContextManager.getInstance().getAppContext().getFilters(FilterKind.SERVER);
+            FilterChain filterChain = new TarsServerFilterChain(filters, request.getServantName(), FilterKind.SERVER, skeleton);
+            filterChain.doFilter(request, response);
+        } catch (Throwable cause) {
+            cause.printStackTrace();
+            System.err.println("ERROR: " + cause.getMessage());
+
+            if (response.isAsyncMode()) {
+                try {
+                    Context<TarsServantRequest, TarsServantResponse> context = ContextManager.getContext();
+                    AsyncContext aContext = context.getAttribute(AsyncContext.PORTAL_CAP_ASYNC_CONTEXT_ATTRIBUTE);
+                    if (aContext != null) aContext.writeException(cause);
+                } catch (Exception ex) {
+                    System.out.println("ERROR: " + ex.getMessage());
+                }
+            } else {
+                response.setResult(null);
+                response.setCause(cause);
+                response.setRet(TarsHelper.SERVERUNKNOWNERR);
+                remark = cause.toString();
+            }
+        } finally {
+            if (oldClassLoader != null) {
+                Thread.currentThread().setContextClassLoader(oldClassLoader);
+            }
+            ContextManager.releaseContext();
+            if (!response.isAsyncMode()) {
+                printServiceFlowLog(flowLogger, request, response.getRet(), (System.currentTimeMillis() - startTime), remark);
+            }
+            postInvokeSkeleton();
+            OmServiceMngr.getInstance().reportWaitingTimeProperty(waitingTime);
+            reportServerStat(request, response, startTime);
+        }
+        return response;
+    }
+
+    private void reportServerStat(TarsServantRequest request, TarsServantResponse response, long startTime) {
+        if (request.getVersion() == TarsHelper.VERSION2 || request.getVersion() == TarsHelper.VERSION3) {
+            reportServerStat(Constants.TARS_TUP_CLIENT, request, response, startTime);
+        } else if (request.getMessageType() == TarsHelper.ONEWAY) {
+            reportServerStat(Constants.TARS_ONE_WAY_CLIENT, request, response, startTime);
+        }
+    }
+
+    private void reportServerStat(String moduleName, TarsServantRequest request, TarsServantResponse response,
+                                  long startTime) {
+        ServerConfig serverConfig = ConfigurationManager.getInstance().getServerConfig();
+        ServantAdapterConfig servantAdapterConfig = serverConfig.getServantAdapterConfMap().get(request.getServantName());
+        if (servantAdapterConfig == null) {
+            return;
+        }
+        CommunicatorConfig communicatorConfig = serverConfig.getCommunicatorConfig();
+        Endpoint serverEndpoint = servantAdapterConfig.getEndpoint();
+        String masterIp = request.getIoSession().getRemoteIp();
+        int result = response.getRet() == TarsHelper.SERVERSUCCESS ? Constants.INVOKE_STATUS_SUCC : Constants.INVOKE_STATUS_EXEC;
+        InvokeStatHelper.getInstance().addProxyStat(request.getServantName()).addInvokeTimeByServer(moduleName, serverConfig.getApplication(), serverConfig.getServerName(), communicatorConfig.getSetName(), communicatorConfig.getSetArea(), communicatorConfig.getSetID(), request.getFunctionName(), (masterIp == null ? "0.0.0.0" : masterIp), serverEndpoint.host(), serverEndpoint.port(), result, (System.currentTimeMillis() - startTime));
+    }
+
     private TarsServantResponse createResponse(TarsServantRequest request, Session session) {
         TarsServantResponse response = new TarsServantResponse(session);
         response.setRet(request.getRet());
@@ -222,46 +223,46 @@ public class TarsServantProcessor extends Processor {
         response.setContext(request.getContext());
         return response;
     }
-    
+
     public void preInvokeSkeleton() {
-    	DistributedContext distributedContext = DistributedContextManager.getDistributedContext();
-    	Request request = distributedContext.get(DyeingSwitch.REQ);
-    	if (request instanceof TarsServantRequest) {
-    		TarsServantRequest tarsServantRequest = (TarsServantRequest)request;
-    		initDyeing(tarsServantRequest);
-    	}
+        DistributedContext distributedContext = DistributedContextManager.getDistributedContext();
+        Request request = distributedContext.get(DyeingSwitch.REQ);
+        if (request instanceof TarsServantRequest) {
+            TarsServantRequest tarsServantRequest = (TarsServantRequest) request;
+            initDyeing(tarsServantRequest);
+        }
     }
 
     public void postInvokeSkeleton() {
-    	DistributedContext distributedContext = DistributedContextManager.getDistributedContext();
-    	distributedContext.clear();
+        DistributedContext distributedContext = DistributedContextManager.getDistributedContext();
+        distributedContext.clear();
     }
-    
+
     private void initDyeing(TarsServantRequest request) {
-    	String routeKey;
-    	String fileName;
-    	if ((request.getMessageType() & TarsHelper.MESSAGETYPEDYED) == TarsHelper.MESSAGETYPEDYED) {
-    		routeKey = request.getStatus().get(DyeingSwitch.STATUS_DYED_KEY);
-    		fileName = request.getStatus().get(DyeingSwitch.STATUS_DYED_FILENAME);
-    		DyeingSwitch.enableUnactiveDyeing(routeKey, fileName);
-    		return;
-    	}
-    	String cache_routeKey = DyeingKeyCache.getInstance().get(request.getServantName(), request.getFunctionName());
-    	if (cache_routeKey == null) {
-    		cache_routeKey =  DyeingKeyCache.getInstance().get(request.getServantName(), "DyeingAllFunctionsFromInterface");
-    	}
-    	if (cache_routeKey == null) {
-    		return;
-    	}
-    	TarsMethodInfo methodInfo = request.getMethodInfo();
-    	if (methodInfo.getRouteKeyIndex() != -1) {
-    		Object[] paramters = request.getMethodParameters();
-    		Object value = paramters[methodInfo.getRouteKeyIndex()];
-    		if (cache_routeKey.equals(value.toString())) {
-    			routeKey = cache_routeKey;
-    			fileName = ConfigurationManager.getInstance().getServerConfig().getServerName();
-    			DyeingSwitch.enableUnactiveDyeing(routeKey, fileName);
-    		}
-    	}
+        String routeKey;
+        String fileName;
+        if ((request.getMessageType() & TarsHelper.MESSAGETYPEDYED) == TarsHelper.MESSAGETYPEDYED) {
+            routeKey = request.getStatus().get(DyeingSwitch.STATUS_DYED_KEY);
+            fileName = request.getStatus().get(DyeingSwitch.STATUS_DYED_FILENAME);
+            DyeingSwitch.enableUnactiveDyeing(routeKey, fileName);
+            return;
+        }
+        String cache_routeKey = DyeingKeyCache.getInstance().get(request.getServantName(), request.getFunctionName());
+        if (cache_routeKey == null) {
+            cache_routeKey = DyeingKeyCache.getInstance().get(request.getServantName(), "DyeingAllFunctionsFromInterface");
+        }
+        if (cache_routeKey == null) {
+            return;
+        }
+        TarsMethodInfo methodInfo = request.getMethodInfo();
+        if (methodInfo.getRouteKeyIndex() != -1) {
+            Object[] paramters = request.getMethodParameters();
+            Object value = paramters[methodInfo.getRouteKeyIndex()];
+            if (cache_routeKey.equals(value.toString())) {
+                routeKey = cache_routeKey;
+                fileName = ConfigurationManager.getInstance().getServerConfig().getServerName();
+                DyeingSwitch.enableUnactiveDyeing(routeKey, fileName);
+            }
+        }
     }
 }

@@ -1,13 +1,13 @@
 /**
  * Tencent is pleased to support the open source community by making Tars available.
- *
+ * <p>
  * Copyright (C) 2016 THL A29 Limited, a Tencent company. All rights reserved.
- *
+ * <p>
  * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- *
+ * <p>
  * https://opensource.org/licenses/BSD-3-Clause
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -15,9 +15,6 @@
  */
 
 package com.qq.tars.client;
-
-import java.lang.reflect.Constructor;
-
 
 import com.qq.tars.client.rpc.loadbalance.DefaultLoadBalance;
 import com.qq.tars.client.rpc.tars.TarsProtocolInvoker;
@@ -36,6 +33,8 @@ import com.qq.tars.rpc.protocol.Codec;
 import com.qq.tars.rpc.protocol.ServantProtocolFactory;
 import com.qq.tars.rpc.protocol.tars.TarsCodec;
 
+import java.lang.reflect.Constructor;
+
 class ObjectProxyFactory {
 
     private final Communicator communicator;
@@ -44,14 +43,20 @@ class ObjectProxyFactory {
         this.communicator = communicator;
     }
 
-    public <T> ObjectProxy<T> getObjectProxy(Class<T> api, String objName, ServantProxyConfig servantProxyConfig,
+    public <T> ObjectProxy<T> getObjectProxy(Class<T> api, String objName, String setDivision, ServantProxyConfig servantProxyConfig,
                                              LoadBalance<T> loadBalance, ProtocolInvoker<T> protocolInvoker) throws ClientException {
         if (servantProxyConfig == null) {
-            servantProxyConfig = createServantProxyConfig(objName);
+            servantProxyConfig = createServantProxyConfig(objName, setDivision);
         } else {
             servantProxyConfig.setCommunicatorId(communicator.getId());
+            servantProxyConfig.setModuleName(communicator.getCommunicatorConfig().getModuleName(), communicator.getCommunicatorConfig().isEnableSet(), communicator.getCommunicatorConfig().getSetDivision());
             servantProxyConfig.setLocator(communicator.getCommunicatorConfig().getLocator());
+            if (setDivision != null) {
+                servantProxyConfig.setEnableSet(true);
+                servantProxyConfig.setSetDivision(setDivision);
+            }
         }
+
         updateServantEndpoints(servantProxyConfig);
 
         if (loadBalance == null) {
@@ -59,12 +64,12 @@ class ObjectProxyFactory {
         }
 
         if (protocolInvoker == null) {
-            protocolInvoker = createProtocolInvoker(api, objName, servantProxyConfig);
+            protocolInvoker = createProtocolInvoker(api, servantProxyConfig);
         }
-        return new ObjectProxy<T>(api, objName, servantProxyConfig, loadBalance, protocolInvoker, communicator);
+        return new ObjectProxy<T>(api, servantProxyConfig, loadBalance, protocolInvoker, communicator);
     }
 
-    private <T> ProtocolInvoker<T> createProtocolInvoker(Class<T> api, String objName,
+    private <T> ProtocolInvoker<T> createProtocolInvoker(Class<T> api,
                                                          ServantProxyConfig servantProxyConfig) throws ClientException {
         ProtocolInvoker<T> protocolInvoker = null;
         Codec codec = createCodec(api, servantProxyConfig);
@@ -92,7 +97,7 @@ class ObjectProxyFactory {
             if (codecClass != null) {
                 Constructor<? extends Codec> constructor;
                 try {
-                    constructor = codecClass.getConstructor(new Class[] { String.class });
+                    constructor = codecClass.getConstructor(new Class[]{String.class});
                     codec = constructor.newInstance(servantProxyConfig.getCharsetName());
                 } catch (Exception e) {
                     throw new ClientException(servantProxyConfig.getSimpleObjectName(), "error occurred on create codec, codec=" + codecClass.getName(), e);
@@ -102,14 +107,17 @@ class ObjectProxyFactory {
         return codec;
     }
 
-    private ServantProxyConfig createServantProxyConfig(String objName) throws CommunicatorConfigException {
+    private ServantProxyConfig createServantProxyConfig(String objName, String setDivision) throws CommunicatorConfigException {
         CommunicatorConfig communicatorConfig = communicator.getCommunicatorConfig();
         ServantProxyConfig cfg = new ServantProxyConfig(communicator.getId(), communicatorConfig.getLocator(), objName);
+        cfg.setModuleName(communicatorConfig.getModuleName(), communicatorConfig.isEnableSet(), communicatorConfig.getSetDivision());
+        if (setDivision != null) {
+            cfg.setEnableSet(true);
+            cfg.setSetDivision(setDivision);
+        }
         cfg.setAsyncTimeout(communicatorConfig.getAsyncInvokeTimeout());
         cfg.setSyncTimeout(communicatorConfig.getSyncInvokeTimeout());
-        cfg.setEnableSet(communicatorConfig.isEnableSet());
-        cfg.setSetDivision(communicatorConfig.getSetDivision());
-        cfg.setModuleName(communicatorConfig.getModuleName());
+
         cfg.setStat(communicatorConfig.getStat());
         cfg.setCharsetName(communicatorConfig.getCharsetName());
         cfg.setConnections(communicatorConfig.getConnections());

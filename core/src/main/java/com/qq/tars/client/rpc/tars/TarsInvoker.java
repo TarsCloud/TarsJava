@@ -1,13 +1,13 @@
 /**
  * Tencent is pleased to support the open source community by making Tars available.
- *
+ * <p>
  * Copyright (C) 2016 THL A29 Limited, a Tencent company. All rights reserved.
- *
+ * <p>
  * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- *
+ * <p>
  * https://opensource.org/licenses/BSD-3-Clause
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -15,11 +15,6 @@
  */
 
 package com.qq.tars.client.rpc.tars;
-
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import com.qq.tars.client.ServantProxyConfig;
 import com.qq.tars.client.cluster.ServantnvokerAliveChecker;
@@ -48,9 +43,14 @@ import com.qq.tars.rpc.protocol.tars.support.AnalystManager;
 import com.qq.tars.server.core.AppContextManager;
 import com.qq.tars.support.stat.InvokeStatHelper;
 
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class TarsInvoker<T> extends ServantInvoker<T> {
-	
-	List<Filter> filters;
+
+    List<Filter> filters;
 
     public TarsInvoker(ServantProxyConfig config, Class<T> api, Url url, ServantClient[] clients) {
         super(config, api, url, clients);
@@ -92,7 +92,7 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
         } finally {
             if (!isAsync) {
                 setAvailable(ServantnvokerAliveChecker.isAlive(getUrl(), config, ret));
-                InvokeStatHelper.getInstance().addProxyStat(objName).addInvokeTime(config.getModuleName(), objName, config.getSetDivision(), inv.getMethodName(), getUrl().getHost(), getUrl().getPort(), ret, System.currentTimeMillis() - begin);
+                InvokeStatHelper.getInstance().addProxyStat(objName).addInvokeTimeByClient(config.getMasterName(), config.getSlaveName(), config.getSlaveSetName(), config.getSlaveSetArea(), config.getSlaveSetID(), inv.getMethodName(), getUrl().getHost(), getUrl().getPort(), ret, System.currentTimeMillis() - begin);
             }
         }
     }
@@ -109,11 +109,12 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
         request.setPacketType(TarsHelper.NORMAL);
         request.setServantName(objName);
         request.setFunctionName(method.getName());
-        request.setMethodInfo(AnalystManager.getInstance().getMethodMap(objName).get(method));
+        request.setApi(super.getApi());
+        request.setMethodInfo(AnalystManager.getInstance().getMethodMap(super.getApi()).get(method));
         request.setMethodParameters(args);
         request.setContext(context);
         request.setInvokeStatus(InvokeStatus.SYNC_CALL);
-        
+
         TarsServantResponse response = new TarsServantResponse(request.getIoSession());
         response.setRequest(request);
         response.setRequestId(request.getTicketNumber());
@@ -125,18 +126,18 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
         response.setCharsetName(request.getCharsetName());
         response.setTimeout(request.getTimeout());
         response.setContext(request.getContext());
-        
+
         DistributedContext distributedContext = DistributedContextManager.getDistributedContext();
-        Boolean bDyeing = distributedContext.get(DyeingSwitch.BDYEING);        
+        Boolean bDyeing = distributedContext.get(DyeingSwitch.BDYEING);
         if (bDyeing != null && bDyeing == true) {
-        	request.setMessageType(request.getMessageType() | TarsHelper.MESSAGETYPEDYED);
-        	HashMap<String, String> status = new HashMap<String, String>();
-        	String routeKey = distributedContext.get(DyeingSwitch.DYEINGKEY);
-        	String fileName = distributedContext.get(DyeingSwitch.FILENAME);
-        	status.put(DyeingSwitch.STATUS_DYED_KEY, routeKey == null ? "" : routeKey);
-        	status.put(DyeingSwitch.STATUS_DYED_FILENAME, fileName == null ? "" : fileName);
-        	request.setStatus(status);
-        	
+            request.setMessageType(request.getMessageType() | TarsHelper.MESSAGETYPEDYED);
+            HashMap<String, String> status = new HashMap<String, String>();
+            String routeKey = distributedContext.get(DyeingSwitch.DYEINGKEY);
+            String fileName = distributedContext.get(DyeingSwitch.FILENAME);
+            status.put(DyeingSwitch.STATUS_DYED_KEY, routeKey == null ? "" : routeKey);
+            status.put(DyeingSwitch.STATUS_DYED_FILENAME, fileName == null ? "" : fileName);
+            request.setStatus(status);
+
         }
         FilterChain filterChain = new TarsClientFilterChain(filters, objName, FilterKind.CLIENT, client, 0, null);
         filterChain.doFilter(request, response);
@@ -154,7 +155,8 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
         request.setFunctionName(method.getName().replaceAll("async_", ""));
         request.setContext(context);
 
-        TarsMethodInfo methodInfo = AnalystManager.getInstance().getMethodMap(objName).get(method);
+        TarsMethodInfo methodInfo = AnalystManager.getInstance().getMethodMap(super.getApi()).get(method);
+        request.setApi(super.getApi());
         request.setMethodInfo(methodInfo);
         request.setMethodParameters(args);
         request.setInvokeStatus(InvokeStatus.ASYNC_CALL);
@@ -171,23 +173,23 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
         if (callback == null) {
             request.setPacketType(TarsHelper.ONEWAY);
         }
-        
+
         TarsServantResponse response = new TarsServantResponse(client.getIoSession());
-        
+
         DistributedContext distributedContext = DistributedContextManager.getDistributedContext();
-        Boolean bDyeing = distributedContext.get(DyeingSwitch.BDYEING);        
+        Boolean bDyeing = distributedContext.get(DyeingSwitch.BDYEING);
         if (bDyeing != null && bDyeing == true) {
-        	request.setMessageType(request.getMessageType() | TarsHelper.MESSAGETYPEDYED);
-        	HashMap<String, String> status = new HashMap<String, String>();
-        	String routeKey = distributedContext.get(DyeingSwitch.DYEINGKEY);
-        	String fileName = distributedContext.get(DyeingSwitch.FILENAME);
-        	status.put(DyeingSwitch.STATUS_DYED_KEY, routeKey == null ? "" : routeKey);
-        	status.put(DyeingSwitch.STATUS_DYED_FILENAME, fileName == null ? "" : fileName);
-        	request.setStatus(status);
-        	
+            request.setMessageType(request.getMessageType() | TarsHelper.MESSAGETYPEDYED);
+            HashMap<String, String> status = new HashMap<String, String>();
+            String routeKey = distributedContext.get(DyeingSwitch.DYEINGKEY);
+            String fileName = distributedContext.get(DyeingSwitch.FILENAME);
+            status.put(DyeingSwitch.STATUS_DYED_KEY, routeKey == null ? "" : routeKey);
+            status.put(DyeingSwitch.STATUS_DYED_FILENAME, fileName == null ? "" : fileName);
+            request.setStatus(status);
+
         }
-        FilterChain filterChain = new TarsClientFilterChain(filters, objName, FilterKind.CLIENT, client, 1, 
-        		new TarsCallbackWrapper(config, request.getFunctionName(), getUrl().getHost(), getUrl().getPort(), request.getBornTime(), request, callback, this));
+        FilterChain filterChain = new TarsClientFilterChain(filters, objName, FilterKind.CLIENT, client, 1,
+                new TarsCallbackWrapper(config, request.getFunctionName(), getUrl().getHost(), getUrl().getPort(), request.getBornTime(), request, callback, this));
         filterChain.doFilter(request, response);
     }
 

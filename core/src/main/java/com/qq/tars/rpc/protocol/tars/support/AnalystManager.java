@@ -1,13 +1,13 @@
 /**
  * Tencent is pleased to support the open source community by making Tars available.
- *
+ * <p>
  * Copyright (C) 2016 THL A29 Limited, a Tencent company. All rights reserved.
- *
+ * <p>
  * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- *
+ * <p>
  * https://opensource.org/licenses/BSD-3-Clause
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -16,14 +16,14 @@
 
 package com.qq.tars.rpc.protocol.tars.support;
 
+import com.qq.tars.protocol.tars.support.TarsMethodInfo;
+import com.qq.tars.protocol.util.TarsHelper;
+
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.qq.tars.protocol.tars.support.TarsMethodInfo;
-import com.qq.tars.protocol.util.TarsHelper;
 
 public final class AnalystManager {
 
@@ -35,12 +35,12 @@ public final class AnalystManager {
         return instance;
     }
 
-    public Map<Method, TarsMethodInfo> getMethodMap(String objName) {
-        return cache.get(objName);
+    public Map<Method, TarsMethodInfo> getMethodMap(Class<?> api) {
+        return cache.get(api.getName());
     }
 
     public void registry(Class<?> api, String objName) {
-        cache.putIfAbsent(objName, TarsHelper.getMethodInfo(api, objName));
+        cache.putIfAbsent(api.getName(), TarsHelper.getMethodInfo(api, objName));
     }
 
     public Map<String, TarsMethodInfo> getMethodMapByName(String objName) {

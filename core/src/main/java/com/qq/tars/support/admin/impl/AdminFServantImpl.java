@@ -1,13 +1,13 @@
 /**
  * Tencent is pleased to support the open source community by making Tars available.
- *
+ * <p>
  * Copyright (C) 2016 THL A29 Limited, a Tencent company. All rights reserved.
- *
+ * <p>
  * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- *
+ * <p>
  * https://opensource.org/licenses/BSD-3-Clause
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -16,12 +16,10 @@
 
 package com.qq.tars.support.admin.impl;
 
-import java.util.Map.Entry;
-
 import com.qq.tars.client.CommunicatorConfig;
+import com.qq.tars.common.ClientVersion;
 import com.qq.tars.common.util.DyeingKeyCache;
 import com.qq.tars.common.util.StringUtils;
-import com.qq.tars.server.ServerVersion;
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.server.config.ServantAdapterConfig;
 import com.qq.tars.server.config.ServerConfig;
@@ -33,6 +31,8 @@ import com.qq.tars.support.node.NodeHelper;
 import com.qq.tars.support.notify.NotifyHelper;
 import com.qq.tars.support.om.OmConstants;
 import com.qq.tars.support.om.OmLogger;
+
+import java.util.Map.Entry;
 
 public class AdminFServantImpl implements AdminFServant {
 
@@ -47,7 +47,7 @@ public class AdminFServantImpl implements AdminFServant {
     private static final String CMD_VIEW_CONN = "tars.connection";
 
     private static final String CMD_VIEW_STATUS = "tars.viewstatus";
-    
+
     private static final String CMD_SET_DYEING = "tars.setdyeing";
 
     private static final String ADATER_CONN = "[adater:%sAdapter] [connections:%d]\n";
@@ -69,7 +69,7 @@ public class AdminFServantImpl implements AdminFServant {
         String params = "";
         String comm = command;
         if (command == null) {
-        	return "command is null";
+            return "command is null";
         }
         int i = command.indexOf(" ");
         if (i != -1) {
@@ -93,7 +93,7 @@ public class AdminFServantImpl implements AdminFServant {
         } else if (CMD_VIEW_VERSION.equals(comm)) {
             result.append(reportServerVersion() + "\n");
         } else if (CMD_SET_DYEING.equals(comm)) {
-        	result.append(loadDyeing(params) + "\n");
+            result.append(loadDyeing(params) + "\n");
         } else {
             final CommandHandler handler = CustemCommandHelper.getInstance().getCommandHandler(comm);
             final String cmdName = comm;
@@ -245,7 +245,7 @@ public class AdminFServantImpl implements AdminFServant {
     }
 
     private String reportServerVersion() {
-        String version = ServerVersion.getVersion();
+        String version = ClientVersion.getVersion();
         NodeHelper.getInstance().reportVersion(version);
         return version;
     }
@@ -265,9 +265,9 @@ public class AdminFServantImpl implements AdminFServant {
     }
 
     private String loadConfig(String params) {
-		if (params == null) {
-			return "invalid params";
-		}
+        if (params == null) {
+            return "invalid params";
+        }
         String fileName = params.trim();
         if (StringUtils.isEmpty(fileName)) {
             return "invalid params.";
@@ -287,26 +287,26 @@ public class AdminFServantImpl implements AdminFServant {
 
         return result;
     }
-    
+
     private String loadDyeing(String params) {
-		String result = null;
-		if (params == null) {
-			return "invalid params";
-		}
-		String[] paramArray = params.split(" ");
-		if (paramArray.length < 2) {
-			return "invalid params";
-		}
-		try {
-			String routeKey = paramArray[0];
-			String servantName = paramArray[1];
-			String interfaceName = (paramArray.length >= 3) ? paramArray[2] : "DyeingAllFunctionsFromInterface";
-			DyeingKeyCache.getInstance().set(servantName, interfaceName, routeKey);
-			result = "execute success";
-		} catch (Exception e) {
-			result = "execute exception: " + e.getMessage();
-		}
-		return result;
-	}
+        String result = null;
+        if (params == null) {
+            return "invalid params";
+        }
+        String[] paramArray = params.split(" ");
+        if (paramArray.length < 2) {
+            return "invalid params";
+        }
+        try {
+            String routeKey = paramArray[0];
+            String servantName = paramArray[1];
+            String interfaceName = (paramArray.length >= 3) ? paramArray[2] : "DyeingAllFunctionsFromInterface";
+            DyeingKeyCache.getInstance().set(servantName, interfaceName, routeKey);
+            result = "execute success";
+        } catch (Exception e) {
+            result = "execute exception: " + e.getMessage();
+        }
+        return result;
+    }
 
 }

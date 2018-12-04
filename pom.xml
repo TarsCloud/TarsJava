@@ -10,7 +10,7 @@
 
     <groupId>com.tencent.tars</groupId>
     <artifactId>tars-parent</artifactId>
-    <version>1.6.0</version>
+    <version>1.6.1</version>
     <packaging>pom</packaging>
     <name>Tars</name>
     <description>Super POM For Projects</description>

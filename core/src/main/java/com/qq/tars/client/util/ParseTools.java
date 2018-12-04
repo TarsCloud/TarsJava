@@ -1,13 +1,13 @@
 /**
  * Tencent is pleased to support the open source community by making Tars available.
- *
+ * <p>
  * Copyright (C) 2016 THL A29 Limited, a Tencent company. All rights reserved.
- *
+ * <p>
  * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- *
+ * <p>
  * https://opensource.org/licenses/BSD-3-Clause
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -16,17 +16,17 @@
 
 package com.qq.tars.client.util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.qq.tars.client.ServantProxyConfig;
 import com.qq.tars.common.util.Constants;
 import com.qq.tars.common.util.StringUtils;
 import com.qq.tars.rpc.common.Url;
 import com.qq.tars.rpc.exc.ClientException;
 import com.qq.tars.support.query.prx.EndpointF;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ParseTools {
 
@@ -36,6 +36,14 @@ public class ParseTools {
             return objectName.substring(0, point);
         }
         return objectName;
+    }
+
+    public static String parseSlaveName(String simpleObjectName) {
+        String[] tmp = StringUtils.split(simpleObjectName, ".");
+        if (tmp.length > 2) {
+            return String.format("%s.%s", tmp[0], tmp[1]);
+        }
+        return simpleObjectName;
     }
 
     public static boolean hasServerNode(String objectName) {
@@ -123,7 +131,7 @@ public class ParseTools {
             } else if (items[i].equals("-s")) {
                 setDivision = items[i + 1];
             } else if (items[i].equals("-e")) {
-            	enableAuth = items[i + 1];
+                enableAuth = items[i + 1];
             } else if (items[i].equals("-v")) {
                 weightType = Integer.parseInt(items[i + 1]);
             } else if (items[i].equals("-w")) {

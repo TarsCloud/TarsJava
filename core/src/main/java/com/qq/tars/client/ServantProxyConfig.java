@@ -1,13 +1,13 @@
 /**
  * Tencent is pleased to support the open source community by making Tars available.
- *
+ * <p>
  * Copyright (C) 2016 THL A29 Limited, a Tencent company. All rights reserved.
- *
+ * <p>
  * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- *
+ * <p>
  * https://opensource.org/licenses/BSD-3-Clause
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -17,6 +17,7 @@
 package com.qq.tars.client;
 
 import com.qq.tars.client.util.ParseTools;
+import com.qq.tars.common.ClientVersion;
 import com.qq.tars.common.util.Constants;
 import com.qq.tars.common.util.StringUtils;
 
@@ -30,14 +31,21 @@ public final class ServantProxyConfig {
     private String stat = Constants.default_stat;
 
     private String objectName;
-    private String simpleObjectName;
+    private volatile String simpleObjectName;
+    private String masterName;
+    private volatile String slaveName;
     private String moduleName = Constants.default_modulename;
+    private boolean enableSet = false;
+    private volatile String setDivision = "";
+    private volatile String slaveSetName;
+    private volatile String slaveSetArea;
+    private volatile String slaveSetID;
+
     private int connections = Constants.default_connections;
     private int connectTimeout = Constants.default_connect_timeout;
     private int syncTimeout = Constants.default_sync_timeout;
     private int asyncTimeout = Constants.default_async_timeout;
-    private boolean enableSet = false;
-    private String setDivision = "";
+
 
     private int refreshInterval = Constants.default_refresh_interval;
     private int reportInterval = Constants.default_report_interval;
@@ -55,7 +63,6 @@ public final class ServantProxyConfig {
 
     private int minStaticWeightLimit = 10;
     private int maxStaticWeightLimit = 100;
-
     private int defaultConHashVirtualNodes = 100;
 
     public ServantProxyConfig(String objectName) {
@@ -113,21 +120,36 @@ public final class ServantProxyConfig {
         return objectName;
     }
 
-    public String getSimpleObjectName() {
-        return simpleObjectName;
-    }
-
     public void setObjectName(String objectName) {
         this.objectName = objectName;
         this.simpleObjectName = ParseTools.parseSimpleObjectName(objectName);
+        this.updateSlaveName();
+    }
+
+    private void updateSlaveName() {
+        String tmpSlaveName = ParseTools.parseSlaveName(this.simpleObjectName);
+        this.slaveName = this.enableSet ? String.format("%s.%s%s%s", tmpSlaveName, this.slaveSetName, this.slaveSetArea, this.slaveSetID) : String.format("%s", tmpSlaveName);
+    }
+
+    public String getSimpleObjectName() {
+        return simpleObjectName;
     }
 
     public String getModuleName() {
         return moduleName;
     }
 
-    public void setModuleName(String moduleName) {
+    public void setModuleName(String moduleName, boolean masterEnableSet, String masterSetDivision) {
         this.moduleName = moduleName;
+        this.masterName = masterEnableSet ? String.format("%s.%s@%s", moduleName, masterSetDivision.replaceAll("\\.", ""), ClientVersion.getVersion()) : String.format("%s@%s", moduleName, ClientVersion.getVersion());
+    }
+
+    public String getMasterName() {
+        return masterName;
+    }
+
+    public String getSlaveName() {
+        return slaveName;
     }
 
     public int getConnectTimeout() {
@@ -166,6 +188,7 @@ public final class ServantProxyConfig {
 
     public void setEnableSet(boolean enableSet) {
         this.enableSet = enableSet;
+        this.updateSlaveName();
     }
 
     public String getSetDivision() {
@@ -174,6 +197,23 @@ public final class ServantProxyConfig {
 
     public void setSetDivision(String setDivision) {
         this.setDivision = setDivision;
+        String[] tmp = StringUtils.split(setDivision, ".");
+        this.slaveSetName = tmp[0];
+        this.slaveSetArea = tmp[1];
+        this.slaveSetID = tmp[2];
+        this.updateSlaveName();
+    }
+
+    public String getSlaveSetName() {
+        return slaveSetName;
+    }
+
+    public String getSlaveSetArea() {
+        return slaveSetArea;
+    }
+
+    public String getSlaveSetID() {
+        return slaveSetID;
     }
 
     public int getMinTimeoutInvoke() {
@@ -325,6 +365,38 @@ public final class ServantProxyConfig {
 
     @Override
     public String toString() {
-        return String.format("ServantProxyConfig [communicatorId=%s, locator=%s, stat=%s, objectName=%s, simpleObjectName=%s, moduleName=%s, connections=%s, connectTimeout=%s, syncTimeout=%s, asyncTimeout=%s, enableSet=%s, setDivision=%s, refreshInterval=%s, reportInterval=%s, checkInterval=%s, tryTimeInterval=%s, minTimeoutInvoke=%s, frequenceFailInvoke=%s, frequenceFailRadio=%s, tcpNoDelay=%s, charsetName=%s, directConnection=%s]", communicatorId, locator, stat, objectName, simpleObjectName, moduleName, connections, connectTimeout, syncTimeout, asyncTimeout, enableSet, setDivision, refreshInterval, reportInterval, checkInterval, tryTimeInterval, minTimeoutInvoke, frequenceFailInvoke, frequenceFailRadio, tcpNoDelay, charsetName, directConnection);
+        return "ServantProxyConfig{" +
+                "communicatorId='" + communicatorId + '\'' +
+                ", protocol='" + protocol + '\'' +
+                ", locator='" + locator + '\'' +
+                ", stat='" + stat + '\'' +
+                ", objectName='" + objectName + '\'' +
+                ", simpleObjectName='" + simpleObjectName + '\'' +
+                ", masterName='" + masterName + '\'' +
+                ", slaveName='" + slaveName + '\'' +
+                ", moduleName='" + moduleName + '\'' +
+                ", enableSet=" + enableSet +
+                ", setDivision='" + setDivision + '\'' +
+                ", slaveSetName='" + slaveSetName + '\'' +
+                ", slaveSetArea='" + slaveSetArea + '\'' +
+                ", slaveSetID='" + slaveSetID + '\'' +
+                ", connections=" + connections +
+                ", connectTimeout=" + connectTimeout +
+                ", syncTimeout=" + syncTimeout +
+                ", asyncTimeout=" + asyncTimeout +
+                ", refreshInterval=" + refreshInterval +
+                ", reportInterval=" + reportInterval +
+                ", checkInterval=" + checkInterval +
+                ", tryTimeInterval=" + tryTimeInterval +
+                ", minTimeoutInvoke=" + minTimeoutInvoke +
+                ", frequenceFailInvoke=" + frequenceFailInvoke +
+                ", frequenceFailRadio=" + frequenceFailRadio +
+                ", tcpNoDelay=" + tcpNoDelay +
+                ", charsetName='" + charsetName + '\'' +
+                ", directConnection=" + directConnection +
+                ", minStaticWeightLimit=" + minStaticWeightLimit +
+                ", maxStaticWeightLimit=" + maxStaticWeightLimit +
+                ", defaultConHashVirtualNodes=" + defaultConHashVirtualNodes +
+                '}';
     }
 }

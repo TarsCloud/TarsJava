@@ -9,7 +9,7 @@ import io.opentracing.propagation.Format;
 import io.opentracing.propagation.TextMapInjectAdapter;
 import io.opentracing.tag.Tags;
 
-import com.qq.tars.client.ClientVersion;
+import com.qq.tars.common.ClientVersion;
 import com.qq.tars.common.Filter;
 import com.qq.tars.common.FilterChain;
 import com.qq.tars.common.util.Constants;
@@ -22,7 +22,6 @@ import com.qq.tars.rpc.protocol.tars.TarsServantRequest;
 import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.server.config.ServerConfig;
-import com.qq.tars.support.log.Logger;
 
 public class TraceClientFilter implements Filter {
 

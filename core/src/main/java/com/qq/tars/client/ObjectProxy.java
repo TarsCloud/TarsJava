@@ -1,13 +1,13 @@
 /**
  * Tencent is pleased to support the open source community by making Tars available.
- *
+ * <p>
  * Copyright (C) 2016 THL A29 Limited, a Tencent company. All rights reserved.
- *
+ * <p>
  * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- *
+ * <p>
  * https://opensource.org/licenses/BSD-3-Clause
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -15,12 +15,6 @@
  */
 
 package com.qq.tars.client;
-
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.util.Random;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import com.qq.tars.client.support.ServantCacheManager;
 import com.qq.tars.client.util.ClientLogger;
@@ -34,10 +28,16 @@ import com.qq.tars.rpc.exc.ClientException;
 import com.qq.tars.rpc.exc.NoConnectionException;
 import com.qq.tars.support.stat.InvokeStatHelper;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.util.Random;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 public final class ObjectProxy<T> implements ServantProxy, InvocationHandler {
 
     private final Class<T> api;
-    private final String objName;
+    //private final String objName;
     private final Communicator communicator;
 
     private final ServantCacheManager servantCacheManager = ServantCacheManager.getInstance();
@@ -53,10 +53,10 @@ public final class ObjectProxy<T> implements ServantProxy, InvocationHandler {
 
     private final Random random = new Random(System.currentTimeMillis() / 1000);
 
-    public ObjectProxy(Class<T> api, String objName, ServantProxyConfig servantProxyConfig, LoadBalance loadBalance,
+    public ObjectProxy(Class<T> api, ServantProxyConfig servantProxyConfig, LoadBalance loadBalance,
                        ProtocolInvoker<T> protocolInvoker, Communicator communicator) {
         this.api = api;
-        this.objName = objName;
+//        this.objName = objName;
         this.communicator = communicator;
         this.servantProxyConfig = servantProxyConfig;
         this.loadBalancer = loadBalance;
@@ -187,11 +187,11 @@ public final class ObjectProxy<T> implements ServantProxy, InvocationHandler {
                     servantProxyConfig.setObjectName(nodes);
                     refresh();
                 }
-                ClientLogger.getLogger().debug(objName + " sync server|" + nodes);
+                ClientLogger.getLogger().debug(servantProxyConfig.getSimpleObjectName() + " sync server|" + nodes);
             } catch (Throwable e) {
-                ClientLogger.getLogger().error(objName + " error sync server", e);
+                ClientLogger.getLogger().error(servantProxyConfig.getSimpleObjectName() + " error sync server", e);
             } finally {
-                ClientLogger.getLogger().info("ServantNodeRefresher run(" + objName + "), use: " + (System.currentTimeMillis() - begin));
+                ClientLogger.getLogger().info("ServantNodeRefresher run(" + servantProxyConfig.getSimpleObjectName() + "), use: " + (System.currentTimeMillis() - begin));
             }
         }
     }
@@ -201,7 +201,7 @@ public final class ObjectProxy<T> implements ServantProxy, InvocationHandler {
         public void run() {
             long begin = System.currentTimeMillis();
             try {
-                communicator.getStatHelper().report(InvokeStatHelper.getInstance().getProxyStat(servantProxyConfig.getSimpleObjectName()));
+                communicator.getStatHelper().report(InvokeStatHelper.getInstance().getProxyStat(servantProxyConfig.getSimpleObjectName()), true);
             } catch (Exception e) {
                 ClientLogger.getLogger().error("report stat worker error|" + servantProxyConfig.getSimpleObjectName(), e);
             } finally {
