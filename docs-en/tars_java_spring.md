@@ -12,7 +12,7 @@ Using this function requires adding a dependency jar package and adding the foll
 <dependency>
       <groupId>com.tencent.tars</groupId>
       <artifactId>tars-spring</artifactId>
-      <version>1.4.0</version>
+      <version>1.6.1</version>
 </dependency>
 ```
 

@@ -93,7 +93,7 @@ The integrated zipkin system is built in the framework, users can query call cha
 
 ## Tars-java Usage
 
-At present, tars-java supports the call chain from version 1.5.0, and the cpp version is about to be released. The following is an example of integrated zipkin.
+At present, tars-java supports the call chain from version 1.6.1, and the cpp version is about to be released. The following is an example of integrated zipkin.
 
 ### Enable the call chain 
 
@@ -137,7 +137,7 @@ Notes:
 >   <dependency>
 >         <groupId>com.tencent.tars</groupId>
 >         <artifactId>tars-core</artifactId>
->         <version>1.5.0</version>
+>         <version>1.6.1</version>
 >         <exclusions>  
 >         	<exclusion>  
 >         		<groupId>org.apache.kafka</groupId>  
