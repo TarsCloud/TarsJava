@@ -18,10 +18,13 @@ package com.qq.tars.net.client.ticket;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.qq.tars.net.client.Callback;
 import com.qq.tars.net.core.Request;
+import com.qq.tars.net.core.nio.SelectorManager;
 
 public class Ticket<T> {
 
@@ -37,10 +40,40 @@ public class Ticket<T> {
     private int ticketNumber = -1;
     private static TicketListener ticketListener = null;
 
+    private SelectorManager selectorManager = null;
+
+    Future<?> timeoutFuture;
+
+    AtomicBoolean hasRun = new AtomicBoolean(false);
+
+    public Future<?> getTimeoutFuture() {
+        return timeoutFuture;
+    }
+
+    public void setTimeoutFuture(Future<?> timeoutFuture) {
+        this.timeoutFuture = timeoutFuture;
+    }
+
+    public SelectorManager getSelectorManager() {
+        return selectorManager;
+    }
+
+    public void setSelectorManager(SelectorManager selectorManager) {
+        this.selectorManager = selectorManager;
+    }
+
+
     public Ticket(Request request, long timeout) {
         this.request = request;
         this.ticketNumber = request.getTicketNumber();
         this.timeout = timeout;
+    }
+
+    public Ticket(Request request, long timeout,SelectorManager selectorManager) {
+        this.request = request;
+        this.ticketNumber = request.getTicketNumber();
+        this.timeout = timeout;
+        this.selectorManager = selectorManager;
     }
 
     public Request request() {
@@ -59,10 +92,21 @@ public class Ticket<T> {
     }
 
     public void expired() {
-        this.expired = true;
-        if (callback != null) callback.onExpired();
-        this.countDown();
-        if (ticketListener != null) ticketListener.onResponseExpired(this);
+        if(hasRun.compareAndSet(false, true)) {
+            this.expired = true;
+            if (callback != null) {
+                //超时回调，用业务线程池去处理,防止业务耗时，影响已有的超时任务线程
+                if(getTimeoutFuture()!= null && (getTimeoutFuture().isDone() || getTimeoutFuture().isCancelled())) {   //超时任务已经执行或者已经被取消，已经通知了业务方超时信息(防止超时消息二次通知)
+                    System.out.println("task has run or canceled.");
+                } else {
+                    selectorManager.getThreadPool().execute(() -> callback.onExpired());
+                }
+            }
+            this.countDown();
+            if (ticketListener != null) ticketListener.onResponseExpired(this);
+        } else {
+            System.out.println("expired has runed.");
+        }
     }
 
     public void countDown() {

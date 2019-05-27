@@ -22,6 +22,7 @@ import java.util.Map;
 
 import com.qq.tars.net.client.ticket.Ticket;
 import com.qq.tars.net.client.ticket.TicketManager;
+import com.qq.tars.net.client.ticket.TimeoutManager;
 import com.qq.tars.net.core.Request;
 import com.qq.tars.net.core.Response;
 
@@ -91,6 +92,9 @@ public final class WorkThread implements Runnable {
                 ticket.notifyResponse(resp);
                 ticket.countDown();
                 TicketManager.removeTicket(ticket.getTicketNumber());
+                if(ticket.getTimeoutFuture() != null) {   //成功收到包,取消超时任务
+                    TimeoutManager.cancelTimeoutTask(ticket);
+                }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
