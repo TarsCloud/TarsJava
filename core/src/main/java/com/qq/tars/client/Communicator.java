@@ -21,6 +21,7 @@ import com.qq.tars.client.util.ClientLogger;
 import com.qq.tars.common.support.ScheduledExecutorManager;
 import com.qq.tars.common.util.StringUtils;
 import com.qq.tars.net.client.ticket.TicketManager;
+import com.qq.tars.net.client.ticket.TimeoutManager;
 import com.qq.tars.rpc.common.LoadBalance;
 import com.qq.tars.rpc.common.ProtocolInvoker;
 import com.qq.tars.rpc.exc.CommunicatorConfigException;
@@ -91,6 +92,7 @@ public final class Communicator {
         this.threadPoolExecutor.shutdownNow();
         ScheduledExecutorManager.getInstance().shutdownNow();
         TicketManager.shutdown();
+        TimeoutManager.shutdown();
         for (Iterator<Object> it = servantProxyFactory.getProxyIterator(); it.hasNext(); ) {
             Object proxy = it.next();
             ((ObjectProxy) Proxy.getInvocationHandler(proxy)).destroy();
