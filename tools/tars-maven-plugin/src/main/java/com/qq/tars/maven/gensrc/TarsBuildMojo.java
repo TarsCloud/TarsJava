@@ -275,9 +275,7 @@ public class TarsBuildMojo extends AbstractMojo implements Contextualizable {
         for (final Artifact artifact : artifacts) {
             try {
                 artifactResolver.resolve(artifact, remoteRepositories, localRepository);
-            } catch (final ArtifactResolutionException e) {
-                throw new MojoExecutionException("Unable to resolve " + artifact, e);
-            } catch (final ArtifactNotFoundException e) {
+            } catch (final ArtifactResolutionException | ArtifactNotFoundException e) {
                 throw new MojoExecutionException("Unable to resolve " + artifact, e);
             }
             installArtifact(artifact, libDir, artifactRepository, useTimestampInSnapshotFileName);
@@ -300,9 +298,7 @@ public class TarsBuildMojo extends AbstractMojo implements Contextualizable {
             unArchiver.setDestDirectory(destination);
             unArchiver.setOverwrite(true);
             unArchiver.extract();
-        } catch (final NoSuchArchiverException e) {
-            throw new MojoExecutionException("Unable to unarchive " + artifactFile.getName(), e);
-        } catch (final ArchiverException e) {
+        } catch (final NoSuchArchiverException | ArchiverException e) {
             throw new MojoExecutionException("Unable to unarchive " + artifactFile.getName(), e);
         }
     }

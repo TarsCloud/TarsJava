@@ -105,8 +105,7 @@ public final class TarsInputStream {
                 skip(len);
                 skipField(hd.type);
             }
-        } catch (TarsDecodeException e) {
-        } catch (BufferUnderflowException e) {
+        } catch (TarsDecodeException | BufferUnderflowException e) {
         }
         return false;
     }
