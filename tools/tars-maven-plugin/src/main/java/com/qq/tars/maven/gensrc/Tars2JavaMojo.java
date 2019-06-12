@@ -85,11 +85,7 @@ public class Tars2JavaMojo extends AbstractMojo {
                 TarsRoot root = (TarsRoot) tarsParser.start().getTree();
                 root.setTokenStream(tokens);
                 for (TarsNamespace ns : root.namespaceList()) {
-                    List<TarsNamespace> list = nsMap.get(ns.namespace());
-                    if (list == null) {
-                        list = new ArrayList<TarsNamespace>();
-                        nsMap.put(ns.namespace(), list);
-                    }
+                    List<TarsNamespace> list = nsMap.computeIfAbsent(ns.namespace(), k -> new ArrayList<TarsNamespace>());
                     list.add(ns);
                 }
             } catch (Throwable th) {
@@ -666,7 +662,7 @@ public class Tars2JavaMojo extends AbstractMojo {
         } else if (jt.isCustom()) {
             TarsCustomType ct = jt.asCustom();
 
-            boolean isEnum = nsMap != null ? isEnum(jt, nsMap) : false;
+            boolean isEnum = nsMap != null && isEnum(jt, nsMap);
             if (isEnum) {
                 if (!usePrimitiveWrapper)
                     return "int";
@@ -768,7 +764,7 @@ public class Tars2JavaMojo extends AbstractMojo {
             } else if (jt.isCustom()) {
                 TarsCustomType ct = jt.asCustom();
 
-                boolean isEnum = nsMap != null ? isEnum(jt, nsMap) : false;
+                boolean isEnum = nsMap != null && isEnum(jt, nsMap);
                 if (isEnum) {
                     return "0";
                 }
