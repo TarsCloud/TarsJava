@@ -42,8 +42,7 @@ public final class QueryHelper {
     }
 
     private QueryFPrx getPrx() {
-        QueryFPrx prx = communicator.stringToProxy(QueryFPrx.class, communicator.getCommunicatorConfig().getLocator());
-        return prx;
+        return communicator.stringToProxy(QueryFPrx.class, communicator.getCommunicatorConfig().getLocator());
     }
 
     public String getServerNodes(ServantProxyConfig config) {
