@@ -60,7 +60,7 @@ public class Utils {
         return sb.toString();
     }
 
-    public static final String getDateSimpleInfo(long time) {
+    public static String getDateSimpleInfo(long time) {
         Date date = new Date(time);
         Calendar ca = Calendar.getInstance();
         ca.setTime(date);
@@ -74,11 +74,10 @@ public class Utils {
         if (day < 10) {
             dayStr = "0" + dayStr;
         }
-        String result = ca.get(Calendar.YEAR) + "-" + monthStr + "-" + dayStr;
-        return result;
+        return ca.get(Calendar.YEAR) + "-" + monthStr + "-" + dayStr;
     }
 
-    public static final String getDateAllInfo(long time) {
+    public static String getDateAllInfo(long time) {
         Date date = new Date(time);
         Calendar ca = Calendar.getInstance();
         ca.setTime(date);

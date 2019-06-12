@@ -27,14 +27,14 @@ public class DistributedContextManager {
 	private static DistributedContextCodec _codec;
 	
 	private static boolean canCodec() {
-		return _codec == null ? false : true;
+		return _codec != null;
 	}
 	
-	public static final DistributedContext getDistributedContext() {
+	public static DistributedContext getDistributedContext() {
 		return context;
 	}
 	
-	public static final void releaseDistributedContext() {
+	public static void releaseDistributedContext() {
 		getDistributedContext().clear();
 	}
 	
