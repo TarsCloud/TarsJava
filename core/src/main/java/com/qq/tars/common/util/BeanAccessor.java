@@ -124,7 +124,7 @@ public class BeanAccessor {
         }
 
         Long result = offsetMap == null ? null : offsetMap.get(fieldName);
-        return result == null ? -1 : result.longValue();
+        return result == null ? -1 : result;
     }
 
     public static Object getBeanValue(Object bean, String fieldName) {

@@ -21,6 +21,8 @@ import com.qq.tars.common.ClientVersion;
 import com.qq.tars.common.util.Constants;
 import com.qq.tars.common.util.StringUtils;
 
+import java.util.Objects;
+
 public final class ServantProxyConfig {
 
     private String communicatorId;
@@ -361,13 +363,10 @@ public final class ServantProxyConfig {
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;
         ServantProxyConfig other = (ServantProxyConfig) obj;
-        if (communicatorId == null) {
-            if (other.communicatorId != null) return false;
-        } else if (!communicatorId.equals(other.communicatorId)) return false;
-        if (simpleObjectName == null) {
-            if (other.simpleObjectName != null) return false;
-        } else if (!simpleObjectName.equals(other.simpleObjectName)) return false;
-        return true;
+        if(!Objects.equals(this.communicatorId, other.communicatorId)){
+            return false;
+        }
+        return Objects.equals(this.simpleObjectName, other.simpleObjectName);
     }
 
     @Override

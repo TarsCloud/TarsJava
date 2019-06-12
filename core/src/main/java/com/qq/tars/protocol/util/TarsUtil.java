@@ -69,15 +69,15 @@ public final class TarsUtil {
     }
 
     public static int compareTo(byte l, byte r) {
-        return l < r ? -1 : (l > r ? 1 : 0);
+        return Byte.compare(l, r);
     }
 
     public static int compareTo(char l, char r) {
-        return l < r ? -1 : (l > r ? 1 : 0);
+        return Character.compare(l, r);
     }
 
     public static int compareTo(short l, short r) {
-        return l < r ? -1 : (l > r ? 1 : 0);
+        return Short.compare(l, r);
     }
 
     public static int compareTo(int l, int r) {

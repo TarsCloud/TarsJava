@@ -129,7 +129,7 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
 
         DistributedContext distributedContext = DistributedContextManager.getDistributedContext();
         Boolean bDyeing = distributedContext.get(DyeingSwitch.BDYEING);
-        if (bDyeing != null && bDyeing == true) {
+        if (bDyeing != null && bDyeing) {
             request.setMessageType(request.getMessageType() | TarsHelper.MESSAGETYPEDYED);
             HashMap<String, String> status = new HashMap<String, String>();
             String routeKey = distributedContext.get(DyeingSwitch.DYEINGKEY);
@@ -178,7 +178,7 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
 
         DistributedContext distributedContext = DistributedContextManager.getDistributedContext();
         Boolean bDyeing = distributedContext.get(DyeingSwitch.BDYEING);
-        if (bDyeing != null && bDyeing == true) {
+        if (bDyeing != null && bDyeing) {
             request.setMessageType(request.getMessageType() | TarsHelper.MESSAGETYPEDYED);
             HashMap<String, String> status = new HashMap<String, String>();
             String routeKey = distributedContext.get(DyeingSwitch.DYEINGKEY);
