@@ -52,8 +52,8 @@ public final class CommunicatorFactory {
             config = new CommunicatorConfig();
             config.setLocator(locator);
         }
-        CommunicatorMap.putIfAbsent(locator, new Communicator(config));
-        return CommunicatorMap.get(locator);
+        CommunicatorConfig configTemp = config;
+        return CommunicatorMap.computeIfAbsent(locator, param-> new Communicator(configTemp));
     }
 
     public Communicator getCommunicator(CommunicatorConfig config) {
@@ -61,7 +61,6 @@ public final class CommunicatorFactory {
         if (communicator != null) {
             return communicator;
         }
-        CommunicatorMap.putIfAbsent(config, new Communicator(config));
-        return CommunicatorMap.get(config);
+        return CommunicatorMap.computeIfAbsent(config, param-> new Communicator((CommunicatorConfig)param));
     }
 }
