@@ -47,34 +47,40 @@ public class ServantInvokerAliveStat {
     }
 
     public synchronized void onCallFinished(int ret, ServantProxyConfig config) {
-        if (ret == Constants.INVOKE_STATUS_SUCC) {
-            frequenceFailInvoke = 0;
-            frequenceFailInvoke_startTime = 0;
-            lastCallSuccess.set(true);
-            netConnectTimeout = false;
-            succCount++;
-        } else if (ret == Constants.INVOKE_STATUS_TIMEOUT) {
-            if (!lastCallSuccess.get()) {
-                frequenceFailInvoke++;
-            } else {
-                lastCallSuccess.set(false);
-                frequenceFailInvoke = 1;
-                frequenceFailInvoke_startTime = System.currentTimeMillis();
-            }
-            netConnectTimeout = false;
-            timeoutCount++;
-        } else if (ret == Constants.INVOKE_STATUS_EXEC) {
-            if (!lastCallSuccess.get()) {
-                frequenceFailInvoke++;
-            } else {
-                lastCallSuccess.set(false);
-                frequenceFailInvoke = 1;
-                frequenceFailInvoke_startTime = System.currentTimeMillis();
-            }
-            netConnectTimeout = false;
-            failedCount++;
-        } else if (ret == Constants.INVOKE_STATUS_NETCONNECTTIMEOUT) {
-            netConnectTimeout = true;
+        switch(ret) {
+            case Constants.INVOKE_STATUS_SUCC:
+                frequenceFailInvoke = 0;
+                frequenceFailInvoke_startTime = 0;
+                lastCallSuccess.set(true);
+                netConnectTimeout = false;
+                succCount++;
+                break;
+            case Constants.INVOKE_STATUS_TIMEOUT:
+                if (!lastCallSuccess.get()) {
+                    frequenceFailInvoke++;
+                } else {
+                    lastCallSuccess.set(false);
+                    frequenceFailInvoke = 1;
+                    frequenceFailInvoke_startTime = System.currentTimeMillis();
+                }
+                netConnectTimeout = false;
+                timeoutCount++;
+                break;
+            case Constants.INVOKE_STATUS_EXEC:
+                if (!lastCallSuccess.get()) {
+                    frequenceFailInvoke++;
+                } else {
+                    lastCallSuccess.set(false);
+                    frequenceFailInvoke = 1;
+                    frequenceFailInvoke_startTime = System.currentTimeMillis();
+                }
+                netConnectTimeout = false;
+                failedCount++;
+                break;
+            case Constants.INVOKE_STATUS_NETCONNECTTIMEOUT:
+                netConnectTimeout = true;
+                break;
+            default:
         }
 
         if ((timeout_startTime + config.getCheckInterval()) < System.currentTimeMillis()) {
@@ -84,28 +90,27 @@ public class ServantInvokerAliveStat {
             timeout_startTime = System.currentTimeMillis();
         }
 
-        if (alive) {
+        calculateAlive: if (alive) {
             long totalCount = timeoutCount + failedCount + succCount;
             if (timeoutCount >= config.getMinTimeoutInvoke()) {
                 double radio = div(timeoutCount, totalCount, 2);
                 if (radio > config.getFrequenceFailRadio()) {
                     alive = false;
                     ClientLogger.getLogger().info(identity + "|alive=false|radio=" + radio + "|" + toString());
+                    break calculateAlive;
                 }
             }
 
-            if (alive) {
-                if (frequenceFailInvoke >= config.getFrequenceFailInvoke() && (frequenceFailInvoke_startTime + 5000) > System.currentTimeMillis()) {
-                    alive = false;
-                    ClientLogger.getLogger().info(identity + "|alive=false|frequenceFailInvoke=" + frequenceFailInvoke + "|" + toString());
-                }
+            if (frequenceFailInvoke >= config.getFrequenceFailInvoke() && (frequenceFailInvoke_startTime + 5000) > System.currentTimeMillis()) {
+                alive = false;
+                ClientLogger.getLogger().info(identity + "|alive=false|frequenceFailInvoke=" + frequenceFailInvoke + "|" + toString());
+                break calculateAlive;
             }
 
-            if (alive) {
-                if (netConnectTimeout) {
-                    alive = false;
-                    ClientLogger.getLogger().info(identity + "|alive=false|netConnectTimeout" + "|" + toString());
-                }
+            if (netConnectTimeout) {
+                alive = false;
+                ClientLogger.getLogger().info(identity + "|alive=false|netConnectTimeout" + "|" + toString());
+                break calculateAlive;
             }
         } else {
             if (ret == Constants.INVOKE_STATUS_SUCC) {
