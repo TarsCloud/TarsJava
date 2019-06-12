@@ -50,7 +50,7 @@ public abstract class TarsStructBase implements java.io.Serializable {
         return null;
     }
 
-    public void recyle() {
+    public void recycle() {
 
     }
 

@@ -37,8 +37,8 @@ public class TraceServerFilter implements Filter {
 			
 			TarsServantRequest tarsServantRequest = (TarsServantRequest)request;
 			
-			try(TraceContext traceContext = TraceContext.getIntance().initCurrentTrace(tarsServantRequest.getServantName())) {
-				Tracer tracer = TraceContext.getIntance().getCurrentTracer();
+			try(TraceContext traceContext = TraceContext.getInstance().initCurrentTrace(tarsServantRequest.getServantName())) {
+				Tracer tracer = TraceContext.getInstance().getCurrentTracer();
 				Map<String, String> status = tarsServantRequest.getStatus();
 				if (tracer == null || status == null || status.isEmpty()) {
 					chain.doFilter(request, response);

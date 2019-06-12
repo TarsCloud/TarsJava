@@ -17,7 +17,7 @@
 package com.qq.tars.client.rpc.tars;
 
 import com.qq.tars.client.ServantProxyConfig;
-import com.qq.tars.client.cluster.ServantnvokerAliveChecker;
+import com.qq.tars.client.cluster.ServantInvokerAliveChecker;
 import com.qq.tars.client.util.ClientLogger;
 import com.qq.tars.common.Filter;
 import com.qq.tars.common.FilterChain;
@@ -65,7 +65,7 @@ public class TarsCallbackWrapper implements Callback<TarsServantResponse> {
 
     public void onCompleted(TarsServantResponse response) {
         int ret = response.getRet() == TarsHelper.SERVERSUCCESS ? Constants.INVOKE_STATUS_SUCC : Constants.INVOKE_STATUS_EXEC;
-        boolean available = ServantnvokerAliveChecker.isAlive(invoker.getUrl(), config, ret);
+        boolean available = ServantInvokerAliveChecker.isAlive(invoker.getUrl(), config, ret);
         invoker.setAvailable(available);
         try {
             beforeCallback();
@@ -93,7 +93,7 @@ public class TarsCallbackWrapper implements Callback<TarsServantResponse> {
 
     public void onExpired() {
         int ret = Constants.INVOKE_STATUS_TIMEOUT;
-        invoker.setAvailable(ServantnvokerAliveChecker.isAlive(invoker.getUrl(), config, ret));
+        invoker.setAvailable(ServantInvokerAliveChecker.isAlive(invoker.getUrl(), config, ret));
         try {
             beforeCallback();
             FilterChain filterChain = new TarsCallbackFilterChain(filters, objName, FilterKind.CALLBACK, callback, 1);

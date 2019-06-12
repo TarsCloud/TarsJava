@@ -45,7 +45,7 @@ public class TraceClientFilter implements Filter {
 		ServerConfig config = ConfigurationManager.getInstance().getServerConfig();
 		DistributedContext context = DistributedContextManager.getDistributedContext();
 		String servantName = context.get(TraceManager.INTERNAL_SERVANT_NAME);
-		Tracer tracer = TraceContext.getIntance().getCurrentTracer();
+		Tracer tracer = TraceContext.getInstance().getCurrentTracer();
 		
         if (tracer == null) {
         	chain.doFilter(request, response);

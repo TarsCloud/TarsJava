@@ -30,7 +30,7 @@ public final class ServantThreadPoolManager {
     private final static HashMap<String, Executor> threadExecutors = new HashMap<String, Executor>();
 
     public static Executor get(ServantAdapterConfig config) {
-        return getAndcreateExecutor(config);
+        return getAndCreateExecutor(config);
     }
 
     private static synchronized Executor createDefaultExecutor(String key) {
@@ -49,7 +49,7 @@ public final class ServantThreadPoolManager {
         return pool;
     }
 
-    private static synchronized Executor getAndcreateExecutor(ServantAdapterConfig config) {
+    private static synchronized Executor getAndCreateExecutor(ServantAdapterConfig config) {
         String key = config.getHandleGroup();
         Executor executor = null;
 

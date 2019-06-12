@@ -143,7 +143,7 @@ public class TarsStartLifecycle extends BaseAppContext implements SmartLifecycle
                 skeletonMap.put(skeleton.name(), skeleton);
                 appServantStarted(skeleton);
             } catch (Exception e) {
-                log.error("load servant faild", e);
+                log.error("load servant failed", e);
             }
         }
 

@@ -27,7 +27,7 @@ import com.qq.tars.common.util.Constants;
 public class ServantInvokerAliveStat {
 
     private final String identity;
-    private AtomicBoolean lastCallSucess = new AtomicBoolean(true);
+    private AtomicBoolean lastCallSuccess = new AtomicBoolean(true);
     private long timeout_startTime = 0;
     private long frequenceFailInvoke = 0;
     private long frequenceFailInvoke_startTime = 0;
@@ -50,24 +50,24 @@ public class ServantInvokerAliveStat {
         if (ret == Constants.INVOKE_STATUS_SUCC) {
             frequenceFailInvoke = 0;
             frequenceFailInvoke_startTime = 0;
-            lastCallSucess.set(true);
+            lastCallSuccess.set(true);
             netConnectTimeout = false;
             succCount++;
         } else if (ret == Constants.INVOKE_STATUS_TIMEOUT) {
-            if (!lastCallSucess.get()) {
+            if (!lastCallSuccess.get()) {
                 frequenceFailInvoke++;
             } else {
-                lastCallSucess.set(false);
+                lastCallSuccess.set(false);
                 frequenceFailInvoke = 1;
                 frequenceFailInvoke_startTime = System.currentTimeMillis();
             }
             netConnectTimeout = false;
             timeoutCount++;
         } else if (ret == Constants.INVOKE_STATUS_EXEC) {
-            if (!lastCallSucess.get()) {
+            if (!lastCallSuccess.get()) {
                 frequenceFailInvoke++;
             } else {
-                lastCallSucess.set(false);
+                lastCallSuccess.set(false);
                 frequenceFailInvoke = 1;
                 frequenceFailInvoke_startTime = System.currentTimeMillis();
             }
@@ -124,7 +124,7 @@ public class ServantInvokerAliveStat {
 
     public String toString() {
         StringBuilder build = new StringBuilder();
-        build.append("lastCallSucc:").append(lastCallSucess.get()).append("|");
+        build.append("lastCallSucc:").append(lastCallSuccess.get()).append("|");
         build.append("timeoutCount:").append(timeoutCount).append("|");
         build.append("failedCount:").append(failedCount).append("|");
         build.append("succCount:").append(succCount).append("|");

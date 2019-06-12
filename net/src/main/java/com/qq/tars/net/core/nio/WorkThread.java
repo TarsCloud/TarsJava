@@ -88,7 +88,7 @@ public final class WorkThread implements Runnable {
                     System.out.println(s);
                     return;
                 }
-                fillDitributedContext(ticket.request().getDistributedContext());
+                fillDistributedContext(ticket.request().getDistributedContext());
                 ticket.notifyResponse(resp);
                 ticket.countDown();
                 TicketManager.removeTicket(ticket.getTicketNumber());
@@ -103,7 +103,7 @@ public final class WorkThread implements Runnable {
         }
     }
 
-    private void fillDitributedContext(Map<String, String> data) {
+    private void fillDistributedContext(Map<String, String> data) {
     }
 
     private void clearDistributedContext() {

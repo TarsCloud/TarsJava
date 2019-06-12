@@ -79,7 +79,7 @@ class ObjectProxyFactory {
             servantProxyConfig.setProtocol(codec.getProtocol());
             protocolInvoker = new TarsProtocolInvoker<T>(api, servantProxyConfig, new ServantProtocolFactory(codec), communicator.getThreadPoolExecutor());
         } else {
-            throw new ClientException(servantProxyConfig.getSimpleObjectName(), "unkonw protocol servant invoker", null);
+            throw new ClientException(servantProxyConfig.getSimpleObjectName(), "unknown protocol servant invoker", null);
         }
         return protocolInvoker;
     }

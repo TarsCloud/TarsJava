@@ -615,7 +615,7 @@ public final class TarsDisplayer {
         } else if (o.getClass().isArray()) {
             display((Object[]) o, fieldName);
         } else {
-            throw new TarsEncodeException("write object error: unsupport type.");
+            throw new TarsEncodeException("write object error: unsupported type.");
         }
         return this;
     }
@@ -663,7 +663,7 @@ public final class TarsDisplayer {
         } else if (o.getClass().isArray()) {
             displaySimple((Object[]) o, bSep);
         } else {
-            throw new TarsEncodeException("write object error: unsupport type.");
+            throw new TarsEncodeException("write object error: unsupported type.");
         }
         return this;
     }

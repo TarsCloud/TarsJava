@@ -116,7 +116,7 @@ public class Server {
             System.setProperty("server.root", cfg.getBasePath());
         } catch (Throwable ex) {
             ex.printStackTrace(System.err);
-            System.err.println("The exception occured at load server config");
+            System.err.println("The exception occurred at load server config");
             System.exit(2);
         }
     }
@@ -149,7 +149,7 @@ public class Server {
                         appContext.stop();
                     }
                 } catch (Exception ex) {
-                    System.err.println("The exception occured at stopping server...");
+                    System.err.println("The exception occurred at stopping server...");
                 }
             }
         });

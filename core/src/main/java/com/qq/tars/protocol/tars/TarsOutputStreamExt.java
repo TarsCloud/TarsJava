@@ -35,9 +35,9 @@ public class TarsOutputStreamExt {
 
         jos.reserve(2);
         jos.writeHead(TarsStructBase.STRUCT_BEGIN, tag);
-        List<TarsStrutPropertyInfo> propertysList = info.getPropertyList();
-        if (!CommonUtils.isEmptyCollection(propertysList)) {
-            for (TarsStrutPropertyInfo propertyInfo : propertysList) {
+        List<TarsStrutPropertyInfo> propertyList = info.getPropertyList();
+        if (!CommonUtils.isEmptyCollection(propertyList)) {
+            for (TarsStrutPropertyInfo propertyInfo : propertyList) {
                 Object value = null;
                 try {
                     value = BeanAccessor.getBeanValue(e, propertyInfo.getName());

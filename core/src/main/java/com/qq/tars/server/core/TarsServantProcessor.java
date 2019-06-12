@@ -256,8 +256,8 @@ public class TarsServantProcessor extends Processor {
         }
         TarsMethodInfo methodInfo = request.getMethodInfo();
         if (methodInfo.getRouteKeyIndex() != -1) {
-            Object[] paramters = request.getMethodParameters();
-            Object value = paramters[methodInfo.getRouteKeyIndex()];
+            Object[] parameters = request.getMethodParameters();
+            Object value = parameters[methodInfo.getRouteKeyIndex()];
             if (cache_routeKey.equals(value.toString())) {
                 routeKey = cache_routeKey;
                 fileName = ConfigurationManager.getInstance().getServerConfig().getServerName();

@@ -105,7 +105,7 @@ public class Ticket<T> {
             this.countDown();
             if (ticketListener != null) ticketListener.onResponseExpired(this);
         } else {
-            System.out.println("expired has runed.");
+            System.out.println("expired has run.");
         }
     }
 

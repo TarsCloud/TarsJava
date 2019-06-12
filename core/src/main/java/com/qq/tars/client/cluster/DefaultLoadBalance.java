@@ -29,7 +29,6 @@ import com.qq.tars.common.util.Constants;
 import com.qq.tars.common.util.StringUtils;
 import com.qq.tars.rpc.common.InvokeContext;
 import com.qq.tars.rpc.common.Invoker;
-import com.qq.tars.rpc.common.LoadBalance;
 import com.qq.tars.rpc.common.exc.NoInvokerException;
 
 @Deprecated
@@ -54,7 +53,7 @@ public class DefaultLoadBalance {
         List<Invoker<T>> list = new ArrayList<Invoker<T>>();
         for (Invoker<T> invoker : invokers) {
             if (!invoker.isAvailable()) {
-                ServantInvokerAliveStat stat = ServantnvokerAliveChecker.get(invoker.getUrl());
+                ServantInvokerAliveStat stat = ServantInvokerAliveChecker.get(invoker.getUrl());
                 if (stat.isAlive() || (stat.getLastRetryTime() + (config.getTryTimeInterval() * 1000)) < System.currentTimeMillis()) {
                     list.add(invoker);
                 }
@@ -75,7 +74,7 @@ public class DefaultLoadBalance {
         }
         if (!invoker.isAvailable()) {
             ClientLogger.getLogger().info("try to use inactive invoker|" + invoker.getUrl().toIdentityString());
-            ServantnvokerAliveChecker.get(invoker.getUrl()).setLastRetryTime(System.currentTimeMillis());
+            ServantInvokerAliveChecker.get(invoker.getUrl()).setLastRetryTime(System.currentTimeMillis());
         }
         return invoker;
     }

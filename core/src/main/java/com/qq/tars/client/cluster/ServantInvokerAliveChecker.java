@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.qq.tars.client.ServantProxyConfig;
 import com.qq.tars.rpc.common.Url;
 
-public class ServantnvokerAliveChecker {
+public class ServantInvokerAliveChecker {
 
     private static final ConcurrentHashMap<String, ServantInvokerAliveStat> cache = new ConcurrentHashMap<String, ServantInvokerAliveStat>();
 

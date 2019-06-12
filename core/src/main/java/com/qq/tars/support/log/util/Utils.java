@@ -49,14 +49,14 @@ public class Utils {
         if (pos < 0) return s;
         int capacity = dest.length() > src.length() ? s.length() * 2 : s.length();
         StringBuilder sb = new StringBuilder(capacity);
-        int writen = 0;
+        int written = 0;
         for (; pos >= 0;) {
-            sb.append(s, writen, pos);
+            sb.append(s, written, pos);
             sb.append(dest);
-            writen = pos + src.length();
-            pos = s.indexOf(src, writen);
+            written = pos + src.length();
+            pos = s.indexOf(src, written);
         }
-        sb.append(s, writen, s.length());
+        sb.append(s, written, s.length());
         return sb.toString();
     }
 
