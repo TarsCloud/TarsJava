@@ -82,25 +82,25 @@ public class AdminFServantImpl implements AdminFServant {
 
         switch (comm) {
             case CMD_VIEW_STATUS:
-                result.append(viewStatus() + "\n");
+                result.append(viewStatus()).append("\n");
                 break;
             case CMD_VIEW_CONN:
-                result.append(viewConn() + "\n");
+                result.append(viewConn()).append("\n");
                 break;
             case CMD_SET_LEVEL:
-                result.append(setLoggerLevel(params) + "\n");
+                result.append(setLoggerLevel(params)).append("\n");
                 break;
             case CMD_LOAD_CONFIG:
-                result.append(loadConfig(params) + "\n");
+                result.append(loadConfig(params)).append("\n");
                 break;
             case CMD_LOAD_LOCATOR:
-                result.append(loadLocator() + "\n");
+                result.append(loadLocator()).append("\n");
                 break;
             case CMD_VIEW_VERSION:
-                result.append(reportServerVersion() + "\n");
+                result.append(reportServerVersion()).append("\n");
                 break;
             case CMD_SET_DYEING:
-                result.append(loadDyeing(params) + "\n");
+                result.append(loadDyeing(params)).append("\n");
                 break;
             default:
                 final CommandHandler handler = CustemCommandHelper.getInstance().getCommandHandler(comm);
@@ -118,7 +118,7 @@ public class AdminFServantImpl implements AdminFServant {
 
                     handleThread.start();
 
-                    result.append("custem command: cmdName=" + cmdName + ", params=" + cmdParam + "\n");
+                    result.append("custem command: cmdName=").append(cmdName).append(", params=").append(cmdParam).append("\n");
                 } else {
                     result.append("invalid command.\n");
                 }
@@ -177,7 +177,7 @@ public class AdminFServantImpl implements AdminFServant {
 
         builder.append("name \t AdminAdapter\n");
         builder.append("servant \t AdminObj\n");
-        builder.append("endpoint \t tcp -h 127.0.0.1 -p " + ConfigurationManager.getInstance().getServerConfig().getLocalPort() + " -t 3000" + "\n");
+        builder.append("endpoint \t tcp -h 127.0.0.1 -p ").append(ConfigurationManager.getInstance().getServerConfig().getLocalPort()).append(" -t 3000").append("\n");
         builder.append("maxconns \t 128\n");
         builder.append("queuecap \t 128\n");
         builder.append("queuetimeout \t 3000\n");
@@ -194,16 +194,16 @@ public class AdminFServantImpl implements AdminFServant {
             }
             ServantAdapterConfig adapterConfig = adapterConfigEntry.getValue();
 
-            builder.append("name \t" + adapterConfigEntry.getKey() + "Adapter\n");
-            builder.append("servant \t" + adapterConfig.getServant() + "\n");
-            builder.append("endpoint \t" + adapterConfig.getEndpoint() + "\n");
-            builder.append("maxconns \t" + adapterConfig.getMaxConns() + "\n");
-            builder.append("queuecap \t" + adapterConfig.getQueueCap() + "\n");
-            builder.append("queuetimeout \t" + adapterConfig.getQueueTimeout() + "\n");
-            builder.append("connections \t" + adapterConfig.getMaxConns() + "\n");
-            builder.append("protocol \t" + adapterConfig.getProtocol() + "\n");
-            builder.append("handlegroup \t" + adapterConfigEntry.getKey() + "\n");
-            builder.append("handlethread  \t" + adapterConfig.getThreads() + "\n");
+            builder.append("name \t").append(adapterConfigEntry.getKey()).append("Adapter\n");
+            builder.append("servant \t").append(adapterConfig.getServant()).append("\n");
+            builder.append("endpoint \t").append(adapterConfig.getEndpoint()).append("\n");
+            builder.append("maxconns \t").append(adapterConfig.getMaxConns()).append("\n");
+            builder.append("queuecap \t").append(adapterConfig.getQueueCap()).append("\n");
+            builder.append("queuetimeout \t").append(adapterConfig.getQueueTimeout()).append("\n");
+            builder.append("connections \t").append(adapterConfig.getMaxConns()).append("\n");
+            builder.append("protocol \t").append(adapterConfig.getProtocol()).append("\n");
+            builder.append("handlegroup \t").append(adapterConfigEntry.getKey()).append("\n");
+            builder.append("handlethread  \t").append(adapterConfig.getThreads()).append("\n");
 
             builder.append("--------------------------------------------------\n");
         }
@@ -215,18 +215,19 @@ public class AdminFServantImpl implements AdminFServant {
         StringBuilder builder = new StringBuilder(1024);
         ServerConfig serverConfig = ConfigurationManager.getInstance().getServerConfig();
         builder.append("[server config]:\n");
-        builder.append("Application \t" + serverConfig.getApplication() + "\n");
-        builder.append("ServerName \t" + serverConfig.getServerName() + "\n");
-        builder.append("BasePath \t" + serverConfig.getBasePath() + "\n");
-        builder.append("DataPath \t" + serverConfig.getDataPath() + "\n");
-        builder.append("LocalIp \t" + serverConfig.getLocalIP() + "\n");
-        builder.append("Local \ttcp -h 127.0.0.1 -p " + serverConfig.getLocalPort() + " -t 3000" + "\n");
-        builder.append("LogPath \t" + serverConfig.getLogPath() + "\n");
-        builder.append("Log \t" + serverConfig.getLog() + "\n");
-        builder.append("Node \t" + serverConfig.getNode() + "\n");
-        builder.append("Config \t" + serverConfig.getConfig() + "\n");
-        builder.append("Notify \t" + serverConfig.getNotify() + "\n");
-        builder.append("logLevel \t" + serverConfig.getLogLevel() + "\n");
+        builder.append("Application \t").append(serverConfig.getApplication()).append("\n");
+        builder.append("ServerName \t").append(serverConfig.getServerName()).append("\n");
+        builder.append("BasePath \t").append(serverConfig.getBasePath()).append("\n");
+        builder.append("DataPath \t").append(serverConfig.getDataPath()).append("\n");
+        builder.append("LocalIp \t").append(serverConfig.getLocalIP()).append("\n");
+        builder.append("Local \ttcp -h 127.0.0.1 -p ").append(serverConfig.getLocalPort()).append(" -t 3000").append(
+                "\n");
+        builder.append("LogPath \t").append(serverConfig.getLogPath()).append("\n");
+        builder.append("Log \t").append(serverConfig.getLog()).append("\n");
+        builder.append("Node \t").append(serverConfig.getNode()).append("\n");
+        builder.append("Config \t").append(serverConfig.getConfig()).append("\n");
+        builder.append("Notify \t").append(serverConfig.getNotify()).append("\n");
+        builder.append("logLevel \t").append(serverConfig.getLogLevel()).append("\n");
 
         return builder.toString();
     }
@@ -235,20 +236,20 @@ public class AdminFServantImpl implements AdminFServant {
         StringBuilder builder = new StringBuilder(1024);
         CommunicatorConfig commConfig = ConfigurationManager.getInstance().getServerConfig().getCommunicatorConfig();
         builder.append("[proxy config]:\n");
-        builder.append("locator \t" + commConfig.getLocator() + "\n");
-        builder.append("sync-invoke-timeout \t" + commConfig.getSyncInvokeTimeout() + "\n");
-        builder.append("async-invoke-timeout \t" + commConfig.getAsyncInvokeTimeout() + "\n");
-        builder.append("refresh-endpoint-interval \t" + commConfig.getRefreshEndpointInterval() + "\n");
-        builder.append("stat \t" + commConfig.getStat() + "\n");
-        builder.append("property \t" + commConfig.getProperty() + "\n");
-        builder.append("report-interval \t" + commConfig.getReportInterval() + "\n");
-        builder.append("sample-rate \t" + commConfig.getSampleRate() + "\n");
-        builder.append("max-sample-count \t" + commConfig.getMaxSampleCount() + "\n");
-        builder.append("recvthread \t" + commConfig.getRecvThread() + "\n");
-        builder.append("asyncthread \t" + commConfig.getAsyncThread() + "\n");
-        builder.append("modulename \t" + commConfig.getModuleName() + "\n");
-        builder.append("enableset \t" + commConfig.isEnableSet() + "\n");
-        builder.append("setdivision \t" + commConfig.getSetDivision() + "\n");
+        builder.append("locator \t").append(commConfig.getLocator()).append("\n");
+        builder.append("sync-invoke-timeout \t").append(commConfig.getSyncInvokeTimeout()).append("\n");
+        builder.append("async-invoke-timeout \t").append(commConfig.getAsyncInvokeTimeout()).append("\n");
+        builder.append("refresh-endpoint-interval \t").append(commConfig.getRefreshEndpointInterval()).append("\n");
+        builder.append("stat \t").append(commConfig.getStat()).append("\n");
+        builder.append("property \t").append(commConfig.getProperty()).append("\n");
+        builder.append("report-interval \t").append(commConfig.getReportInterval()).append("\n");
+        builder.append("sample-rate \t").append(commConfig.getSampleRate()).append("\n");
+        builder.append("max-sample-count \t").append(commConfig.getMaxSampleCount()).append("\n");
+        builder.append("recvthread \t").append(commConfig.getRecvThread()).append("\n");
+        builder.append("asyncthread \t").append(commConfig.getAsyncThread()).append("\n");
+        builder.append("modulename \t").append(commConfig.getModuleName()).append("\n");
+        builder.append("enableset \t").append(commConfig.isEnableSet()).append("\n");
+        builder.append("setdivision \t").append(commConfig.getSetDivision()).append("\n");
 
         return builder.toString();
     }

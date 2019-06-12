@@ -767,8 +767,7 @@ public final class TarsInputStream {
         }
         T[] tt = readArrayImpl(l.get(0), tag, isRequire);
         if (tt == null) return null;
-        ArrayList<T> ll = new ArrayList<T>();
-        ll.addAll(Arrays.asList(tt));
+        ArrayList<T> ll = new ArrayList<T>(Arrays.asList(tt));
         return ll;
     }
 
