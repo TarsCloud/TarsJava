@@ -113,7 +113,7 @@ public class RoundRobinLoadBalance<T> implements LoadBalance<T> {
         }
 
         List<Invoker<T>> sortedInvokersTmp = new ArrayList<Invoker<T>>(invokers);
-        Collections.sort(sortedInvokersTmp, comparator);
+        sortedInvokersTmp.sort(comparator);
         
         sortedInvokersCache = sortedInvokersTmp;
         staticWeightInvokersCache = LoadBalanceHelper.buildStaticWeightList(sortedInvokersTmp, config);

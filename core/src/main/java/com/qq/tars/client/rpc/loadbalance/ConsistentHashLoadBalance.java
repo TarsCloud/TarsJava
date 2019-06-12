@@ -121,7 +121,7 @@ public class ConsistentHashLoadBalance<T> implements LoadBalance<T> {
         }
 
         List<Invoker<T>> sortedInvokersTmp = new ArrayList<Invoker<T>>(invokers);
-        Collections.sort(sortedInvokersTmp, comparator);
+        sortedInvokersTmp.sort(comparator);
 
         sortedInvokersCache = sortedInvokersTmp;
         conHashInvokersCache = LoadBalanceHelper.buildConsistentHashCircle(sortedInvokersTmp, config);

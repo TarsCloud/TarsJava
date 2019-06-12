@@ -67,7 +67,7 @@ public class DefaultLoadBalance {
         Invoker<T> invoker = null;
         long hash = Math.abs(StringUtils.convertLong(context.getAttachment(Constants.TARS_HASH), 0));
         if (hash > 0) {
-            Collections.sort(list, comparator);
+            list.sort(comparator);
             invoker = list.get((int) (hash % list.size()));
         } else {
             invoker = list.get((sequence.getAndIncrement() & Integer.MAX_VALUE) % list.size());
