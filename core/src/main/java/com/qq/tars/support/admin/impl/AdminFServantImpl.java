@@ -80,40 +80,49 @@ public class AdminFServantImpl implements AdminFServant {
         StringBuilder result = new StringBuilder();
         result.append("\n");
 
-        if (CMD_VIEW_STATUS.equals(comm)) {
-            result.append(viewStatus() + "\n");
-        } else if (CMD_VIEW_CONN.equals(comm)) {
-            result.append(viewConn() + "\n");
-        } else if (CMD_SET_LEVEL.equals(comm)) {
-            result.append(setLoggerLevel(params) + "\n");
-        } else if (CMD_LOAD_CONFIG.equals(comm)) {
-            result.append(loadConfig(params) + "\n");
-        } else if (CMD_LOAD_LOCATOR.equals(comm)) {
-            result.append(loadLocator() + "\n");
-        } else if (CMD_VIEW_VERSION.equals(comm)) {
-            result.append(reportServerVersion() + "\n");
-        } else if (CMD_SET_DYEING.equals(comm)) {
-            result.append(loadDyeing(params) + "\n");
-        } else {
-            final CommandHandler handler = CustemCommandHelper.getInstance().getCommandHandler(comm);
-            final String cmdName = comm;
-            final String cmdParam = params;
+        switch (comm) {
+            case CMD_VIEW_STATUS:
+                result.append(viewStatus() + "\n");
+                break;
+            case CMD_VIEW_CONN:
+                result.append(viewConn() + "\n");
+                break;
+            case CMD_SET_LEVEL:
+                result.append(setLoggerLevel(params) + "\n");
+                break;
+            case CMD_LOAD_CONFIG:
+                result.append(loadConfig(params) + "\n");
+                break;
+            case CMD_LOAD_LOCATOR:
+                result.append(loadLocator() + "\n");
+                break;
+            case CMD_VIEW_VERSION:
+                result.append(reportServerVersion() + "\n");
+                break;
+            case CMD_SET_DYEING:
+                result.append(loadDyeing(params) + "\n");
+                break;
+            default:
+                final CommandHandler handler = CustemCommandHelper.getInstance().getCommandHandler(comm);
+                final String cmdName = comm;
+                final String cmdParam = params;
 
-            if (handler != null) {
-                Thread handleThread = new Thread(new Runnable() {
+                if (handler != null) {
+                    Thread handleThread = new Thread(new Runnable() {
 
-                    @Override
-                    public void run() {
-                        handler.handle(cmdName, cmdParam);
-                    }
-                });
+                        @Override
+                        public void run() {
+                            handler.handle(cmdName, cmdParam);
+                        }
+                    });
 
-                handleThread.start();
+                    handleThread.start();
 
-                result.append("custem command: cmdName=" + cmdName + ", params=" + cmdParam + "\n");
-            } else {
-                result.append("invalid command.\n");
-            }
+                    result.append("custem command: cmdName=" + cmdName + ", params=" + cmdParam + "\n");
+                } else {
+                    result.append("invalid command.\n");
+                }
+                break;
         }
 
         NotifyHelper.getInstance().syncReport(command);
