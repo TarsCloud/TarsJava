@@ -17,14 +17,12 @@
 package com.qq.tars.net.client.ticket;
 
 import java.util.Collection;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import com.qq.tars.net.client.Callback;
 import com.qq.tars.net.core.Request;
 import com.qq.tars.net.core.Session;
+import com.qq.tars.net.core.nio.SelectorManager;
 
 public class TicketManager {
 
@@ -74,6 +72,33 @@ public class TicketManager {
 
         if (tickets.putIfAbsent(ticket.getTicketNumber(), ticket) != null) {
             throw new IllegalArgumentException("duplicate ticket number.");
+        }
+
+        //创建一个延时(timeout执行的)定时任务,添加到TimeoutManager中
+        if(ticket.getCallback() != null) {
+            Future<?> timeoutTask =TimeoutManager.watch(new TimeoutManager.TimeoutTask(ticket),timeout);
+            ticket.setTimeoutFuture(timeoutTask);
+        }
+
+        return ticket;
+    }
+
+    public static <T> Ticket<T> createTicket(Request req, Session session, long timeout, Callback<T> callback,SelectorManager selectorManager) {
+        if (req.getTicketNumber() == Ticket.DEFAULT_TICKET_NUMBER) {
+            req.setTicketNumber(session.hashCode());
+        }
+
+        Ticket<T> ticket = new Ticket<T>(req, timeout, selectorManager);
+        ticket.setCallback(callback);
+
+        if (tickets.putIfAbsent(ticket.getTicketNumber(), ticket) != null) {
+            throw new IllegalArgumentException("duplicate ticket number.");
+        }
+
+        //创建一个延时(timeout执行的)定时任务,添加到TimeoutManager中
+        if(ticket.getCallback() != null) {
+            Future<?> timeoutTask =TimeoutManager.watch(new TimeoutManager.TimeoutTask(ticket),timeout);
+            ticket.setTimeoutFuture(timeoutTask);
         }
 
         return ticket;

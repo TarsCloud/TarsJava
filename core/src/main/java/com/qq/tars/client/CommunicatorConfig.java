@@ -18,6 +18,7 @@ package com.qq.tars.client;
 
 import com.qq.tars.common.util.Config;
 import com.qq.tars.common.util.Constants;
+import com.qq.tars.common.util.StringUtils;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -100,10 +101,7 @@ public class CommunicatorConfig {
 
 
         if (enableSet && setDivision != null) {
-            String[] tmp = setDivision.split("\\.");
-            setName = tmp[0];
-            setArea = tmp[1];
-            setID = tmp[2];
+            this.setSetDivision(setDivision);
         }
 
         connections = conf.getInt("/tars/application/client<connections>", Constants.default_connections);
@@ -255,10 +253,18 @@ public class CommunicatorConfig {
     public CommunicatorConfig setSetDivision(String setDivision) {
         this.setDivision = setDivision;
         if (setDivision != null) {
-            String[] tmp = setDivision.split(".");
-            setName = tmp[0];
-            setArea = tmp[1];
-            setID = tmp[2];
+            String[] tmp = StringUtils.split(setDivision, ".");
+            if (tmp != null && tmp.length == 3) {
+                setName = tmp[0];
+                setArea = tmp[1];
+                setID = tmp[2];
+                enableSet = true;
+            } else {
+                setName = "";
+                setArea = "";
+                setID = "";
+                enableSet = false;
+            }
         }
         return this;
     }
