@@ -62,22 +62,14 @@ public class StringUtils {
             inputFormat = "yyyy-MM-dd HH:mm:ss.SSS";
         } else if (dateStr.matches("\\d{4}\\-\\d{1,2}\\-\\d{1,2} +\\d{1,2}:\\d{1,2}")) {
             inputFormat = "yyyy-MM-dd HH:mm:ss";
-        } else if (dateStr.matches("\\d{4}\\-\\d{1,2}\\-\\d{1,2} +\\d{1,2}:\\d{1,2}")) {
-            inputFormat = "yyyy-MM-dd HH:mm";
         } else if (dateStr.matches("\\d{4}\\-\\d{1,2}\\-\\d{1,2} +\\d{1,2}")) {
             inputFormat = "yyyy-MM-dd HH";
-        } else if (dateStr.matches("\\d{4}\\-\\d{1,2}\\-\\d{1,2} +\\d{1,2}")) {
-            inputFormat = "yyyy-MM-dd";
         } else if (dateStr.matches("\\d{1,4}/\\d{1,2}/\\d{1,2}\\s+\\d{1,2}:\\d{1,2}:\\d{1,2}\\.\\d{1,3}")) {
             inputFormat = "yyyy/MM/dd HH:mm:ss.SSS";
         } else if (dateStr.matches("\\d{4}/\\d{1,2}/\\d{1,2} +\\d{1,2}:\\d{1,2}")) {
             inputFormat = "yyyy/MM/dd HH:mm:ss";
-        } else if (dateStr.matches("\\d{4}/\\d{1,2}/\\d{1,2} +\\d{1,2}:\\d{1,2}")) {
-            inputFormat = "yyyy/MM/dd HH:mm";
         } else if (dateStr.matches("\\d{4}/\\d{1,2}/\\d{1,2} +\\d{1,2}")) {
             inputFormat = "yyyy/MM/dd HH";
-        } else if (dateStr.matches("\\d{4}/\\d{1,2}/\\d{1,2} +\\d{1,2}")) {
-            inputFormat = "yyyy/MM/dd";
         }
         resultStr = formatDate(dateStr, inputFormat, format);
         return resultStr;
