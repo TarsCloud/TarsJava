@@ -118,9 +118,9 @@ public abstract class Server {
     protected void initServerConfig() {
         try {
             props.load(Utils.loadConfigFile("server.properties", Server.class));
-            minPoolSize = Integer.valueOf(props.getProperty("nami_min_thread", "10"));
-            maxPoolSize = Integer.valueOf(props.getProperty("nami_max_thread", "128"));
-            keepAlive = Boolean.valueOf(props.getProperty("nami_keep_alive", "true"));
+            minPoolSize = Integer.parseInt(props.getProperty("nami_min_thread", "10"));
+            maxPoolSize = Integer.parseInt(props.getProperty("nami_max_thread", "128"));
+            keepAlive = Boolean.parseBoolean(props.getProperty("nami_keep_alive", "true"));
         } catch (Exception ex) {
             System.out.println("ERROR: Failed to init server config file...");
             ex.printStackTrace();
