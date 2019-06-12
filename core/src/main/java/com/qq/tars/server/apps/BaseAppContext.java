@@ -62,7 +62,7 @@ public abstract class BaseAppContext implements AppContext {
         } catch (Exception ex) {
             ready = false;
             ex.printStackTrace();
-            System.out.println("[SERVER] failed to start the applicaton.");
+            System.out.println("[SERVER] failed to start the application.");
         }
     }
 

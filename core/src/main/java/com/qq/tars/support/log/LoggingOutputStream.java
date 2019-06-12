@@ -21,7 +21,7 @@ import java.io.OutputStream;
 
 public class LoggingOutputStream extends OutputStream {
 
-    protected static final String LINE_SEPERATOR = System.getProperty("line.separator");
+    protected static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
     protected boolean hasBeenClosed = false;
 
@@ -82,8 +82,8 @@ public class LoggingOutputStream extends OutputStream {
             return;
         }
 
-        if (count == LINE_SEPERATOR.length()) {
-            if (((char) buf[0]) == LINE_SEPERATOR.charAt(0) && ((count == 1) || ((count == 2) && ((char) buf[1]) == LINE_SEPERATOR.charAt(1)))) {
+        if (count == LINE_SEPARATOR.length()) {
+            if (((char) buf[0]) == LINE_SEPARATOR.charAt(0) && ((count == 1) || ((count == 2) && ((char) buf[1]) == LINE_SEPARATOR.charAt(1)))) {
                 reset();
                 return;
             }

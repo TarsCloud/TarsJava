@@ -16,7 +16,7 @@ import brave.opentracing.BraveTracer;
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.server.config.ServerConfig;
 import com.qq.tars.support.om.OmConstants;
-import com.qq.tars.support.trace.exc.NotSupportedSuchSampleEncodeingException;
+import com.qq.tars.support.trace.exc.NotSupportedSuchSampleEncodingException;
 import com.qq.tars.support.trace.exc.NotSupportedSuchSampleTypeException;
 
 public class TarsTraceZipkinConfiguration {
@@ -59,7 +59,7 @@ public class TarsTraceZipkinConfiguration {
 		}
 	}
 	
-	private void createSender() throws NotSupportedSuchSampleTypeException, NotSupportedSuchSampleEncodeingException {
+	private void createSender() throws NotSupportedSuchSampleTypeException, NotSupportedSuchSampleEncodingException {
 		if ("http".equals(serverConfig.getSampleType())) {
 			String baseurl = serverConfig.getSampleAddress();
 			String url = baseurl + (baseurl.endsWith("/") ? "" : "/") + "api/v2/spans";
@@ -78,14 +78,14 @@ public class TarsTraceZipkinConfiguration {
 		}
 	}
 	
-	private Encoding createCodec() throws NotSupportedSuchSampleEncodeingException {
+	private Encoding createCodec() throws NotSupportedSuchSampleEncodingException {
 		if ("json".endsWith(serverConfig.getSampleEncoding())) {
 			return Encoding.JSON;
 		}
 		if ("proto".endsWith(serverConfig.getSampleEncoding())) {
 			return Encoding.PROTO3;
 		}
-		throw new NotSupportedSuchSampleEncodeingException("unsupported sample encoding");
+		throw new NotSupportedSuchSampleEncodingException("unsupported sample encoding");
 	}
 
 }

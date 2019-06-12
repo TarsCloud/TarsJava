@@ -59,10 +59,10 @@ public class ClientThreadPoolManager {
     }
 
     private static String resolveCurrentContextIdentity() {
-        Object slefClassLoader = ClientThreadPoolManager.class.getClassLoader();
+        Object selfClassLoader = ClientThreadPoolManager.class.getClassLoader();
         Object contextClassLoader = Thread.currentThread().getContextClassLoader();
         String contextIdentity = ClientThreadPoolManager.class.getName();
-        if (slefClassLoader != null && contextClassLoader != null && slefClassLoader != contextClassLoader) {
+        if (selfClassLoader != null && contextClassLoader != null && selfClassLoader != contextClassLoader) {
             contextIdentity = contextClassLoader.toString();
         }
         return contextIdentity;

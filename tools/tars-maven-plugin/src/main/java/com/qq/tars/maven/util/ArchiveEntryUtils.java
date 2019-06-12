@@ -117,8 +117,8 @@ public final class ArchiveEntryUtils {
             method = File.class.getMethod("setWritable", new Class[] { Boolean.TYPE, Boolean.TYPE });
             method.invoke(file, new Object[] { Boolean.valueOf(filePermission.isWritable()), Boolean.valueOf(filePermission.isOwnerOnlyWritable()) });
         } catch (final Exception e) {
-            logger.error("error calling dynamically file permissons with jvm " + e.getMessage(), e);
-            throw new RuntimeException("error calling dynamically file permissons with jvm " + e.getMessage(), e);
+            logger.error("error calling dynamically file permissions with jvm " + e.getMessage(), e);
+            throw new RuntimeException("error calling dynamically file permissions with jvm " + e.getMessage(), e);
         }
     }
 }

@@ -78,27 +78,27 @@ public class BasicClassTypeUtil {
         }
     }
 
-    public static String transTypeList(ArrayList<String> listTpye) {
+    public static String transTypeList(ArrayList<String> listType) {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < listTpye.size(); i++) {
-            listTpye.set(i, java2UniType(listTpye.get(i)));
+        for (int i = 0; i < listType.size(); i++) {
+            listType.set(i, java2UniType(listType.get(i)));
         }
-        Collections.reverse(listTpye);
-        for (int i = 0; i < listTpye.size(); i++) {
-            String type = listTpye.get(i);
+        Collections.reverse(listType);
+        for (int i = 0; i < listType.size(); i++) {
+            String type = listType.get(i);
             if (type.equals("list")) {
-                listTpye.set(i - 1, "<" + listTpye.get(i - 1));
-                listTpye.set(0, listTpye.get(0) + ">");
+                listType.set(i - 1, "<" + listType.get(i - 1));
+                listType.set(0, listType.get(0) + ">");
             } else if (type.equals("map")) {
-                listTpye.set(i - 1, "<" + listTpye.get(i - 1) + ",");
-                listTpye.set(0, listTpye.get(0) + ">");
+                listType.set(i - 1, "<" + listType.get(i - 1) + ",");
+                listType.set(0, listType.get(0) + ">");
             } else if (type.equals("Array")) {
-                listTpye.set(i - 1, "<" + listTpye.get(i - 1));
-                listTpye.set(0, listTpye.get(0) + ">");
+                listType.set(i - 1, "<" + listType.get(i - 1));
+                listType.set(0, listType.get(0) + ">");
             }
         }
-        Collections.reverse(listTpye);
-        for (String s : listTpye) {
+        Collections.reverse(listType);
+        for (String s : listType) {
             sb.append(s);
         }
         return sb.toString();

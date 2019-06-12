@@ -91,7 +91,7 @@ public interface ConfigPrx {
 	public void async_loadConfig(@TarsCallback ConfigPrxCallback callback, String app, String server, String filename, @TarsContext java.util.Map<String, String> ctx);
 	/**
 	 * 根据host读取文件
-	 * @param appSerever, app.server
+	 * @param appServer, app.server
 	 * @param filename, config file name
 	 * @param host, ip
 	 * @param config, 配置文件内容
@@ -99,7 +99,7 @@ public interface ConfigPrx {
 	public int loadConfigByHost(String appServerName, String filename, String host, @TarsHolder Holder<String> config);
 	/**
 	 * 根据host读取文件
-	 * @param appSerever, app.server
+	 * @param appServer, app.server
 	 * @param filename, config file name
 	 * @param host, ip
 	 * @param config, 配置文件内容
@@ -107,7 +107,7 @@ public interface ConfigPrx {
 	public int loadConfigByHost(String appServerName, String filename, String host, @TarsHolder Holder<String> config, @TarsContext java.util.Map<String, String> ctx);
 	/**
 	 * 根据host读取文件
-	 * @param appSerever, app.server
+	 * @param appServer, app.server
 	 * @param filename, config file name
 	 * @param host, ip
 	 * @param config, 配置文件内容
@@ -115,7 +115,7 @@ public interface ConfigPrx {
 	public void async_loadConfigByHost(@TarsCallback ConfigPrxCallback callback, String appServerName, String filename, String host);
 	/**
 	 * 根据host读取文件
-	 * @param appSerever, app.server
+	 * @param appServer, app.server
 	 * @param filename, config file name
 	 * @param host, ip
 	 * @param config, 配置文件内容
@@ -123,7 +123,7 @@ public interface ConfigPrx {
 	public void async_loadConfigByHost(@TarsCallback ConfigPrxCallback callback, String appServerName, String filename, String host, @TarsContext java.util.Map<String, String> ctx);
 	/**
 	 * 检查配置文件是否服务TC_Config格式
-	 * @param appSerever, app.server
+	 * @param appServer, app.server
 	 * @param filename, config file name
 	 * @param host, ip
 	 * @param result, 提示
@@ -132,7 +132,7 @@ public interface ConfigPrx {
 	public int checkConfig(String appServerName, String filename, String host, @TarsHolder Holder<String> result);
 	/**
 	 * 检查配置文件是否服务TC_Config格式
-	 * @param appSerever, app.server
+	 * @param appServer, app.server
 	 * @param filename, config file name
 	 * @param host, ip
 	 * @param result, 提示
@@ -141,7 +141,7 @@ public interface ConfigPrx {
 	public int checkConfig(String appServerName, String filename, String host, @TarsHolder Holder<String> result, @TarsContext java.util.Map<String, String> ctx);
 	/**
 	 * 检查配置文件是否服务TC_Config格式
-	 * @param appSerever, app.server
+	 * @param appServer, app.server
 	 * @param filename, config file name
 	 * @param host, ip
 	 * @param result, 提示
@@ -150,7 +150,7 @@ public interface ConfigPrx {
 	public void async_checkConfig(@TarsCallback ConfigPrxCallback callback, String appServerName, String filename, String host);
 	/**
 	 * 检查配置文件是否服务TC_Config格式
-	 * @param appSerever, app.server
+	 * @param appServer, app.server
 	 * @param filename, config file name
 	 * @param host, ip
 	 * @param result, 提示

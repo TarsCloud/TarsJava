@@ -16,7 +16,7 @@ public abstract class AbstractFilterChain<T> implements FilterChain {
 	
 	protected T target;
 	
-	private Iterator<Filter> iteator;
+	private Iterator<Filter> iterator;
 	
 	public AbstractFilterChain(List<Filter> filters, String servant, FilterKind kind, T target) {
 		this.filters = filters;
@@ -40,11 +40,11 @@ public abstract class AbstractFilterChain<T> implements FilterChain {
 		if (filters == null || filters.isEmpty()) {
 			return null;
 		}
-		if (iteator == null) {
-			iteator = filters.iterator();
+		if (iterator == null) {
+			iterator = filters.iterator();
 		}
-		if (iteator.hasNext()) {
-			return iteator.next();
+		if (iterator.hasNext()) {
+			return iterator.next();
 		}
 		return null;
 	}
