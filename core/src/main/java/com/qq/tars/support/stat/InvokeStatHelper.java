@@ -40,12 +40,7 @@ public final class InvokeStatHelper {
     }
 
     public ProxyStat addProxyStat(String objectName) {
-        ProxyStat statTool = proxyStats.get(objectName);
-        if (statTool == null) {
-            proxyStats.putIfAbsent(objectName, new ProxyStat());
-            statTool = proxyStats.get(objectName);
-        }
-        return statTool;
+        return proxyStats.computeIfAbsent(objectName, param -> new ProxyStat());
     }
 
     public ProxyStat getProxyStat(String objectName) {

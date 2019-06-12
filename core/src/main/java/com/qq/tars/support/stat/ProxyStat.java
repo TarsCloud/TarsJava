@@ -51,12 +51,7 @@ public class ProxyStat {
     }
 
     private ProxyStatBody getStatBody(ProxyStatHead head) {
-        ProxyStatBody body = stat.get(head);
-        if (body == null) {
-            stat.putIfAbsent(head, new ProxyStatBody(DEFAULT_TIME_STAT_INTERVAL));
-            body = stat.get(head);
-        }
-        return body;
+        return stat.computeIfAbsent(head, param -> new ProxyStatBody(DEFAULT_TIME_STAT_INTERVAL));
     }
 
     public void addInvokeTime(ProxyStatHead head, long costTimeMill, int result) {

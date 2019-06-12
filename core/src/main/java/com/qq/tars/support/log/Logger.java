@@ -244,12 +244,7 @@ public class Logger {
         boolean result = getQueue().offer(logItem);
         
         if (dyeFlag) {
-	        LinkedBlockingQueue<LogItem> subItems = dyeLogQueue.get(dyeFileName);
-	        if (subItems == null) {
-	        	subItems = new LinkedBlockingQueue<LogItem>();
-	        	dyeLogQueue.putIfAbsent(dyeFileName, subItems);
-	        	subItems = dyeLogQueue.get(dyeFileName);
-	        }
+	        LinkedBlockingQueue<LogItem> subItems = dyeLogQueue.computeIfAbsent(dyeFileName, param -> new LinkedBlockingQueue<LogItem>());
 	        subItems.offer(logItem);
         }
         
