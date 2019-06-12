@@ -243,7 +243,7 @@ public class Logger {
         LogItem logItem = new LogItem(level, str, dyeFlag, dyeFileName, dyeServantName, th);
         boolean result = getQueue().offer(logItem);
         
-        if (dyeFlag == true) {
+        if (dyeFlag) {
 	        LinkedBlockingQueue<LogItem> subItems = dyeLogQueue.get(dyeFileName);
 	        if (subItems == null) {
 	        	subItems = new LinkedBlockingQueue<LogItem>();
@@ -297,7 +297,7 @@ public class Logger {
     		Map.Entry<String, LinkedBlockingQueue<LogItem>> entry = iterator.next();
 	    	try {
 	    		if (!entry.getValue().isEmpty()) {
-	    			String fileName = isLost == true ? entry.getKey() + "_dyeing.lost." : entry.getKey() + "_dyeing.";
+	    			String fileName = isLost ? entry.getKey() + "_dyeing.lost." : entry.getKey() + "_dyeing.";
 	    			FileOutputStream outputStream = new FileOutputStream(LoggerFactory.dyeingLogRoot + fileName + 
 	    		                                            Utils.getDateSimpleInfo(System.currentTimeMillis()), true);
 	    			do {
@@ -356,7 +356,7 @@ public class Logger {
     				} catch (Exception e) {
     					succ = false;
     				} finally {
-    					if (succ == false) {
+    					if (!succ) {
     						writeDyeToLocal(logs, LoggerFactory.dyeingLogRoot + entry.getKey() + "_dyeing.lost");
     					}
     				}

@@ -122,6 +122,6 @@ public class TarsCallbackWrapper implements Callback<TarsServantResponse> {
     }
 
     private boolean isDyeingReq() {
-        return ((request.getMessageType() & TarsHelper.MESSAGETYPEDYED) == TarsHelper.MESSAGETYPEDYED) ? true : false;
+        return (request.getMessageType() & TarsHelper.MESSAGETYPEDYED) == TarsHelper.MESSAGETYPEDYED;
     }
 }
