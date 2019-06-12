@@ -68,9 +68,7 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
     public void refresh() {
         ClientLogger.getLogger().info("try to refresh " + servantProxyConfig.getSimpleObjectName());
         List<Invoker<T>> invokers = new ArrayList<Invoker<T>>();
-        for (Invoker<T> invoker : allInvoker) {
-            invokers.add(invoker);
-        }
+        invokers.addAll(allInvoker);
         this.initInvoker();
         destroy(invokers);
     }
