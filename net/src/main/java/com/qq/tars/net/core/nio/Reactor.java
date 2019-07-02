@@ -124,16 +124,25 @@ public final class Reactor extends Thread {
     private void disConnectWithException(final SelectionKey key, final Throwable ex) {
         try {
             Session session = (Session) key.attachment();
-
+            
+            String ip = null;
+            String port = null;
+            
             if (session == null) {
                 if (key.channel() instanceof SocketChannel) key.channel().close();
             } else {
+                ip = session.getRemoteIp();
+                port = String.valueOf(session.getRemotePort());                
                 session.close();
             }
 
-            ex.printStackTrace();
+            //ex.printStackTrace();
+            
+            System.err.println("SelectionKey session close. exMsg : " + ex.toString() + " , RemoteIp : " + ip + ':' + port);
+            
         } catch (Throwable e2) {
             ex.printStackTrace();
+            //System.err.println("SelectionKey session close. ex2Msg : " + e2.toString());
         }
     }
 

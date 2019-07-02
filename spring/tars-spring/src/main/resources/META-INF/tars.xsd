@@ -39,4 +39,25 @@
             </xsd:attribute>
         </xsd:complexType>
     </xsd:element>
+    
+    <xsd:element name="client">
+        <xsd:complexType>
+        	<xsd:attribute name="id" type="xsd:string"/>
+            <xsd:attribute name="objName" type="xsd:string" use="required">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ The Obj name. ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="interface" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ The interface class name. ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="host" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ The host name. ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>            
+        </xsd:complexType>
+    </xsd:element>    
 </xsd:schema>

@@ -19,6 +19,7 @@ package com.qq.tars.server.config;
 import com.qq.tars.client.CommunicatorConfig;
 import com.qq.tars.common.support.Endpoint;
 import com.qq.tars.common.util.Config;
+import com.qq.tars.support.log.Logger.LogType;
 import com.qq.tars.support.om.OmConstants;
 
 import java.io.File;
@@ -55,6 +56,11 @@ public class ServerConfig {
     private LinkedHashMap<String, ServantAdapterConfig> servantAdapterConfMap;
     private CommunicatorConfig communicatorConfig;
 
+    /////
+    private boolean logDebug = false;
+    private int logType = LogType.LOCAL.getValue();
+    /////
+    
     public ServerConfig load(Config conf) {
         application = conf.get("/tars/application/server<app>", "UNKNOWN");
         serverName = conf.get("/tars/application/server<server>", null);
@@ -92,6 +98,14 @@ public class ServerConfig {
                 4096);
         tcpNoDelay = conf.getBool("/tars/application/server<tcpnodelay>", false);
 
+        ////
+        this.logDebug   = conf
+                .getBool("/tars/application/server<logDebug>", false);
+        
+        this.logType   = conf
+                    .getInt("/tars/application/server<logType>", LogType.LOCAL.getValue());
+        ////
+        
         servantAdapterConfMap = new LinkedHashMap<String, ServantAdapterConfig>();
         List<String> adapterNameList = conf.getSubTags("/tars/application/server");
         if (adapterNameList != null) {
@@ -337,4 +351,23 @@ public class ServerConfig {
         this.sampleEncoding = sampleEncoding;
     }
 
+    public boolean isLogDebug()
+    {
+        return logDebug;
+    }
+
+    public void setLogDebug(boolean logDebug)
+    {
+        this.logDebug = logDebug;
+    }
+
+    public int getLogType()
+    {
+        return logType;
+    }
+
+    public void setLogType(int logType)
+    {
+        this.logType = logType;
+    }
 }

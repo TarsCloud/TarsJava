@@ -147,7 +147,9 @@ class ObjectProxyFactory {
             }
 
             if (StringUtils.isEmpty(endpoints)) {
-                throw new CommunicatorConfigException(cfg.getSimpleObjectName(), "error occurred on create proxy, servant endpoint is empty! locator =" + communicatorConfig.getLocator() + "|communicator id=" + communicator.getId());
+                //throw new CommunicatorConfigException(cfg.getSimpleObjectName(), "error occurred on create proxy, servant endpoint is empty! locator =" + communicatorConfig.getLocator() + "|communicator id=" + communicator.getId());
+                System.out.println("*** error occurred on create proxy, servant endpoint is empty! ObjectName = " + cfg.getObjectName() + ", locator =" + communicatorConfig.getLocator() + " , communicator id=" + communicator.getId());
+                return;
             }
             cfg.setObjectName(endpoints);
         }

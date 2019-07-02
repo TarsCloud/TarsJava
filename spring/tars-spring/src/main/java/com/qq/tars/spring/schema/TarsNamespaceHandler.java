@@ -27,5 +27,6 @@ public class TarsNamespaceHandler extends NamespaceHandlerSupport {
     public void init() {
         registerBeanDefinitionParser("servant", new TarsBeanDefinitionParser(ServantConfig.class));
         registerBeanDefinitionParser("listener", new TarsBeanDefinitionParser(ListenerConfig.class));
+        registerBeanDefinitionParser("client", new TarsClientBeanDefinitionParser());
     }
 }

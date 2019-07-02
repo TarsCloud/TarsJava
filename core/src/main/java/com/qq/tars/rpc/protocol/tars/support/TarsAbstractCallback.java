@@ -29,9 +29,30 @@ import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 @TarsCallback(comment = "Callback")
 public abstract class TarsAbstractCallback implements com.qq.tars.net.client.Callback<TarsServantResponse> {
 
+    private TarsServantResponse response;
+    
+    protected TarsServantResponse getResponse()
+    {
+        return this.response;
+    }
+    
+    protected String getFunctionName()
+    {
+        String name = null;
+        if (null != response)
+        {
+            if (null != response.getRequest())
+            {
+                name = response.getRequest().getServantName() + ':' + response.getRequest().getFunctionName();
+            }
+        }
+        return name;
+    }
+    
     @Override
     public final void onCompleted(TarsServantResponse response) {
         TarsServantRequest request = response.getRequest();
+        this.response = response;
         try {
             Method callback = getCallbackMethod("callback_".concat(request.getFunctionName()));
             callback.setAccessible(true);

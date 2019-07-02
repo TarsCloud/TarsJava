@@ -20,6 +20,7 @@ import com.qq.tars.client.Communicator;
 import com.qq.tars.client.util.ClientLogger;
 import com.qq.tars.common.util.StringUtils;
 import com.qq.tars.support.stat.prx.StatFPrx;
+import com.qq.tars.support.stat.prx.StatFPrxCallback;
 import com.qq.tars.support.stat.prx.StatMicMsgBody;
 import com.qq.tars.support.stat.prx.StatMicMsgHead;
 
@@ -79,7 +80,37 @@ public final class StatHelper {
                 i++;
                 if (i % BATCH_REPORTS == 0) {
                     try {
-                        statFProxy.reportMicMsg(reprotMap, bFromClient);
+                        //statFProxy.reportMicMsg(reprotMap, true);
+                        statFProxy.async_reportMicMsg(new StatFPrxCallback()
+                        {
+                            
+                            @Override
+                            public void callback_expired()
+                            {
+                                ClientLogger.getLogger().warn("i % BATCH_REPORTS == 0 . 上报异超时.....");
+                                
+                            }
+                            
+                            @Override
+                            public void callback_exception(Throwable ex)
+                            {
+                                ClientLogger.getLogger().error("i % BATCH_REPORTS == 0 . 上报异 msg : " + ex.getMessage() , ex);
+                            }
+                            
+                            @Override
+                            public void callback_reportSampleMsg(int ret)
+                            {
+                                // TODO Auto-generated method stub
+                                
+                            }
+                            
+                            @Override
+                            public void callback_reportMicMsg(int ret)
+                            {
+                                // TODO Auto-generated method stub
+                                
+                            }
+                        }, reprotMap, bFromClient);
                         ++successCount;
                     } catch (Exception e) {
                         ClientLogger.getLogger().error("error occurred on report proxy stat", e);
@@ -90,7 +121,37 @@ public final class StatHelper {
             }
             if (reprotMap.size() > 0) {
                 try {
-                    statFProxy.reportMicMsg(reprotMap, bFromClient);
+                    //statFProxy.reportMicMsg(reprotMap, true);
+                    statFProxy.async_reportMicMsg(new StatFPrxCallback()
+                    {
+                        
+                        @Override
+                        public void callback_expired()
+                        {
+                            ClientLogger.getLogger().warn("reprotMap.size() > 0 . 上报异超时.....");
+                            
+                        }
+                        
+                        @Override
+                        public void callback_exception(Throwable ex)
+                        {
+                            ClientLogger.getLogger().error("reprotMap.size() > 0 . 上报异 msg : " + ex.getMessage() , ex);
+                        }
+                        
+                        @Override
+                        public void callback_reportSampleMsg(int ret)
+                        {
+                            // TODO Auto-generated method stub
+                            
+                        }
+                        
+                        @Override
+                        public void callback_reportMicMsg(int ret)
+                        {
+                            // TODO Auto-generated method stub
+                            
+                        }
+                    }, reprotMap, bFromClient);
                     successCount++;
                 } catch (Exception e) {
                     errorCount++;
