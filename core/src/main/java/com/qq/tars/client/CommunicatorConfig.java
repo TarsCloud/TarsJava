@@ -253,7 +253,7 @@ public class CommunicatorConfig {
     public CommunicatorConfig setSetDivision(String setDivision) {
         this.setDivision = setDivision;
         if (setDivision != null) {
-            String[] tmp = StringUtils.split(setDivision, ".");
+            String[] tmp = StringUtils.split(setDivision, "\\.");
             if (tmp != null && tmp.length == 3) {
                 setName = tmp[0];
                 setArea = tmp[1];
