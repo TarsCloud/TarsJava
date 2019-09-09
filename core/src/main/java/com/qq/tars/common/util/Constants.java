@@ -82,4 +82,7 @@ public interface Constants {
     String TARS_CLIENT_WEIGHT_TYPE = "weightType";
     String TARS_CLIENT_WEIGHT = "weight";
     String TARS_CLIENT_GRAYFLAG = "taf.framework.GrayFlag";
+
+    String TARS_METHOD_ASYNC_START_WITH = "async_";
+    String TARS_METHOD_PROMISE_START_WITH = "promise_";
 }

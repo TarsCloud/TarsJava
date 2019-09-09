@@ -32,6 +32,7 @@ import com.qq.tars.net.client.Callback;
 import com.qq.tars.net.core.Request.InvokeStatus;
 import com.qq.tars.protocol.tars.support.TarsMethodInfo;
 import com.qq.tars.protocol.tars.support.TarsMethodParameterInfo;
+import com.qq.tars.protocol.tars.support.TarsPromiseFutureCallback;
 import com.qq.tars.protocol.util.TarsHelper;
 import com.qq.tars.rpc.common.Url;
 import com.qq.tars.rpc.exc.NotConnectedException;
@@ -47,6 +48,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 public class TarsInvoker<T> extends ServantInvoker<T> {
 
@@ -58,20 +60,20 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
     }
 
     @Override
-    protected void setAvailable(boolean available) {
+    public void setAvailable(boolean available) {
         super.setAvailable(available);
     }
 
     protected Object doInvokeServant(final ServantInvokeContext inv) throws Throwable {
-        long begin = System.currentTimeMillis();
-
+        final long begin = System.currentTimeMillis();
         int ret = Constants.INVOKE_STATUS_SUCC;
-        boolean isAsync = TarsHelper.isAsync(inv.getMethodName());
         try {
             Method method = getApi().getMethod(inv.getMethodName(), inv.getParameterTypes());
-            if (isAsync) {
+            if (inv.isAsync()) {
                 invokeWithAsync(method, inv.getArguments(), inv.getAttachments());
                 return null;
+            } else if (inv.isPromiseFuture()) {
+                return invokeWithPromiseFuture(method, inv.getArguments(), inv.getAttachments());// return Future Result
             } else {
                 TarsServantResponse response = invokeWithSync(method, inv.getArguments(), inv.getAttachments());
                 ret = response.getRet() == TarsHelper.SERVERSUCCESS ? Constants.INVOKE_STATUS_SUCC : Constants.INVOKE_STATUS_EXEC;
@@ -90,9 +92,11 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
             }
             throw e;
         } finally {
-            if (!isAsync) {
+            if (inv.isNormal()) {
                 setAvailable(ServantnvokerAliveChecker.isAlive(getUrl(), config, ret));
-                InvokeStatHelper.getInstance().addProxyStat(objName).addInvokeTimeByClient(config.getMasterName(), config.getSlaveName(), config.getSlaveSetName(), config.getSlaveSetArea(), config.getSlaveSetID(), inv.getMethodName(), getUrl().getHost(), getUrl().getPort(), ret, System.currentTimeMillis() - begin);
+                InvokeStatHelper.getInstance().addProxyStat(objName)
+                        .addInvokeTimeByClient(config.getMasterName(), config.getSlaveName(), config.getSlaveSetName(), config.getSlaveSetArea(),
+                                config.getSlaveSetID(), inv.getMethodName(), getUrl().getHost(), getUrl().getPort(), ret, System.currentTimeMillis() - begin);
             }
         }
     }
@@ -152,7 +156,7 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
         request.setMessageType(isHashInvoke(context) ? TarsHelper.MESSAGETYPEHASH : TarsHelper.MESSAGETYPENULL);
         request.setPacketType(TarsHelper.NORMAL);
         request.setServantName(objName);
-        request.setFunctionName(method.getName().replaceAll("async_", ""));
+        request.setFunctionName(method.getName().replaceAll(Constants.TARS_METHOD_ASYNC_START_WITH, ""));
         request.setContext(context);
 
         TarsMethodInfo methodInfo = AnalystManager.getInstance().getMethodMap(super.getApi()).get(method);
@@ -191,6 +195,37 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
         FilterChain filterChain = new TarsClientFilterChain(filters, objName, FilterKind.CLIENT, client, 1,
                 new TarsCallbackWrapper(config, request.getFunctionName(), getUrl().getHost(), getUrl().getPort(), request.getBornTime(), request, callback, this));
         filterChain.doFilter(request, response);
+    }
+
+
+    /**
+     * promise调用
+     * @param method
+     * @param args
+     * @param context
+     */
+    private <V> CompletableFuture<V> invokeWithPromiseFuture(Method method, Object args[], Map<String, String> context) throws Throwable {
+        final ServantClient client = getClient();
+        final TarsServantRequest request = new TarsServantRequest(client.getIoSession());
+        request.setVersion(TarsHelper.VERSION);
+        request.setMessageType(isHashInvoke(context) ? TarsHelper.MESSAGETYPEHASH : TarsHelper.MESSAGETYPENULL);
+        request.setPacketType(TarsHelper.NORMAL);
+        request.setServantName(objName);
+        request.setFunctionName(method.getName().replaceAll(Constants.TARS_METHOD_PROMISE_START_WITH, ""));
+        request.setContext(context);
+        request.setMethodParameters(args); //completableFuture send Callback
+        final CompletableFuture<V> completableFuture = new CompletableFuture<>();
+        final TarsMethodInfo methodInfo = AnalystManager.getInstance().getMethodMapByName(objName).get(method.getName());
+        request.setMethodInfo(methodInfo);
+        client.invokeWithFuture(request, new TarsPromiseFutureCallback<>(
+                config,
+                request.getFunctionName(),
+                getUrl().getHost(),
+                getUrl().getPort(),
+                request.getBornTime(),
+                TarsInvoker.this,
+                completableFuture));
+        return completableFuture;
     }
 
     private boolean isHashInvoke(Map<String, String> context) {

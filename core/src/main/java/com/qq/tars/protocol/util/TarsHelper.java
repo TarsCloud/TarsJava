@@ -16,21 +16,6 @@
 
 package com.qq.tars.protocol.util;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.qq.tars.common.support.Holder;
 import com.qq.tars.common.util.BeanAccessor;
 import com.qq.tars.common.util.CommonUtils;
@@ -47,6 +32,21 @@ import com.qq.tars.protocol.tars.support.TarsMethodInfo;
 import com.qq.tars.protocol.tars.support.TarsMethodParameterInfo;
 import com.qq.tars.protocol.tars.support.TarsStructInfo;
 import com.qq.tars.protocol.tars.support.TarsStrutPropertyInfo;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TarsHelper {
 
@@ -106,13 +106,13 @@ public class TarsHelper {
     public static final Double STAMP_DOUBLE = Double.valueOf(0);
     public static final String STAMP_STRING = "";
 
-    public static final boolean[] STAMP_BOOLEAN_ARRAY = new boolean[] { true };
-    public static final byte[] STAMP_BYTE_ARRAY = new byte[] { 0 };
-    public static final short[] STAMP_SHORT_ARRAY = new short[] { 0 };
-    public static final int[] STAMP_INT_ARRAY = new int[] { 0 };
-    public static final long[] STAMP_LONG_ARRAY = new long[] { 0 };
-    public static final float[] STAMP_FLOAT_ARRAY = new float[] { 0 };
-    public static final double[] STAMP_DOUBLE_ARRAY = new double[] { 0 };
+    public static final boolean[] STAMP_BOOLEAN_ARRAY = new boolean[]{true};
+    public static final byte[] STAMP_BYTE_ARRAY = new byte[]{0};
+    public static final short[] STAMP_SHORT_ARRAY = new short[]{0};
+    public static final int[] STAMP_INT_ARRAY = new int[]{0};
+    public static final long[] STAMP_LONG_ARRAY = new long[]{0};
+    public static final float[] STAMP_FLOAT_ARRAY = new float[]{0};
+    public static final double[] STAMP_DOUBLE_ARRAY = new double[]{0};
     public static final Map<String, String> STAMP_MAP = new HashMap<String, String>();
 
     static {
@@ -370,9 +370,9 @@ public class TarsHelper {
                 if (!isCallback(allParameterAnnotations[order])) {
                     parameterInfo.setStamp(TarsHelper.getParameterStamp(genericParameterType));
                 }
-                
+
                 if (isRoutekey(allParameterAnnotations[order])) {
-                	methodInfo.setRouteKeyIndex(order);
+                    methodInfo.setRouteKeyIndex(order);
                 }
             } catch (Exception e) {
                 throw new RuntimeException("failed to create parameter info:" + method + ", index=[" + order + "]", e);
@@ -393,6 +393,10 @@ public class TarsHelper {
 
     public static boolean isAsync(String methodName) {
         return methodName != null && methodName.startsWith("async_");
+    }
+
+    public static boolean isPromiseFuture(String methodName) {
+        return methodName != null && methodName.startsWith("promise_");
     }
 
     public static boolean isPing(String methodName) {
@@ -456,17 +460,17 @@ public class TarsHelper {
         }
         return false;
     }
-    
+
     public static boolean isRoutekey(Annotation[] annotations) {
-    	if (annotations == null || annotations.length < 0) {
-    		return false;
-    	}
-    	for (Annotation annotation : annotations) {
-    		if (annotation.annotationType() ==TarsRouteKey.class) {
-    			return true;
-    		}
-    	}
-    	return false;
+        if (annotations == null || annotations.length < 0) {
+            return false;
+        }
+        for (Annotation annotation : annotations) {
+            if (annotation.annotationType() == TarsRouteKey.class) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static boolean isStruct(Class<?> clazz) {
