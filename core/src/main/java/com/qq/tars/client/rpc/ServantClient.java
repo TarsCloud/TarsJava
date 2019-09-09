@@ -18,6 +18,7 @@ package com.qq.tars.client.rpc;
 
 import com.qq.tars.client.util.ClientLogger;
 import com.qq.tars.net.client.Callback;
+import com.qq.tars.net.client.FutureImpl;
 import com.qq.tars.net.client.ticket.Ticket;
 import com.qq.tars.net.client.ticket.TicketManager;
 import com.qq.tars.net.core.Request.InvokeStatus;
@@ -38,6 +39,7 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 public class ServantClient {
@@ -177,11 +179,30 @@ public class ServantClient {
         Ticket<T> ticket = null;
         try {
             ensureConnected();
-            request.setInvokeStatus(InvokeStatus.FUTURE_CALL);
+            request.setInvokeStatus(InvokeStatus.ASYNC_CALL);
             ticket = TicketManager.createTicket(request, session, this.syncTimeout, callback);
 
             Session current = session;
             current.write(request);
+        } catch (Exception ex) {
+            if (ticket != null) {
+                TicketManager.removeTicket(ticket.getTicketNumber());
+            }
+            throw new IOException("error occurred on invoker with future", ex);
+        }
+    }
+
+
+    public <T extends ServantResponse> Future invokeWithFuture(ServantRequest request) throws IOException {
+        Ticket<T> ticket = null;
+        try {
+            ensureConnected();
+            request.setInvokeStatus(InvokeStatus.FUTURE_CALL);
+            ticket = TicketManager.createTicket(request, session, this.syncTimeout);
+
+            Session current = session;
+            current.write(request);
+            return new FutureImpl<>(ticket);
         } catch (Exception ex) {
             if (ticket != null) {
                 TicketManager.removeTicket(ticket.getTicketNumber());

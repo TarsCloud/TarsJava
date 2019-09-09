@@ -16,12 +16,12 @@
 
 package com.qq.tars.net.core;
 
+import com.qq.tars.net.client.ticket.Ticket;
+import com.qq.tars.net.protocol.ProtocolException;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import com.qq.tars.net.client.ticket.Ticket;
-import com.qq.tars.net.protocol.ProtocolException;
 
 public abstract class Request {
 
@@ -39,7 +39,7 @@ public abstract class Request {
 
     private transient long processTime;
 
-    public static enum InvokeStatus {
+    public enum InvokeStatus {
         SYNC_CALL, ASYNC_CALL, FUTURE_CALL
     }
 

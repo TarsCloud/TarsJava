@@ -490,7 +490,6 @@ public class TarsCodec extends Codec {
 
     public Object[] decodeCallbackArgs(TarsServantResponse response) throws ProtocolException {
         byte[] data = response.getInputStream().read(new byte[]{}, 6, true);
-
         TarsServantRequest request = response.getRequest();
 
         TarsMethodInfo methodInfo = null;

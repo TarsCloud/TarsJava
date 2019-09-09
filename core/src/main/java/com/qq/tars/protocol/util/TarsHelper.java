@@ -19,6 +19,7 @@ package com.qq.tars.protocol.util;
 import com.qq.tars.common.support.Holder;
 import com.qq.tars.common.util.BeanAccessor;
 import com.qq.tars.common.util.CommonUtils;
+import com.qq.tars.common.util.Constants;
 import com.qq.tars.protocol.annotation.Servant;
 import com.qq.tars.protocol.tars.annotation.TarsCallback;
 import com.qq.tars.protocol.tars.annotation.TarsContext;
@@ -392,11 +393,11 @@ public class TarsHelper {
     }
 
     public static boolean isAsync(String methodName) {
-        return methodName != null && methodName.startsWith("async_");
+        return methodName != null && methodName.startsWith(Constants.TARS_METHOD_ASYNC_START_WITH);
     }
 
     public static boolean isPromiseFuture(String methodName) {
-        return methodName != null && methodName.startsWith("promise_");
+        return methodName != null && methodName.startsWith(Constants.TARS_METHOD_PROMISE_START_WITH);
     }
 
     public static boolean isPing(String methodName) {
