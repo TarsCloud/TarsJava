@@ -215,7 +215,15 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
         request.setContext(context);
         request.setMethodParameters(args); //completableFuture send Callback
         final CompletableFuture<V> completableFuture = new CompletableFuture<>();
-        final TarsMethodInfo methodInfo = AnalystManager.getInstance().getMethodMapByName(objName).get(method.getName());
+        final TarsMethodInfo methodInfo = AnalystManager.getInstance().getMethodMap(super.getApi()).get(method);
+
+        //     TarsMethodInfo methodInfo = AnalystManager.getInstance().getMethodMap(super.getApi()).get(method);
+        //        request.setApi(super.getApi());
+        //        request.setMethodInfo(methodInfo);
+        //        request.setMethodParameters(args);
+        //        request.setInvokeStatus(InvokeStatus.ASYNC_CALL);
+        request.setInvokeStatus(InvokeStatus.FUTURE_CALL);
+        request.setApi(super.getApi());
         request.setMethodInfo(methodInfo);
         client.invokeWithFuture(request, new TarsPromiseFutureCallback<>(
                 config,

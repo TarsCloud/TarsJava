@@ -902,9 +902,6 @@ public final class TarsInputStream {
         return 0;
     }
 
-    public static void main(String[] args) {
-
-    }
 
     public ByteBuffer getBs() {
         return bs;

@@ -385,16 +385,16 @@ public class TarsHelper {
         Type returnType = method.getGenericReturnType();
         Type returnOriginType = method.getReturnType();
 
-        if (returnType != void.class) {
+        if (returnOriginType == CompletableFuture.class) {
+            ParameterizedTypeImpl parameterizedType = (ParameterizedTypeImpl) method.getGenericReturnType();
             TarsMethodParameterInfo returnInfo = new TarsMethodParameterInfo();
-            returnInfo.setStamp(TarsHelper.getParameterStamp(returnType));
+            returnInfo.setStamp(TarsHelper.getParameterStamp(parameterizedType.getActualTypeArguments()[0]));//CompletableFuture use  gengeric  inner type class
             returnInfo.setName("result");
             returnInfo.setOrder(0);
             methodInfo.setReturnInfo(returnInfo);
-        } else if (returnOriginType == CompletableFuture.class) {
-            ParameterizedTypeImpl parameterizedType = (ParameterizedTypeImpl) method.getGenericReturnType();
+        } else if (returnType != void.class) {
             TarsMethodParameterInfo returnInfo = new TarsMethodParameterInfo();
-            returnInfo.setStamp(parameterizedType.getActualTypeArguments()[0]);//CompletableFuture use  gengeric  inner type class
+            returnInfo.setStamp(TarsHelper.getParameterStamp(returnType));
             returnInfo.setName("result");
             returnInfo.setOrder(0);
             methodInfo.setReturnInfo(returnInfo);

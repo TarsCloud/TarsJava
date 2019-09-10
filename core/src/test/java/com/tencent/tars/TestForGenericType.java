@@ -1,7 +1,7 @@
 package com.tencent.tars;
 
+import junit.framework.Assert;
 import junit.framework.TestCase;
-import org.junit.Assert;
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 import java.lang.reflect.InvocationTargetException;

@@ -21,9 +21,11 @@ import com.qq.tars.client.CommunicatorFactory;
 import com.qq.tars.quickstart.client.testapp.HelloPrx;
 import com.qq.tars.quickstart.client.testapp.HelloPrxCallback;
 
+import java.util.concurrent.CompletableFuture;
+
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         CommunicatorConfig cfg = new CommunicatorConfig();
         Communicator communicator = CommunicatorFactory.getInstance().getCommunicator(cfg);
         HelloPrx proxy = communicator.stringToProxy(HelloPrx.class, "TestApp.HelloServer.HelloObj@tcp -h 127.0.0.1 -p 18601 -t 60000");
@@ -47,8 +49,15 @@ public class Main {
 
             @Override
             public void callback_hello(String ret) {
-                System.out.println(ret);
+                System.out.println("invoke use async " + ret);
             }
         }, 1000, "Hello World");
+
+        proxy.promise_hello(1000, "hello world").thenCompose(x -> {
+            System.out.println("invoke use promise  " + x);
+            return CompletableFuture.completedFuture(0);
+        });
+
+        Thread.sleep(1000l);
     }
 }
