@@ -62,10 +62,6 @@ public class TarsPromiseFutureCallback<V> implements Callback<TarsServantRespons
             completableFuture.completeExceptionally(ServerException.makeException(ret));
             onException(ex);
         } finally {
-            //String masterName, String slaveName, String slaveSetName, String slaveSetArea, String slaveSetID, String methodName,
-            //                                      String slaveIp, int slavePort, int result, long costTimeMill
-            /// .addInvokeTimeByClient(config.getMasterName(), config.getSlaveName(), config.getSlaveSetName(), config.getSlaveSetArea(),
-            //                                config.getSlaveSetID(), inv.getMethodName(), getUrl().getHost(), getUrl().getPort(), ret, System.currentTimeMillis() - begin)
             invoker.setAvailable(ServantnvokerAliveChecker.isAlive(invoker.getUrl(), config, ret));
             InvokeStatHelper.getInstance().addProxyStat(objName)
                     .addInvokeTimeByClient(config.getMasterName(), config.getSlaveName(), config.getSlaveSetName(), config.getSlaveSetArea(),

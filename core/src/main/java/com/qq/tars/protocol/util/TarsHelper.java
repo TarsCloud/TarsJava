@@ -33,6 +33,7 @@ import com.qq.tars.protocol.tars.support.TarsMethodInfo;
 import com.qq.tars.protocol.tars.support.TarsMethodParameterInfo;
 import com.qq.tars.protocol.tars.support.TarsStructInfo;
 import com.qq.tars.protocol.tars.support.TarsStrutPropertyInfo;
+import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
@@ -48,6 +49,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 public class TarsHelper {
 
@@ -380,14 +382,23 @@ public class TarsHelper {
             }
             order++;
         }
-
         Type returnType = method.getGenericReturnType();
+        Type returnOriginType = method.getReturnType();
+
         if (returnType != void.class) {
             TarsMethodParameterInfo returnInfo = new TarsMethodParameterInfo();
             returnInfo.setStamp(TarsHelper.getParameterStamp(returnType));
             returnInfo.setName("result");
             returnInfo.setOrder(0);
             methodInfo.setReturnInfo(returnInfo);
+        } else if (returnOriginType == CompletableFuture.class) {
+            ParameterizedTypeImpl parameterizedType = (ParameterizedTypeImpl) method.getGenericReturnType();
+            TarsMethodParameterInfo returnInfo = new TarsMethodParameterInfo();
+            returnInfo.setStamp(parameterizedType.getActualTypeArguments()[0]);//CompletableFuture use  gengeric  inner type class
+            returnInfo.setName("result");
+            returnInfo.setOrder(0);
+            methodInfo.setReturnInfo(returnInfo);
+
         }
         return methodInfo;
     }
@@ -582,4 +593,6 @@ public class TarsHelper {
     public static Object getHolderValue(Object holder) throws Exception {
         return BeanAccessor.getBeanValue(holder, "value");
     }
+
+
 }
