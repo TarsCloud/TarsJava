@@ -16,9 +16,9 @@
 
 package com.qq.tars.common.util;
 
-import java.net.URL;
-
 import com.qq.tars.rpc.exc.TarsException;
+
+import java.net.URL;
 
 public class Loader {
 

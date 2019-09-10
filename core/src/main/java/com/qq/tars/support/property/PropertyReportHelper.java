@@ -16,13 +16,6 @@
 
 package com.qq.tars.support.property;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import com.qq.tars.client.Communicator;
 import com.qq.tars.rpc.exc.TarsException;
 import com.qq.tars.server.config.ConfigurationManager;
@@ -31,6 +24,13 @@ import com.qq.tars.support.property.prx.PropertyFPrx;
 import com.qq.tars.support.property.prx.StatPropInfo;
 import com.qq.tars.support.property.prx.StatPropMsgBody;
 import com.qq.tars.support.property.prx.StatPropMsgHead;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PropertyReportHelper {
 

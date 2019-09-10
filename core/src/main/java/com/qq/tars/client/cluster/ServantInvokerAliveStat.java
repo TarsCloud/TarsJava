@@ -16,13 +16,13 @@
 
 package com.qq.tars.client.cluster;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import com.qq.tars.client.ServantProxyConfig;
 import com.qq.tars.client.util.ClientLogger;
 import com.qq.tars.common.util.Constants;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ServantInvokerAliveStat {
 

@@ -16,6 +16,11 @@
 
 package com.qq.tars.client.support;
 
+import com.qq.tars.client.util.ClientLogger;
+import com.qq.tars.common.util.Constants;
+import com.qq.tars.common.util.Loader;
+import com.qq.tars.common.util.StringUtils;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -31,11 +36,6 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
-
-import com.qq.tars.client.util.ClientLogger;
-import com.qq.tars.common.util.Constants;
-import com.qq.tars.common.util.Loader;
-import com.qq.tars.common.util.StringUtils;
 
 public final class ServantCacheManager {
 

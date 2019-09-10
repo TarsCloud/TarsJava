@@ -16,9 +16,9 @@
 
 package com.qq.tars.rpc.common;
 
-import java.util.Collection;
-
 import com.qq.tars.rpc.common.exc.NoInvokerException;
+
+import java.util.Collection;
 
 public interface LoadBalance<T> {
 

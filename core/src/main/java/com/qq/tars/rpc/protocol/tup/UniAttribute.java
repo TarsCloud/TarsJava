@@ -16,14 +16,14 @@
 
 package com.qq.tars.rpc.protocol.tup;
 
+import com.qq.tars.protocol.tars.TarsInputStream;
+import com.qq.tars.protocol.tars.TarsOutputStream;
+import com.qq.tars.protocol.util.TarsUtil;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import com.qq.tars.protocol.tars.TarsInputStream;
-import com.qq.tars.protocol.tars.TarsOutputStream;
-import com.qq.tars.protocol.util.TarsUtil;
 
 public class UniAttribute extends OldUniAttribute {
 

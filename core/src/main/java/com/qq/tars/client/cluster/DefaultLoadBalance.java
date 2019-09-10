@@ -16,21 +16,20 @@
 
 package com.qq.tars.client.cluster;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import com.qq.tars.client.ServantProxyConfig;
 import com.qq.tars.client.util.ClientLogger;
 import com.qq.tars.common.util.Constants;
 import com.qq.tars.common.util.StringUtils;
 import com.qq.tars.rpc.common.InvokeContext;
 import com.qq.tars.rpc.common.Invoker;
-import com.qq.tars.rpc.common.LoadBalance;
 import com.qq.tars.rpc.common.exc.NoInvokerException;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Deprecated
 public class DefaultLoadBalance {

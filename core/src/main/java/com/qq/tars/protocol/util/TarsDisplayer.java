@@ -16,13 +16,13 @@
 
 package com.qq.tars.protocol.util;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import com.qq.tars.common.util.HexUtil;
 import com.qq.tars.protocol.tars.TarsStructBase;
 import com.qq.tars.protocol.tars.exc.TarsEncodeException;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public final class TarsDisplayer {
 

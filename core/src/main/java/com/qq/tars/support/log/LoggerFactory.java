@@ -16,18 +16,18 @@
 
 package com.qq.tars.support.log;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import com.qq.tars.client.Communicator;
 import com.qq.tars.common.util.StringUtils;
 import com.qq.tars.support.log.Logger.Level;
 import com.qq.tars.support.log.Logger.LogType;
 import com.qq.tars.support.log.prx.LogPrx;
 import com.qq.tars.support.log.util.Utils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class LoggerFactory {
 

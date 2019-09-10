@@ -16,13 +16,13 @@
 
 package com.qq.tars.support.property;
 
+import com.qq.tars.rpc.exc.TarsException;
+import com.qq.tars.support.property.PropertyReportHelper.Policy;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import com.qq.tars.rpc.exc.TarsException;
-import com.qq.tars.support.property.PropertyReportHelper.Policy;
 
 public class CommonPropertyPolicy {
 

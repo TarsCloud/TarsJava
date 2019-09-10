@@ -16,11 +16,10 @@
 
 package com.qq.tars.server.core;
 
-import java.util.List;
-
 import com.qq.tars.common.Filter;
-import com.qq.tars.common.FilterChain;
 import com.qq.tars.common.FilterKind;
+
+import java.util.List;
 
 public interface AppContext {
 

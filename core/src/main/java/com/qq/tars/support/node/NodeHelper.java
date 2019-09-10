@@ -16,15 +16,15 @@
 
 package com.qq.tars.support.node;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
-
 import com.qq.tars.client.Communicator;
 import com.qq.tars.common.util.StringUtils;
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.support.node.prx.ServerFPrx;
 import com.qq.tars.support.node.prx.ServerInfo;
 import com.qq.tars.support.om.OmLogger;
+
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 
 public class NodeHelper {
 

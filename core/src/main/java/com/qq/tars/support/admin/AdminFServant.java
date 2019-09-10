@@ -20,9 +20,7 @@
 
 package com.qq.tars.support.admin;
 
-import com.qq.tars.protocol.annotation.*;
-import com.qq.tars.protocol.tars.annotation.*;
-import com.qq.tars.common.support.Holder;
+import com.qq.tars.protocol.annotation.Servant;
 
 @Servant
 public interface AdminFServant {

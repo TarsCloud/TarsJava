@@ -1,10 +1,10 @@
 package com.qq.tars.common;
 
-import java.util.Iterator;
-import java.util.List;
-
 import com.qq.tars.net.core.Request;
 import com.qq.tars.net.core.Response;
+
+import java.util.Iterator;
+import java.util.List;
 
 public abstract class AbstractFilterChain<T> implements FilterChain {
 

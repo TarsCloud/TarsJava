@@ -16,10 +16,6 @@
 
 package com.qq.tars.register;
 
-import com.qq.tars.client.Communicator;
-import com.qq.tars.client.CommunicatorConfig;
-import com.qq.tars.client.Communicator;
-import com.qq.tars.server.config.ServerConfig;
 import com.qq.tars.support.query.prx.EndpointF;
 
 import java.util.List;

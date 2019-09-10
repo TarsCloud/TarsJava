@@ -16,6 +16,15 @@
 
 package com.qq.tars.support.log;
 
+import com.qq.tars.common.util.DyeingSwitch;
+import com.qq.tars.context.DistributedContext;
+import com.qq.tars.context.DistributedContextManager;
+import com.qq.tars.server.config.ConfigurationManager;
+import com.qq.tars.server.config.ServerConfig;
+import com.qq.tars.support.log.prx.LogInfo;
+import com.qq.tars.support.log.prx.LogPrx;
+import com.qq.tars.support.log.util.Utils;
+
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -31,15 +40,6 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import com.qq.tars.common.util.DyeingSwitch;
-import com.qq.tars.context.DistributedContext;
-import com.qq.tars.context.DistributedContextManager;
-import com.qq.tars.server.config.ConfigurationManager;
-import com.qq.tars.server.config.ServerConfig;
-import com.qq.tars.support.log.prx.LogInfo;
-import com.qq.tars.support.log.prx.LogPrx;
-import com.qq.tars.support.log.util.Utils;
 
 public class Logger {
 

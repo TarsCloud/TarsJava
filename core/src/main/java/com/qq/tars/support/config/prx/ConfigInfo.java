@@ -20,10 +20,11 @@
 
 package com.qq.tars.support.config.prx;
 
-import com.qq.tars.protocol.util.*;
-import com.qq.tars.protocol.annotation.*;
-import com.qq.tars.protocol.tars.*;
-import com.qq.tars.protocol.tars.annotation.*;
+import com.qq.tars.protocol.tars.TarsInputStream;
+import com.qq.tars.protocol.tars.TarsOutputStream;
+import com.qq.tars.protocol.tars.annotation.TarsStruct;
+import com.qq.tars.protocol.tars.annotation.TarsStructProperty;
+import com.qq.tars.protocol.util.TarsUtil;
 
 @TarsStruct
 public class ConfigInfo {

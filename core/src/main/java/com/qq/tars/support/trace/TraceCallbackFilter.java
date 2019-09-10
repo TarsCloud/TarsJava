@@ -1,9 +1,5 @@
 package com.qq.tars.support.trace;
 
-import io.opentracing.Scope;
-import io.opentracing.Span;
-import io.opentracing.Tracer;
-
 import com.qq.tars.client.util.Pair;
 import com.qq.tars.common.Filter;
 import com.qq.tars.common.FilterChain;
@@ -13,6 +9,9 @@ import com.qq.tars.rpc.exc.TimeoutException;
 import com.qq.tars.rpc.protocol.tars.TarsServantRequest;
 import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 import com.qq.tars.server.config.ConfigurationManager;
+import io.opentracing.Scope;
+import io.opentracing.Span;
+import io.opentracing.Tracer;
 
 public class TraceCallbackFilter implements Filter {
 	

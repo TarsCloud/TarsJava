@@ -16,13 +16,6 @@
 
 package com.qq.tars.client.rpc;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ThreadPoolExecutor;
-
 import com.qq.tars.client.ServantProxyConfig;
 import com.qq.tars.client.support.ClientPoolManager;
 import com.qq.tars.client.util.ClientLogger;
@@ -35,6 +28,13 @@ import com.qq.tars.rpc.common.ProtocolInvoker;
 import com.qq.tars.rpc.common.Url;
 import com.qq.tars.rpc.common.util.concurrent.ConcurrentHashSet;
 import com.qq.tars.rpc.exc.ClientException;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
 

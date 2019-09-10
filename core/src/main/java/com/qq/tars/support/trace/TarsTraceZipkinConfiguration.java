@@ -1,23 +1,21 @@
 package com.qq.tars.support.trace;
 
-import io.opentracing.Tracer;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import zipkin2.codec.Encoding;
-import zipkin2.reporter.AsyncReporter;
-import zipkin2.reporter.Reporter;
-import zipkin2.reporter.Sender;
-import zipkin2.reporter.urlconnection.URLConnectionSender;
 import brave.Tracing;
 import brave.opentracing.BraveTracer;
-
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.server.config.ServerConfig;
 import com.qq.tars.support.om.OmConstants;
 import com.qq.tars.support.trace.exc.NotSupportedSuchSampleEncodeingException;
 import com.qq.tars.support.trace.exc.NotSupportedSuchSampleTypeException;
+import io.opentracing.Tracer;
+import zipkin2.codec.Encoding;
+import zipkin2.reporter.AsyncReporter;
+import zipkin2.reporter.Reporter;
+import zipkin2.reporter.Sender;
+import zipkin2.reporter.urlconnection.URLConnectionSender;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class TarsTraceZipkinConfiguration {
 	

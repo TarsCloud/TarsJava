@@ -16,9 +16,9 @@
 
 package com.qq.tars.support.log;
 
-import java.util.Collection;
-
 import com.qq.tars.support.log.Logger.LogType;
+
+import java.util.Collection;
 
 final class LogWorkThread implements Runnable {
 

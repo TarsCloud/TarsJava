@@ -16,13 +16,13 @@
 
 package com.qq.tars.common.util;
 
+import sun.misc.Unsafe;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import sun.misc.Unsafe;
 
 public class BeanAccessor {
 

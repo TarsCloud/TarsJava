@@ -16,14 +16,14 @@
 
 package com.qq.tars.server.core;
 
-import java.util.HashMap;
-import java.util.concurrent.Executor;
-import java.util.concurrent.TimeUnit;
-
 import com.qq.tars.common.util.concurrent.TaskQueue;
 import com.qq.tars.common.util.concurrent.TaskThreadFactory;
 import com.qq.tars.common.util.concurrent.TaskThreadPoolExecutor;
 import com.qq.tars.server.config.ServantAdapterConfig;
+
+import java.util.HashMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
 public final class ServantThreadPoolManager {
 

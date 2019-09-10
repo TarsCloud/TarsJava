@@ -16,14 +16,14 @@
 
 package com.qq.tars.protocol.tars;
 
-import java.util.List;
-
 import com.qq.tars.common.util.BeanAccessor;
 import com.qq.tars.common.util.CommonUtils;
 import com.qq.tars.protocol.tars.exc.TarsEncodeException;
 import com.qq.tars.protocol.tars.support.TarsStructInfo;
 import com.qq.tars.protocol.tars.support.TarsStrutPropertyInfo;
 import com.qq.tars.protocol.util.TarsHelper;
+
+import java.util.List;
 
 public class TarsOutputStreamExt {
 

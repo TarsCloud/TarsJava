@@ -16,6 +16,8 @@
 
 package com.qq.tars.support.log;
 
+import com.qq.tars.common.util.StringUtils;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -27,8 +29,6 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import com.qq.tars.common.util.StringUtils;
 
 public class LogConfCacheMngr {
 

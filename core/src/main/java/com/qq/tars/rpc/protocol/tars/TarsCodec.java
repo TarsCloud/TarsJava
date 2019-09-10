@@ -40,7 +40,11 @@ import com.qq.tars.rpc.protocol.tup.UniAttribute;
 
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class TarsCodec extends Codec {
 

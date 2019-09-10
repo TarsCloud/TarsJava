@@ -16,10 +16,10 @@
 
 package com.qq.tars.server.common;
 
-import java.io.PrintStream;
-
 import com.qq.tars.support.log.Logger;
 import com.qq.tars.support.log.LoggingOutputStream;
+
+import java.io.PrintStream;
 
 public final class ServerLogger {
 

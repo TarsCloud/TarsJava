@@ -16,16 +16,12 @@
 
 package com.qq.tars.server.core;
 
-import java.io.IOException;
-import java.util.Map.Entry;
-
 import com.qq.tars.client.Communicator;
 import com.qq.tars.client.CommunicatorConfig;
 import com.qq.tars.client.CommunicatorFactory;
 import com.qq.tars.common.util.BeanAccessor;
 import com.qq.tars.common.util.StringUtils;
 import com.qq.tars.net.core.SessionManager;
-import com.qq.tars.register.RegisterManager;
 import com.qq.tars.server.common.ServerLogger;
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.server.config.ServantAdapterConfig;
@@ -35,6 +31,9 @@ import com.qq.tars.support.log.LogConfCacheMngr;
 import com.qq.tars.support.log.LoggerFactory;
 import com.qq.tars.support.om.OmConstants;
 import com.qq.tars.support.om.OmServiceMngr;
+
+import java.io.IOException;
+import java.util.Map.Entry;
 
 public class Server {
 

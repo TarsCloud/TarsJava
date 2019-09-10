@@ -16,8 +16,6 @@
 
 package com.qq.tars.server.core;
 
-import java.lang.reflect.Method;
-
 import com.qq.tars.net.core.Processor;
 import com.qq.tars.net.core.Request;
 import com.qq.tars.net.core.Response;
@@ -27,6 +25,8 @@ import com.qq.tars.rpc.protocol.ext.ExtendedServantRequest;
 import com.qq.tars.rpc.protocol.ext.ExtendedServantResponse;
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.support.om.OmServiceMngr;
+
+import java.lang.reflect.Method;
 
 public abstract class ExtendedServantProcessor<RES extends ExtendedServantRequest, RESP extends ExtendedServantResponse> extends Processor {
 
