@@ -23,6 +23,7 @@ import ch.qos.logback.core.joran.spi.JoranException;
 
 public class LoggerFactory {
     private static final LoggerContext logContext;
+    private static final String CLIENT_LOG_NAME = "TARS_CLIENT";
 
     static {
         logContext = (LoggerContext) org.slf4j.LoggerFactory.getILoggerFactory();
@@ -45,7 +46,6 @@ public class LoggerFactory {
         return logContext.getLogger(logName);
     }
 
-    private static final String CLIENT_LOG_NAME = "TARS_CLIENT";
 
     public static Logger getClientLogger() {
         return LoggerFactory.getLogger(CLIENT_LOG_NAME);
