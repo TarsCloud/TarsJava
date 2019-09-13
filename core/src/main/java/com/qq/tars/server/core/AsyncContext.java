@@ -19,8 +19,8 @@ package com.qq.tars.server.core;
 import com.qq.tars.protocol.util.TarsHelper;
 import com.qq.tars.rpc.protocol.tars.TarsServantRequest;
 import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
-import com.qq.tars.support.log.Logger;
-import com.qq.tars.support.log.Logger.LogType;
+import com.qq.tars.support.log.LoggerImpl;
+import com.qq.tars.support.log.LoggerImpl.LogType;
 
 import java.io.IOException;
 
@@ -28,7 +28,7 @@ public final class AsyncContext {
     public static final String PORTAL_CAP_ASYNC_CONTEXT_ATTRIBUTE = "internal.asynccontext";
 
     private Context<TarsServantRequest, TarsServantResponse> context = null;
-    private Logger flowLogger = Logger.getLogger("tarsserver.log", LogType.ALL);
+    private LoggerImpl flowLogger = LoggerImpl.getLogger("tarsserver.log", LogType.ALL);
 
     public static AsyncContext startAsync() throws IOException {
         Context<TarsServantRequest, TarsServantResponse> context = ContextManager.getContext();

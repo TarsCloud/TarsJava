@@ -16,11 +16,11 @@
 
 package com.qq.tars.support.om;
 
-import com.qq.tars.support.log.Logger;
+import com.qq.tars.support.log.LoggerImpl;
 
 public class OmLogger {
 
-    private static final Logger LOGGER = Logger.getLogger("tars_om_client.log");
+    private static final LoggerImpl LOGGER = LoggerImpl.getLogger("tars_om_client.log");
 
     public static void record(String str, Throwable t) {
         LOGGER.error(str, t);

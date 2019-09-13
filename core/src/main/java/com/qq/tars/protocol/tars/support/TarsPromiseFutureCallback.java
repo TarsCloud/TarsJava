@@ -4,14 +4,15 @@ package com.qq.tars.protocol.tars.support;
 import com.qq.tars.client.ServantProxyConfig;
 import com.qq.tars.client.cluster.ServantnvokerAliveChecker;
 import com.qq.tars.client.rpc.tars.TarsInvoker;
-import com.qq.tars.client.util.ClientLogger;
 import com.qq.tars.common.util.Constants;
 import com.qq.tars.net.client.Callback;
 import com.qq.tars.protocol.util.TarsHelper;
 import com.qq.tars.rpc.exc.ServerException;
 import com.qq.tars.rpc.exc.TarsException;
 import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
+import com.qq.tars.support.log.LoggerFactory;
 import com.qq.tars.support.stat.InvokeStatHelper;
+import org.slf4j.Logger;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -20,6 +21,8 @@ import java.util.concurrent.CompletableFuture;
  * @author Kerrigan
  */
 public class TarsPromiseFutureCallback<V> implements Callback<TarsServantResponse> {
+    private static final Logger logger = LoggerFactory.getClientLogger();
+
 
     private final String objName;
     private final String methodName;
@@ -58,7 +61,7 @@ public class TarsPromiseFutureCallback<V> implements Callback<TarsServantRespons
             TarsPromiseFutureCallback.this.completableFuture.complete((V) response.getResult());
         } catch (Throwable ex) {
             ret = Constants.INVOKE_STATUS_EXEC;
-            ClientLogger.getLogger().error("error occurred on callback completed", ex);
+            logger.error("error occurred on callback completed", ex);
             completableFuture.completeExceptionally(ServerException.makeException(ret));
             onException(ex);
         } finally {
@@ -75,7 +78,7 @@ public class TarsPromiseFutureCallback<V> implements Callback<TarsServantRespons
         try {
             TarsPromiseFutureCallback.this.completableFuture.completeExceptionally(e);
         } catch (Throwable ex) {
-            ClientLogger.getLogger().error("error occurred on callback exception", ex);
+            logger.error("error occurred on callback exception", ex);
         }
     }
 

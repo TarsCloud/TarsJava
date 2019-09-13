@@ -16,7 +16,7 @@
 
 package com.qq.tars.server.common;
 
-import com.qq.tars.support.log.Logger;
+import com.qq.tars.support.log.LoggerImpl;
 import com.qq.tars.support.log.LoggingOutputStream;
 
 import java.io.PrintStream;
@@ -28,22 +28,22 @@ public final class ServerLogger {
     private static final String SERVER_LOG_NAME = "tarsserver.log";
 
     public static void init() {
-        System.setOut(new PrintStream(new LoggingOutputStream(Logger.getLogger(STDOUT_log_NAME)), true));
-        System.setErr(new PrintStream(new LoggingOutputStream(Logger.getLogger(STDERR_LOG_NAME)), true));
+        System.setOut(new PrintStream(new LoggingOutputStream(LoggerImpl.getLogger(STDOUT_log_NAME)), true));
+        System.setErr(new PrintStream(new LoggingOutputStream(LoggerImpl.getLogger(STDERR_LOG_NAME)), true));
     }
 
     public static void initNamiCoreLog(String logPath, String logLevel) {
     }
 
-    public static Logger stdout() {
-        return Logger.getLogger(STDOUT_log_NAME);
+    public static LoggerImpl stdout() {
+        return LoggerImpl.getLogger(STDOUT_log_NAME);
     }
 
-    public static Logger stderr() {
-        return Logger.getLogger(STDERR_LOG_NAME);
+    public static LoggerImpl stderr() {
+        return LoggerImpl.getLogger(STDERR_LOG_NAME);
     }
 
-    public static Logger flow() {
-        return Logger.getLogger(SERVER_LOG_NAME);
+    public static LoggerImpl flow() {
+        return LoggerImpl.getLogger(SERVER_LOG_NAME);
     }
 }

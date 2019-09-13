@@ -16,6 +16,8 @@
 
 package com.qq.tars.common.util;
 
+import java.nio.charset.Charset;
+
 public interface Constants {
 
     String SERVER_NODE_CACHE_FILENAME = "tarsnodes.dat";
@@ -42,7 +44,7 @@ public interface Constants {
     int default_background_queuesize = 20000;
 
     String default_charset_name = "UTF-8";
-
+    Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
     int default_queue_size = 20000;
     int default_core_pool_size = Runtime.getRuntime().availableProcessors();
     int default_max_pool_size = Runtime.getRuntime().availableProcessors() * 2;

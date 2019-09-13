@@ -38,8 +38,8 @@ import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.server.config.ServantAdapterConfig;
 import com.qq.tars.server.config.ServerConfig;
-import com.qq.tars.support.log.Logger;
-import com.qq.tars.support.log.Logger.LogType;
+import com.qq.tars.support.log.LoggerImpl;
+import com.qq.tars.support.log.LoggerImpl.LogType;
 import com.qq.tars.support.om.OmServiceMngr;
 import com.qq.tars.support.stat.InvokeStatHelper;
 import com.qq.tars.support.trace.TraceManager;
@@ -51,9 +51,9 @@ public class TarsServantProcessor extends Processor {
 
     private static final String FLOW_SEP_FLAG = "|";
     private static final Random rand = new Random(System.currentTimeMillis());
-    private Logger flowLogger = Logger.getLogger("tarsserver.log", LogType.LOCAL);
+    private LoggerImpl flowLogger = LoggerImpl.getLogger("tarsserver.log", LogType.LOCAL);
 
-    public static void printServiceFlowLog(Logger logger, TarsServantRequest request, int status, long cost,
+    public static void printServiceFlowLog(LoggerImpl logger, TarsServantRequest request, int status, long cost,
                                            String remark) {
         if (status == TarsHelper.SERVERSUCCESS && !isFlowLogEnable()) return;
 

@@ -18,7 +18,6 @@ package com.qq.tars.client.rpc.tars;
 
 import com.qq.tars.client.ServantProxyConfig;
 import com.qq.tars.client.cluster.ServantnvokerAliveChecker;
-import com.qq.tars.client.util.ClientLogger;
 import com.qq.tars.common.Filter;
 import com.qq.tars.common.FilterChain;
 import com.qq.tars.common.FilterKind;
@@ -31,11 +30,14 @@ import com.qq.tars.rpc.exc.TimeoutException;
 import com.qq.tars.rpc.protocol.tars.TarsServantRequest;
 import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 import com.qq.tars.server.core.AppContextManager;
+import com.qq.tars.support.log.LoggerFactory;
 import com.qq.tars.support.stat.InvokeStatHelper;
+import org.slf4j.Logger;
 
 import java.util.List;
 
 public class TarsCallbackWrapper implements Callback<TarsServantResponse> {
+    private static final Logger logger = LoggerFactory.getClientLogger();
 
     private final String objName;
     private final ServantProxyConfig config;
@@ -73,7 +75,7 @@ public class TarsCallbackWrapper implements Callback<TarsServantResponse> {
             filterChain.doFilter(request, response);
         } catch (Throwable ex) {
             ret = Constants.INVOKE_STATUS_EXEC;
-            ClientLogger.getLogger().error("error occurred on callback completed", ex);
+            logger.error("error occurred on callback completed", ex);
             onException(ex);
         } finally {
             afterCallback();
@@ -87,7 +89,7 @@ public class TarsCallbackWrapper implements Callback<TarsServantResponse> {
                 this.callback.onException(e);
             }
         } catch (Throwable ex) {
-            ClientLogger.getLogger().error("error occurred on callback exception", ex);
+            logger.error("error occurred on callback exception", ex);
         }
     }
 
@@ -103,7 +105,7 @@ public class TarsCallbackWrapper implements Callback<TarsServantResponse> {
             response.setCause(new TimeoutException("async call timeout"));
             filterChain.doFilter(request, response);
         } catch (Throwable ex) {
-            ClientLogger.getLogger().error("error occurred on callback expired", ex);
+            logger.error("error occurred on callback expired", ex);
         } finally {
             afterCallback();
             InvokeStatHelper.getInstance().addProxyStat(objName).addInvokeTimeByClient(config.getModuleName(), config.getSlaveName(), config.getSlaveSetName(), config.getSlaveSetArea(), config.getSlaveSetID(), methodName, remoteIp, remotePort, ret, System.currentTimeMillis() - bornTime);

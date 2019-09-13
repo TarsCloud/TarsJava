@@ -51,7 +51,7 @@ module tars
 		* @param format, 日志时间格式(%Y%m%d)
 		* @param buffer, 日志内容
 		*/
-        void logger(string app, string server, string file, string format, vector<string> buffer);
+        void loggerInnerImpl(string app, string server, string file, string format, vector<string> buffer);
 
 	   /**
 		* 记录远程日志

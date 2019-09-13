@@ -651,7 +651,7 @@ NotifyHelper.getInstance().notifyError(info);
 ```
 DyeingSwitch.enableActiveDyeing("helloServer");   //主动打开开关接口，参数表示染色日志名称
 ...业务处理
-logger.info("hello world");   //此时出于染色开启状态，该条日志会额外打印一份到染色日志中
+loggerInnerImpl.info("hello world");   //此时出于染色开启状态，该条日志会额外打印一份到染色日志中
 ...业务处理
 DyeingSwitch.closeActiveDyeing();    //主动关闭染色开关接口
 ```

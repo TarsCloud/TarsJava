@@ -17,9 +17,16 @@
         <brave.version>5.1.0</brave.version>
         <brave-opentracing.version>0.31.1</brave-opentracing.version>
         <zipkin-reporter.version>2.7.4</zipkin-reporter.version>
+        <ch.qos.logback.version>1.2.3</ch.qos.logback.version>
+
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${ch.qos.logback.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.tencent.tars</groupId>
             <artifactId>tars-net</artifactId>
@@ -33,12 +40,12 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>3.0.1</version>
+            <version>3.1.0</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>3.8.1</version>
+            <version>4.12</version>
             <scope>test</scope>
         </dependency>
         <dependency>

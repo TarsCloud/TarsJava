@@ -16,7 +16,6 @@
 
 package com.qq.tars.client.rpc;
 
-import com.qq.tars.client.util.ClientLogger;
 import com.qq.tars.net.client.Callback;
 import com.qq.tars.net.client.FutureImpl;
 import com.qq.tars.net.client.ticket.Ticket;
@@ -31,6 +30,8 @@ import com.qq.tars.rpc.exc.NotConnectedException;
 import com.qq.tars.rpc.exc.TimeoutException;
 import com.qq.tars.rpc.protocol.ServantRequest;
 import com.qq.tars.rpc.protocol.ServantResponse;
+import com.qq.tars.support.log.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -43,6 +44,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 public class ServantClient {
+    private static final Logger logger = LoggerFactory.getClientLogger();
 
     private Session session = null;
     private String host = null;
@@ -88,7 +90,7 @@ public class ServantClient {
                         ((SocketChannel) channel).socket().setTrafficClass(this.tc);
                     }
                 } catch (Exception ex) {
-                    ClientLogger.getLogger().error(ex.getLocalizedMessage());
+                    logger.error(ex.getLocalizedMessage());
                 }
                 ((SocketChannel) channel).connect(server);
 
@@ -148,7 +150,7 @@ public class ServantClient {
             }
             return response;
         } catch (InterruptedException e) {
-            ClientLogger.getLogger().error(e.getLocalizedMessage());
+            logger.error(e.getLocalizedMessage());
         } finally {
             if (ticket != null) {
                 TicketManager.removeTicket(ticket.getTicketNumber());
@@ -234,7 +236,7 @@ public class ServantClient {
             try {
                 ((SocketChannel) ((TCPSession) this.session).getChannel()).socket().setTrafficClass(tc);
             } catch (Exception ex) {
-                ClientLogger.getLogger().error(ex.getLocalizedMessage());
+                logger.error(ex.getLocalizedMessage());
             }
         }
         this.tc = tc;
@@ -247,7 +249,7 @@ public class ServantClient {
             try {
                 ((SocketChannel) ((TCPSession) this.session).getChannel()).socket().setTcpNoDelay(on);
             } catch (Exception ex) {
-                ClientLogger.getLogger().error(ex.getLocalizedMessage());
+                logger.error(ex.getLocalizedMessage());
             }
         }
     }

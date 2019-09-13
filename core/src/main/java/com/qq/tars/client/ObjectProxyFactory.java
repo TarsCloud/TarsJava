@@ -19,7 +19,6 @@ package com.qq.tars.client;
 import com.qq.tars.client.rpc.loadbalance.DefaultLoadBalance;
 import com.qq.tars.client.rpc.tars.TarsProtocolInvoker;
 import com.qq.tars.client.support.ServantCacheManager;
-import com.qq.tars.client.util.ClientLogger;
 import com.qq.tars.client.util.ParseTools;
 import com.qq.tars.common.util.StringUtils;
 import com.qq.tars.protocol.annotation.Servant;
@@ -32,10 +31,14 @@ import com.qq.tars.rpc.exc.CommunicatorConfigException;
 import com.qq.tars.rpc.protocol.Codec;
 import com.qq.tars.rpc.protocol.ServantProtocolFactory;
 import com.qq.tars.rpc.protocol.tars.TarsCodec;
+import com.qq.tars.support.log.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.lang.reflect.Constructor;
 
 class ObjectProxyFactory {
+    private static final Logger logger = LoggerFactory.getClientLogger();
+
 
     private final Communicator communicator;
 
@@ -144,7 +147,7 @@ class ObjectProxyFactory {
             } catch (CommunicatorConfigException e) {
                 /** 如果失败，从本地绶存文件中拉取 */
                 endpoints = ServantCacheManager.getInstance().get(communicator.getId(), cfg.getSimpleObjectName(), communicatorConfig.getDataPath());
-                ClientLogger.getLogger().error(cfg.getSimpleObjectName() + " error occurred on get by registry, use by local cache=" + endpoints + "|" + e.getLocalizedMessage(), e);
+                logger.error(cfg.getSimpleObjectName() + " error occurred on get by registry, use by local cache=" + endpoints + "|" + e.getLocalizedMessage(), e);
             }
 
             if (StringUtils.isEmpty(endpoints)) {

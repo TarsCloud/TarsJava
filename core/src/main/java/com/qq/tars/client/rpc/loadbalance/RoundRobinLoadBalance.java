@@ -21,11 +21,12 @@ import com.qq.tars.client.ServantProxyConfig;
 import com.qq.tars.client.cluster.ServantInvokerAliveStat;
 import com.qq.tars.client.cluster.ServantnvokerAliveChecker;
 import com.qq.tars.client.rpc.InvokerComparator;
-import com.qq.tars.client.util.ClientLogger;
 import com.qq.tars.rpc.common.InvokeContext;
 import com.qq.tars.rpc.common.Invoker;
 import com.qq.tars.rpc.common.LoadBalance;
 import com.qq.tars.rpc.common.exc.NoInvokerException;
+import com.qq.tars.support.log.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,6 +38,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 轮询负载均衡策略
  */
 public class RoundRobinLoadBalance<T> implements LoadBalance<T> {
+    private static final Logger logger = LoggerFactory.getClientLogger();
+
 
     private final AtomicInteger sequence = new AtomicInteger();
     private final AtomicInteger staticWeightSequence = new AtomicInteger();
@@ -62,7 +65,7 @@ public class RoundRobinLoadBalance<T> implements LoadBalance<T> {
             ServantInvokerAliveStat stat = ServantnvokerAliveChecker.get(invoker.getUrl());
             if (stat.isAlive() || (stat.getLastRetryTime() + (config.getTryTimeInterval() * 1000)) < System.currentTimeMillis()) {
                 //屏敝后尝试重新调用    
-                ClientLogger.getLogger().info("try to use inactive invoker|" + invoker.getUrl().toIdentityString());
+                logger.info("try to use inactive invoker|" + invoker.getUrl().toIdentityString());
                 stat.setLastRetryTime(System.currentTimeMillis());
                 return invoker;
             }
@@ -97,7 +100,7 @@ public class RoundRobinLoadBalance<T> implements LoadBalance<T> {
 
         if (!invoker.isAvailable()) {
             //屏敝后尝试重新调用    
-            ClientLogger.getLogger().info("try to use inactive invoker|" + invoker.getUrl().toIdentityString());
+            logger.info("try to use inactive invoker|" + invoker.getUrl().toIdentityString());
             ServantnvokerAliveChecker.get(invoker.getUrl()).setLastRetryTime(System.currentTimeMillis());
         }
         return invoker;
@@ -105,7 +108,7 @@ public class RoundRobinLoadBalance<T> implements LoadBalance<T> {
 
     @Override
     public void refresh(Collection<Invoker<T>> invokers) {
-        ClientLogger.getLogger().info(config.getSimpleObjectName() + " try to refresh RoundRobinLoadBalance's invoker cache, size=" + (invokers == null || invokers.isEmpty() ? 0 : invokers.size()));
+        logger.info(config.getSimpleObjectName() + " try to refresh RoundRobinLoadBalance's invoker cache, size=" + (invokers == null || invokers.isEmpty() ? 0 : invokers.size()));
         if (invokers == null || invokers.isEmpty()) {
             sortedInvokersCache = null;
             staticWeightInvokersCache = null;
@@ -114,11 +117,11 @@ public class RoundRobinLoadBalance<T> implements LoadBalance<T> {
 
         List<Invoker<T>> sortedInvokersTmp = new ArrayList<Invoker<T>>(invokers);
         Collections.sort(sortedInvokersTmp, comparator);
-        
+
         sortedInvokersCache = sortedInvokersTmp;
         staticWeightInvokersCache = LoadBalanceHelper.buildStaticWeightList(sortedInvokersTmp, config);
 
-        ClientLogger.getLogger().info(config.getSimpleObjectName() + " refresh RoundRobinLoadBalance's invoker cache done, staticWeightInvokersCache size=" + (staticWeightInvokersCache == null || staticWeightInvokersCache.isEmpty() ? 0 : staticWeightInvokersCache.size()) + ", sortedInvokersCache size=" + (sortedInvokersCache == null || sortedInvokersCache.isEmpty() ? 0 : sortedInvokersCache.size()));
+        logger.info(config.getSimpleObjectName() + " refresh RoundRobinLoadBalance's invoker cache done, staticWeightInvokersCache size=" + (staticWeightInvokersCache == null || staticWeightInvokersCache.isEmpty() ? 0 : staticWeightInvokersCache.size()) + ", sortedInvokersCache size=" + (sortedInvokersCache == null || sortedInvokersCache.isEmpty() ? 0 : sortedInvokersCache.size()));
     }
 
 }
