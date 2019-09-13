@@ -16,6 +16,7 @@
 
 package com.qq.tars.support.log;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
@@ -37,6 +38,25 @@ public class LoggerFactory {
         }
     }
 
+
+    public static int resetLogBack() {
+        JoranConfigurator configurator = new JoranConfigurator();
+        configurator.setContext(logContext);
+        logContext.reset();
+        try {
+            configurator.doConfigure("logback.xml");
+            return 0;
+        } catch (JoranException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    public static void resetLogLevel(Level level) {
+        Logger root = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        root.setLevel(level);
+    }
+
     public static Logger getLogger() {
         return logContext.getLogger("");
     }
@@ -50,6 +70,5 @@ public class LoggerFactory {
     public static Logger getClientLogger() {
         return LoggerFactory.getLogger(CLIENT_LOG_NAME);
     }
-
 
 }
