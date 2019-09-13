@@ -18,7 +18,7 @@ package com.qq.tars.net.client.ticket;
 
 public interface TicketListener {
 
-    public void onResponseExpired(Ticket<?> ticket);
+    void onResponseExpired(Ticket<?> ticket);
 
-    public void onResponseReceived(Ticket<?> ticket);
+    void onResponseReceived(Ticket<?> ticket);
 }
