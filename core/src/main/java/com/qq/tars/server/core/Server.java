@@ -20,15 +20,11 @@ import com.qq.tars.client.Communicator;
 import com.qq.tars.client.CommunicatorConfig;
 import com.qq.tars.client.CommunicatorFactory;
 import com.qq.tars.common.util.BeanAccessor;
-import com.qq.tars.common.util.StringUtils;
 import com.qq.tars.net.core.SessionManager;
-import com.qq.tars.server.common.ServerLogger;
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.server.config.ServantAdapterConfig;
 import com.qq.tars.server.config.ServerConfig;
 import com.qq.tars.server.ha.ConnectionSessionListener;
-import com.qq.tars.support.log.LogConfCacheMngr;
-import com.qq.tars.support.log.LoggerFactory;
 import com.qq.tars.support.om.OmConstants;
 import com.qq.tars.support.om.OmServiceMngr;
 
@@ -46,19 +42,9 @@ public class Server {
 
     public void startUp(AppContext appContext) {
         try {
-
-//            initCommunicator();
-//
-//            configLogger();
-//
-//            startManagerService();
-
             startAppContext(appContext);
-
             startSessionManager();
-
             registerServerHook();
-
             System.out.println("[SERVER] server is ready...");
         } catch (Throwable ex) {
             System.out.println("[SERVER] failed to start server...");
@@ -86,23 +72,7 @@ public class Server {
     }
 
     public static void configLogger() {
-        String objName = ConfigurationManager.getInstance().getServerConfig().getLog();
-        String appName = ConfigurationManager.getInstance().getServerConfig().getApplication();
-        String serviceName = ConfigurationManager.getInstance().getServerConfig().getServerName();
 
-        String defaultLevel = ConfigurationManager.getInstance().getServerConfig().getLogLevel();
-        String defaultRoot = ConfigurationManager.getInstance().getServerConfig().getLogPath();
-        String dataPath = ConfigurationManager.getInstance().getServerConfig().getDataPath();
-
-        LoggerFactory.config(CommunicatorFactory.getInstance().getCommunicator()
-                , objName, appName, serviceName, defaultLevel, defaultRoot);
-
-        LogConfCacheMngr.getInstance().init(dataPath);
-        if (StringUtils.isNotEmpty(LogConfCacheMngr.getInstance().getLevel())) {
-            LoggerFactory.setDefaultLoggerLevel(LogConfCacheMngr.getInstance().getLevel());
-        }
-
-        ServerLogger.init();
     }
 
     public static void loadServerConfig() {
@@ -110,7 +80,6 @@ public class Server {
             ConfigurationManager.getInstance().init();
 
             ServerConfig cfg = ConfigurationManager.getInstance().getServerConfig();
-            ServerLogger.initNamiCoreLog(cfg.getLogPath(), cfg.getLogLevel());
             System.setProperty("com.qq.nami.server.udp.bufferSize", String.valueOf(cfg.getUdpBufferSize()));
             System.setProperty("server.root", cfg.getBasePath());
         } catch (Throwable ex) {
@@ -139,18 +108,14 @@ public class Server {
     }
 
     private void registerServerHook() {
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-
-            @Override
-            public void run() {
-                try {
-                    if (appContext != null) {
-                        appContext.stop();
-                    }
-                } catch (Exception ex) {
-                    System.err.println("The exception occured at stopping server...");
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                if (appContext != null) {
+                    appContext.stop();
                 }
+            } catch (Exception ex) {
+                System.err.println("The exception occured at stopping server...");
             }
-        });
+        }));
     }
 }
