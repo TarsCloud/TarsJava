@@ -18,6 +18,7 @@
 package com.qq.tars.client;
 
 import com.qq.tars.client.util.ParseTools;
+
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class CommunicatorFactory {

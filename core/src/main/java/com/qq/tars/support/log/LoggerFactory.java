@@ -24,7 +24,8 @@ import ch.qos.logback.core.joran.spi.JoranException;
 
 public class LoggerFactory {
     private static final LoggerContext logContext;
-    private static final String CLIENT_LOG_NAME = "TARS_CLIENT";
+    private static final String CLIENT_LOG_NAME = "TARS_CLIENT_LOGGER";
+    private static final String OM_LOG_NAME = "OM_LOGGER";
 
 
     static {
@@ -68,7 +69,7 @@ public class LoggerFactory {
     }
 
     public static Logger getOmLogger() {
-        return logContext.getLogger("omLogger");
+        return logContext.getLogger(OM_LOG_NAME);
     }
 
 

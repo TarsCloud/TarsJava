@@ -20,8 +20,6 @@
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
         </encoder>
     </appender>
-
-
     <!-- file start -->
     <appender name="FILE_WARN" class="ch.qos.logback.core.rolling.RollingFileAppender">
 
@@ -91,6 +89,20 @@
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
         </encoder>
     </appender>
+    <appender name="FILE_OM_LOGGER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/tars_om_client.%d{yyyy-MM-dd}.log</FileNamePattern>
+            <MaxHistory>30</MaxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+        </encoder>
+    </appender>
     <appender name="ASYNC_INFO" class="ch.qos.logback.classic.AsyncAppender">
         <discardingThreshold>30</discardingThreshold>
         <queueSize>512</queueSize>
@@ -111,13 +123,21 @@
         <queueSize>512</queueSize>
         <appender-ref ref="FILE_DEBUG"/>
     </appender>
-    <appender name="ASYNC_CLIENT" class="ch.qos.logback.classic.AsyncAppender">
+    <appender name="ASYNC_TARS_CLIENT" class="ch.qos.logback.classic.AsyncAppender">
         <discardingThreshold>30</discardingThreshold>
         <queueSize>512</queueSize>
-        <appender-ref ref="FILE_DEBUG"/>
-    </appender>
-    <logger name="TARS_CLIENT" level="DEBUG">
         <appender-ref ref="FILE_TARS_CLIENT"/>
+    </appender>
+    <appender name="ASYNC_OM_CLIENT" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>30</discardingThreshold>
+        <queueSize>512</queueSize>
+        <appender-ref ref="FILE_OM_LOGGER"/>
+    </appender>
+    <logger name="TARS_CLIENT_LOGGER" level="DEBUG">
+        <appender-ref ref="ASYNC_TARS_CLIENT"/>
+    </logger>
+    <logger name="OM_LOGGER" level="DEBUG">
+        <appender-ref ref="ASYNC_OM_CLIENT"/>
     </logger>
     <root level="DEBUG">
         <appender-ref ref="FILE_INFO"/>
