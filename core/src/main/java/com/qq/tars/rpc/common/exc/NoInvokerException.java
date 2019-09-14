@@ -19,6 +19,8 @@ package com.qq.tars.rpc.common.exc;
 @SuppressWarnings("serial")
 public class NoInvokerException extends RuntimeException {
 
+    private static final long serialVersionUID = 6881131005776499222L;
+
     public NoInvokerException() {
         super();
     }
