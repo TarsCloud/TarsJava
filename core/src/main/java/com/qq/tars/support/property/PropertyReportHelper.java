@@ -19,11 +19,12 @@ package com.qq.tars.support.property;
 import com.qq.tars.client.Communicator;
 import com.qq.tars.rpc.exc.TarsException;
 import com.qq.tars.server.config.ConfigurationManager;
-import com.qq.tars.support.om.OmLogger;
+import com.qq.tars.support.log.LoggerFactory;
 import com.qq.tars.support.property.prx.PropertyFPrx;
 import com.qq.tars.support.property.prx.StatPropInfo;
 import com.qq.tars.support.property.prx.StatPropMsgBody;
 import com.qq.tars.support.property.prx.StatPropMsgHead;
+import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,6 +34,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PropertyReportHelper {
+    private static final Logger omLogger = LoggerFactory.getOmLogger();
 
     public static interface Policy {
 
@@ -179,7 +181,7 @@ public class PropertyReportHelper {
                 propertyFPrx.async_reportPropMsg(null, sendData);
             }
         } catch (Throwable t) {
-            OmLogger.record("PropertyReporter|ReportThread error", t);
+            omLogger.error("PropertyReporter|ReportThread error", t);
         }
     }
 }

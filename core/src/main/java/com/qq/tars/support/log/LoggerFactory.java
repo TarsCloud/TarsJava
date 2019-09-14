@@ -26,6 +26,7 @@ public class LoggerFactory {
     private static final LoggerContext logContext;
     private static final String CLIENT_LOG_NAME = "TARS_CLIENT";
 
+
     static {
         logContext = (LoggerContext) org.slf4j.LoggerFactory.getILoggerFactory();
         JoranConfigurator configurator = new JoranConfigurator();
@@ -64,6 +65,10 @@ public class LoggerFactory {
 
     public static Logger getLogger(String logName) {
         return logContext.getLogger(logName);
+    }
+
+    public static Logger getOmLogger() {
+        return logContext.getLogger("omLogger");
     }
 
 
