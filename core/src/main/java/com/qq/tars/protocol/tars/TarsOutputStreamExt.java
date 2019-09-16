@@ -17,7 +17,7 @@
 package com.qq.tars.protocol.tars;
 
 import com.qq.tars.common.util.BeanAccessor;
-import com.qq.tars.common.util.CommonUtils;
+import com.qq.tars.common.util.CollectionUtils;
 import com.qq.tars.protocol.tars.exc.TarsEncodeException;
 import com.qq.tars.protocol.tars.support.TarsStructInfo;
 import com.qq.tars.protocol.tars.support.TarsStrutPropertyInfo;
@@ -36,7 +36,7 @@ public class TarsOutputStreamExt {
         jos.reserve(2);
         jos.writeHead(TarsStructBase.STRUCT_BEGIN, tag);
         List<TarsStrutPropertyInfo> propertysList = info.getPropertyList();
-        if (!CommonUtils.isEmptyCollection(propertysList)) {
+        if (CollectionUtils.isNotEmpty(propertysList)) {
             for (TarsStrutPropertyInfo propertyInfo : propertysList) {
                 Object value = null;
                 try {

@@ -19,4 +19,7 @@ public class CollectionUtils {
         return !isEmpty(collction);
     }
 
+
+
+
 }
