@@ -20,6 +20,8 @@ package com.qq.tars.rpc.exc;
 @SuppressWarnings("serial")
 public class NotConnectedException extends TarsException {
 
+    private static final long serialVersionUID = 7973911084718606368L;
+
     public NotConnectedException() {
         super();
     }

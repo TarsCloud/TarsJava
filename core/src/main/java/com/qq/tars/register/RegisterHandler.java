@@ -22,8 +22,8 @@ import java.util.List;
 
 public interface RegisterHandler {
 
-	public void register(String appName, String serviceName);
+    void register(String appName, String serviceName);
 
-	public List<EndpointF> query(String name);
+    List<EndpointF> query(String name);
 
 }

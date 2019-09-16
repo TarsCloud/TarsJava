@@ -19,6 +19,8 @@ package com.qq.tars.rpc.exc;
 @SuppressWarnings("serial")
 public class ServerResetGridException extends ServerException {
 
+    private static final long serialVersionUID = 7866797885484717537L;
+
     public ServerResetGridException(int ret) {
         super(ret);
     }

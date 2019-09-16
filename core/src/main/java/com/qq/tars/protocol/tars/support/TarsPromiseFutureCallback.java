@@ -32,7 +32,7 @@ public class TarsPromiseFutureCallback<V> implements Callback<TarsServantRespons
     private final TarsInvoker<?> invoker;
     private final ServantProxyConfig config;
 
-    private final CompletableFuture<V> completableFuture;//上层传入的周期操作，仅在callback操作的时候，是会处理的。在回调听时候 。才会操作
+    private final CompletableFuture<V> completableFuture;//future
 
     public TarsPromiseFutureCallback(ServantProxyConfig config, String methodName, String remoteIp, int remotePort,
                                      long bornTime, TarsInvoker<?> invoker, CompletableFuture<V> completableFuture) {

@@ -19,7 +19,9 @@ package com.qq.tars.rpc.exc;
 @SuppressWarnings("serial")
 public class NotImplementedException extends UnsupportedOperationException {
 
+
     private static final String DEFAULT_MESSAGE = "Not implemented";
+    private static final long serialVersionUID = 3269390385274778049L;
 
     public NotImplementedException() {
         super(DEFAULT_MESSAGE);

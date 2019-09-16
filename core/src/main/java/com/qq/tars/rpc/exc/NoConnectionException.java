@@ -19,6 +19,8 @@ package com.qq.tars.rpc.exc;
 @SuppressWarnings("serial")
 public class NoConnectionException extends ClientException {
 
+    private static final long serialVersionUID = -2244573531255176500L;
+
     public NoConnectionException(String message) {
         super(message);
     }
