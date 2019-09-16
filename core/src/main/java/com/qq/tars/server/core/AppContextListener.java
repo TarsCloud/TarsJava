@@ -18,8 +18,8 @@ package com.qq.tars.server.core;
 
 public interface AppContextListener {
 
-    public void appContextStarted(AppContextEvent event);
+    void appContextStarted(AppContextEvent event);
 
-    public void appServantStarted(AppServantEvent event);
+    void appServantStarted(AppServantEvent event);
 
 }
