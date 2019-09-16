@@ -52,7 +52,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class TarsInvoker<T> extends ServantInvoker<T> {
 
-    List<Filter> filters;
+    final List<Filter> filters;
 
     public TarsInvoker(ServantProxyConfig config, Class<T> api, Url url, ServantClient[] clients) {
         super(config, api, url, clients);
@@ -143,7 +143,7 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
             request.setStatus(status);
 
         }
-        FilterChain filterChain = new TarsClientFilterChain(filters, objName, FilterKind.CLIENT, client, 0, null);
+        FilterChain filterChain = new TarsClientFilterChain(filters, objName, FilterKind.CLIENT, client, InvokeStatus.SYNC_CALL, null);
         filterChain.doFilter(request, response);
         return response;
     }
@@ -184,7 +184,7 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
         Boolean bDyeing = distributedContext.get(DyeingSwitch.BDYEING);
         if (bDyeing != null && bDyeing == true) {
             request.setMessageType(request.getMessageType() | TarsHelper.MESSAGETYPEDYED);
-            HashMap<String, String> status = new HashMap<String, String>();
+            HashMap<String, String> status = new HashMap<>();
             String routeKey = distributedContext.get(DyeingSwitch.DYEINGKEY);
             String fileName = distributedContext.get(DyeingSwitch.FILENAME);
             status.put(DyeingSwitch.STATUS_DYED_KEY, routeKey == null ? "" : routeKey);
@@ -192,7 +192,7 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
             request.setStatus(status);
 
         }
-        FilterChain filterChain = new TarsClientFilterChain(filters, objName, FilterKind.CLIENT, client, 1,
+        FilterChain filterChain = new TarsClientFilterChain(filters, objName, FilterKind.CLIENT, client, InvokeStatus.ASYNC_CALL,
                 new TarsCallbackWrapper(config, request.getFunctionName(), getUrl().getHost(), getUrl().getPort(), request.getBornTime(), request, callback, this));
         filterChain.doFilter(request, response);
     }
