@@ -27,7 +27,7 @@ public class InnerLogger {
 
     public void debug(String str, Throwable th) {
         if (logger.isDebugEnabled())
-            logger.error(str, th);
+            logger.debug(str, th);
 
     }
 
@@ -37,7 +37,7 @@ public class InnerLogger {
 
     public void info(String str, Throwable th) {
         if (logger.isInfoEnabled())
-            logger.error(str, th);
+            logger.info(str, th);
     }
 
 
@@ -47,7 +47,7 @@ public class InnerLogger {
 
     public void warn(String str, Throwable th) {
         if (logger.isWarnEnabled())
-            logger.error(str, th);
+            logger.warn(str, th);
     }
 
 

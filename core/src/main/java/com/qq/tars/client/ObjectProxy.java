@@ -194,11 +194,11 @@ public final class ObjectProxy<T> implements ServantProxy, InvocationHandler {
                     servantProxyConfig.setObjectName(nodes);
                     refresh();
                 }
-                logger.debug(servantProxyConfig.getSimpleObjectName() + " sync server|" + nodes);
+                logger.debug("{} sync server|{}", servantProxyConfig.getSimpleObjectName(), nodes);
             } catch (Throwable e) {
                 logger.error(servantProxyConfig.getSimpleObjectName() + " error sync server", e);
             } finally {
-                logger.info("ServantNodeRefresher run(" + servantProxyConfig.getSimpleObjectName() + "), use: " + (System.currentTimeMillis() - begin));
+                logger.info("ServantNodeRefresher run({}), use: {}", servantProxyConfig.getSimpleObjectName(), (System.currentTimeMillis() - begin));
             }
         }
     }
