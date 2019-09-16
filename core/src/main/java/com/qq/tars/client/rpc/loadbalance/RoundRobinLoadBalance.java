@@ -119,7 +119,11 @@ public class RoundRobinLoadBalance<T> implements LoadBalance<T> {
         Collections.sort(sortedInvokersTmp, comparator);
         sortedInvokersCache = sortedInvokersTmp;
         staticWeightInvokersCache = LoadBalanceHelper.buildStaticWeightList(sortedInvokersTmp, config);
-        logger.info(config.getSimpleObjectName() + " refresh RoundRobinLoadBalance's invoker cache done, staticWeightInvokersCache size=" + (staticWeightInvokersCache == null || staticWeightInvokersCache.isEmpty() ? 0 : staticWeightInvokersCache.size()) + ", sortedInvokersCache size=" + (sortedInvokersCache == null || sortedInvokersCache.isEmpty() ? 0 : sortedInvokersCache.size()));
+        logger.info("{} refresh RoundRobinLoadBalance's invoker cache done, staticWeightInvokersCache size= {}, sortedInvokersCache size={}",
+                config.getSimpleObjectName(),
+                (staticWeightInvokersCache == null || staticWeightInvokersCache.isEmpty() ? 0 : staticWeightInvokersCache.size()),
+                (sortedInvokersCache == null || sortedInvokersCache.isEmpty() ? 0 : sortedInvokersCache.size()))
+        ;
     }
 
 }
