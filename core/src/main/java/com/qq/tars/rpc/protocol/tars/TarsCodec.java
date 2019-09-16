@@ -18,7 +18,7 @@ package com.qq.tars.rpc.protocol.tars;
 
 import com.qq.tars.common.support.ClassLoaderManager;
 import com.qq.tars.common.support.Holder;
-import com.qq.tars.common.util.CommonUtils;
+import com.qq.tars.common.util.CollectionUtils;
 import com.qq.tars.common.util.Constants;
 import com.qq.tars.common.util.StringUtils;
 import com.qq.tars.net.core.IoBuffer;
@@ -322,7 +322,7 @@ public class TarsCodec extends Codec {
 
             request.setMethodInfo(methodInfo);
             List<TarsMethodParameterInfo> parametersList = methodInfo.getParametersList();
-            if (!CommonUtils.isEmptyCollection(parametersList)) {
+            if (CollectionUtils.isNotEmpty(parametersList)) {
                 Object[] parameters = new Object[parametersList.size()];
                 int i = 0;
                 if (TarsHelper.VERSION == request.getVersion()) {//request
