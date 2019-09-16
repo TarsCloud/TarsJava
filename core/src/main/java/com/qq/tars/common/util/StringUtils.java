@@ -26,6 +26,9 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class StringUtils {
+    private StringUtils() {
+
+    }
 
     public static final String ENC_UTF8 = "UTF-8";
 
@@ -162,7 +165,7 @@ public class StringUtils {
         ArrayList<String> list = new ArrayList<String>();
         int pos1 = 0;
         int pos2;
-        for (;;) {
+        for (; ; ) {
             pos2 = line.indexOf(seperator, pos1);
             if (pos2 < 0) {
                 list.add(line.substring(pos1));
@@ -245,7 +248,7 @@ public class StringUtils {
         int capacity = dest.length() > src.length() ? s.length() * 2 : s.length();
         StringBuilder sb = new StringBuilder(capacity);
         int writen = 0;
-        for (; pos >= 0;) {
+        for (; pos >= 0; ) {
             sb.append(s, writen, pos);
             sb.append(dest);
             writen = pos + src.length();
