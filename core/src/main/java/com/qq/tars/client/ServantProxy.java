@@ -18,13 +18,13 @@ package com.qq.tars.client;
 
 public interface ServantProxy {
 
-    public Class<?> getApi();
+    Class<?> getApi();
 
-    public String getObjectName();
+    String getObjectName();
 
-    public void refresh();
+    void refresh();
 
-    public void destroy();
+    void destroy();
 
-    public ServantProxyConfig getConfig();
+    ServantProxyConfig getConfig();
 }
