@@ -23,16 +23,16 @@ import java.util.List;
 
 public interface AppContext {
 
-    public String getInitParameter(String name);
+    String getInitParameter(String name);
 
-    public abstract String name();
+    String name();
 
-    public void stop();
+    void stop();
 
-    public ServantHomeSkeleton getCapHomeSkeleton(String homeName);
-    
-    public List<Filter> getFilters(FilterKind kind);
+    ServantHomeSkeleton getCapHomeSkeleton(String homeName);
 
-    public void init();
+    List<Filter> getFilters(FilterKind kind);
+
+    void init();
 }
 
