@@ -214,7 +214,10 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
         request.setFunctionName(method.getName().replaceAll(Constants.TARS_METHOD_PROMISE_START_WITH, ""));
         request.setContext(context);
         request.setMethodParameters(args); //completableFuture send Callback
+
         final CompletableFuture<V> completableFuture = new CompletableFuture<>();
+
+
         final TarsMethodInfo methodInfo = AnalystManager.getInstance().getMethodMap(super.getApi()).get(method);
 
         //     TarsMethodInfo methodInfo = AnalystManager.getInstance().getMethodMap(super.getApi()).get(method);
@@ -225,14 +228,31 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
         request.setInvokeStatus(InvokeStatus.FUTURE_CALL);
         request.setApi(super.getApi());
         request.setMethodInfo(methodInfo);
-        client.invokeWithFuture(request, new TarsPromiseFutureCallback<>(
+
+        TarsServantResponse response = new TarsServantResponse(client.getIoSession());
+        DistributedContext distributedContext = DistributedContextManager.getDistributedContext();
+        Boolean bDyeing = distributedContext.get(DyeingSwitch.BDYEING);
+        if (bDyeing != null && bDyeing == true) {
+            request.setMessageType(request.getMessageType() | TarsHelper.MESSAGETYPEDYED);
+            HashMap<String, String> status = new HashMap<>();
+            String routeKey = distributedContext.get(DyeingSwitch.DYEINGKEY);
+            String fileName = distributedContext.get(DyeingSwitch.FILENAME);
+            status.put(DyeingSwitch.STATUS_DYED_KEY, routeKey == null ? "" : routeKey);
+            status.put(DyeingSwitch.STATUS_DYED_FILENAME, fileName == null ? "" : fileName);
+            request.setStatus(status);
+        }
+        final Callback callback = new TarsPromiseFutureCallback<>(
                 config,
                 request.getFunctionName(),
                 getUrl().getHost(),
                 getUrl().getPort(),
                 request.getBornTime(),
                 TarsInvoker.this,
-                completableFuture));
+                completableFuture);
+        //sync call all filter
+        final FilterChain filterChain = new TarsClientFilterChain(filters, objName, FilterKind.CLIENT, client, InvokeStatus.ASYNC_CALL,
+                callback);
+        filterChain.doFilter(request, response);
         return completableFuture;
     }
 

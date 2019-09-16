@@ -55,7 +55,7 @@ public class TarsClientFilterChain extends AbstractFilterChain<ServantClient> {
                     target.invokeWithAsync((ServantRequest) request, callback);
                     return;
                 case FUTURE_CALL:
-                    future = target.invokeWithFuture((ServantRequest) request);
+                    target.invokeWithFuture((ServantRequest) request, callback);
                     return;
 
             }
