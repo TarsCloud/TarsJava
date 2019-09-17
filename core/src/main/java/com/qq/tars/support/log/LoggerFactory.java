@@ -30,14 +30,6 @@ public class LoggerFactory {
 
     static {
         logContext = (LoggerContext) org.slf4j.LoggerFactory.getILoggerFactory();
-        JoranConfigurator configurator = new JoranConfigurator();
-        configurator.setContext(logContext);
-        logContext.reset();
-        try {
-            configurator.doConfigure("logback.xml");
-        } catch (JoranException e) {
-            e.printStackTrace();
-        }
     }
 
 

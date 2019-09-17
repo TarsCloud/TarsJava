@@ -20,10 +20,14 @@ import com.qq.tars.client.CommunicatorConfig;
 import com.qq.tars.client.CommunicatorFactory;
 import com.qq.tars.quickstart.client.testapp.HelloPrx;
 import com.qq.tars.quickstart.client.testapp.HelloPrxCallback;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CompletableFuture;
 
 public class Main {
+
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) throws InterruptedException {
         CommunicatorConfig cfg = new CommunicatorConfig();
@@ -49,12 +53,13 @@ public class Main {
 
             @Override
             public void callback_hello(String ret) {
-                System.out.println("invoke use async " + ret);
+                Main.logger.info("invoke use async {}", ret);
+
             }
         }, 1000, "Hello World");
 
         proxy.promise_hello(1000, "hello world").thenCompose(x -> {
-            System.out.println("invoke use promise  " + x);
+            logger.info("invoke use promise {}", x);
             return CompletableFuture.completedFuture(0);
         });
 
