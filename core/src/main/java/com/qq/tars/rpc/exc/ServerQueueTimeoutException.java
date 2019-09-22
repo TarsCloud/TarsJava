@@ -19,6 +19,8 @@ package com.qq.tars.rpc.exc;
 @SuppressWarnings("serial")
 public class ServerQueueTimeoutException extends ServerException {
 
+    private static final long serialVersionUID = 4284666926468891967L;
+
     public ServerQueueTimeoutException(int ret) {
         super(ret);
     }

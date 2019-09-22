@@ -16,16 +16,8 @@
 
 package com.qq.tars.client.rpc;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ThreadPoolExecutor;
-
 import com.qq.tars.client.ServantProxyConfig;
 import com.qq.tars.client.support.ClientPoolManager;
-import com.qq.tars.client.util.ClientLogger;
 import com.qq.tars.client.util.ParseTools;
 import com.qq.tars.common.util.Constants;
 import com.qq.tars.net.core.nio.SelectorManager;
@@ -35,8 +27,19 @@ import com.qq.tars.rpc.common.ProtocolInvoker;
 import com.qq.tars.rpc.common.Url;
 import com.qq.tars.rpc.common.util.concurrent.ConcurrentHashSet;
 import com.qq.tars.rpc.exc.ClientException;
+import com.qq.tars.support.log.LoggerFactory;
+import org.slf4j.Logger;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
+    private static final Logger logger = LoggerFactory.getClientLogger();
+
 
     protected final Class<T> api;
     protected final ServantProxyConfig servantProxyConfig;
@@ -66,7 +69,7 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
     }
 
     public void refresh() {
-        ClientLogger.getLogger().info("try to refresh " + servantProxyConfig.getSimpleObjectName());
+        logger.info("try to refresh " + servantProxyConfig.getSimpleObjectName());
         List<Invoker<T>> invokers = new ArrayList<Invoker<T>>();
         for (Invoker<T> invoker : allInvoker) {
             invokers.add(invoker);
@@ -110,35 +113,35 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
 
     protected void initInvoker() {
         try {
-            ClientLogger.getLogger().info("try to init invoker|conf=" + servantProxyConfig.toString());
+            logger.info("try to init invoker|conf=" + servantProxyConfig.toString());
             List<Url> list = ParseTools.parse(servantProxyConfig);
             for (Url url : list) {
                 try {
                     boolean active = url.getParameter(Constants.TARS_CLIENT_ACTIVE, false);
                     if (active) {
-                        ClientLogger.getLogger().info("try to init invoker|active=" + active + "|" + url.toIdentityString());
+                        logger.info("try to init invoker|active={} |{}", active, url.toIdentityString());
                         allInvoker.add(create(api, url));
                     } else {
-                        ClientLogger.getLogger().info("inactive invoker can`t to init|active=" + active + "|" + url.toIdentityString());
+                        logger.info("inactive invoker can't to init|active={}|{}", active, url.toIdentityString());
                     }
                 } catch (Throwable e) {
-                    ClientLogger.getLogger().error("error occurred on init invoker|" + url.toIdentityString(), e);
+                    logger.error("error occurred on init invoker|" + url.toIdentityString(), e);
                 }
             }
         } catch (Throwable t) {
-            ClientLogger.getLogger().error("error occurred on init invoker|" + servantProxyConfig.getObjectName(), t);
+            logger.error("error occurred on init invoker|" + servantProxyConfig.getObjectName(), t);
         }
     }
 
     private void destroy(Collection<Invoker<T>> invokers) {
         for (Invoker<?> invoker : invokers) {
             if (invoker != null) {
-                ClientLogger.getLogger().info("destroy reference|" + invoker);
+                logger.info("destroy reference|" + invoker);
                 try {
                     allInvoker.remove(invoker);
                     invoker.destroy();
                 } catch (Throwable t) {
-                    ClientLogger.getLogger().error("error occurred on destroy invoker|" + invoker, t);
+                    logger.error("error occurred on destroy invoker|" + invoker, t);
                 }
             }
         }

@@ -16,10 +16,10 @@
 
 package com.qq.tars.server.core;
 
-import java.lang.reflect.Method;
-
 import com.qq.tars.net.core.Processor;
 import com.qq.tars.rpc.protocol.Codec;
+
+import java.lang.reflect.Method;
 
 public class ServantHomeSkeleton extends AppService {
 

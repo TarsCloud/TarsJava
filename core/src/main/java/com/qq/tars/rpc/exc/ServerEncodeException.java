@@ -19,6 +19,8 @@ package com.qq.tars.rpc.exc;
 @SuppressWarnings("serial")
 public class ServerEncodeException extends ServerException {
 
+    private static final long serialVersionUID = 1423222503492781998L;
+
     public ServerEncodeException(int ret) {
         super(ret);
     }

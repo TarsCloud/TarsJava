@@ -16,18 +16,14 @@
 
 package com.qq.tars.register;
 
-import com.qq.tars.client.Communicator;
-import com.qq.tars.client.CommunicatorConfig;
-import com.qq.tars.client.Communicator;
-import com.qq.tars.server.config.ServerConfig;
 import com.qq.tars.support.query.prx.EndpointF;
 
 import java.util.List;
 
 public interface RegisterHandler {
 
-	public void register(String appName, String serviceName);
+    void register(String appName, String serviceName);
 
-	public List<EndpointF> query(String name);
+    List<EndpointF> query(String name);
 
 }

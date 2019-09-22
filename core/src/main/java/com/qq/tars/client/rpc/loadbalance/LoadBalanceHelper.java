@@ -17,17 +17,28 @@
 package com.qq.tars.client.rpc.loadbalance;
 
 import com.qq.tars.client.ServantProxyConfig;
-import com.qq.tars.client.util.ClientLogger;
 import com.qq.tars.client.util.Pair;
 import com.qq.tars.common.util.Constants;
 import com.qq.tars.rpc.common.Invoker;
+import com.qq.tars.support.log.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class LoadBalanceHelper {
+
+    private static final Logger logger = LoggerFactory.getClientLogger();
 
     public static <T> List<Invoker<T>> buildStaticWeightList(Collection<Invoker<T>> invokers,
                                                              ServantProxyConfig config) {
@@ -43,8 +54,8 @@ public class LoadBalanceHelper {
             return null;
         }
 
-        if (ClientLogger.getLogger().isDebugEnabled()) {
-            ClientLogger.getLogger().debug("[buildStaticWeightList]: weightInvokers size: " + weightInvokers.size());
+        if (logger.isDebugEnabled()) {
+            logger.debug("[buildStaticWeightList]: weightInvokers size: " + weightInvokers.size());
         }
 
         int minWeight = Integer.MAX_VALUE;
@@ -73,8 +84,8 @@ public class LoadBalanceHelper {
             totalWeight += weight;
             weightToInvoker.add(new Pair<Integer, Invoker<T>>(weight, invoker));
             invokerToWeight.put(invoker, weight);
-            if (ClientLogger.getLogger().isDebugEnabled()) {
-                ClientLogger.getLogger().debug("[buildStaticWeightList]: invoker: " + invoker.hashCode() + ", weight: " + weight + ", host: " + invoker.getUrl().getHost() + ", port: " + invoker.getUrl().getPort());
+            if (logger.isDebugEnabled()) {
+                logger.debug("[buildStaticWeightList]: invoker: " + invoker.hashCode() + ", weight: " + weight + ", host: " + invoker.getUrl().getHost() + ", port: " + invoker.getUrl().getPort());
             }
         }
 
@@ -89,8 +100,8 @@ public class LoadBalanceHelper {
                     first = false;
                     result.add(pair.second);
                     weightToInvokerTmp.add(new Pair<Integer, Invoker<T>>(pair.first - totalWeight + invokerToWeight.get(pair.second), pair.second));
-/*                    if (ClientLogger.getLogger().isDebugEnabled()) {
-                        ClientLogger.getLogger().debug("[buildStaticWeightList]: select: " + pair.getFirst() + ", " + pair.getSecond().hashCode());
+/*                    if (logger.isDebugEnabled()) {
+                        logger.debug("[buildStaticWeightList]: select: " + pair.getFirst() + ", " + pair.getSecond().hashCode());
                     }*/
                 } else {
                     weightToInvokerTmp.add(new Pair<Integer, Invoker<T>>(pair.first + invokerToWeight.get(pair.second), pair.second));
@@ -142,15 +153,15 @@ public class LoadBalanceHelper {
                 }
             }
 
-//            if (ClientLogger.getLogger().isDebugEnabled()) {
+//            if (logger.isDebugEnabled()) {
 //                StringBuilder sb = new StringBuilder("consistent hash circle:");
 //                for (Entry<Long, Invoker<T>> entry : result.entrySet()) {
 //                    sb.append(entry.getKey()).append("-").append(entry.getValue().getUrl().toIdentityString()).append(", ");
 //                }
-//                ClientLogger.getLogger().debug(sb.toString());
+//                logger.debug(sb.toString());
 //            }
         } catch (Exception e) {
-            ClientLogger.getLogger().error("build consistent hash circle err. ", e);
+            logger.error("build consistent hash circle err. ", e);
             return null;
         }
         return result;

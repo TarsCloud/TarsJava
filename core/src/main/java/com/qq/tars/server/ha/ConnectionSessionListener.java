@@ -16,12 +16,12 @@
 
 package com.qq.tars.server.ha;
 
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
-
+import com.qq.tars.net.core.Session.SessionStatus;
 import com.qq.tars.net.core.SessionEvent;
 import com.qq.tars.net.core.SessionListener;
-import com.qq.tars.net.core.Session.SessionStatus;
+
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ConnectionSessionListener implements SessionListener {
 

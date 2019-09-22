@@ -16,6 +16,9 @@
 
 package com.qq.tars.protocol.tars;
 
+import com.qq.tars.common.util.HexUtil;
+import com.qq.tars.protocol.tars.exc.TarsDecodeException;
+
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -26,9 +29,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import com.qq.tars.common.util.HexUtil;
-import com.qq.tars.protocol.tars.exc.TarsDecodeException;
 
 public final class TarsInputStream {
 
@@ -902,9 +902,6 @@ public final class TarsInputStream {
         return 0;
     }
 
-    public static void main(String[] args) {
-
-    }
 
     public ByteBuffer getBs() {
         return bs;

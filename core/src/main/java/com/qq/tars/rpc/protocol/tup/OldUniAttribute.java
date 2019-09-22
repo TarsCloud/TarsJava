@@ -16,6 +16,11 @@
 
 package com.qq.tars.rpc.protocol.tup;
 
+import com.qq.tars.protocol.tars.TarsInputStream;
+import com.qq.tars.protocol.tars.TarsOutputStream;
+import com.qq.tars.protocol.tars.TarsStructBase;
+import com.qq.tars.protocol.util.TarsUtil;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,11 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import com.qq.tars.protocol.tars.TarsInputStream;
-import com.qq.tars.protocol.tars.TarsOutputStream;
-import com.qq.tars.protocol.tars.TarsStructBase;
-import com.qq.tars.protocol.util.TarsUtil;
 
 class OldUniAttribute {
 

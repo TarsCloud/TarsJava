@@ -20,17 +20,24 @@ import com.qq.tars.client.ServantProxyConfig;
 import com.qq.tars.client.cluster.ServantInvokerAliveStat;
 import com.qq.tars.client.cluster.ServantnvokerAliveChecker;
 import com.qq.tars.client.rpc.InvokerComparator;
-import com.qq.tars.client.util.ClientLogger;
 import com.qq.tars.common.util.Constants;
 import com.qq.tars.common.util.StringUtils;
 import com.qq.tars.rpc.common.InvokeContext;
 import com.qq.tars.rpc.common.Invoker;
 import com.qq.tars.rpc.common.LoadBalance;
 import com.qq.tars.rpc.common.exc.NoInvokerException;
+import com.qq.tars.support.log.LoggerFactory;
+import org.slf4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class ConsistentHashLoadBalance<T> implements LoadBalance<T> {
+    private static final Logger logger = LoggerFactory.getClientLogger();
 
     private final ServantProxyConfig config;
     private final InvokerComparator comparator = new InvokerComparator();
@@ -66,14 +73,14 @@ public class ConsistentHashLoadBalance<T> implements LoadBalance<T> {
             ServantInvokerAliveStat stat = ServantnvokerAliveChecker.get(invoker.getUrl());
             if (stat.isAlive() || (stat.getLastRetryTime() + (config.getTryTimeInterval() * 1000)) < System.currentTimeMillis()) {
                 //屏敝后尝试重新调用    
-                ClientLogger.getLogger().info("try to use inactive invoker|" + invoker.getUrl().toIdentityString());
+                logger.info("try to use inactive invoker|" + invoker.getUrl().toIdentityString());
                 stat.setLastRetryTime(System.currentTimeMillis());
                 return invoker;
             }
         }
 
-        if (ClientLogger.getLogger().isDebugEnabled()) {
-            ClientLogger.getLogger().debug(config.getSimpleObjectName() + " can't find active invoker using consistent hash loadbalance. try to use normal hash");
+        if (logger.isDebugEnabled()) {
+            logger.debug(config.getSimpleObjectName() + " can't find active invoker using consistent hash loadbalance. try to use normal hash");
         }
 
         //使用普通hash
@@ -105,7 +112,7 @@ public class ConsistentHashLoadBalance<T> implements LoadBalance<T> {
 
         if (!invoker.isAvailable()) {
             //屏敝后尝试重新调用    
-            ClientLogger.getLogger().info("try to use inactive invoker|" + invoker.getUrl().toIdentityString());
+            logger.info("try to use inactive invoker|" + invoker.getUrl().toIdentityString());
             ServantnvokerAliveChecker.get(invoker.getUrl()).setLastRetryTime(System.currentTimeMillis());
         }
         return invoker;
@@ -113,7 +120,7 @@ public class ConsistentHashLoadBalance<T> implements LoadBalance<T> {
 
     @Override
     public void refresh(Collection<Invoker<T>> invokers) {
-        ClientLogger.getLogger().info(config.getSimpleObjectName() + " try to refresh ConsistentHashLoadBalance's invoker cache, size=" + (invokers == null || invokers.isEmpty() ? 0 : invokers.size()));
+        logger.info(config.getSimpleObjectName() + " try to refresh ConsistentHashLoadBalance's invoker cache, size=" + (invokers == null || invokers.isEmpty() ? 0 : invokers.size()));
         if (invokers == null || invokers.isEmpty()) {
             sortedInvokersCache = null;
             conHashInvokersCache = null;
@@ -126,7 +133,7 @@ public class ConsistentHashLoadBalance<T> implements LoadBalance<T> {
         sortedInvokersCache = sortedInvokersTmp;
         conHashInvokersCache = LoadBalanceHelper.buildConsistentHashCircle(sortedInvokersTmp, config);
 
-        ClientLogger.getLogger().info(config.getSimpleObjectName() + " refresh ConsistentHashLoadBalance's invoker cache done, conHashInvokersCache size=" + (conHashInvokersCache == null || conHashInvokersCache.isEmpty() ? 0 : conHashInvokersCache.size()) + ", sortedInvokersCache size=" + (sortedInvokersCache == null || sortedInvokersCache.isEmpty() ? 0 : sortedInvokersCache.size()));
+        logger.info(config.getSimpleObjectName() + " refresh ConsistentHashLoadBalance's invoker cache done, conHashInvokersCache size=" + (conHashInvokersCache == null || conHashInvokersCache.isEmpty() ? 0 : conHashInvokersCache.size()) + ", sortedInvokersCache size=" + (sortedInvokersCache == null || sortedInvokersCache.isEmpty() ? 0 : sortedInvokersCache.size()));
     }
 
 }

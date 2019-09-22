@@ -22,7 +22,6 @@ import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.server.core.AppContext;
 import com.qq.tars.server.core.Server;
 
-import java.io.File;
 import java.net.URL;
 
 public class Main {

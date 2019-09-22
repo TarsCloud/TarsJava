@@ -16,6 +16,9 @@
 package com.qq.tars.rpc.exc;
 
 public class ServiceNotFoundException extends TarsException {
+
+    private static final long serialVersionUID = 7206643109167131022L;
+
     public ServiceNotFoundException(String msg) {
         super(msg);
     }

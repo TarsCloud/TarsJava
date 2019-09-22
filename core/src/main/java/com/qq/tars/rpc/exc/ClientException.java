@@ -20,6 +20,8 @@ package com.qq.tars.rpc.exc;
 @SuppressWarnings("serial")
 public class ClientException extends TarsException {
 
+
+    private static final long serialVersionUID = -2448067965000958261L;
     private String objectName;
 
     public ClientException(String message) {

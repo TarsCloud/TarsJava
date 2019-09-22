@@ -18,7 +18,7 @@ package com.qq.tars.rpc.protocol.tars;
 
 import com.qq.tars.common.support.ClassLoaderManager;
 import com.qq.tars.common.support.Holder;
-import com.qq.tars.common.util.CommonUtils;
+import com.qq.tars.common.util.CollectionUtils;
 import com.qq.tars.common.util.Constants;
 import com.qq.tars.common.util.StringUtils;
 import com.qq.tars.net.core.IoBuffer;
@@ -40,7 +40,11 @@ import com.qq.tars.rpc.protocol.tup.UniAttribute;
 
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class TarsCodec extends Codec {
 
@@ -318,7 +322,7 @@ public class TarsCodec extends Codec {
 
             request.setMethodInfo(methodInfo);
             List<TarsMethodParameterInfo> parametersList = methodInfo.getParametersList();
-            if (!CommonUtils.isEmptyCollection(parametersList)) {
+            if (CollectionUtils.isNotEmpty(parametersList)) {
                 Object[] parameters = new Object[parametersList.size()];
                 int i = 0;
                 if (TarsHelper.VERSION == request.getVersion()) {//request
@@ -490,7 +494,6 @@ public class TarsCodec extends Codec {
 
     public Object[] decodeCallbackArgs(TarsServantResponse response) throws ProtocolException {
         byte[] data = response.getInputStream().read(new byte[]{}, 6, true);
-
         TarsServantRequest request = response.getRequest();
 
         TarsMethodInfo methodInfo = null;

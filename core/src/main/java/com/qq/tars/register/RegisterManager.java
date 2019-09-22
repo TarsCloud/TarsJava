@@ -16,7 +16,6 @@
 
 package com.qq.tars.register;
 
-import com.qq.tars.rpc.exc.ServiceNotFoundException;
 import java.util.ServiceLoader;
 
 public class RegisterManager {

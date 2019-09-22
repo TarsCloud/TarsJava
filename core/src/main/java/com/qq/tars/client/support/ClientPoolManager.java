@@ -16,11 +16,6 @@
 
 package com.qq.tars.client.support;
 
-import java.io.IOException;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
 import com.qq.tars.client.CommunicatorConfig;
 import com.qq.tars.client.ServantProxyConfig;
 import com.qq.tars.client.rpc.ServantClient;
@@ -29,8 +24,18 @@ import com.qq.tars.common.util.concurrent.TaskThreadFactory;
 import com.qq.tars.common.util.concurrent.TaskThreadPoolExecutor;
 import com.qq.tars.net.core.nio.SelectorManager;
 import com.qq.tars.net.protocol.ProtocolFactory;
+import com.qq.tars.support.log.LoggerFactory;
+import org.slf4j.Logger;
+
+import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class ClientPoolManager {
+
+    private static final Logger logger = LoggerFactory.getClientLogger();
+
 
     private final static ConcurrentHashMap<CommunicatorConfig, ThreadPoolExecutor> clientThreadPoolMap = new ConcurrentHashMap<CommunicatorConfig, ThreadPoolExecutor>();
     private final static ConcurrentHashMap<ServantProxyConfig, SelectorManager> selectorsMap = new ConcurrentHashMap<ServantProxyConfig, SelectorManager>();
@@ -55,8 +60,8 @@ public class ClientPoolManager {
         int keepAliveTime = communicatorConfig.getKeepAliveTime();
         int queueSize = communicatorConfig.getQueueSize();
         TaskQueue taskqueue = new TaskQueue(queueSize);
-
         String namePrefix = "tars-client-executor-";
+        logger.info("create client thread pool, communicator config is {}", communicatorConfig.toString());
         TaskThreadPoolExecutor executor = new TaskThreadPoolExecutor(corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS, taskqueue, new TaskThreadFactory(namePrefix));
         taskqueue.setParent(executor);
         return executor;

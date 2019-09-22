@@ -1,13 +1,12 @@
 package com.qq.tars.support.trace;
 
+import com.qq.tars.client.util.Pair;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.qq.tars.client.util.Pair;
 
 public class TraceManager {
 	

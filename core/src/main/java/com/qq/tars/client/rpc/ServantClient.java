@@ -16,6 +16,23 @@
 
 package com.qq.tars.client.rpc;
 
+import com.qq.tars.net.client.Callback;
+import com.qq.tars.net.client.FutureImpl;
+import com.qq.tars.net.client.ticket.Ticket;
+import com.qq.tars.net.client.ticket.TicketManager;
+import com.qq.tars.net.core.Request.InvokeStatus;
+import com.qq.tars.net.core.Session;
+import com.qq.tars.net.core.Session.SessionStatus;
+import com.qq.tars.net.core.nio.SelectorManager;
+import com.qq.tars.net.core.nio.TCPSession;
+import com.qq.tars.net.core.nio.UDPSession;
+import com.qq.tars.rpc.exc.NotConnectedException;
+import com.qq.tars.rpc.exc.TimeoutException;
+import com.qq.tars.rpc.protocol.ServantRequest;
+import com.qq.tars.rpc.protocol.ServantResponse;
+import com.qq.tars.support.log.LoggerFactory;
+import org.slf4j.Logger;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -26,23 +43,8 @@ import java.nio.channels.SocketChannel;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import com.qq.tars.client.util.ClientLogger;
-import com.qq.tars.net.client.Callback;
-import com.qq.tars.net.client.FutureImpl;
-import com.qq.tars.net.client.ticket.Ticket;
-import com.qq.tars.net.client.ticket.TicketManager;
-import com.qq.tars.net.core.Session;
-import com.qq.tars.net.core.Request.InvokeStatus;
-import com.qq.tars.net.core.Session.SessionStatus;
-import com.qq.tars.net.core.nio.SelectorManager;
-import com.qq.tars.net.core.nio.TCPSession;
-import com.qq.tars.net.core.nio.UDPSession;
-import com.qq.tars.rpc.exc.NotConnectedException;
-import com.qq.tars.rpc.exc.TimeoutException;
-import com.qq.tars.rpc.protocol.ServantRequest;
-import com.qq.tars.rpc.protocol.ServantResponse;
-
 public class ServantClient {
+    private static final Logger logger = LoggerFactory.getClientLogger();
 
     private Session session = null;
     private String host = null;
@@ -88,7 +90,7 @@ public class ServantClient {
                         ((SocketChannel) channel).socket().setTrafficClass(this.tc);
                     }
                 } catch (Exception ex) {
-                    ClientLogger.getLogger().error(ex.getLocalizedMessage());
+                    logger.error(ex.getLocalizedMessage());
                 }
                 ((SocketChannel) channel).connect(server);
 
@@ -148,7 +150,7 @@ public class ServantClient {
             }
             return response;
         } catch (InterruptedException e) {
-            ClientLogger.getLogger().error(e.getLocalizedMessage());
+            logger.error(e.getLocalizedMessage());
         } finally {
             if (ticket != null) {
                 TicketManager.removeTicket(ticket.getTicketNumber());
@@ -175,7 +177,25 @@ public class ServantClient {
         }
     }
 
-    public <T extends ServantResponse> Future<T> invokeWithFuture(ServantRequest request) throws IOException {
+    public <T extends ServantResponse> void invokeWithFuture(ServantRequest request, Callback<T> callback) throws IOException {
+        Ticket<T> ticket = null;
+        try {
+            ensureConnected();
+            request.setInvokeStatus(InvokeStatus.ASYNC_CALL);
+            ticket = TicketManager.createTicket(request, session, this.syncTimeout, callback);
+
+            Session current = session;
+            current.write(request);
+        } catch (Exception ex) {
+            if (ticket != null) {
+                TicketManager.removeTicket(ticket.getTicketNumber());
+            }
+            throw new IOException("error occurred on invoker with future", ex);
+        }
+    }
+
+
+    public <T extends ServantResponse> Future invokeWithFuture(ServantRequest request) throws IOException {
         Ticket<T> ticket = null;
         try {
             ensureConnected();
@@ -184,7 +204,7 @@ public class ServantClient {
 
             Session current = session;
             current.write(request);
-            return new FutureImpl<T>(ticket);
+            return new FutureImpl<>(ticket);
         } catch (Exception ex) {
             if (ticket != null) {
                 TicketManager.removeTicket(ticket.getTicketNumber());
@@ -216,7 +236,7 @@ public class ServantClient {
             try {
                 ((SocketChannel) ((TCPSession) this.session).getChannel()).socket().setTrafficClass(tc);
             } catch (Exception ex) {
-                ClientLogger.getLogger().error(ex.getLocalizedMessage());
+                logger.error(ex.getLocalizedMessage());
             }
         }
         this.tc = tc;
@@ -229,7 +249,7 @@ public class ServantClient {
             try {
                 ((SocketChannel) ((TCPSession) this.session).getChannel()).socket().setTcpNoDelay(on);
             } catch (Exception ex) {
-                ClientLogger.getLogger().error(ex.getLocalizedMessage());
+                logger.error(ex.getLocalizedMessage());
             }
         }
     }

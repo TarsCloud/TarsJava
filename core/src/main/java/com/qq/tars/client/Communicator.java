@@ -17,7 +17,6 @@
 package com.qq.tars.client;
 
 import com.qq.tars.client.support.ClientPoolManager;
-import com.qq.tars.client.util.ClientLogger;
 import com.qq.tars.common.support.ScheduledExecutorManager;
 import com.qq.tars.common.util.StringUtils;
 import com.qq.tars.net.client.ticket.TicketManager;
@@ -107,7 +106,6 @@ public final class Communicator {
         try {
             if (!inited.get()) {
                 try {
-                    ClientLogger.init(config.getLogPath(), config.getLogLevel());
                     if (StringUtils.isEmpty(config.getLocator())) {
                         this.id = UUID.randomUUID().toString().replaceAll("-", "");
                     } else {

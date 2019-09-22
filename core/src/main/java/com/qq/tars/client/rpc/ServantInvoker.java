@@ -16,16 +16,19 @@
 
 package com.qq.tars.client.rpc;
 
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.ReentrantLock;
-
 import com.qq.tars.client.ServantProxyConfig;
-import com.qq.tars.client.util.ClientLogger;
 import com.qq.tars.rpc.common.InvokeContext;
 import com.qq.tars.rpc.common.Url;
 import com.qq.tars.rpc.common.support.AbstractInvoker;
+import com.qq.tars.support.log.LoggerFactory;
+import org.slf4j.Logger;
+
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 
 public abstract class ServantInvoker<T> extends AbstractInvoker<T> {
+    private static final Logger logger = LoggerFactory.getClientLogger();
+
 
     protected final String objName;
     protected final ServantProxyConfig config;
@@ -58,11 +61,11 @@ public abstract class ServantInvoker<T> extends AbstractInvoker<T> {
             super.destroy();
             for (ServantClient client : clients) {
                 try {
-                    ClientLogger.getLogger().info("try to close client " + client);
+                    logger.info("try to close client " + client);
                     client.close();
-                    ClientLogger.getLogger().info("closed client " + client);
+                    logger.info("closed client " + client);
                 } catch (Throwable t) {
-                    ClientLogger.getLogger().error("error in close " + client, t);
+                    logger.error("error in close " + client, t);
                 }
             }
         } finally {

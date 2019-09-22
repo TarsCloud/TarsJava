@@ -16,13 +16,14 @@
 
 package com.qq.tars.client.rpc;
 
+import com.qq.tars.protocol.util.TarsHelper;
+import com.qq.tars.rpc.common.InvokeContext;
+import com.qq.tars.rpc.common.Invoker;
+
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.qq.tars.rpc.common.InvokeContext;
-import com.qq.tars.rpc.common.Invoker;
 
 @SuppressWarnings("serial")
 public class ServantInvokeContext implements InvokeContext, Serializable {
@@ -33,7 +34,12 @@ public class ServantInvokeContext implements InvokeContext, Serializable {
     private Object[] arguments;
     private Class<?>[] parameterTypes;
 
+    private final boolean isAsync;
+    private final boolean isPromiseFuture;
+    private final boolean isNormal;
+
     private Map<String, String> attachments;
+
 
     public ServantInvokeContext(Method method, Object[] arguments, Map<String, String> attachments) {
         this(method, arguments, attachments, null);
@@ -49,6 +55,17 @@ public class ServantInvokeContext implements InvokeContext, Serializable {
         if (invoker != null) {
             this.addAttachmentsIfAbsent(invoker.getUrl().getParameters());
         }
+        this.isAsync = TarsHelper.isAsync(methodName);
+        this.isPromiseFuture = TarsHelper.isPromiseFuture(methodName);
+        this.isNormal = !this.isAsync && !this.isPromiseFuture ? Boolean.TRUE : Boolean.FALSE;
+    }
+
+    public boolean isAsync() {
+        return isAsync;
+    }
+
+    public boolean isPromiseFuture() {
+        return isPromiseFuture;
     }
 
     public Invoker<?> getInvoker() {
@@ -124,5 +141,18 @@ public class ServantInvokeContext implements InvokeContext, Serializable {
             return defaultValue;
         }
         return value;
+    }
+
+    @Override
+    public String toString() {
+        return "ServantInvokeContext{" +
+                "methodName='" + methodName + '\'' +
+                ", isAsync=" + isAsync +
+                ", isPromiseFuture=" + isPromiseFuture +
+                '}';
+    }
+
+    public boolean isNormal() {
+        return isNormal;
     }
 }

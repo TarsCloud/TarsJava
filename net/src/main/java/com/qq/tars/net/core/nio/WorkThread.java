@@ -16,15 +16,15 @@
 
 package com.qq.tars.net.core.nio;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Map;
-
 import com.qq.tars.net.client.ticket.Ticket;
 import com.qq.tars.net.client.ticket.TicketManager;
 import com.qq.tars.net.client.ticket.TimeoutManager;
 import com.qq.tars.net.core.Request;
 import com.qq.tars.net.core.Response;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Map;
 
 public final class WorkThread implements Runnable {
 

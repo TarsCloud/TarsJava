@@ -16,15 +16,17 @@
 
 package com.qq.tars.client.cluster;
 
+import com.qq.tars.client.ServantProxyConfig;
+import com.qq.tars.common.util.Constants;
+import com.qq.tars.support.log.LoggerFactory;
+import org.slf4j.Logger;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.qq.tars.client.ServantProxyConfig;
-import com.qq.tars.client.util.ClientLogger;
-import com.qq.tars.common.util.Constants;
-
 public class ServantInvokerAliveStat {
+    private static final Logger logger = LoggerFactory.getClientLogger();
 
     private final String identity;
     private AtomicBoolean lastCallSucess = new AtomicBoolean(true);
@@ -90,21 +92,21 @@ public class ServantInvokerAliveStat {
                 double radio = div(timeoutCount, totalCount, 2);
                 if (radio > config.getFrequenceFailRadio()) {
                     alive = false;
-                    ClientLogger.getLogger().info(identity + "|alive=false|radio=" + radio + "|" + toString());
+                    logger.info(identity + "|alive=false|radio=" + radio + "|" + toString());
                 }
             }
 
             if (alive) {
                 if (frequenceFailInvoke >= config.getFrequenceFailInvoke() && (frequenceFailInvoke_startTime + 5000) > System.currentTimeMillis()) {
                     alive = false;
-                    ClientLogger.getLogger().info(identity + "|alive=false|frequenceFailInvoke=" + frequenceFailInvoke + "|" + toString());
+                    logger.info("{}|alive=false|frequenceFailInvoke={}|{}", identity, frequenceFailInvoke, toString());
                 }
             }
 
             if (alive) {
                 if (netConnectTimeout) {
                     alive = false;
-                    ClientLogger.getLogger().info(identity + "|alive=false|netConnectTimeout" + "|" + toString());
+                    logger.info("{}|alive=false|netConnectTimeout|{}", identity, toString());
                 }
             }
         } else {

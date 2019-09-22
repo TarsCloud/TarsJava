@@ -16,6 +16,7 @@
 
 package com.qq.tars.support.admin.impl;
 
+import ch.qos.logback.classic.Level;
 import com.qq.tars.client.CommunicatorConfig;
 import com.qq.tars.common.ClientVersion;
 import com.qq.tars.common.util.DyeingKeyCache;
@@ -27,14 +28,16 @@ import com.qq.tars.support.admin.AdminFServant;
 import com.qq.tars.support.admin.CommandHandler;
 import com.qq.tars.support.admin.CustemCommandHelper;
 import com.qq.tars.support.config.ConfigHelper;
+import com.qq.tars.support.log.LoggerFactory;
 import com.qq.tars.support.node.NodeHelper;
 import com.qq.tars.support.notify.NotifyHelper;
 import com.qq.tars.support.om.OmConstants;
-import com.qq.tars.support.om.OmLogger;
+import org.slf4j.Logger;
 
 import java.util.Map.Entry;
 
 public class AdminFServantImpl implements AdminFServant {
+    private static final Logger omLogger = LoggerFactory.getOmLogger();
 
     private static final String CMD_LOAD_CONFIG = "tars.loadconfig";
 
@@ -58,7 +61,7 @@ public class AdminFServantImpl implements AdminFServant {
             System.out.println(ConfigurationManager.getInstance().getServerConfig().getApplication() + "." + ConfigurationManager.getInstance().getServerConfig().getServerName() + " is stopped.");
             NotifyHelper.getInstance().syncReport("[alarm] server is stopped.");
         } catch (Exception e) {
-            OmLogger.record("shutdown error", e);
+            omLogger.error("shutdown error", e);
         }
 
         System.exit(0);
@@ -126,10 +129,9 @@ public class AdminFServantImpl implements AdminFServant {
         if (StringUtils.isEmpty(level)) {
             result = "set log level failed, level is empty";
         } else {
-            level = level.trim();
-            com.qq.tars.support.log.LoggerFactory.setDefaultLoggerLevel(level);
-            com.qq.tars.support.log.LogConfCacheMngr.getInstance().updateLevel(level);
-
+            level = level.trim().toUpperCase();
+            LoggerFactory.resetLogBack();
+            LoggerFactory.resetLogLevel(Level.toLevel(level));
             result = "set log level [" + level + "] ok";
         }
 
@@ -255,9 +257,9 @@ public class AdminFServantImpl implements AdminFServant {
 
         try {
             result = "execute success.";
-            OmLogger.record("Reload locator success.");
+            omLogger.info("Reload locator success.");
         } catch (Exception e) {
-            OmLogger.record("Reload locator failed.", e);
+            omLogger.error("Reload locator failed.", e);
             result = "execute exception: " + e.getMessage();
         }
 

@@ -16,12 +16,12 @@
 
 package com.qq.tars.protocol.annotation;
 
+import com.qq.tars.rpc.protocol.Codec;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import com.qq.tars.rpc.protocol.Codec;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

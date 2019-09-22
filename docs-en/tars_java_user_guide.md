@@ -652,7 +652,7 @@ The example code is as follows:
 ```
 DyeingSwitch.enableActiveDyeing("helloServer");   //Open the switch interface automatically, and the parameter indicates the name of the dyed log.
 ...Business processing
-logger.info("hello world");   //At this time, because of the color opening state, the log will print an extra copy to the dyed log.
+loggerInnerImpl.info("hello world");   //At this time, because of the color opening state, the log will print an extra copy to the dyed log.
 ...Business processing
 DyeingSwitch.closeActiveDyeing();    //Active closure of dyed switch interface
 ```

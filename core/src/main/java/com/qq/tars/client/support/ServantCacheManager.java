@@ -16,6 +16,12 @@
 
 package com.qq.tars.client.support;
 
+import com.qq.tars.common.util.Constants;
+import com.qq.tars.common.util.Loader;
+import com.qq.tars.common.util.StringUtils;
+import com.qq.tars.support.log.LoggerFactory;
+import org.slf4j.Logger;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -27,17 +33,14 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.qq.tars.client.util.ClientLogger;
-import com.qq.tars.common.util.Constants;
-import com.qq.tars.common.util.Loader;
-import com.qq.tars.common.util.StringUtils;
-
 public final class ServantCacheManager {
+    private static final Logger LOGGER = LoggerFactory.getClientLogger();
 
     private final static ServantCacheManager instance = new ServantCacheManager();
 
@@ -68,7 +71,7 @@ public final class ServantCacheManager {
             props.put(makeKey(CommunicatorId, objName), endpointList);
             saveToLocal(dataPath);
         } catch (Throwable e) {
-            ClientLogger.getLogger().error("", e);
+            LOGGER.error("", e);
         }
     }
 
@@ -103,9 +106,9 @@ public final class ServantCacheManager {
             }
             out = new BufferedOutputStream(new FileOutputStream(file));
             props.store(out, (new Date()).toString());
-            ClientLogger.getLogger().info("save " + file.getAbsolutePath());
+            LOGGER.info("save " + file.getAbsolutePath());
         } catch (Exception e) {
-            ClientLogger.getLogger().error("save " + Constants.SERVER_NODE_CACHE_FILENAME + " failed", e);
+            LOGGER.error("save " + Constants.SERVER_NODE_CACHE_FILENAME + " failed", e);
         } finally {
             if (null != out) {
                 try {
@@ -130,7 +133,7 @@ public final class ServantCacheManager {
                 }
                 in = new BufferedInputStream(new FileInputStream(file));
                 props.load(in);
-                ArrayList<String> removeKey = new ArrayList<String>();
+                List<String> removeKey = new ArrayList<>();
                 for (Entry<Object, Object> entry : props.entrySet()) {
                     if (entry.getKey().toString().startsWith("<")) {
                         removeKey.add(entry.getKey().toString());
@@ -139,9 +142,9 @@ public final class ServantCacheManager {
                 for (String key : removeKey) {
                     props.remove(key);
                 }
-                ClientLogger.getLogger().info("load " + Constants.SERVER_NODE_CACHE_FILENAME);
+                LOGGER.info("load  {}", Constants.SERVER_NODE_CACHE_FILENAME);
             } catch (Throwable e) {
-                ClientLogger.getLogger().error("read file " + Constants.SERVER_NODE_CACHE_FILENAME + " error.", e);
+                LOGGER.error("read file " + Constants.SERVER_NODE_CACHE_FILENAME + " error.", e);
             } finally {
                 if (null != in) {
                     try {

@@ -16,10 +16,10 @@
 
 package com.qq.tars.client.cluster;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 import com.qq.tars.client.ServantProxyConfig;
 import com.qq.tars.rpc.common.Url;
+
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ServantnvokerAliveChecker {
 

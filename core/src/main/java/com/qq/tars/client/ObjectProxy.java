@@ -17,16 +17,21 @@
 package com.qq.tars.client;
 
 import com.qq.tars.client.support.ServantCacheManager;
-import com.qq.tars.client.util.ClientLogger;
 import com.qq.tars.client.util.ParseTools;
 import com.qq.tars.common.support.ScheduledExecutorManager;
 import com.qq.tars.common.util.StringUtils;
 import com.qq.tars.register.RegisterManager;
-import com.qq.tars.rpc.common.*;
+import com.qq.tars.rpc.common.InvokeContext;
+import com.qq.tars.rpc.common.Invoker;
+import com.qq.tars.rpc.common.LoadBalance;
+import com.qq.tars.rpc.common.ProtocolInvoker;
+import com.qq.tars.rpc.common.Url;
 import com.qq.tars.rpc.common.exc.NoInvokerException;
 import com.qq.tars.rpc.exc.ClientException;
 import com.qq.tars.rpc.exc.NoConnectionException;
+import com.qq.tars.support.log.LoggerFactory;
 import com.qq.tars.support.stat.InvokeStatHelper;
+import org.slf4j.Logger;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -35,6 +40,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public final class ObjectProxy<T> implements ServantProxy, InvocationHandler {
+    private static final Logger logger = LoggerFactory.getClientLogger();
+
 
     private final Class<T> api;
     //private final String objName;
@@ -94,8 +101,8 @@ public final class ObjectProxy<T> implements ServantProxy, InvocationHandler {
             return invoker.invoke(context);
         } catch (Throwable e) {
             e.printStackTrace();
-            if (ClientLogger.getLogger().isDebugEnabled()) {
-                ClientLogger.getLogger().debug(servantProxyConfig.getSimpleObjectName() + " error occurred on invoke|" + e.getLocalizedMessage(), e);
+            if (logger.isDebugEnabled()) {
+                logger.debug(servantProxyConfig.getSimpleObjectName() + " error occurred on invoke|" + e.getLocalizedMessage(), e);
             }
             if (e instanceof NoInvokerException) {
                 throw new NoConnectionException(servantProxyConfig.getSimpleObjectName(), e.getLocalizedMessage(), e);
@@ -187,11 +194,11 @@ public final class ObjectProxy<T> implements ServantProxy, InvocationHandler {
                     servantProxyConfig.setObjectName(nodes);
                     refresh();
                 }
-                ClientLogger.getLogger().debug(servantProxyConfig.getSimpleObjectName() + " sync server|" + nodes);
+                logger.debug("{} sync server|{}", servantProxyConfig.getSimpleObjectName(), nodes);
             } catch (Throwable e) {
-                ClientLogger.getLogger().error(servantProxyConfig.getSimpleObjectName() + " error sync server", e);
+                logger.error(servantProxyConfig.getSimpleObjectName() + " error sync server", e);
             } finally {
-                ClientLogger.getLogger().info("ServantNodeRefresher run(" + servantProxyConfig.getSimpleObjectName() + "), use: " + (System.currentTimeMillis() - begin));
+                logger.info("ServantNodeRefresher run({}), use: {}", servantProxyConfig.getSimpleObjectName(), (System.currentTimeMillis() - begin));
             }
         }
     }
@@ -203,9 +210,9 @@ public final class ObjectProxy<T> implements ServantProxy, InvocationHandler {
             try {
                 communicator.getStatHelper().report(InvokeStatHelper.getInstance().getProxyStat(servantProxyConfig.getSimpleObjectName()), true);
             } catch (Exception e) {
-                ClientLogger.getLogger().error("report stat worker error|" + servantProxyConfig.getSimpleObjectName(), e);
+                logger.error("report stat worker error|" + servantProxyConfig.getSimpleObjectName(), e);
             } finally {
-                ClientLogger.getLogger().info("ServantStatReproter run(), use: " + (System.currentTimeMillis() - begin));
+                logger.info("ServantStatReproter run(), use: " + (System.currentTimeMillis() - begin));
             }
         }
     }

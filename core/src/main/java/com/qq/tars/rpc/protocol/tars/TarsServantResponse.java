@@ -16,15 +16,14 @@
 
 package com.qq.tars.rpc.protocol.tars;
 
-import java.util.Map;
-
 import com.qq.tars.net.client.ticket.Ticket;
 import com.qq.tars.net.client.ticket.TicketManager;
 import com.qq.tars.net.core.Session;
 import com.qq.tars.net.protocol.ProtocolException;
 import com.qq.tars.protocol.tars.TarsInputStream;
-import com.qq.tars.rpc.protocol.Codec;
 import com.qq.tars.rpc.protocol.ServantResponse;
+
+import java.util.Map;
 
 public class TarsServantResponse extends ServantResponse implements java.io.Serializable {
 

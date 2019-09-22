@@ -20,9 +20,9 @@
 
 package com.qq.tars.support.node.prx;
 
-import com.qq.tars.protocol.annotation.*;
-import com.qq.tars.protocol.tars.annotation.*;
-import com.qq.tars.common.support.Holder;
+import com.qq.tars.protocol.annotation.Servant;
+import com.qq.tars.protocol.tars.annotation.TarsCallback;
+import com.qq.tars.protocol.tars.annotation.TarsContext;
 
 @Servant
 public interface ServerFPrx {

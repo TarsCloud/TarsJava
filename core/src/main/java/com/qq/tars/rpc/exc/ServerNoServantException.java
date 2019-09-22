@@ -19,6 +19,9 @@ package com.qq.tars.rpc.exc;
 @SuppressWarnings("serial")
 public class ServerNoServantException extends ServerException {
 
+
+    private static final long serialVersionUID = 6855179702862436955L;
+
     public ServerNoServantException(int ret) {
         super(ret);
     }

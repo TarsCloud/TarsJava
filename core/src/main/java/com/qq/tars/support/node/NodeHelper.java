@@ -16,17 +16,19 @@
 
 package com.qq.tars.support.node;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
-
 import com.qq.tars.client.Communicator;
 import com.qq.tars.common.util.StringUtils;
 import com.qq.tars.server.config.ConfigurationManager;
+import com.qq.tars.support.log.LoggerFactory;
 import com.qq.tars.support.node.prx.ServerFPrx;
 import com.qq.tars.support.node.prx.ServerInfo;
-import com.qq.tars.support.om.OmLogger;
+import org.slf4j.Logger;
+
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 
 public class NodeHelper {
+    private static final Logger omLogger = LoggerFactory.getLogger("omLogger");
 
     private static final NodeHelper Instance = new NodeHelper();
     private Communicator communicator;
@@ -56,7 +58,7 @@ public class NodeHelper {
             ServerFPrx nodePrx = communicator.stringToProxy(ServerFPrx.class, node);
             nodePrx.async_keepAlive(null, si);
         } catch (Throwable t) {
-            OmLogger.record("NodeHelper|keepAlive|error", t);
+            omLogger.error("NodeHelper|keepAlive|error", t);
         }
     }
 
@@ -72,7 +74,7 @@ public class NodeHelper {
             ServerFPrx nodePrx = communicator.stringToProxy(ServerFPrx.class, node);
             nodePrx.async_reportVersion(null, si.application, si.serverName, version);
         } catch (Throwable t) {
-            OmLogger.record("NodeHelper|reportVersion|error", t);
+            omLogger.error("NodeHelper|reportVersion|error", t);
         }
     }
 

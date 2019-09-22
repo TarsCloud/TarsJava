@@ -16,6 +16,9 @@
 
 package com.qq.tars.common.support;
 
+import com.qq.tars.common.util.Constants;
+import com.qq.tars.common.util.concurrent.TaskThreadFactory;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -29,9 +32,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import com.qq.tars.common.util.Constants;
-import com.qq.tars.common.util.concurrent.TaskThreadFactory;
 
 public final class ScheduledExecutorManager implements ScheduledExecutorService {
 

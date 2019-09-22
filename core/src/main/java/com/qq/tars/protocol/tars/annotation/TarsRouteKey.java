@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TarsRouteKey {
 	
-	public String comment() default "";
+	String comment() default "";
 }

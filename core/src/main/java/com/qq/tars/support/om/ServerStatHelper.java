@@ -20,12 +20,15 @@ import com.qq.tars.client.Communicator;
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.server.config.ServantAdapterConfig;
 import com.qq.tars.server.config.ServerConfig;
+import com.qq.tars.support.log.LoggerFactory;
 import com.qq.tars.support.stat.InvokeStatHelper;
+import org.slf4j.Logger;
 
 import java.util.LinkedHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ServerStatHelper {
+    private static final Logger omLogger = LoggerFactory.getOmLogger();
 
     private static final ServerStatHelper instance = new ServerStatHelper();
     private final AtomicBoolean inited = new AtomicBoolean(false);
@@ -62,7 +65,7 @@ public class ServerStatHelper {
                 communicator.getStatHelper().report(InvokeStatHelper.getInstance().getProxyStat(servantCfg.getServant()), false);
             }
         } catch (Exception e) {
-            OmLogger.record("ServerStatHelper|ReportThread error", e);
+            omLogger.error("ServerStatHelper|ReportThread error", e);
         }
     }
 }

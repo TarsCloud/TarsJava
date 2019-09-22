@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TarsHolder {
 
-    public String name() default "";
+    String name() default "";
 
-    public String comment() default "";
+    String comment() default "";
 }

@@ -16,11 +16,11 @@
 
 package com.qq.tars.protocol.util;
 
+import com.qq.tars.protocol.tars.TarsStructBase;
+
 import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.List;
-
-import com.qq.tars.protocol.tars.TarsStructBase;
 
 public final class TarsUtil {
 
