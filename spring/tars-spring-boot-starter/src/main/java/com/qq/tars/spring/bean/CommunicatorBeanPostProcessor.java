@@ -57,7 +57,7 @@ public class CommunicatorBeanPostProcessor implements BeanPostProcessor {
             }
 
             if (field.getType().getAnnotation(Servant.class) == null) {
-                throw new RuntimeException("[TARS] autoware client failed: target field is not TAF client");
+                throw new RuntimeException("[TARS] autoware client failed: target field is not  tars  client");
             }
 
             String objName = annotation.name();
