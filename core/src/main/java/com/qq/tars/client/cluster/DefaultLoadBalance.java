@@ -55,7 +55,7 @@ public class DefaultLoadBalance {
         List<Invoker<T>> list = new ArrayList<Invoker<T>>();
         for (Invoker<T> invoker : invokers) {
             if (!invoker.isAvailable()) {
-                ServantInvokerAliveStat stat = ServantnvokerAliveChecker.get(invoker.getUrl());
+                ServantInvokerAliveStat stat = ServantInvokerAliveChecker.get(invoker.getUrl());
                 if (stat.isAlive() || (stat.getLastRetryTime() + (config.getTryTimeInterval() * 1000)) < System.currentTimeMillis()) {
                     list.add(invoker);
                 }
@@ -76,7 +76,7 @@ public class DefaultLoadBalance {
         }
         if (!invoker.isAvailable()) {
             logger.info("try to use inactive invoker|" + invoker.getUrl().toIdentityString());
-            ServantnvokerAliveChecker.get(invoker.getUrl()).setLastRetryTime(System.currentTimeMillis());
+            ServantInvokerAliveChecker.get(invoker.getUrl()).setLastRetryTime(System.currentTimeMillis());
         }
         return invoker;
     }

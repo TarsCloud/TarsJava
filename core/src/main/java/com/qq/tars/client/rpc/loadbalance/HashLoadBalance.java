@@ -19,7 +19,7 @@ package com.qq.tars.client.rpc.loadbalance;
 
 import com.qq.tars.client.ServantProxyConfig;
 import com.qq.tars.client.cluster.ServantInvokerAliveStat;
-import com.qq.tars.client.cluster.ServantnvokerAliveChecker;
+import com.qq.tars.client.cluster.ServantInvokerAliveChecker;
 import com.qq.tars.client.rpc.InvokerComparator;
 import com.qq.tars.common.util.Constants;
 import com.qq.tars.common.util.StringUtils;
@@ -60,7 +60,7 @@ public class HashLoadBalance<T> implements LoadBalance<T> {
             Invoker<T> invoker = staticWeightInvokers.get((int) (hash % staticWeightInvokers.size()));
             if (invoker.isAvailable()) return invoker;
 
-            ServantInvokerAliveStat stat = ServantnvokerAliveChecker.get(invoker.getUrl());
+            ServantInvokerAliveStat stat = ServantInvokerAliveChecker.get(invoker.getUrl());
             if (stat.isAlive() || (stat.getLastRetryTime() + (config.getTryTimeInterval() * 1000)) < System.currentTimeMillis()) {
                 //屏敝后尝试重新调用    
                 logger.info("try to use inactive invoker|" + invoker.getUrl().toIdentityString());
@@ -81,7 +81,7 @@ public class HashLoadBalance<T> implements LoadBalance<T> {
                 /**
                  * 屏敝后尝试重新调用    
                  */
-                ServantInvokerAliveStat stat = ServantnvokerAliveChecker.get(invoker.getUrl());
+                ServantInvokerAliveStat stat = ServantInvokerAliveChecker.get(invoker.getUrl());
                 if (stat.isAlive() || (stat.getLastRetryTime() + (config.getTryTimeInterval() * 1000)) < System.currentTimeMillis()) {
                     list.add(invoker);
                 }
@@ -99,7 +99,7 @@ public class HashLoadBalance<T> implements LoadBalance<T> {
         if (!invoker.isAvailable()) {
             //屏敝后尝试重新调用    
             logger.info("try to use inactive invoker|" + invoker.getUrl().toIdentityString());
-            ServantnvokerAliveChecker.get(invoker.getUrl()).setLastRetryTime(System.currentTimeMillis());
+            ServantInvokerAliveChecker.get(invoker.getUrl()).setLastRetryTime(System.currentTimeMillis());
         }
         return invoker;
     }
