@@ -39,14 +39,12 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
     private static final Logger logger = LoggerFactory.getClientLogger();
-
-
     protected final Class<T> api;
     protected final ServantProxyConfig servantProxyConfig;
     protected final ThreadPoolExecutor threadPoolExecutor;
     protected final ProtocolFactory protocolFactory;
     protected volatile SelectorManager selectorManager = null;
-    protected final ConcurrentHashSet<Invoker<T>> allInvoker = new ConcurrentHashSet<Invoker<T>>();
+    protected volatile ConcurrentHashSet<Invoker<T>> allInvoker = new ConcurrentHashSet<>();
 
     public ServantProtocolInvoker(Class<T> api, ServantProxyConfig config, ProtocolFactory protocolFactory,
                                   ThreadPoolExecutor threadPoolExecutor) {
@@ -70,10 +68,8 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
 
     public void refresh() {
         logger.info("try to refresh " + servantProxyConfig.getSimpleObjectName());
-        List<Invoker<T>> invokers = new ArrayList<Invoker<T>>();
-        for (Invoker<T> invoker : allInvoker) {
-            invokers.add(invoker);
-        }
+        final List<Invoker<T>> invokers = new ArrayList<>(allInvoker);//copy invoker for destroy
+        this.allInvoker = this.initInvoker();
         this.initInvoker();
         destroy(invokers);
     }
@@ -111,16 +107,17 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
         return client;
     }
 
-    protected void initInvoker() {
+    protected ConcurrentHashSet<Invoker<T>> initInvoker() {
         try {
-            logger.info("try to init invoker|conf=" + servantProxyConfig.toString());
-            List<Url> list = ParseTools.parse(servantProxyConfig);
+            logger.info("try to init invoker|conf={}" + servantProxyConfig.toString());
+            final List<Url> list = ParseTools.parse(servantProxyConfig);
+            final ConcurrentHashSet<Invoker<T>> needRefreshInvokers = new ConcurrentHashSet<>();
             for (Url url : list) {
                 try {
                     boolean active = url.getParameter(Constants.TARS_CLIENT_ACTIVE, false);
                     if (active) {
                         logger.info("try to init invoker|active={} |{}", active, url.toIdentityString());
-                        allInvoker.add(create(api, url));
+                        needRefreshInvokers.add(create(api, url));
                     } else {
                         logger.info("inactive invoker can't to init|active={}|{}", active, url.toIdentityString());
                     }
@@ -128,9 +125,11 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
                     logger.error("error occurred on init invoker|" + url.toIdentityString(), e);
                 }
             }
+            return needRefreshInvokers;
         } catch (Throwable t) {
             logger.error("error occurred on init invoker|" + servantProxyConfig.getObjectName(), t);
         }
+        return (ConcurrentHashSet<Invoker<T>>) Collections.EMPTY_SET;
     }
 
     private void destroy(Collection<Invoker<T>> invokers) {
