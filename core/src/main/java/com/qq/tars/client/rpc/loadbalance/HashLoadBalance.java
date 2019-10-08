@@ -18,8 +18,8 @@ package com.qq.tars.client.rpc.loadbalance;
 
 
 import com.qq.tars.client.ServantProxyConfig;
-import com.qq.tars.client.cluster.ServantInvokerAliveStat;
 import com.qq.tars.client.cluster.ServantInvokerAliveChecker;
+import com.qq.tars.client.cluster.ServantInvokerAliveStat;
 import com.qq.tars.client.rpc.InvokerComparator;
 import com.qq.tars.common.util.Constants;
 import com.qq.tars.common.util.StringUtils;
@@ -36,7 +36,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * hash负载均衡策略
+ * hash  Load balancing strategy
  */
 public class HashLoadBalance<T> implements LoadBalance<T> {
     private static final Logger logger = LoggerFactory.getClientLogger();
