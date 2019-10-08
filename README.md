@@ -1,4 +1,4 @@
-[点我查看中文版](README.zh.md)
+
 
 Tars Java - An RPC library and framework
 ========================================
@@ -10,6 +10,10 @@ This project is the source code of the Tars RPC framework Java language.
     <td><b>Homepage:</b></td>
     <td><a href="https://tars.tencent.com/base/tars_index/en/index.html">tars.tencent.com</a></td>
   </tr>
+    <tr>
+      <td><b>中文版:</b></td>
+      <td><a href="README.zh.md">点我查看中文版</a></td>
+    </tr>
 </table>
 
 
