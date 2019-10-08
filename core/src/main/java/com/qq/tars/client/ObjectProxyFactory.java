@@ -133,7 +133,7 @@ class ObjectProxyFactory {
         String endpoints = null;
         if (!ParseTools.hasServerNode(cfg.getObjectName()) && !cfg.isDirectConnection() && !communicatorConfig.getLocator().startsWith(cfg.getSimpleObjectName())) {
             try {
-                /** 从主控拉取server node */
+                /** query server nodes from registerServer */
                 if (RegisterManager.getInstance().getHandler() != null) {
                     endpoints = ParseTools.parse(RegisterManager.getInstance().getHandler().query(cfg.getSimpleObjectName()),
                             cfg.getSimpleObjectName());
@@ -145,7 +145,7 @@ class ObjectProxyFactory {
                 }
                 ServantCacheManager.getInstance().save(communicator.getId(), cfg.getSimpleObjectName(), endpoints, communicatorConfig.getDataPath());
             } catch (CommunicatorConfigException e) {
-                /** 如果失败，从本地绶存文件中拉取 */
+                /** If it fails, pull it from the local cache  file */
                 endpoints = ServantCacheManager.getInstance().get(communicator.getId(), cfg.getSimpleObjectName(), communicatorConfig.getDataPath());
                 logger.error(cfg.getSimpleObjectName() + " error occurred on get by registry, use by local cache=" + endpoints + "|" + e.getLocalizedMessage(), e);
             }
