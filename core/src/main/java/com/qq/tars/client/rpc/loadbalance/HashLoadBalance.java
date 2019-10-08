@@ -21,6 +21,7 @@ import com.qq.tars.client.ServantProxyConfig;
 import com.qq.tars.client.cluster.ServantInvokerAliveChecker;
 import com.qq.tars.client.cluster.ServantInvokerAliveStat;
 import com.qq.tars.client.rpc.InvokerComparator;
+import com.qq.tars.common.util.CollectionUtils;
 import com.qq.tars.common.util.Constants;
 import com.qq.tars.common.util.StringUtils;
 import com.qq.tars.rpc.common.InvokeContext;
@@ -55,21 +56,18 @@ public class HashLoadBalance<T> implements LoadBalance<T> {
         long hash = Math.abs(StringUtils.convertLong(invocation.getAttachment(Constants.TARS_HASH), 0));
 
         List<Invoker<T>> staticWeightInvokers = staticWeightInvokersCache;
-        //使用带权重的hash
         if (staticWeightInvokers != null && !staticWeightInvokers.isEmpty()) {
             Invoker<T> invoker = staticWeightInvokers.get((int) (hash % staticWeightInvokers.size()));
             if (invoker.isAvailable()) return invoker;
 
             ServantInvokerAliveStat stat = ServantInvokerAliveChecker.get(invoker.getUrl());
             if (stat.isAlive() || (stat.getLastRetryTime() + (config.getTryTimeInterval() * 1000)) < System.currentTimeMillis()) {
-                //屏敝后尝试重新调用    
                 logger.info("try to use inactive invoker|" + invoker.getUrl().toIdentityString());
                 stat.setLastRetryTime(System.currentTimeMillis());
                 return invoker;
             }
         }
 
-        //使用不带权重的hash
         List<Invoker<T>> sortedInvokers = sortedInvokersCache;
         if (sortedInvokers == null || sortedInvokers.isEmpty()) {
             throw new NoInvokerException("no such active connection invoker");
@@ -78,9 +76,6 @@ public class HashLoadBalance<T> implements LoadBalance<T> {
         List<Invoker<T>> list = new ArrayList<Invoker<T>>();
         for (Invoker<T> invoker : sortedInvokers) {
             if (!invoker.isAvailable()) {
-                /**
-                 * 屏敝后尝试重新调用    
-                 */
                 ServantInvokerAliveStat stat = ServantInvokerAliveChecker.get(invoker.getUrl());
                 if (stat.isAlive() || (stat.getLastRetryTime() + (config.getTryTimeInterval() * 1000)) < System.currentTimeMillis()) {
                     list.add(invoker);
@@ -89,7 +84,7 @@ public class HashLoadBalance<T> implements LoadBalance<T> {
                 list.add(invoker);
             }
         }
-        // TODO 如果全死，是否需要随机取一个尝试？
+        //TODO When all is not available. Whether to randomly extract one
         if (list.isEmpty()) {
             throw new NoInvokerException(config.getSimpleObjectName() + " try to select active invoker, size=" + sortedInvokers.size() + ", no such active connection invoker");
         }
@@ -97,7 +92,6 @@ public class HashLoadBalance<T> implements LoadBalance<T> {
         Invoker<T> invoker = list.get((int) (hash % list.size()));
 
         if (!invoker.isAvailable()) {
-            //屏敝后尝试重新调用    
             logger.info("try to use inactive invoker|" + invoker.getUrl().toIdentityString());
             ServantInvokerAliveChecker.get(invoker.getUrl()).setLastRetryTime(System.currentTimeMillis());
         }
@@ -106,7 +100,7 @@ public class HashLoadBalance<T> implements LoadBalance<T> {
 
     @Override
     public void refresh(Collection<Invoker<T>> invokers) {
-        logger.info(config.getSimpleObjectName() + " try to refresh HashLoadBalance's invoker cache, size=" + (invokers == null || invokers.isEmpty() ? 0 : invokers.size()));
+        logger.info("{} try to refresh RoundRobinLoadBalance's invoker cache, size= {} ", config.getSimpleObjectName(), CollectionUtils.isEmpty(invokers) ? 0 : invokers.size());
         if (invokers == null || invokers.isEmpty()) {
             sortedInvokersCache = null;
             staticWeightInvokersCache = null;
