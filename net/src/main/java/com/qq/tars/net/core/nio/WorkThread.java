@@ -23,7 +23,6 @@ import com.qq.tars.net.core.Response;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Map;
 
 public final class WorkThread implements Runnable {
 
@@ -87,7 +86,6 @@ public final class WorkThread implements Runnable {
                     System.out.println(s);
                     return;
                 }
-                fillDitributedContext(ticket.request().getDistributedContext());
                 ticket.notifyResponse(resp);
                 ticket.countDown();
                 TicketManager.removeTicket(ticket.getTicketNumber());
@@ -97,9 +95,6 @@ public final class WorkThread implements Runnable {
         } finally {
             clearDistributedContext();
         }
-    }
-
-    private void fillDitributedContext(Map<String, String> data) {
     }
 
     private void clearDistributedContext() {
