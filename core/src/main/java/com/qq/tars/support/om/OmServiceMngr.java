@@ -55,7 +55,7 @@ public class OmServiceMngr {
         ConfigHelper.getInstance().setConfigInfo(communicator, app, serverName, basePath);
         NodeHelper.getInstance().setNodeInfo(communicator, app, serverName);
         NotifyHelper.getInstance().setNotifyInfo(communicator, app, serverName);
-        PropertyReportHelper.getInstance().setPropertyInfo(communicator, modualName);
+        PropertyReportHelper.getInstance().init(communicator, modualName);
         NodeHelper.getInstance().reportVersion(ClientVersion.getVersion());
 
         Policy avgPolicy = new CommonPropertyPolicy.Avg();
