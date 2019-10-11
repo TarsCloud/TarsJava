@@ -36,13 +36,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PropertyReportHelper {
     private static final Logger omLogger = LoggerFactory.getOmLogger();
 
-    public static interface Policy {
+    public interface Policy {
 
-        public String desc();
+        String desc();
 
-        public String get();
+        String get();
 
-        public void set(int value);
+        void set(int value);
 
     }
 
@@ -113,11 +113,11 @@ public class PropertyReportHelper {
     private Map<String, PropertyReporter> reporters;
     private Communicator communicator;
     private String moduleName;
-    private boolean configed;
+    private volatile boolean initialized;
 
     private PropertyReportHelper() {
-        reporters = new ConcurrentHashMap<String, PropertyReporter>();
-        configed = false;
+        reporters = new ConcurrentHashMap<>();
+        initialized = false;
     }
 
     public static PropertyReportHelper getInstance() {
@@ -125,13 +125,18 @@ public class PropertyReportHelper {
     }
 
     public synchronized void setPropertyInfo(Communicator comm, String moduleName) {
-        if (configed) {
-            throw new TarsException("PropertyReporter|setPropertyInfo method should be called once at most");
+        init(comm, moduleName);
+    }
+
+    public synchronized void init(Communicator comm, String moduleName) {
+        if (initialized) {
+            omLogger.warn("PropertyReporter|setPropertyInfo method should be called once at most");
+            return;
         }
 
         this.communicator = comm;
         this.moduleName = moduleName;
-        configed = true;
+        initialized = true;
     }
 
     public synchronized void createPropertyReporter(String propRptName, Policy... policies) {
@@ -156,7 +161,7 @@ public class PropertyReportHelper {
 
     public void report() {
         try {
-            if (!configed) {
+            if (!initialized) {
                 return;
             }
 

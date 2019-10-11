@@ -18,7 +18,7 @@ package com.qq.tars.net.protocol;
 
 public interface ProtocolFactory {
 
-    public ProtocolEncoder getEncoder();
+    ProtocolEncoder getEncoder();
 
-    public ProtocolDecoder getDecoder();
+    ProtocolDecoder getDecoder();
 }

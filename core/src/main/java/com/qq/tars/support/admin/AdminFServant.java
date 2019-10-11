@@ -24,12 +24,13 @@ import com.qq.tars.protocol.annotation.Servant;
 
 @Servant
 public interface AdminFServant {
-	/**
-	 * 关闭服务
-	 */
-	public void shutdown();
-	/**
-	 * 通知服务
-	 */
-	public String notify(String command);
+    /**
+     * close Server
+     */
+    void shutdown();
+
+    /**
+     * notify Server
+     */
+    String notify(String command);
 }

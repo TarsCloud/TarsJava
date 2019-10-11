@@ -19,7 +19,7 @@ package com.qq.tars.client.rpc.loadbalance;
 
 import com.qq.tars.client.ServantProxyConfig;
 import com.qq.tars.client.cluster.ServantInvokerAliveStat;
-import com.qq.tars.client.cluster.ServantnvokerAliveChecker;
+import com.qq.tars.client.cluster.ServantInvokerAliveChecker;
 import com.qq.tars.client.rpc.InvokerComparator;
 import com.qq.tars.common.util.CollectionUtils;
 import com.qq.tars.rpc.common.InvokeContext;
@@ -63,7 +63,7 @@ public class RoundRobinLoadBalance<T> implements LoadBalance<T> {
             Invoker<T> invoker = staticWeightInvokers.get((staticWeightSequence.getAndIncrement() & Integer.MAX_VALUE) % staticWeightInvokers.size());
             if (invoker.isAvailable()) return invoker;
 
-            ServantInvokerAliveStat stat = ServantnvokerAliveChecker.get(invoker.getUrl());
+            ServantInvokerAliveStat stat = ServantInvokerAliveChecker.get(invoker.getUrl());
             if (stat.isAlive() || (stat.getLastRetryTime() + (config.getTryTimeInterval() * 1000)) < System.currentTimeMillis()) {
                 //Try to recall after blocking
                 logger.info("try to use inactive invoker|" + invoker.getUrl().toIdentityString());
@@ -84,7 +84,7 @@ public class RoundRobinLoadBalance<T> implements LoadBalance<T> {
                 /**
                  * Try to recall after blocking
                  */
-                ServantInvokerAliveStat stat = ServantnvokerAliveChecker.get(invoker.getUrl());
+                ServantInvokerAliveStat stat = ServantInvokerAliveChecker.get(invoker.getUrl());
                 if (stat.isAlive() || (stat.getLastRetryTime() + (config.getTryTimeInterval() * 1000)) < System.currentTimeMillis()) {
                     list.add(invoker);
                 }
@@ -92,7 +92,7 @@ public class RoundRobinLoadBalance<T> implements LoadBalance<T> {
                 list.add(invoker);
             }
         }
-        // TODO After all shielding, randomly select one
+        //TODO When all is not available. Whether to randomly extract one
         if (list.isEmpty()) {
             throw new NoInvokerException(config.getSimpleObjectName() + " try to select active invoker, size=" + sortedInvokers.size() + ", no such active connection invoker");
         }
@@ -102,7 +102,7 @@ public class RoundRobinLoadBalance<T> implements LoadBalance<T> {
         if (!invoker.isAvailable()) {
             //Try to recall after blocking
             logger.info("try to use inactive invoker|" + invoker.getUrl().toIdentityString());
-            ServantnvokerAliveChecker.get(invoker.getUrl()).setLastRetryTime(System.currentTimeMillis());
+            ServantInvokerAliveChecker.get(invoker.getUrl()).setLastRetryTime(System.currentTimeMillis());
         }
         return invoker;
     }

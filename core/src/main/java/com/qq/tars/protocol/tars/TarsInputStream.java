@@ -32,7 +32,7 @@ import java.util.Map;
 
 public final class TarsInputStream {
 
-    private ByteBuffer bs; // 缓冲区
+    private ByteBuffer bs; // byte buffer
 
     public static class HeadData {
 
@@ -346,15 +346,16 @@ public final class TarsInputStream {
                     bs.get(ss);
                     s = HexUtil.bytes2HexStr(ss);
                 }
-                    break;
+                break;
                 case TarsStructBase.STRING4: {
                     int len = bs.getInt();
-                    if (len > TarsStructBase.MAX_STRING_LENGTH || len < 0) throw new TarsDecodeException("String too long: " + len);
+                    if (len > TarsStructBase.MAX_STRING_LENGTH || len < 0)
+                        throw new TarsDecodeException("String too long: " + len);
                     byte[] ss = new byte[len];
                     bs.get(ss);
                     s = HexUtil.bytes2HexStr(ss);
                 }
-                    break;
+                break;
                 default:
                     throw new TarsDecodeException("type mismatch.");
             }
@@ -380,10 +381,11 @@ public final class TarsInputStream {
                         s = new String(ss);
                     }
                 }
-                    break;
+                break;
                 case TarsStructBase.STRING4: {
                     int len = bs.getInt();
-                    if (len > TarsStructBase.MAX_STRING_LENGTH || len < 0) throw new TarsDecodeException("String too long: " + len);
+                    if (len > TarsStructBase.MAX_STRING_LENGTH || len < 0)
+                        throw new TarsDecodeException("String too long: " + len);
                     byte[] ss = new byte[len];
                     bs.get(ss);
                     try {
@@ -392,7 +394,7 @@ public final class TarsInputStream {
                         s = new String(ss);
                     }
                 }
-                    break;
+                break;
                 default:
                     throw new TarsDecodeException("type mismatch.");
             }
@@ -419,10 +421,11 @@ public final class TarsInputStream {
                         s = new String(ss);
                     }
                 }
-                    break;
+                break;
                 case TarsStructBase.STRING4: {
                     int len = bs.getInt();
-                    if (len > TarsStructBase.MAX_STRING_LENGTH || len < 0) throw new TarsDecodeException("String too long: " + len);
+                    if (len > TarsStructBase.MAX_STRING_LENGTH || len < 0)
+                        throw new TarsDecodeException("String too long: " + len);
                     byte[] ss = new byte[len];
                     bs.get(ss);
                     try {
@@ -431,7 +434,7 @@ public final class TarsInputStream {
                         s = new String(ss);
                     }
                 }
-                    break;
+                break;
                 default:
                     throw new TarsDecodeException("type mismatch.");
             }
@@ -460,7 +463,7 @@ public final class TarsInputStream {
                         mr.put(k, v);
                     }
                 }
-                    break;
+                break;
                 default:
                     throw new TarsDecodeException("type mismatch.");
             }
@@ -474,7 +477,7 @@ public final class TarsInputStream {
         return (HashMap<K, V>) readMap(new HashMap<K, V>(), m, tag, isRequire);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private <K, V> Map<K, V> readMap(Map<K, V> mr, Map<K, V> m, int tag, boolean isRequire) {
         if (m == null || m.isEmpty()) {
             return new HashMap();
@@ -498,7 +501,7 @@ public final class TarsInputStream {
                         mr.put(k, v);
                     }
                 }
-                    break;
+                break;
                 default:
                     throw new TarsDecodeException("type mismatch.");
             }
@@ -508,7 +511,7 @@ public final class TarsInputStream {
         return mr;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public List readList(int tag, boolean isRequire) {
         List lr = new ArrayList();
         if (skipToTag(tag)) {
@@ -545,19 +548,19 @@ public final class TarsInputStream {
                                 if (len < 0) len += 256;
                                 skip(len);
                             }
-                                break;
+                            break;
                             case TarsStructBase.STRING4: {
                                 skip(bs.getInt());
                             }
-                                break;
+                            break;
                             case TarsStructBase.MAP: {
 
                             }
-                                break;
+                            break;
                             case TarsStructBase.LIST: {
 
                             }
-                                break;
+                            break;
                             case TarsStructBase.STRUCT_BEGIN:
                                 try {
                                     Class<?> newoneClass = Class.forName(TarsStructBase.class.getName());
@@ -578,7 +581,7 @@ public final class TarsInputStream {
                         }
                     }
                 }
-                    break;
+                break;
                 default:
                     throw new TarsDecodeException("type mismatch.");
             }
@@ -624,7 +627,8 @@ public final class TarsInputStream {
                         throw new TarsDecodeException("type mismatch, tag: " + tag + ", type: " + hd.type + ", " + hh.type);
                     }
                     int size = read(0, 0, true);
-                    if (size < 0) throw new TarsDecodeException("invalid size, tag: " + tag + ", type: " + hd.type + ", " + hh.type + ", size: " + size);
+                    if (size < 0)
+                        throw new TarsDecodeException("invalid size, tag: " + tag + ", type: " + hd.type + ", " + hh.type + ", size: " + size);
                     lr = new byte[size];
                     bs.get(lr);
                     break;
