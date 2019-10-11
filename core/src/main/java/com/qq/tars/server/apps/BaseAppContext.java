@@ -59,6 +59,9 @@ public abstract class BaseAppContext implements AppContext {
 
 
     BaseAppContext() {
+        this.filters.put(FilterKind.SERVER, new LinkedList<>());
+        this.filters.put(FilterKind.CLIENT, new LinkedList<>());
+        this.filters.put(FilterKind.CALLBACK, new LinkedList<>());
     }
 
     @Override
@@ -128,10 +131,6 @@ public abstract class BaseAppContext implements AppContext {
     }
 
     void loadDefaultFilter() {
-        filters.put(FilterKind.SERVER, new LinkedList<Filter>());
-        filters.put(FilterKind.CLIENT, new LinkedList<Filter>());
-        filters.put(FilterKind.CALLBACK, new LinkedList<Filter>());
-
         List<Filter> serverFilters = filters.get(FilterKind.SERVER);
         Filter traceServerFilter = new TraceServerFilter();
         traceServerFilter.init();
@@ -159,11 +158,6 @@ public abstract class BaseAppContext implements AppContext {
     }
 
     @Override
-    public String getInitParameter(String name) {
-        return contextParams.get(name);
-    }
-
-    @Override
     public String name() {
         return "";
     }
@@ -182,5 +176,11 @@ public abstract class BaseAppContext implements AppContext {
             throw new RuntimeException("The application isn't started.");
         }
         return filters.get(kind);
+    }
+
+    @Override
+    public void addFilter(FilterKind kind, Filter filter) {
+        List<Filter> filters = this.filters.get(kind);
+        filters.add(filter);
     }
 }
