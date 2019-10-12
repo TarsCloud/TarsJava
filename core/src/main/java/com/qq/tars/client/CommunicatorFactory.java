@@ -18,7 +18,6 @@
 package com.qq.tars.client;
 
 import com.qq.tars.client.util.ParseTools;
-
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class CommunicatorFactory {
@@ -44,17 +43,25 @@ public final class CommunicatorFactory {
     }
 
     public Communicator getCommunicator(String locator) {
-        return locatorCommunicatorMap.computeIfAbsent(locator, param -> {
-            CommunicatorConfig config = null;
-            if (ParseTools.hasServerNode(locator)) {
-                config = new CommunicatorConfig();
-                config.setLocator(locator);
-            }
-            return new Communicator(config);
-        });
+        Communicator communicator = CommunicatorMap.get(locator);
+        if (communicator != null) {
+            return communicator;
+        }
+        CommunicatorConfig config = null;
+        if (ParseTools.hasServerNode(locator)) {
+            config = new CommunicatorConfig();
+            config.setLocator(locator);
+        }
+        CommunicatorMap.putIfAbsent(locator, new Communicator(config));
+        return CommunicatorMap.get(locator);
     }
 
     public Communicator getCommunicator(CommunicatorConfig config) {
-        return configCommunicatorMap.computeIfAbsent(config, param -> new Communicator(param));
+        Communicator communicator = CommunicatorMap.get(config);
+        if (communicator != null) {
+            return communicator;
+        }
+        CommunicatorMap.putIfAbsent(config, new Communicator(config));
+        return CommunicatorMap.get(config);
     }
 }

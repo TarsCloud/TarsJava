@@ -17,7 +17,7 @@
 package com.qq.tars.protocol.tars;
 
 import com.qq.tars.common.util.BeanAccessor;
-import com.qq.tars.common.util.CollectionUtils;
+import com.qq.tars.common.util.CommonUtils;
 import com.qq.tars.protocol.tars.exc.TarsEncodeException;
 import com.qq.tars.protocol.tars.support.TarsStructInfo;
 import com.qq.tars.protocol.tars.support.TarsStrutPropertyInfo;

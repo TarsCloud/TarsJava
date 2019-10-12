@@ -502,13 +502,13 @@ public class Tars2JavaMojo extends AbstractMojo {
 
         // 4. print tars methods and prototypes
         for (TarsOperation op : _interface.operationList()) {
-            // 2 print sync method without context
+            // 1 print sync method without context
             out.println(getDoc(op, "\t"));
             out.println("\tpublic " + type(op.retType(), nsMap) + " " + op.operationName() + "(" + operationParams(null, op.paramList(), null, true, nsMap) + ");");
 
             // 2 print  promise method without context
             out.println(getDoc(op, "\t"));
-            out.println("\tCompletableFuture<" + type(op.retType(), true, nsMap) + ">  promise_" + op.oprationName() + "(" + opertaionParams(null, op.paramList(), null, true, nsMap) + ");");
+            out.println("\tCompletableFuture<" + type(op.retType(), true, nsMap) + ">  promise_" + op.operationName() + "(" + operationParams(null, op.paramList(), null, true, nsMap) + ");");
 
             // 3 print sync method with context
             out.println(getDoc(op, "\t"));
