@@ -42,12 +42,10 @@ class ServantProxyFactory {
         if (proxy == null) {
             lock.lock();
             try {
-                proxy = cache.get(key);
-                if (proxy == null) {
+                proxy = cache.computeIfAbsent(key, param -> {
                     ObjectProxy<T> objectProxy = communicator.getObjectProxyFactory().getObjectProxy(clazz, objName, setDivision, servantProxyConfig, loadBalance, protocolInvoker);
-                    cache.putIfAbsent(key, createProxy(clazz, objectProxy));
-                    proxy = cache.get(key);
-                }
+                    return createProxy(clazz, objectProxy);
+                });
             } finally {
                 lock.unlock();
             }

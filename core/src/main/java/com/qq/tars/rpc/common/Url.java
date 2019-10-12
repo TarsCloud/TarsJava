@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @SuppressWarnings("serial")
 public final class Url implements Comparable<Url>, Serializable {
@@ -145,33 +146,33 @@ public final class Url implements Comparable<Url>, Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
         Url other = (Url) obj;
-        if (host == null) {
-            if (other.host != null) return false;
-        } else if (!host.equals(other.host)) return false;
-        if (parameters == null) {
-            if (other.parameters != null) return false;
-        } else if (!parameters.equals(other.parameters)) return false;
-        if (path == null) {
-            if (other.path != null) return false;
-        } else if (!path.equals(other.path)) return false;
-        if (port != other.port) return false;
-        if (protocol == null) {
-            if (other.protocol != null) return false;
-        } else if (!protocol.equals(other.protocol)) return false;
-        return true;
+        if (!Objects.equals(this.host, other.host)) {
+            return false;
+        }
+        if (!Objects.equals(this.parameters, other.parameters)) {
+            return false;
+        }
+        if (!Objects.equals(this.path, other.path)) {
+            return false;
+        }
+        if (!Objects.equals(this.port, other.port)) {
+            return false;
+        }
+        return Objects.equals(this.protocol, other.protocol);
     }
 
     @Override
     public int compareTo(Url url) {
         int i = this.host.compareTo(url.host);
         if (i == 0) {
-            int thisVal = this.port;
-            int anotherVal = url.port;
-            i = (thisVal < anotherVal ? -1 : (thisVal == anotherVal ? 0 : 1));
+            i = Integer.compare(this.port, url.port);
         }
         return i;
     }

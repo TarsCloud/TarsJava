@@ -72,7 +72,7 @@ module tars
 
         /**
          * 根据host读取文件
-         * @param appSerever, app.server
+         * @param appServer, app.server
          * @param filename, config file name
          * @param host, ip
          * @param config, 配置文件内容
@@ -81,7 +81,7 @@ module tars
 
         /**
          * 检查配置文件是否服务TC_Config格式
-         * @param appSerever, app.server
+         * @param appServer, app.server
          * @param filename, config file name
          * @param host, ip
          * @param result, 提示

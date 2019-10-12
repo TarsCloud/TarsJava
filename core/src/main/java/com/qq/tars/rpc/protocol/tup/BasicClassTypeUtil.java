@@ -18,11 +18,7 @@ package com.qq.tars.rpc.protocol.tup;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class BasicClassTypeUtil {
 
@@ -78,27 +74,31 @@ public class BasicClassTypeUtil {
         }
     }
 
-    public static String transTypeList(ArrayList<String> listTpye) {
+    public static String transTypeList(ArrayList<String> listType) {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < listTpye.size(); i++) {
-            listTpye.set(i, java2UniType(listTpye.get(i)));
+        for (int i = 0; i < listType.size(); i++) {
+            listType.set(i, java2UniType(listType.get(i)));
         }
-        Collections.reverse(listTpye);
-        for (int i = 0; i < listTpye.size(); i++) {
-            String type = listTpye.get(i);
-            if (type.equals("list")) {
-                listTpye.set(i - 1, "<" + listTpye.get(i - 1));
-                listTpye.set(0, listTpye.get(0) + ">");
-            } else if (type.equals("map")) {
-                listTpye.set(i - 1, "<" + listTpye.get(i - 1) + ",");
-                listTpye.set(0, listTpye.get(0) + ">");
-            } else if (type.equals("Array")) {
-                listTpye.set(i - 1, "<" + listTpye.get(i - 1));
-                listTpye.set(0, listTpye.get(0) + ">");
+        Collections.reverse(listType);
+        for (int i = 0; i < listType.size(); i++) {
+            String type = listType.get(i);
+            switch (type) {
+                case "list":
+                    listType.set(i - 1, "<" + listType.get(i - 1));
+                    listType.set(0, listType.get(0) + ">");
+                    break;
+                case "map":
+                    listType.set(i - 1, "<" + listType.get(i - 1) + ",");
+                    listType.set(0, listType.get(0) + ">");
+                    break;
+                case "Array":
+                    listType.set(i - 1, "<" + listType.get(i - 1));
+                    listType.set(0, listType.get(0) + ">");
+                    break;
             }
         }
-        Collections.reverse(listTpye);
-        for (String s : listTpye) {
+        Collections.reverse(listType);
+        for (String s : listType) {
             sb.append(s);
         }
         return sb.toString();
@@ -160,174 +160,171 @@ public class BasicClassTypeUtil {
     }
 
     public static Object createClassByName(String name) throws ObjectCreateException {
-        if (name.equals("java.lang.Integer")) {
-            return 0;
-        } else if (name.equals("java.lang.Boolean")) {
-            return false;
-        } else if (name.equals("java.lang.Byte")) {
-            return (byte) 0;
-        } else if (name.equals("java.lang.Double")) {
-            return (double) 0;
-        } else if (name.equals("java.lang.Float")) {
-            return (float) 0;
-        } else if (name.equals("java.lang.Long")) {
-            return (long) 0;
-        } else if (name.equals("java.lang.Short")) {
-            return (short) 0;
-        } else if (name.equals("java.lang.Character")) {
-            throw new java.lang.IllegalArgumentException("can not support java.lang.Character");
-        } else if (name.equals("java.lang.String")) {
-            return "";
-        } else if (name.equals("java.util.List")) {
-            return new ArrayList();
-        } else if (name.equals("java.util.Map")) {
-            return new HashMap();
-        } else if (name.equals("Array")) {
-            return "Array";
-        } else if (name.equals("?")) {
-            return name;
-        } else {
-            try {
-                Class newoneClass = Class.forName(name);
-                Constructor cons = newoneClass.getConstructor();
-                return cons.newInstance();
-            } catch (Exception e) {
-                throw new ObjectCreateException(e);
-            }
+        switch (name) {
+            case "java.lang.Integer":
+                return 0;
+            case "java.lang.Boolean":
+                return false;
+            case "java.lang.Byte":
+                return (byte) 0;
+            case "java.lang.Double":
+                return (double) 0;
+            case "java.lang.Float":
+                return (float) 0;
+            case "java.lang.Long":
+                return (long) 0;
+            case "java.lang.Short":
+                return (short) 0;
+            case "java.lang.Character":
+                throw new java.lang.IllegalArgumentException("can not support java.lang.Character");
+            case "java.lang.String":
+                return "";
+            case "java.util.List":
+                return new ArrayList();
+            case "java.util.Map":
+                return new HashMap();
+            case "Array":
+                return "Array";
+            case "?":
+                return name;
+            default:
+                Object result = null;
+                try {
+                    Class newoneClass = Class.forName(name);
+                    Constructor cons = newoneClass.getConstructor();
+                    result = cons.newInstance();
+                } catch (Exception e) {
+                    throw new ObjectCreateException(e);
+                }
+                return result;
         }
     }
 
     public static String java2UniType(String srcType) {
-        if (srcType.equals("java.lang.Integer") || srcType.equals("int")) {
-            return "int32";
-        } else if (srcType.equals("java.lang.Boolean") || srcType.equals("boolean")) {
-            return "bool";
-        } else if (srcType.equals("java.lang.Byte") || srcType.equals("byte")) {
-            return "char";
-        } else if (srcType.equals("java.lang.Double") || srcType.equals("double")) {
-            return "double";
-        } else if (srcType.equals("java.lang.Float") || srcType.equals("float")) {
-            return "float";
-        } else if (srcType.equals("java.lang.Long") || srcType.equals("long")) {
-            return "int64";
-        } else if (srcType.equals("java.lang.Short") || srcType.equals("short")) {
-            return "short";
-        } else if (srcType.equals("java.lang.Character")) {
-            throw new java.lang.IllegalArgumentException("can not support java.lang.Character");
-        } else if (srcType.equals("java.lang.String")) {
-            return "string";
-        } else if (srcType.equals("java.util.List")) {
-            return "list";
-        } else if (srcType.equals("java.util.Map")) {
-            return "map";
-        } else {
-            return srcType;
+        switch (srcType) {
+            case "java.lang.Integer":
+            case "int":
+                return "int32";
+            case "java.lang.Boolean":
+            case "boolean":
+                return "bool";
+            case "java.lang.Byte":
+            case "byte":
+                return "char";
+            case "java.lang.Double":
+            case "double":
+                return "double";
+            case "java.lang.Float":
+            case "float":
+                return "float";
+            case "java.lang.Long":
+            case "long":
+                return "int64";
+            case "java.lang.Short":
+            case "short":
+                return "short";
+            case "java.lang.Character":
+                throw new java.lang.IllegalArgumentException("can not support java.lang.Character");
+            case "java.lang.String":
+                return "string";
+            case "java.util.List":
+                return "list";
+            case "java.util.Map":
+                return "map";
+            default:
+                return srcType;
         }
     }
 
     public static String uni2JavaType(String srcType) {
-        if (srcType.equals("int32")) {
-            return "java.lang.Integer";
-        } else if (srcType.equals("bool")) {
-            return "java.lang.Boolean";
-        } else if (srcType.equals("char")) {
-            return "java.lang.Byte";
-        } else if (srcType.equals("double")) {
-            return "java.lang.Double";
-        } else if (srcType.equals("float")) {
-            return "java.lang.Float";
-        } else if (srcType.equals("int64")) {
-            return "java.lang.Long";
-        } else if (srcType.equals("short")) {
-            return "java.lang.Short";
-        } else if (srcType.equals("string")) {
-            return "java.lang.String";
-        } else if (srcType.equals("list")) {
-            return "java.util.List";
-        } else if (srcType.equals("map")) {
-            return "java.util.Map";
-        } else {
-            return srcType;
+        switch (srcType) {
+            case "int32":
+                return "java.lang.Integer";
+            case "bool":
+                return "java.lang.Boolean";
+            case "char":
+                return "java.lang.Byte";
+            case "double":
+                return "java.lang.Double";
+            case "float":
+                return "java.lang.Float";
+            case "int64":
+                return "java.lang.Long";
+            case "short":
+                return "java.lang.Short";
+            case "string":
+                return "java.lang.String";
+            case "list":
+                return "java.util.List";
+            case "map":
+                return "java.util.Map";
+            default:
+                return srcType;
         }
     }
 
     public static boolean isBasicType(String name) {
-        if (name.equals("int")) {
-            return true;
-        } else if (name.equals("boolean")) {
-            return true;
-        } else if (name.equals("byte")) {
-            return true;
-        } else if (name.equals("double")) {
-            return true;
-        } else if (name.equals("float")) {
-            return true;
-        } else if (name.equals("long")) {
-            return true;
-        } else if (name.equals("short")) {
-            return true;
-        } else if (name.equals("char")) {
-            return true;
-        } else if (name.equals("Integer")) {
-            return true;
-        } else if (name.equals("Boolean")) {
-            return true;
-        } else if (name.equals("Byte")) {
-            return true;
-        } else if (name.equals("Double")) {
-            return true;
-        } else if (name.equals("Float")) {
-            return true;
-        } else if (name.equals("Long")) {
-            return true;
-        } else if (name.equals("Short")) {
-            return true;
-        } else if (name.equals("Char")) {
-            return true;
+        switch (name) {
+            case "int":
+            case "boolean":
+            case "byte":
+            case "double":
+            case "float":
+            case "long":
+            case "short":
+            case "char":
+            case "Integer":
+            case "Boolean":
+            case "Byte":
+            case "Double":
+            case "Float":
+            case "Long":
+            case "Short":
+            case "Char":
+                return true;
+            default:
+                return false;
         }
-        return false;
     }
 
     public static String getClassTransName(String name) {
-        if (name.equals("int")) {
-            name = "Integer";
-        } else if (name.equals("boolean")) {
-            name = "Boolean";
-        } else if (name.equals("byte")) {
-            name = "Byte";
-        } else if (name.equals("double")) {
-            name = "Double";
-        } else if (name.equals("float")) {
-            name = "Float";
-        } else if (name.equals("long")) {
-            name = "Long";
-        } else if (name.equals("short")) {
-            name = "Short";
-        } else if (name.equals("char")) {
-            name = "Character";
+        switch (name) {
+            case "int":
+                return "Integer";
+            case "boolean":
+                return "Boolean";
+            case "byte":
+                return "Byte";
+            case "double":
+                return "Double";
+            case "float":
+                return "Float";
+            case "long":
+                return "Long";
+            case "short":
+                return "Short";
+            case "char":
+                return "Character";
+            default:
+                return name;
         }
-        return name;
     }
 
     public static String getVariableInit(String name, String type) {
-        if (type.equals("int")) {
-            return type + " " + name + "=0 ;\n";
-        } else if (type.equals("boolean")) {
-            return type + " " + name + "=false ;\n";
-        } else if (type.equals("byte")) {
-            return type + " " + name + " ;\n";
-        } else if (type.equals("double")) {
-            return type + " " + name + "=0 ;\n";
-        } else if (type.equals("float")) {
-            return type + " " + name + "=0 ;\n";
-        } else if (type.equals("long")) {
-            return type + " " + name + "=0 ;\n";
-        } else if (type.equals("short")) {
-            return type + " " + name + "=0 ;\n";
-        } else if (type.equals("char")) {
-            return type + " " + name + " ;\n";
-        } else {
-            return type + " " + name + " = null ;\n";
+        switch (type) {
+            case "int":
+            case "double":
+            case "float":
+            case "long":
+            case "short":
+                return type + " " + name + "=0 ;\n";
+            case "boolean":
+                return type + " " + name + "=false ;\n";
+            case "byte":
+            case "char":
+                return type + " " + name + " ;\n";
+            default:
+                return type + " " + name + " = null ;\n";
         }
     }
 }

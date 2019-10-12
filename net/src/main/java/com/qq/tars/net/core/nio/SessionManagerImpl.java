@@ -44,7 +44,7 @@ public class SessionManagerImpl extends SessionManager {
 
     public void unregisterSession(Session session) {
         sessionList.remove(session);
-        notifySessionDestory(session);
+        notifySessionDestroy(session);
     }
 
     @Override
@@ -62,10 +62,10 @@ public class SessionManagerImpl extends SessionManager {
         }
     }
 
-    private void notifySessionDestory(Session oldSession) {
+    private void notifySessionDestroy(Session oldSession) {
         for (SessionListener listener : listeners) {
             try {
-                listener.onSessionDestoryed(new SessionEvent(oldSession));
+                listener.onSessionDestroyed(new SessionEvent(oldSession));
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

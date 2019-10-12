@@ -20,6 +20,6 @@ public interface SessionListener {
 
     void onSessionCreated(SessionEvent se);
 
-    void onSessionDestoryed(SessionEvent se);
+    public void onSessionDestroyed(SessionEvent se);
 
 }

@@ -16,6 +16,8 @@
 
 package com.qq.tars.common.support;
 
+import java.util.Objects;
+
 public class Endpoint {
 
     private final String type;
@@ -88,12 +90,9 @@ public class Endpoint {
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;
         Endpoint other = (Endpoint) obj;
-        if (host == null) {
-            if (other.host != null) return false;
-        } else if (!host.equals(other.host)) return false;
         if (port != other.port) return false;
         if (type != other.type) return false;
-        return true;
+        return Objects.equals(this.host, other.host);
     }
 
     @Override

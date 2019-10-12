@@ -325,10 +325,10 @@ public final class Client<REQ extends Request, RES extends Response> {
     private String resolveCurrentContextIdentity() {
         String contextIdentity = "";
 
-        Object slefClassLoader = this.getClass().getClassLoader();
+        Object selfClassLoader = this.getClass().getClassLoader();
         Object contextClassLoader = Thread.currentThread().getContextClassLoader();
 
-        if (slefClassLoader != null && contextClassLoader != null && slefClassLoader != contextClassLoader) {
+        if (selfClassLoader != null && contextClassLoader != null && selfClassLoader != contextClassLoader) {
             contextIdentity = contextClassLoader.toString();
         }
 

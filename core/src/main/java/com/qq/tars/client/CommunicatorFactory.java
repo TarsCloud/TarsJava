@@ -44,25 +44,17 @@ public final class CommunicatorFactory {
     }
 
     public Communicator getCommunicator(String locator) {
-        Communicator communicator = CommunicatorMap.get(locator);
-        if (communicator != null) {
-            return communicator;
-        }
-        CommunicatorConfig config = null;
-        if (ParseTools.hasServerNode(locator)) {
-            config = new CommunicatorConfig();
-            config.setLocator(locator);
-        }
-        CommunicatorMap.putIfAbsent(locator, new Communicator(config));
-        return CommunicatorMap.get(locator);
+        return locatorCommunicatorMap.computeIfAbsent(locator, param -> {
+            CommunicatorConfig config = null;
+            if (ParseTools.hasServerNode(locator)) {
+                config = new CommunicatorConfig();
+                config.setLocator(locator);
+            }
+            return new Communicator(config);
+        });
     }
 
     public Communicator getCommunicator(CommunicatorConfig config) {
-        Communicator communicator = CommunicatorMap.get(config);
-        if (communicator != null) {
-            return communicator;
-        }
-        CommunicatorMap.putIfAbsent(config, new Communicator(config));
-        return CommunicatorMap.get(config);
+        return configCommunicatorMap.computeIfAbsent(config, param -> new Communicator(param));
     }
 }

@@ -84,11 +84,7 @@ public class Tars2JavaMojo extends AbstractMojo {
                 TarsRoot root = (TarsRoot) tarsParser.start().getTree();
                 root.setTokenStream(tokens);
                 for (TarsNamespace ns : root.namespaceList()) {
-                    List<TarsNamespace> list = nsMap.get(ns.namespace());
-                    if (list == null) {
-                        list = new ArrayList<TarsNamespace>();
-                        nsMap.put(ns.namespace(), list);
-                    }
+                    List<TarsNamespace> list = nsMap.computeIfAbsent(ns.namespace(), k -> new ArrayList<TarsNamespace>());
                     list.add(ns);
                 }
             } catch (Throwable th) {
@@ -506,9 +502,9 @@ public class Tars2JavaMojo extends AbstractMojo {
 
         // 4. print tars methods and prototypes
         for (TarsOperation op : _interface.operationList()) {
-            // 1 print sync method without context
+            // 2 print sync method without context
             out.println(getDoc(op, "\t"));
-            out.println("\t" + type(op.retType(), nsMap) + " " + op.oprationName() + "(" + opertaionParams(null, op.paramList(), null, true, nsMap) + ");");
+            out.println("\tpublic " + type(op.retType(), nsMap) + " " + op.operationName() + "(" + operationParams(null, op.paramList(), null, true, nsMap) + ");");
 
             // 2 print  promise method without context
             out.println(getDoc(op, "\t"));
@@ -516,15 +512,15 @@ public class Tars2JavaMojo extends AbstractMojo {
 
             // 3 print sync method with context
             out.println(getDoc(op, "\t"));
-            out.println("\t" + type(op.retType(), nsMap) + " " + op.oprationName() + "(" + opertaionParams(null, op.paramList(), Arrays.asList("@TarsContext java.util.Map<String, String> ctx"), true, nsMap) + ");");
+            out.println("\tpublic " + type(op.retType(), nsMap) + " " + op.operationName() + "(" + operationParams(null, op.paramList(), Arrays.asList("@TarsContext java.util.Map<String, String> ctx"), true, nsMap) + ");");
 
             // 4 print async method without context
             out.println(getDoc(op, "\t"));
-            out.println("\tvoid async_" + op.oprationName() + "(" + opertaionParams(Arrays.asList("@TarsCallback " + prxClass + "Callback callback"), op.paramList(), null, false, nsMap) + ");");
+            out.println("\tpublic void async_" + op.operationName() + "(" + operationParams(Arrays.asList("@TarsCallback " + prxClass + "Callback callback"), op.paramList(), null, false, nsMap) + ");");
 
             // 5 print async method with context
             out.println(getDoc(op, "\t"));
-            out.println("\tvoid async_" + op.oprationName() + "(" + opertaionParams(Arrays.asList("@TarsCallback " + prxClass + "Callback callback"), op.paramList(), Arrays.asList("@TarsContext java.util.Map<String, String> ctx"), false, nsMap) + ");");
+            out.println("\tpublic void async_" + op.operationName() + "(" + operationParams(Arrays.asList("@TarsCallback " + prxClass + "Callback callback"), op.paramList(), Arrays.asList("@TarsContext java.util.Map<String, String> ctx"), false, nsMap) + ");");
         }
 
         out.println("}");
@@ -559,7 +555,7 @@ public class Tars2JavaMojo extends AbstractMojo {
         for (TarsOperation op : _interface.operationList()) {
             // 2 print sync method without context
             out.println(getDoc(op, "\t"));
-            out.println("\t" + type(op.retType(), nsMap) + " " + op.oprationName() + "(" + opertaionParams(null, op.paramList(), null, true, nsMap) + ");");
+            out.println("\tpublic " + type(op.retType(), nsMap) + " " + op.operationName() + "(" + operationParams(null, op.paramList(), null, true, nsMap) + ");");
         }
 
         out.println("}");
@@ -589,9 +585,9 @@ public class Tars2JavaMojo extends AbstractMojo {
         for (TarsOperation op : tarsInterface.operationList()) {
             String type = type(op.retType(), false, nsMap);
             if ("void".equals(type) || "Void".equals(type)) {
-                out.println("\tpublic abstract void callback_" + op.oprationName() + "(" + opertaionCallBackParams(null, op.paramList(), null, nsMap) + ");");
+                out.println("\tpublic abstract void callback_" + op.operationName() + "(" + operationCallBackParams(null, op.paramList(), null, nsMap) + ");");
             } else {
-                out.println("\tpublic abstract void callback_" + op.oprationName() + "(" + opertaionCallBackParams(Arrays.asList(type + " ret"), op.paramList(), null, nsMap) + ");");
+                out.println("\tpublic abstract void callback_" + op.operationName() + "(" + operationCallBackParams(Arrays.asList(type + " ret"), op.paramList(), null, nsMap) + ");");
             }
 
             out.println();
@@ -787,7 +783,7 @@ public class Tars2JavaMojo extends AbstractMojo {
         }
     }
 
-    public String opertaionCallBackParams(List<String> beforeParams, List<TarsParam> paramList,
+    public String operationCallBackParams(List<String> beforeParams, List<TarsParam> paramList,
                                           List<String> afterParams, Map<String, List<TarsNamespace>> nsMap) {
         StringBuilder sb = new StringBuilder();
         boolean isFirst = true;
@@ -825,7 +821,7 @@ public class Tars2JavaMojo extends AbstractMojo {
         return sb.toString();
     }
 
-    public String opertaionParams(List<String> beforeParams, List<TarsParam> paramList, List<String> afterParams,
+    public String operationParams(List<String> beforeParams, List<TarsParam> paramList, List<String> afterParams,
                                   boolean isSync, Map<String, List<TarsNamespace>> nsMap) {
         StringBuilder sb = new StringBuilder();
         boolean isFirst = true;
