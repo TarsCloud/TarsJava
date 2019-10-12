@@ -41,6 +41,8 @@ public class ConfigSourceListener implements ApplicationListener<ApplicationStar
             for (String name : sources.value()) {
                 if (!ConfigHelper.getInstance().loadConfig(name)) {
                     throw new RuntimeException("[TARS] load config failed: " + name);
+                } else {
+                    System.out.println("[TARS] load config: " + name);
                 }
             }
         }
