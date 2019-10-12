@@ -16,6 +16,7 @@
 
 package com.qq.tars.spring.bean;
 
+import com.qq.tars.rpc.exc.TarsException;
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.server.config.ServantAdapterConfig;
 import com.qq.tars.server.config.ServerConfig;
@@ -57,8 +58,7 @@ public class ServletContainerCustomizer implements WebServerFactoryCustomizer<Co
                 ServantAdapterConfig adapterConfig = ConfigurationManager.getInstance()
                         .getServerConfig().getServantAdapterConfMap().get(homeName);
                 if (adapterConfig.getProtocol().equals("tars")) {
-                    logger.warn("Incorrect protocol type configured use TarsHttpService ,Please use the no_tars protocol");
-                    continue;
+                    throw new TarsException("[TARS] http servant can not use taf protocol");
                 }
                 port = adapterConfig.getEndpoint().port();
                 host = adapterConfig.getEndpoint().host();
