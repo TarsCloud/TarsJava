@@ -58,7 +58,7 @@ public class ServletContainerCustomizer implements WebServerFactoryCustomizer<Co
                 ServantAdapterConfig adapterConfig = ConfigurationManager.getInstance()
                         .getServerConfig().getServantAdapterConfMap().get(homeName);
                 if (adapterConfig.getProtocol().equals("tars")) {
-                    throw new TarsException("[TARS] http servant can not use taf protocol");
+                    throw new TarsException("[TARS] http servant can not use tars protocol");
                 }
                 port = adapterConfig.getEndpoint().port();
                 host = adapterConfig.getEndpoint().host();
