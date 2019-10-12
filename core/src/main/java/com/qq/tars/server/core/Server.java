@@ -38,6 +38,7 @@ public class Server {
     private static final Server INSTANCE = new Server();
 
     private Server() {
+        System.out.println("[TARS] start server construction");
         loadServerConfig();
         initCommunicator();
         startManagerService();
