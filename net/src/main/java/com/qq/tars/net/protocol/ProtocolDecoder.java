@@ -23,7 +23,7 @@ import com.qq.tars.net.core.Session;
 
 public interface ProtocolDecoder {
 
-    public Request decodeRequest(IoBuffer buff, Session session) throws ProtocolException;
+    Request decodeRequest(IoBuffer buff, Session session) throws ProtocolException;
 
-    public Response decodeResponse(IoBuffer buff, Session session) throws ProtocolException;
+    Response decodeResponse(IoBuffer buff, Session session) throws ProtocolException;
 }

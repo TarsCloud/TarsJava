@@ -23,8 +23,6 @@ import java.util.List;
 
 public interface AppContext {
 
-    String getInitParameter(String name);
-
     String name();
 
     void stop();
@@ -32,6 +30,8 @@ public interface AppContext {
     ServantHomeSkeleton getCapHomeSkeleton(String homeName);
 
     List<Filter> getFilters(FilterKind kind);
+
+    void addFilter(FilterKind kind, Filter filter);
 
     void init();
 }

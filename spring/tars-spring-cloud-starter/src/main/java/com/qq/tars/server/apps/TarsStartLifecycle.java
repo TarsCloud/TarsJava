@@ -125,7 +125,7 @@ public class TarsStartLifecycle extends BaseAppContext implements SmartLifecycle
         servantAdapterConfig.setThreads(serverProperties.getThreads());
         servantAdapterConfig.setQueueCap(serverProperties.getQueueCap());
         servantAdapterConfig.setQueueTimeout(serverProperties.getQueueTimeout());
-        
+
         TarsTraceZipkinConfiguration.getInstance().init();
     }
 
