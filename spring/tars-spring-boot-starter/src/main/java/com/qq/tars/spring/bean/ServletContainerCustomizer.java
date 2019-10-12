@@ -20,6 +20,8 @@ import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.server.config.ServantAdapterConfig;
 import com.qq.tars.server.config.ServerConfig;
 import com.qq.tars.spring.annotation.TarsHttpService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
@@ -32,6 +34,7 @@ import java.net.UnknownHostException;
 import java.util.Map;
 
 public class ServletContainerCustomizer implements WebServerFactoryCustomizer<ConfigurableServletWebServerFactory>, ApplicationContextAware {
+    private static final Logger logger = LoggerFactory.getLogger(ServletContainerCustomizer.class);
     private ApplicationContext applicationContext;
 
     @Override
@@ -53,7 +56,10 @@ public class ServletContainerCustomizer implements WebServerFactoryCustomizer<Co
 
                 ServantAdapterConfig adapterConfig = ConfigurationManager.getInstance()
                         .getServerConfig().getServantAdapterConfMap().get(homeName);
-
+                if (adapterConfig.getProtocol().equals("tars")) {
+                    logger.warn("Incorrect protocol type configured use TarsHttpService ,Please use the no_tars protocol");
+                    continue;
+                }
                 port = adapterConfig.getEndpoint().port();
                 host = adapterConfig.getEndpoint().host();
             }
