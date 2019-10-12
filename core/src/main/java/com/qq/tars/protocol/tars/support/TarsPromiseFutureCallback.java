@@ -2,7 +2,7 @@ package com.qq.tars.protocol.tars.support;
 
 
 import com.qq.tars.client.ServantProxyConfig;
-import com.qq.tars.client.cluster.ServantnvokerAliveChecker;
+import com.qq.tars.client.cluster.ServantInvokerAliveChecker;
 import com.qq.tars.client.rpc.tars.TarsInvoker;
 import com.qq.tars.common.util.Constants;
 import com.qq.tars.net.client.Callback;
@@ -65,7 +65,7 @@ public class TarsPromiseFutureCallback<V> implements Callback<TarsServantRespons
             completableFuture.completeExceptionally(ServerException.makeException(ret));
             onException(ex);
         } finally {
-            invoker.setAvailable(ServantnvokerAliveChecker.isAlive(invoker.getUrl(), config, ret));
+            invoker.setAvailable(ServantInvokerAliveChecker.isAlive(invoker.getUrl(), config, ret));
             InvokeStatHelper.getInstance().addProxyStat(objName)
                     .addInvokeTimeByClient(config.getMasterName(), config.getSlaveName(), config.getSlaveSetName(), config.getSlaveSetArea(),
                             config.getSlaveSetID(), methodName, remoteIp, remotePort, ret,
@@ -87,7 +87,7 @@ public class TarsPromiseFutureCallback<V> implements Callback<TarsServantRespons
         try {
             TarsPromiseFutureCallback.this.completableFuture.completeExceptionally(ServerException.makeException(ret));
         } finally {
-            invoker.setAvailable(ServantnvokerAliveChecker.isAlive(invoker.getUrl(), config, ret));
+            invoker.setAvailable(ServantInvokerAliveChecker.isAlive(invoker.getUrl(), config, ret));
             InvokeStatHelper.getInstance().addProxyStat(objName)
                     .addInvokeTimeByClient(config.getMasterName(), config.getSlaveName(), config.getSlaveSetName(), config.getSlaveSetArea(),
                             config.getSlaveSetID(), methodName, remoteIp, remotePort, ret,

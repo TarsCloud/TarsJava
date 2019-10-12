@@ -16,13 +16,10 @@
 
 package com.qq.tars.server.apps;
 
-import com.qq.tars.client.Communicator;
-import com.qq.tars.client.CommunicatorFactory;
 import com.qq.tars.common.support.Endpoint;
 import com.qq.tars.common.util.StringUtils;
 import com.qq.tars.protocol.annotation.Servant;
 import com.qq.tars.protocol.util.TarsHelper;
-import com.qq.tars.server.common.ServerLogger;
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.server.config.ServantAdapterConfig;
 import com.qq.tars.server.config.ServerConfig;
@@ -31,8 +28,6 @@ import com.qq.tars.server.core.ServantHomeSkeleton;
 import com.qq.tars.spring.annotation.TarsServant;
 import com.qq.tars.spring.config.TarsClientProperties;
 import com.qq.tars.spring.config.TarsServerProperties;
-import com.qq.tars.support.log.LogConfCacheMngr;
-import com.qq.tars.support.log.LoggerFactory;
 import com.qq.tars.support.trace.TarsTraceZipkinConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -85,7 +80,6 @@ public class TarsStartLifecycle extends BaseAppContext implements SmartLifecycle
             log.info("Start init TarsServer");
 
             initConfig();
-            configLogger();
             loadAppServants();
             initServants();
             appContextStarted();
@@ -131,7 +125,7 @@ public class TarsStartLifecycle extends BaseAppContext implements SmartLifecycle
         servantAdapterConfig.setThreads(serverProperties.getThreads());
         servantAdapterConfig.setQueueCap(serverProperties.getQueueCap());
         servantAdapterConfig.setQueueTimeout(serverProperties.getQueueTimeout());
-        
+
         TarsTraceZipkinConfiguration.getInstance().init();
     }
 
@@ -143,7 +137,7 @@ public class TarsStartLifecycle extends BaseAppContext implements SmartLifecycle
                 skeletonMap.put(skeleton.name(), skeleton);
                 appServantStarted(skeleton);
             } catch (Exception e) {
-                log.error("load servant faild", e);
+                log.error("load servant failed", e);
             }
         }
 
@@ -193,25 +187,5 @@ public class TarsStartLifecycle extends BaseAppContext implements SmartLifecycle
 
         ServerAdapter.bind();
         servantAdapterMap.put("", ServerAdapter);
-    }
-
-    private void configLogger() {
-        Communicator communicator = CommunicatorFactory.getInstance().getCommunicator();
-
-        String objName = ConfigurationManager.getInstance().getServerConfig().getLog();
-        String appName = ConfigurationManager.getInstance().getServerConfig().getApplication();
-        String serviceName = ConfigurationManager.getInstance().getServerConfig().getServerName();
-
-        String defaultLevel = ConfigurationManager.getInstance().getServerConfig().getLogLevel();
-        String defaultRoot = ConfigurationManager.getInstance().getServerConfig().getLogPath();
-        String dataPath = ConfigurationManager.getInstance().getServerConfig().getDataPath();
-
-        LoggerFactory.config(communicator, objName, appName, serviceName, defaultLevel, defaultRoot);
-
-        LogConfCacheMngr.getInstance().init(dataPath);
-        if (StringUtils.isNotEmpty(LogConfCacheMngr.getInstance().getLevel())) {
-            LoggerFactory.setDefaultLoggerLevel(LogConfCacheMngr.getInstance().getLevel());
-        }
-        ServerLogger.init();
     }
 }

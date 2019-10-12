@@ -83,7 +83,7 @@ public class HelloServantImpl implements HelloServant {
 接口的实现类通过注解@TarsServant来暴露服务，其中填写的'HelloObj'为servant名，该名称与管理平台上的名称对应即可。
 
 ## 编写一个Http服务
-此外如果你想使用spring-boot来编写一个http服务，而不使用taf接口的话也是可以的：
+此外如果你想使用spring-boot来编写一个http服务，而不使用tars接口的话也是可以的：
 ```java
 @SpringBootApplication
 @EnableTarsServer

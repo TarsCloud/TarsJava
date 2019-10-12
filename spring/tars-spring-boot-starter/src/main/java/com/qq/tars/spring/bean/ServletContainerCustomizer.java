@@ -44,7 +44,7 @@ public class ServletContainerCustomizer implements WebServerFactoryCustomizer<Co
         Map<String, Object> beans = applicationContext.getBeansWithAnnotation(TarsHttpService.class);
         int port = 8080;
         String host = null;
-        ServerConfig serverCfg = ConfigurationManager.getInstance().getserverConfig();
+        ServerConfig serverCfg = ConfigurationManager.getInstance().getServerConfig();
 
         try {
             for (Object bean : beans.values()) {

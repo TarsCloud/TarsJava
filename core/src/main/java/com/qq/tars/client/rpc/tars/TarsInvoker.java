@@ -17,7 +17,7 @@
 package com.qq.tars.client.rpc.tars;
 
 import com.qq.tars.client.ServantProxyConfig;
-import com.qq.tars.client.cluster.ServantnvokerAliveChecker;
+import com.qq.tars.client.cluster.ServantInvokerAliveChecker;
 import com.qq.tars.client.rpc.ServantClient;
 import com.qq.tars.client.rpc.ServantInvokeContext;
 import com.qq.tars.client.rpc.ServantInvoker;
@@ -93,7 +93,7 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
             throw e;
         } finally {
             if (inv.isNormal()) {
-                setAvailable(ServantnvokerAliveChecker.isAlive(getUrl(), config, ret));
+                setAvailable(ServantInvokerAliveChecker.isAlive(getUrl(), config, ret));
                 InvokeStatHelper.getInstance().addProxyStat(objName)
                         .addInvokeTimeByClient(config.getMasterName(), config.getSlaveName(), config.getSlaveSetName(), config.getSlaveSetArea(),
                                 config.getSlaveSetID(), inv.getMethodName(), getUrl().getHost(), getUrl().getPort(), ret, System.currentTimeMillis() - begin);
