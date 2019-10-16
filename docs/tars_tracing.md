@@ -92,7 +92,7 @@ tars框架内部采用opentracing api来封装调用链数据采集功能，并�
 
 ## tars-java 使用方法
 
-目前tars -java从1.5.0版本开始支持调用链，cpp 版本即将放出，下面以集成zipkin为例介绍。
+目前tars -java从1.6.1版本开始支持调用链，cpp 版本即将放出，下面以集成zipkin为例介绍。
 
 ### 开启调用链 
 
@@ -136,7 +136,7 @@ tars框架内部采用opentracing api来封装调用链数据采集功能，并�
 >   <dependency>
 >         <groupId>com.tencent.tars</groupId>
 >         <artifactId>tars-core</artifactId>
->         <version>1.5.0</version>
+>         <version>1.6.1</version>
 >         <exclusions>  
 >         	<exclusion>  
 >         		<groupId>org.apache.kafka</groupId>  

@@ -21,6 +21,8 @@ import com.qq.tars.common.ClientVersion;
 import com.qq.tars.common.util.Constants;
 import com.qq.tars.common.util.StringUtils;
 
+import java.util.Objects;
+
 public final class ServantProxyConfig {
 
     private String communicatorId;
@@ -188,7 +190,6 @@ public final class ServantProxyConfig {
 
     public void setEnableSet(boolean enableSet) {
         this.enableSet = enableSet;
-        this.updateSlaveName();
     }
 
     public String getSetDivision() {
@@ -198,9 +199,17 @@ public final class ServantProxyConfig {
     public void setSetDivision(String setDivision) {
         this.setDivision = setDivision;
         String[] tmp = StringUtils.split(setDivision, ".");
-        this.slaveSetName = tmp[0];
-        this.slaveSetArea = tmp[1];
-        this.slaveSetID = tmp[2];
+        if (tmp != null && tmp.length == 3) {
+            this.slaveSetName = tmp[0];
+            this.slaveSetArea = tmp[1];
+            this.slaveSetID = tmp[2];
+            this.setEnableSet(true);
+        } else {
+            this.slaveSetName = "";
+            this.slaveSetArea = "";
+            this.slaveSetID = "";
+            this.setEnableSet(false);
+        }
         this.updateSlaveName();
     }
 
@@ -354,13 +363,10 @@ public final class ServantProxyConfig {
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;
         ServantProxyConfig other = (ServantProxyConfig) obj;
-        if (communicatorId == null) {
-            if (other.communicatorId != null) return false;
-        } else if (!communicatorId.equals(other.communicatorId)) return false;
-        if (simpleObjectName == null) {
-            if (other.simpleObjectName != null) return false;
-        } else if (!simpleObjectName.equals(other.simpleObjectName)) return false;
-        return true;
+        if(!Objects.equals(this.communicatorId, other.communicatorId)){
+            return false;
+        }
+        return Objects.equals(this.simpleObjectName, other.simpleObjectName);
     }
 
     @Override

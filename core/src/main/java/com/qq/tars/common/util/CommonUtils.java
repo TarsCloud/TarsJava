@@ -16,6 +16,7 @@
 
 package com.qq.tars.common.util;
 
+import java.util.Collection;
 import java.util.Map;
 
 @SuppressWarnings("unchecked")
@@ -53,6 +54,9 @@ public class CommonUtils {
         return null == array || array.length == 0;
     }
 
+    public static boolean isEmptyCollection(Collection<?> collection) {
+        return collection == null || collection.isEmpty();
+    }
 
     public static boolean isEmptyMap(Map<?, ?> map) {
         return map == null || map.isEmpty();

@@ -54,8 +54,7 @@ class ObjectProxyFactory {
             servantProxyConfig.setCommunicatorId(communicator.getId());
             servantProxyConfig.setModuleName(communicator.getCommunicatorConfig().getModuleName(), communicator.getCommunicatorConfig().isEnableSet(), communicator.getCommunicatorConfig().getSetDivision());
             servantProxyConfig.setLocator(communicator.getCommunicatorConfig().getLocator());
-            if (setDivision != null) {
-                servantProxyConfig.setEnableSet(true);
+            if (StringUtils.isNotEmpty(setDivision)) {
                 servantProxyConfig.setSetDivision(setDivision);
             }
         }
@@ -83,7 +82,7 @@ class ObjectProxyFactory {
             servantProxyConfig.setProtocol(codec.getProtocol());
             protocolInvoker = new TarsProtocolInvoker<T>(api, servantProxyConfig, new ServantProtocolFactory(codec), communicator.getThreadPoolExecutor());
         } else {
-            throw new ClientException(servantProxyConfig.getSimpleObjectName(), "unkonw protocol servant invoker", null);
+            throw new ClientException(servantProxyConfig.getSimpleObjectName(), "unknown protocol servant invoker", null);
         }
         return protocolInvoker;
     }
@@ -113,14 +112,14 @@ class ObjectProxyFactory {
     private ServantProxyConfig createServantProxyConfig(String objName, String setDivision) throws CommunicatorConfigException {
         CommunicatorConfig communicatorConfig = communicator.getCommunicatorConfig();
         ServantProxyConfig cfg = new ServantProxyConfig(communicator.getId(), communicatorConfig.getLocator(), objName);
-        cfg.setModuleName(communicatorConfig.getModuleName(), communicatorConfig.isEnableSet(), communicatorConfig.getSetDivision());
-        if (setDivision != null) {
-            cfg.setEnableSet(true);
-            cfg.setSetDivision(setDivision);
-        }
         cfg.setAsyncTimeout(communicatorConfig.getAsyncInvokeTimeout());
         cfg.setSyncTimeout(communicatorConfig.getSyncInvokeTimeout());
 
+        if (StringUtils.isNotEmpty(setDivision)) {
+            cfg.setSetDivision(setDivision);
+        }
+
+        cfg.setModuleName(communicatorConfig.getModuleName(), communicatorConfig.isEnableSet(), communicatorConfig.getSetDivision());
         cfg.setStat(communicatorConfig.getStat());
         cfg.setCharsetName(communicatorConfig.getCharsetName());
         cfg.setConnections(communicatorConfig.getConnections());

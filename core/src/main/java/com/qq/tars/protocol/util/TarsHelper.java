@@ -101,12 +101,12 @@ public class TarsHelper {
     public static final String STATUS_RESULT_DESC = "STATUS_RESULT_DESC";
 
     public static final Boolean STAMP_BOOLEAN = Boolean.TRUE;
-    public static final Byte STAMP_BYTE = Byte.valueOf((byte) 0);
-    public static final Short STAMP_SHORT = Short.valueOf((short) 0);
-    public static final Float STAMP_FLOAT = Float.valueOf(0);
-    public static final Integer STAMP_INT = Integer.valueOf(0);
-    public static final Long STAMP_LONG = Long.valueOf(0);
-    public static final Double STAMP_DOUBLE = Double.valueOf(0);
+    public static final Byte STAMP_BYTE = (byte) 0;
+    public static final Short STAMP_SHORT = (short) 0;
+    public static final Float STAMP_FLOAT = (float) 0;
+    public static final Integer STAMP_INT = 0;
+    public static final Long STAMP_LONG = 0L;
+    public static final Double STAMP_DOUBLE = (double) 0;
     public static final String STAMP_STRING = "";
 
     public static final boolean[] STAMP_BOOLEAN_ARRAY = new boolean[]{true};
@@ -278,7 +278,7 @@ public class TarsHelper {
                         }
 
                         try {
-                            Collections.sort(fieldList, tarsStructFieldsListComparator);
+                            fieldList.sort(tarsStructFieldsListComparator);
                         } catch (Exception e) {
                             throw new RuntimeException("class[" + clazz + "] , Annotation StructProperty order error: " + e.getMessage(), e);
                         }
@@ -578,7 +578,7 @@ public class TarsHelper {
             return value;
         } else if (value instanceof Byte && ((Byte) value).intValue() != 0) {
             return value;
-        } else if (value instanceof Boolean && ((Boolean) value).booleanValue() != false) {
+        } else if (value instanceof Boolean && ((Boolean) value).booleanValue()) {
             return value;
         } else if (value instanceof String) {
             return value;

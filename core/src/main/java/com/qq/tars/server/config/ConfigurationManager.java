@@ -26,17 +26,15 @@ public class ConfigurationManager {
 
     private static final ConfigurationManager instance = new ConfigurationManager();
 
+    private ConfigurationManager() {
+    }
+
     private volatile ServerConfig serverConfig;
 
     private volatile CommunicatorConfig communicatorConfig;
 
     public static ConfigurationManager getInstance() {
         return instance;
-    }
-
-    @Deprecated
-    public ServerConfig getserverConfig() {
-        return serverConfig;
     }
 
     public ServerConfig getServerConfig() {

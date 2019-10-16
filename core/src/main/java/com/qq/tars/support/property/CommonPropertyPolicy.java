@@ -108,7 +108,7 @@ public class CommonPropertyPolicy {
 
         public Distr(List<Integer> list) {
             if (list == null || list.size() == 0) {
-                throw new TarsException("ProperyReport|Distr initial list object can not be empty");
+                throw new TarsException("PropertyReport|Distr initial list object can not be empty");
             }
 
             this.data = new HashSet<Integer>(list).toArray(II);

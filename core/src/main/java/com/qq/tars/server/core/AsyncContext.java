@@ -73,7 +73,7 @@ public final class AsyncContext {
 
         getCapHomeSkeleton().postInvokeCapHomeSkeleton();
         Long startTime = this.context.getAttribute(Context.INTERNAL_START_TIME);
-        TarsServantProcessor.printServiceFlowLog(flowLogger, this.context.request(), response.getRet(), (System.currentTimeMillis() - startTime.longValue()), ex.toString());
+        TarsServantProcessor.printServiceFlowLog(flowLogger, this.context.request(), response.getRet(), (System.currentTimeMillis() - startTime), ex.toString());
 
     }
 
@@ -86,6 +86,6 @@ public final class AsyncContext {
 
         getCapHomeSkeleton().postInvokeCapHomeSkeleton();
         Long startTime = this.context.getAttribute(Context.INTERNAL_START_TIME);
-        TarsServantProcessor.printServiceFlowLog(flowLogger, this.context.request(), response.getRet(), (System.currentTimeMillis() - startTime.longValue()), "");
+        TarsServantProcessor.printServiceFlowLog(flowLogger, this.context.request(), response.getRet(), (System.currentTimeMillis() - startTime), "");
     }
 }

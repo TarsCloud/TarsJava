@@ -18,9 +18,11 @@ package com.qq.tars.client;
 
 import com.qq.tars.common.util.Config;
 import com.qq.tars.common.util.Constants;
+import com.qq.tars.common.util.StringUtils;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Objects;
 
 public class CommunicatorConfig {
 
@@ -100,10 +102,7 @@ public class CommunicatorConfig {
 
 
         if (enableSet && setDivision != null) {
-            String[] tmp = setDivision.split("\\.");
-            setName = tmp[0];
-            setArea = tmp[1];
-            setID = tmp[2];
+            this.setSetDivision(setDivision);
         }
 
         connections = conf.getInt("/tars/application/client<connections>", Constants.default_connections);
@@ -255,10 +254,18 @@ public class CommunicatorConfig {
     public CommunicatorConfig setSetDivision(String setDivision) {
         this.setDivision = setDivision;
         if (setDivision != null) {
-            String[] tmp = setDivision.split(".");
-            setName = tmp[0];
-            setArea = tmp[1];
-            setID = tmp[2];
+            String[] tmp = StringUtils.split(setDivision, ".");
+            if (tmp != null && tmp.length == 3) {
+                setName = tmp[0];
+                setArea = tmp[1];
+                setID = tmp[2];
+                enableSet = true;
+            } else {
+                setName = "";
+                setArea = "";
+                setID = "";
+                enableSet = false;
+            }
         }
         return this;
     }
@@ -380,13 +387,10 @@ public class CommunicatorConfig {
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;
         CommunicatorConfig other = (CommunicatorConfig) obj;
-        if (locator == null) {
-            if (other.locator != null) return false;
-        } else if (!locator.equals(other.locator)) return false;
-        if (moduleName == null) {
-            if (other.moduleName != null) return false;
-        } else if (!moduleName.equals(other.moduleName)) return false;
-        return true;
+        if(!Objects.equals(this.locator,other.locator)){
+            return false;
+        }
+        return Objects.equals(this.moduleName, other.moduleName);
     }
 
     @Override

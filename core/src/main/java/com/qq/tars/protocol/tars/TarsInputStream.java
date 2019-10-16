@@ -24,11 +24,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class TarsInputStream {
 
@@ -105,8 +101,7 @@ public final class TarsInputStream {
                 skip(len);
                 skipField(hd.type);
             }
-        } catch (TarsDecodeException e) {
-        } catch (BufferUnderflowException e) {
+        } catch (TarsDecodeException | BufferUnderflowException e) {
         }
         return false;
     }
@@ -776,9 +771,7 @@ public final class TarsInputStream {
         }
         T[] tt = readArrayImpl(l.get(0), tag, isRequire);
         if (tt == null) return null;
-        ArrayList<T> ll = new ArrayList<T>();
-        for (int i = 0; i < tt.length; ++i)
-            ll.add(tt[i]);
+        ArrayList<T> ll = new ArrayList<T>(Arrays.asList(tt));
         return ll;
     }
 

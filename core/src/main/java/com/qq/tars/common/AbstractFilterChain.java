@@ -1,6 +1,5 @@
 package com.qq.tars.common;
 
-import com.qq.tars.common.util.CollectionUtils;
 import com.qq.tars.net.core.Request;
 import com.qq.tars.net.core.Response;
 
@@ -9,27 +8,24 @@ import java.util.List;
 
 public abstract class AbstractFilterChain<T> implements FilterChain {
 
-    private List<Filter> filters;
-
     protected String servant;
-
     protected FilterKind kind;
-
     protected T target;
-
-    private Iterator<Filter> iteator;
+    private Iterator<Filter> iterator;
 
     public AbstractFilterChain(List<Filter> filters, String servant, FilterKind kind, T target) {
-        this.filters = filters;
         this.servant = servant;
         this.kind = kind;
         this.target = target;
+        if (filters != null) {
+            this.iterator = filters.iterator();
+        }
     }
 
     @Override
     public void doFilter(Request request, Response response) throws Throwable {
         Filter filter = getFilter();
-        if (CollectionUtils.isNotEmpty(filters)) {
+        if (filter != null) {
             filter.doFilter(request, response, this);
         } else {
             doRealInvoke(request, response);
@@ -38,17 +34,7 @@ public abstract class AbstractFilterChain<T> implements FilterChain {
     }
 
     private Filter getFilter() {
-
-        if (CollectionUtils.isEmpty(filters)) {
-            return null;
-        }
-        if (iteator == null) {
-            iteator = filters.iterator();
-        }
-        if (iteator.hasNext()) {
-            return iteator.next();
-        }
-        return null;
+        return iterator != null && iterator.hasNext() ? iterator.next() : null;
     }
 
     protected abstract void doRealInvoke(Request request, Response response) throws Throwable;

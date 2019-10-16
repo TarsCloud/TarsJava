@@ -14,7 +14,7 @@ public class TraceContext implements Closeable {
 	
 	private TraceContext() {}
 	
-	public static TraceContext getIntance() {
+	public static TraceContext getInstance() {
 		return instance;
 	}
 	

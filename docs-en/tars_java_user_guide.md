@@ -21,7 +21,7 @@ Add dependent jar packages in the build project **pom.xml**
 <dependency>
     <groupId>com.tencent.tars</groupId>
     <artifactId>tars-server</artifactId>
-    <version>1.4.0</version>
+    <version>1.6.1</version>
     <type>jar</type>
 </dependency>
 ```
@@ -30,7 +30,7 @@ Add dependent jar packages in the build project **pom.xml**
 <plugin>
     <groupId>com.tencent.tars</groupId>
     <artifactId>tars-maven-plugin</artifactId>
-    <version>1.4.0</version>
+    <version>1.6.1</version>
     <configuration>
 	<tars2JavaConfig>
 	    <tarsFiles>
@@ -65,7 +65,7 @@ Provide plug-in compile to generate java code, add java file configuration in ta
 <plugin>
 	<groupId>com.tencent.tars</groupId>
 	<artifactId>tars-maven-plugin</artifactId>
-	<version>1.4.0</version>
+	<version>1.6.1</version>
 	<configuration>
 		<tars2JavaConfig>
 			<!-- Tars file location -->

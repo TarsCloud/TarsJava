@@ -213,8 +213,7 @@ public class UniAttribute extends OldUniAttribute {
     private Object decodeData(byte[] data, Object proxy) {
         _is.warp(data);
         _is.setServerEncoding(encodeName);
-        Object o = _is.read(proxy, 0, true);
-        return o;
+        return _is.read(proxy, 0, true);
     }
 
     private void saveDataCache(String name, Object o) {

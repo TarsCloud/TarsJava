@@ -163,7 +163,7 @@ public class ServantClient {
         try {
             ensureConnected();
             request.setInvokeStatus(InvokeStatus.ASYNC_CALL);
-            ticket = TicketManager.createTicket(request, session, this.asyncTimeout, callback);
+            ticket = TicketManager.createTicket(request, session, this.asyncTimeout, callback, selectorManager);
 
             Session current = session;
             current.write(request);

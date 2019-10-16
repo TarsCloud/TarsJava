@@ -29,7 +29,7 @@ public abstract class Response {
 
     protected transient boolean asyncMode = false;
 
-    private volatile boolean commited = false;
+    private volatile boolean committed = false;
 
     public Response(Session session) {
         this.session = session;
@@ -65,7 +65,7 @@ public abstract class Response {
     }
 
     private synchronized void ensureNotCommitted() {
-        if (commited) throw new IllegalStateException("Not allowed after response has committed.");
-        this.commited = true;
+        if (committed) throw new IllegalStateException("Not allowed after response has committed.");
+        this.committed = true;
     }
 }

@@ -125,7 +125,7 @@ public final class ObjectProxy<T> implements ServantProxy, InvocationHandler {
 
     public void refresh() {
         synchronized (refreshLock) {
-            registryStatReproter();
+            registryStatReporter();
             registryServantNodeRefresher();
             protocolInvoker.refresh();
             loadBalancer.refresh(protocolInvoker.getInvokers());
@@ -148,21 +148,21 @@ public final class ObjectProxy<T> implements ServantProxy, InvocationHandler {
         loadBalancer.refresh(protocolInvoker.getInvokers());
 
         if (StringUtils.isNotEmpty(this.servantProxyConfig.getLocator()) && !StringUtils.isEmpty(this.servantProxyConfig.getStat())) {
-            this.registryStatReproter();
+            this.registryStatReporter();
         }
         if (!servantProxyConfig.isDirectConnection()) {
             this.registryServantNodeRefresher();
         }
     }
 
-    private void registryStatReproter() {
+    private void registryStatReporter() {
         if (this.statReportFuture != null && !this.statReportFuture.isCancelled()) {
             this.statReportFuture.cancel(false);
         }
         if (!StringUtils.isEmpty(communicator.getCommunicatorConfig().getStat())) {
             int interval = servantProxyConfig.getReportInterval();
             int initialDelay = interval + (random.nextInt(30) * 1000);
-            this.statReportFuture = ScheduledExecutorManager.getInstance().scheduleAtFixedRate(new ServantStatReproter(), initialDelay, interval, TimeUnit.MILLISECONDS);
+            this.statReportFuture = ScheduledExecutorManager.getInstance().scheduleAtFixedRate(new ServantStatReporter(), initialDelay, interval, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -203,7 +203,7 @@ public final class ObjectProxy<T> implements ServantProxy, InvocationHandler {
         }
     }
 
-    private class ServantStatReproter implements Runnable {
+    private class ServantStatReporter implements Runnable {
 
         public void run() {
             long begin = System.currentTimeMillis();

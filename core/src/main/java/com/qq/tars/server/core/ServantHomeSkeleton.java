@@ -69,7 +69,7 @@ public class ServantHomeSkeleton extends AppService {
         return args;
     }
 
-    private final Object fixValueDataType(Class<?> dataType, Object value) {
+    private Object fixValueDataType(Class<?> dataType, Object value) {
         Object dataValue = value;
 
         if (dataType != null && dataValue != null) {

@@ -16,7 +16,7 @@
 
 package com.qq.tars.spring.bean;
 
-import com.qq.tars.server.config.ConfigurationManager;
+import com.qq.tars.server.core.Server;
 import com.qq.tars.spring.annotation.RemotePropertySource;
 import com.qq.tars.support.config.ConfigHelper;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
@@ -34,7 +34,7 @@ public class PropertiesListener implements ApplicationListener<ApplicationEnviro
         RemotePropertySource sources = event.getSpringApplication()
                 .getMainApplicationClass().getAnnotation(RemotePropertySource.class);
 
-        String configPath = ConfigurationManager.getInstance().getserverConfig().getBasePath() + "/conf/";
+        String configPath = Server.getInstance().getServerConfig().getBasePath() + "/conf/";
         if (sources != null) {
             for (String name : sources.value()) {
                 try {

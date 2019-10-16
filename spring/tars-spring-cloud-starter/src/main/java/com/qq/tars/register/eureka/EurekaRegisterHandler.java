@@ -49,7 +49,7 @@ public class EurekaRegisterHandler implements RegisterHandler {
     @Autowired
     private TarsClientProperties clientProperties;
 
-    private AtomicBoolean isRegisted = new AtomicBoolean(false);
+    private AtomicBoolean isRegistered = new AtomicBoolean(false);
 
     public EurekaRegisterHandler(EurekaClient client, TarsEurekaInstance instanceConfig,
                                  HealthCheckHandler healthCheckHandler, ApplicationInfoManager applicationInfoManager) {
@@ -71,7 +71,7 @@ public class EurekaRegisterHandler implements RegisterHandler {
     }
 
     public void start() {
-        if (isRegisted.compareAndSet(false, true)) {
+        if (isRegistered.compareAndSet(false, true)) {
             if (instanceConfig.getNonSecurePort() > 0) {
                 client.getApplications();
                 applicationInfoManager.setInstanceStatus(instanceConfig.getInitialStatus());

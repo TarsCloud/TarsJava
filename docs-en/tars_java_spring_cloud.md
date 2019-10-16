@@ -21,7 +21,7 @@ Here are the steps to create and publish a service:
 <dependency>
     <groupId>com.tencent.tars</groupId>
     <artifactId>tars-spring-cloud-starter</artifactId>
-    <version>1.4.0</version>
+    <version>1.6.1</version>
 </dependency>
 ```
 
@@ -109,7 +109,7 @@ Here's how to discover and access a service.
 <dependency>
     <groupId>com.tencent.tars</groupId>
     <artifactId>tars-spring-cloud-starter</artifactId>
-    <version>1.4.0</version>
+    <version>1.6.1</version>
 </dependency>
 ```
 

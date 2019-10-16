@@ -5,7 +5,7 @@
 Tars支持使用通过spring boot的方式编写tars服务，使用此功能需要依赖tars-spring-boot-starter.jar包，以及spring boot 2.0及以上版本。你可以将你的servant作为一个Spring bean，注解暴露spring bean即可。
 
 ## demo工程
-demo工程参考[demo工程](https://github.com/Tencent/Tars/tree/master/java/examples/tars-spring-boot-server)
+demo工程参考[demo工程](https://github.com/TarsCloud/TarsJava/tree/master/examples/tars-spring-boot-server)
 
 ## 依赖配置
 
@@ -31,7 +31,7 @@ demo工程参考[demo工程](https://github.com/Tencent/Tars/tree/master/java/ex
         <dependency>
             <groupId>com.tencent.tars</groupId>
             <artifactId>tars-spring-boot-starter</artifactId>
-            <version>1.5.0</version>
+            <version>1.6.1</version>
         </dependency>
     </dependencies>
 ```
@@ -167,7 +167,7 @@ public @interface TarsClient {
 
 ## 版本升级指南
 
-如需使用tars-spring-boot的新功能需要将tars升级到1.5.0版本及以上版本，本次改动相对较大，附上版本升级指南：
+如需使用tars-spring-boot的新功能需要将tars升级到1.6.1版本及以上版本，本次改动相对较大，附上版本升级指南：
 1. 管理平台需要重新编译升级。
 2. tars-node需要升级到新版本。
 3. 模板选择需要选tars.tarsjava.springboot模版。如果不是重新搭建环境可自行添加模板，父模板选择tars.tarsjava.default，内容如下：

@@ -65,7 +65,7 @@ public class DistributedContextImpl implements DistributedContext {
 		return item;
 	}
 
-	public Map<String, Object> getAttrbuites() {
+	public Map<String, Object> getAttributes() {
 		return getItem().getMap();
 	}
 

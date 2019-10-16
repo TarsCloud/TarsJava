@@ -27,14 +27,14 @@ public class DistributedContextManager {
 	private static DistributedContextCodec _codec;
 	
 	private static boolean canCodec() {
-		return _codec == null ? false : true;
+		return _codec != null;
 	}
 	
-	public static final DistributedContext getDistributedContext() {
+	public static DistributedContext getDistributedContext() {
 		return context;
 	}
 	
-	public static final void releaseDistributedContext() {
+	public static void releaseDistributedContext() {
 		getDistributedContext().clear();
 	}
 	
@@ -44,7 +44,7 @@ public class DistributedContextManager {
 	
 	public static byte[] serializeContext2Bytes() throws CodecException {
 		if (canCodec()) {
-			return _codec.context2Bytes(getDistributedContext().getAttrbuites());
+			return _codec.context2Bytes(getDistributedContext().getAttributes());
 		} else {
 			throw new CodecException("codec is null");
 		}
@@ -61,9 +61,9 @@ public class DistributedContextManager {
 		}
 	}
 	
-	public static String seriallizeContext2String() throws CodecException {
+	public static String serializeContext2String() throws CodecException {
 		if (canCodec()) {
-			return _codec.context2String(getDistributedContext().getAttrbuites());
+			return _codec.context2String(getDistributedContext().getAttributes());
 		} else {
 			throw new CodecException("codec is null");
 		}
