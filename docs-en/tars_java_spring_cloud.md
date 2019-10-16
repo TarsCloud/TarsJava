@@ -121,13 +121,13 @@ Here's how to discover and access a service.
 @Servant
 public interface HelloPrx {
 
-	public String hello(int no, String name);
+	 String hello(int no, String name);
 
-	public String hello(int no, String name, @TarsContext java.util.Map<String, String> ctx);
+	 String hello(int no, String name, @TarsContext java.util.Map<String, String> ctx);
 
-	public void async_hello(@TarsCallback HelloPrxCallback callback, int no, String name);
+	 void async_hello(@TarsCallback HelloPrxCallback callback, int no, String name);
 
-	public void async_hello(@TarsCallback HelloPrxCallback callback, int no, String name, @TarsContext java.util.Map<String, String> ctx);
+	 void async_hello(@TarsCallback HelloPrxCallback callback, int no, String name, @TarsContext java.util.Map<String, String> ctx);
 }
 ```
 

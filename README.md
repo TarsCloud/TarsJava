@@ -2,6 +2,8 @@
 
 Tars Java - An RPC library and framework
 ========================================
+[![Latest release](https://img.shields.io/github/v/release/tarsCloud/TarsJava)](https://github.com/TarsCloud/TarsJava/releases/latest)
+
 
 This project is the source code of the Tars RPC framework Java language.
 
