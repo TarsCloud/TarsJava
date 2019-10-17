@@ -149,7 +149,7 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
     }
 
     @SuppressWarnings("unchecked")
-    private void invokeWithAsync(Method method, Object args[], Map<String, String> context) throws Throwable {
+    private void invokeWithAsync(Method method, Object[] args, Map<String, String> context) throws Throwable {
         ServantClient client = getClient();
         TarsServantRequest request = new TarsServantRequest(client.getIoSession());
         request.setVersion(TarsHelper.VERSION);
@@ -182,7 +182,7 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
 
         DistributedContext distributedContext = DistributedContextManager.getDistributedContext();
         Boolean bDyeing = distributedContext.get(DyeingSwitch.BDYEING);
-        if (bDyeing != null && bDyeing == true) {
+        if (bDyeing != null && bDyeing) {
             request.setMessageType(request.getMessageType() | TarsHelper.MESSAGETYPEDYED);
             HashMap<String, String> status = new HashMap<>();
             String routeKey = distributedContext.get(DyeingSwitch.DYEINGKEY);
