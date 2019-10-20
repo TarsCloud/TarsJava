@@ -73,13 +73,13 @@ public class ServantHomeSkeleton extends AppService {
         Object dataValue = value;
 
         if (dataType != null && dataValue != null) {
-            if ("short" == dataType.getName()) {
+            if ("short".equals(dataType.getName())) {
                 dataValue = Short.valueOf(dataValue.toString());
-            } else if ("byte" == dataType.getName()) {
+            } else if ("byte".equals(dataType.getName())) {
                 dataValue = Byte.valueOf(dataValue.toString());
             } else if (char.class == dataType) {
                 dataValue = ((String) value).charAt(0);
-            } else if ("float" == dataType.getName()) {
+            } else if ("float".equals(dataType.getName())) {
                 dataValue = Float.valueOf(dataValue.toString());
             }
         }
