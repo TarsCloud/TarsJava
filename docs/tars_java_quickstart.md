@@ -211,7 +211,7 @@ public static void main(String[] args) {
         CommunicatorConfig cfg = new CommunicatorConfig();
         // 从本地启动的Communcator
         Communicator communicator = CommunicatorFactory.getInstance().getCommunicator(cfg);
-        //若是部署在tars平台启动的项目， 只能使用CommunicatorFactory.getInstance().getCommunicator()构造函数获取communcator
+        //若是部署在tars平台启动的项目，  平台的communcator只能使用CommunicatorFactory.getInstance().getCommunicator()构造函数获取communcator
         //且需要保证平台的框架都执行完成后（com.qq.tars.server.startup.Main）
         //才可以得到平台构造的communcator
         //Communicator communicator = CommunicatorFactory.getInstance().getCommunicator();
@@ -228,7 +228,7 @@ public static void main(String[] args) {
         CommunicatorConfig cfg = new CommunicatorConfig();
         // 从本地启动的Communcator
         Communicator communicator = CommunicatorFactory.getInstance().getCommunicator(cfg);
-        //若是部署在tars平台启动的项目， 只能使用CommunicatorFactory.getInstance().getCommunicator()构造函数获取communcator
+        //若是部署在tars平台启动的项目， 平台的communcator只能使用CommunicatorFactory.getInstance().getCommunicator()构造函数获取communcator
         //且需要保证平台的框架都执行完成后（com.qq.tars.server.startup.Main）
         //才可以得到平台构造的communcator
         //Communicator communicator = CommunicatorFactory.getInstance().getCommunicator();
