@@ -207,9 +207,14 @@ public interface HelloPrx {
 - 同步调用
 ```java
 public static void main(String[] args) {
-	CommunicatorConfig cfg = new CommunicatorConfig();
-        //构建通信器
+        // 从本地启动的配置
+        CommunicatorConfig cfg = new CommunicatorConfig();
+        // 从本地启动的Communcator
         Communicator communicator = CommunicatorFactory.getInstance().getCommunicator(cfg);
+        //若是部署在tars平台启动的项目，  平台的communcator只能使用CommunicatorFactory.getInstance().getCommunicator()构造函数获取communcator
+        //且需要保证平台的框架都执行完成后（com.qq.tars.server.startup.Main）
+        //才可以得到平台构造的communcator
+        //Communicator communicator = CommunicatorFactory.getInstance().getCommunicator();
         //通过通信器，生成代理对象
         HelloPrx proxy = communicator.stringToProxy(HelloPrx.class, "TestApp.HelloServer.HelloObj");
         String ret = proxy.hello(1000, "HelloWorld");
@@ -219,9 +224,14 @@ public static void main(String[] args) {
 - 异步调用
 ```java
 public static void main(String[] args) {
-	CommunicatorConfig cfg = new CommunicatorConfig();
-        //构建通信器
+        // 从本地启动的配置
+        CommunicatorConfig cfg = new CommunicatorConfig();
+        // 从本地启动的Communcator
         Communicator communicator = CommunicatorFactory.getInstance().getCommunicator(cfg);
+        //若是部署在tars平台启动的项目， 平台的communcator只能使用CommunicatorFactory.getInstance().getCommunicator()构造函数获取communcator
+        //且需要保证平台的框架都执行完成后（com.qq.tars.server.startup.Main）
+        //才可以得到平台构造的communcator
+        //Communicator communicator = CommunicatorFactory.getInstance().getCommunicator();
         //通过通信器，生成代理对象
         HelloPrx proxy = communicator.stringToProxy(HelloPrx.class, "TestApp.HelloServer.HelloObj");
         proxy.async_hello(new HelloPrxCallback() {
@@ -289,7 +299,8 @@ public static void main(String[] args) {
   -“服务类型”指你的服务程序用什么语言写的，例如：java的选择“tars_java”。
   -“模版“ 指你的服务程序在启动时，设置的配置文件的名称，默认用”tars.tarsjavadefault“即可。
   -“节点“ 指服务部署的机器IP。
-  -“Set分组“ 指设置服务的Set分组信息，Set信息包括3部分：Set名、Set地区、Set组名。
+  -“Set分组“ 指设置服务的Set分组信息，Set信息包括3部分：Set名、Set地区、Set组名。### 服务发布
+
   -“OBJ名称“ 指Servant的名称。
   -“OBJ绑定IP“ 指服务绑定的机器IP，一般与节点一样。
   -“端口“ 指OBJ要绑定的端口。
@@ -306,7 +317,6 @@ public static void main(String[] args) {
 
 在管理系统上的部署暂时先到这里，到此为止，只是使你的服务在管理系统上占了个位置，真实程序尚未发布。
 
-### 服务发布
 
 在管理系统的菜单树下，找到你部署的服务，点击进入服务页面。 
 
