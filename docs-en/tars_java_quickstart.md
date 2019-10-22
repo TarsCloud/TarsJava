@@ -238,6 +238,7 @@ public static void main(String[] args) {
         // use local communcator 
         Communicator communicator = CommunicatorFactory.getInstance().getCommunicator(cfg);
         //Start from the Tars platform, using the following apis
+        //com.qq.tars.server.startup.Main(args);
         //Communicator communicator = CommunicatorFactory.getInstance().getCommunicator();
         //generate proxy objects through the communicator
         HelloPrx proxy = communicator.stringToProxy(HelloPrx.class, "TestApp.HelloServer.HelloObj");
@@ -254,6 +255,7 @@ public static void main(String[] args) {
         //Use local communcator 
         Communicator communicator = CommunicatorFactory.getInstance().getCommunicator(cfg);
         //Start from the Tars platform, using the following apis
+        //com.qq.tars.server.startup.Main(args);
         //Communicator communicator = CommunicatorFactory.getInstance().getCommunicator();
         //generate proxy objects through the communicator
         HelloPrx proxy = communicator.stringToProxy(HelloPrx.class, "TestApp.HelloServer.HelloObj");
