@@ -52,7 +52,7 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
         this.servantProxyConfig = config;
         this.threadPoolExecutor = threadPoolExecutor;
         this.protocolFactory = protocolFactory;
-        this.initInvoker();
+        this.allInvoker = this.initInvoker();
     }
 
     public abstract Invoker<T> create(Class<T> api, Url url) throws Exception;
@@ -70,7 +70,6 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
         logger.info("try to refresh " + servantProxyConfig.getSimpleObjectName());
         final List<Invoker<T>> invokers = new ArrayList<>(allInvoker);//copy invoker for destroy
         this.allInvoker = this.initInvoker();
-        this.initInvoker();
         destroy(invokers);
     }
 

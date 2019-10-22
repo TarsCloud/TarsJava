@@ -76,7 +76,9 @@ public class TarsCallbackWrapper implements Callback<TarsServantResponse> {
         } catch (Throwable ex) {
             ret = Constants.INVOKE_STATUS_EXEC;
             logger.error("error occurred on callback completed", ex);
-            onException(ex);
+            // fix: callback.onException() invoked in TarsAbstractCallback#doRealInvoke when execute exception, then throw ex
+            // so callback.onException() will be called twice!
+            // onException(ex);
         } finally {
             afterCallback();
             InvokeStatHelper.getInstance().addProxyStat(objName).addInvokeTimeByClient(config.getModuleName(), config.getSlaveName(), config.getSlaveSetName(), config.getSlaveSetArea(), config.getSlaveSetID(), methodName, remoteIp, remotePort, ret, System.currentTimeMillis() - bornTime);
