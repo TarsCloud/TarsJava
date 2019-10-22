@@ -211,8 +211,9 @@ public static void main(String[] args) {
         CommunicatorConfig cfg = new CommunicatorConfig();
         // 从本地启动的Communcator
         Communicator communicator = CommunicatorFactory.getInstance().getCommunicator(cfg);
-        //若是部署在tars平台启动的， 只能使用下面的构造器获取communcator
-        //com.qq.tars.server.startup.Main(args);  // 需要保证平台的框架都执行完成后，才可以得到平台构造的communcator
+        //若是部署在tars平台启动的项目， 只能使用CommunicatorFactory.getInstance().getCommunicator()构造函数获取communcator
+        //且需要保证平台的框架都执行完成后（com.qq.tars.server.startup.Main）
+        //才可以得到平台构造的communcator
         //Communicator communicator = CommunicatorFactory.getInstance().getCommunicator();
         //通过通信器，生成代理对象
         HelloPrx proxy = communicator.stringToProxy(HelloPrx.class, "TestApp.HelloServer.HelloObj");
@@ -227,8 +228,9 @@ public static void main(String[] args) {
         CommunicatorConfig cfg = new CommunicatorConfig();
         // 从本地启动的Communcator
         Communicator communicator = CommunicatorFactory.getInstance().getCommunicator(cfg);
-        //若是部署在tars平台启动的， 只能使用下面的构造器获取communcator
-        //com.qq.tars.server.startup.Main(args);  // 需要保证平台的框架都执行完成后，才可以得到平台构造的communcator
+        //若是部署在tars平台启动的项目， 只能使用CommunicatorFactory.getInstance().getCommunicator()构造函数获取communcator
+        //且需要保证平台的框架都执行完成后（com.qq.tars.server.startup.Main）
+        //才可以得到平台构造的communcator
         //Communicator communicator = CommunicatorFactory.getInstance().getCommunicator();
         //通过通信器，生成代理对象
         HelloPrx proxy = communicator.stringToProxy(HelloPrx.class, "TestApp.HelloServer.HelloObj");
