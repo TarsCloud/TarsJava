@@ -30,6 +30,6 @@ public interface DistributedContext {
 
     int size();
     
-    Map<String, Object> getAttrbuites();
+    Map<String, Object> getAttributes();
 
 }
