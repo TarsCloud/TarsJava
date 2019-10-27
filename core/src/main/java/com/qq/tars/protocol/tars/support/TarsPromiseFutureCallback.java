@@ -50,19 +50,16 @@ public class TarsPromiseFutureCallback<V> implements Callback<TarsServantRespons
         int ret = Constants.INVOKE_STATUS_SUCC;
         try {
             if (response.getCause() != null) {
-                completableFuture.completeExceptionally(new TarsException(response.getCause()));
                 throw new TarsException(response.getCause());
 
             }
             if (response.getRet() != TarsHelper.SERVERSUCCESS) {
-                completableFuture.completeExceptionally(ServerException.makeException(response.getRet()));
                 throw ServerException.makeException(response.getRet());
             }
             TarsPromiseFutureCallback.this.completableFuture.complete((V) response.getResult());
         } catch (Throwable ex) {
             ret = Constants.INVOKE_STATUS_EXEC;
             logger.error("error occurred on callback completed", ex);
-            completableFuture.completeExceptionally(ServerException.makeException(ret));
             onException(ex);
         } finally {
             invoker.setAvailable(ServantInvokerAliveChecker.isAlive(invoker.getUrl(), config, ret));

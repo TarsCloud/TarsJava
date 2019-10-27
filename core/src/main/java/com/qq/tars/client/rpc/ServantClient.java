@@ -179,7 +179,7 @@ public class ServantClient {
         Ticket<T> ticket = null;
         try {
             ensureConnected();
-            request.setInvokeStatus(InvokeStatus.ASYNC_CALL);
+            request.setInvokeStatus(InvokeStatus.FUTURE_CALL);
             ticket = TicketManager.createTicket(request, session, this.syncTimeout, callback);
 
             Session current = session;
