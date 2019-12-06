@@ -67,7 +67,7 @@ public class TarsServerStartLifecycle implements SmartLifecycle, ApplicationCont
 
     @Override
     public void stop(Runnable runnable) {
-
+        runnable.run();
     }
 
     @Override
