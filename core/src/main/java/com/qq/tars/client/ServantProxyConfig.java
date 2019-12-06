@@ -200,15 +200,17 @@ public final class ServantProxyConfig {
             return;
         }
         this.setDivision = setDivision;
+        String[] tmp = StringUtils.split(setDivision, ".");
+        if (tmp != null && tmp.length >= 3) {
+            this.slaveSetName = tmp[0];
             this.slaveSetArea = tmp[1];
             this.slaveSetID = tmp[2];
+            this.setEnableSet(true);
         } else {
-            this.slaveName = "";
+            this.slaveSetName = "";
             this.slaveSetArea = "";
             this.slaveSetID = "";
-            String[] tmp = StringUtils.split(setDivision, ".");
-            if (tmp.length >= 3) {
-                this.slaveSetName = tmp[0];
+            this.setEnableSet(false);
         }
         this.updateSlaveName();
     }
