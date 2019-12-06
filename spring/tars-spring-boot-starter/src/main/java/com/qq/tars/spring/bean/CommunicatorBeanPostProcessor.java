@@ -78,13 +78,12 @@ public class CommunicatorBeanPostProcessor implements BeanPostProcessor {
             }
             config.setConnections(annotation.connections());
             config.setConnectTimeout(annotation.connectTimeout());
-            config.setSyncTimeout(annotation.syncT            Object proxy = communicator.stringToProxy(field.getType(), config);
-            imeout());
+            config.setSyncTimeout(annotation.syncTimeout());
             config.setAsyncTimeout(annotation.asyncTimeout());
-
             config.setTcpNoDelay(annotation.tcpNoDelay());
             config.setCharsetName(annotation.charsetName());
 
+            Object proxy = communicator.stringToProxy(field.getType(), config);
 
             ReflectionUtils.makeAccessible(field);
             ReflectionUtils.setField(field, bean, proxy);

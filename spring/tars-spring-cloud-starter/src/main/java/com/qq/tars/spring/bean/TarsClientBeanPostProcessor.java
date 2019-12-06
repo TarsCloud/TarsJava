@@ -17,10 +17,15 @@
 package com.qq.tars.spring.bean;
 
 import com.qq.tars.client.Communicator;
+import com.qq.tars.client.CommunicatorConfig;
 import com.qq.tars.client.CommunicatorFactory;
+import com.qq.tars.client.ServantProxyConfig;
 import com.qq.tars.common.util.BeanAccessor;
+import com.qq.tars.common.util.StringUtils;
+import com.qq.tars.protocol.annotation.Servant;
 import com.qq.tars.register.RegisterHandler;
 import com.qq.tars.register.RegisterManager;
+import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.spring.annotation.TarsClient;
 import com.qq.tars.spring.config.TarsClientProperties;
 import org.springframework.beans.BeansException;
@@ -75,7 +80,33 @@ public class TarsClientBeanPostProcessor implements BeanPostProcessor, Initializ
                 continue;
             }
 
-            Object proxy = communicator.stringToProxy(field.getType(), annotation.name());
+            if (field.getType().getAnnotation(Servant.class) == null) {
+                throw new RuntimeException("[TARS] autoware client failed: target field is not  tars  client");
+            }
+
+            String objName = annotation.name();
+
+            if (StringUtils.isEmpty(annotation.value())) {
+                throw new RuntimeException("[TARS] autoware client failed: objName is empty");
+            }
+
+            ServantProxyConfig config = new ServantProxyConfig(objName);
+            CommunicatorConfig communicatorConfig = ConfigurationManager.getInstance().getServerConfig().getCommunicatorConfig();
+            config.setModuleName(communicatorConfig.getModuleName(), communicatorConfig.isEnableSet(), communicatorConfig.getSetDivision());
+            config.setEnableSet(annotation.enableSet());
+            config.setSetDivision(annotation.setDivision());
+            if (StringUtils.isNotEmpty(annotation.setDivision())) {
+                config.setEnableSet(true);
+                config.setSetDivision(annotation.setDivision());
+            }
+            config.setConnections(annotation.connections());
+            config.setConnectTimeout(annotation.connectTimeout());
+            config.setSyncTimeout(annotation.syncTimeout());
+            config.setAsyncTimeout(annotation.asyncTimeout());
+            config.setTcpNoDelay(annotation.tcpNoDelay());
+            config.setCharsetName(annotation.charsetName());
+
+            Object proxy = communicator.stringToProxy(field.getType(), config);
 
             ReflectionUtils.makeAccessible(field);
             ReflectionUtils.setField(field, bean, proxy);
