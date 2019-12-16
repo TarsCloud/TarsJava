@@ -253,7 +253,7 @@ public class CommunicatorConfig {
 
     public CommunicatorConfig setSetDivision(String setDivision) {
         this.setDivision = setDivision;
-        if (setDivision != null) {
+        if (StringUtils.isNotEmpty(setDivision)) {
             String[] tmp = StringUtils.split(setDivision, ".");
             if (tmp != null && tmp.length == 3) {
                 setName = tmp[0];
@@ -387,7 +387,7 @@ public class CommunicatorConfig {
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;
         CommunicatorConfig other = (CommunicatorConfig) obj;
-        if(!Objects.equals(this.locator,other.locator)){
+        if (!Objects.equals(this.locator, other.locator)) {
             return false;
         }
         return Objects.equals(this.moduleName, other.moduleName);
