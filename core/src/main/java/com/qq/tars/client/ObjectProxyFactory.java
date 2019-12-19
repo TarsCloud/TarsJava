@@ -51,7 +51,7 @@ class ObjectProxyFactory {
             servantProxyConfig.setCommunicatorId(communicator.getId());
             servantProxyConfig.setModuleName(communicator.getCommunicatorConfig().getModuleName(), communicator.getCommunicatorConfig().isEnableSet(), communicator.getCommunicatorConfig().getSetDivision());
             servantProxyConfig.setLocator(communicator.getCommunicatorConfig().getLocator());
-            if (setDivision != null) {
+            if (!StringUtils.isEmpty(setDivision)) {
                 servantProxyConfig.setEnableSet(true);
                 servantProxyConfig.setSetDivision(setDivision);
             }
