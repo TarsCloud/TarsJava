@@ -1,3 +1,4 @@
 org.springframework.context.ApplicationListener=\
 com.qq.tars.spring.bean.ConfigSourceListener,\
-com.qq.tars.spring.bean.PropertiesListener
+com.qq.tars.spring.bean.PropertiesListener,\
+com.qq.tars.spring.bean.ApplicationFailListener
