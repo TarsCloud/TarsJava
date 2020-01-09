@@ -38,7 +38,7 @@ public class ApplicationFailListener implements SpringApplicationRunListener {
     @Override
     public void failed(ConfigurableApplicationContext context, Throwable exception) {
         exception.printStackTrace();
-        System.out.println("[TARS]  start application fail" + exception.getMessage());
+        System.out.println("[TARS]  start application fail " + exception.getMessage());
         System.exit(-1);
     }
 
