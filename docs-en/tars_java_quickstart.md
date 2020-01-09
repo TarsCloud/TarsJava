@@ -48,7 +48,7 @@ Add a dependency jar package by modifying pom.xml
 <dependency>
 		<groupId>com.tencent.tars</groupId>
      	<artifactId>tars-server</artifactId>
-     	<version>  1.7.0</version>
+     	<version>1.7.0-SNAPSHOT</version>
      	<type>jar</type>
 </dependency>
 ```
@@ -59,7 +59,7 @@ Add a dependency jar package by modifying pom.xml
 <plugin>
 	<groupId>com.tencent.tars</groupId>
    	<artifactId>tars-maven-plugin</artifactId>
-   	<version>  1.7.0</version>
+   	<version>1.7.0-SNAPSHOT</version>
   	<configuration>
    		<tars2JavaConfig>
   			<tarsFiles>

@@ -31,7 +31,7 @@ demo工程参考[demo工程](https://github.com/TarsCloud/TarsJava/tree/master/e
         <dependency>
             <groupId>com.tencent.tars</groupId>
             <artifactId>tars-spring-boot-starter</artifactId>
-            <version>  1.7.0</version>
+            <version>1.7.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 ```
@@ -167,7 +167,7 @@ public @interface TarsClient {
 
 ## 版本升级指南
 
-如需使用tars-spring-boot的新功能需要将tars升级到  1.7.0版本及以上版本，本次改动相对较大，附上版本升级指南：
+如需使用tars-spring-boot的新功能需要将tars升级到  1.6.0版本及以上版本，本次改动相对较大，附上版本升级指南：
 1. 管理平台需要重新编译升级。
 2. tars-node需要升级到新版本。
 3. 模板选择需要选tars.tarsjava.springboot模版。如果不是重新搭建环境可自行添加模板，父模板选择tars.tarsjava.default，内容如下：
