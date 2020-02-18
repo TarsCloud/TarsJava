@@ -41,6 +41,10 @@ public class UniAttribute extends OldUniAttribute {
         cachedData.clear();
     }
 
+    public void setNewDataNull() {
+        _newData = null;
+    }
+
     public Set<String> getKeySet() {
         if (null != _newData) {
             return Collections.unmodifiableSet(_newData.keySet());
@@ -295,6 +299,7 @@ public class UniAttribute extends OldUniAttribute {
 
     public void decodeVersion2(byte[] buffer) {
         super.decode(buffer);
+        setNewDataNull();
     }
 
     public void decode(byte[] buffer) {
