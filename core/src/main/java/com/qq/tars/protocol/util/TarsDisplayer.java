@@ -16,13 +16,13 @@
 
 package com.qq.tars.protocol.util;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import com.qq.tars.common.util.HexUtil;
 import com.qq.tars.protocol.tars.TarsStructBase;
 import com.qq.tars.protocol.tars.exc.TarsEncodeException;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public final class TarsDisplayer {
 
@@ -615,7 +615,7 @@ public final class TarsDisplayer {
         } else if (o.getClass().isArray()) {
             display((Object[]) o, fieldName);
         } else {
-            throw new TarsEncodeException("write object error: unsupport type.");
+            throw new TarsEncodeException("write object error: unsupported type.");
         }
         return this;
     }
@@ -663,7 +663,7 @@ public final class TarsDisplayer {
         } else if (o.getClass().isArray()) {
             displaySimple((Object[]) o, bSep);
         } else {
-            throw new TarsEncodeException("write object error: unsupport type.");
+            throw new TarsEncodeException("write object error: unsupported type.");
         }
         return this;
     }

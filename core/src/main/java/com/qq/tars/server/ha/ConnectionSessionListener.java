@@ -16,12 +16,12 @@
 
 package com.qq.tars.server.ha;
 
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
-
+import com.qq.tars.net.core.Session.SessionStatus;
 import com.qq.tars.net.core.SessionEvent;
 import com.qq.tars.net.core.SessionListener;
-import com.qq.tars.net.core.Session.SessionStatus;
+
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ConnectionSessionListener implements SessionListener {
 
@@ -49,9 +49,9 @@ public class ConnectionSessionListener implements SessionListener {
     }
 
     @Override
-    public synchronized void onSessionDestoryed(SessionEvent se) {
+    public synchronized void onSessionDestroyed(SessionEvent se) {
         if ((se.getSession() == null || se.getSession().getStatus() == SessionStatus.CLOSED) && connStat.get() > 0) {
-            System.out.println("onSessionDestoryed: " + connStat.decrementAndGet());
+            System.out.println("onSessionDestroyed: " + connStat.decrementAndGet());
         }
     }
 }

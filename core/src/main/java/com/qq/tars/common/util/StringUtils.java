@@ -26,6 +26,9 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class StringUtils {
+    private StringUtils() {
+
+    }
 
     public static final String ENC_UTF8 = "UTF-8";
 
@@ -57,22 +60,14 @@ public class StringUtils {
             inputFormat = "yyyy-MM-dd HH:mm:ss.SSS";
         } else if (dateStr.matches("\\d{4}\\-\\d{1,2}\\-\\d{1,2} +\\d{1,2}:\\d{1,2}")) {
             inputFormat = "yyyy-MM-dd HH:mm:ss";
-        } else if (dateStr.matches("\\d{4}\\-\\d{1,2}\\-\\d{1,2} +\\d{1,2}:\\d{1,2}")) {
-            inputFormat = "yyyy-MM-dd HH:mm";
         } else if (dateStr.matches("\\d{4}\\-\\d{1,2}\\-\\d{1,2} +\\d{1,2}")) {
             inputFormat = "yyyy-MM-dd HH";
-        } else if (dateStr.matches("\\d{4}\\-\\d{1,2}\\-\\d{1,2} +\\d{1,2}")) {
-            inputFormat = "yyyy-MM-dd";
         } else if (dateStr.matches("\\d{1,4}/\\d{1,2}/\\d{1,2}\\s+\\d{1,2}:\\d{1,2}:\\d{1,2}\\.\\d{1,3}")) {
             inputFormat = "yyyy/MM/dd HH:mm:ss.SSS";
         } else if (dateStr.matches("\\d{4}/\\d{1,2}/\\d{1,2} +\\d{1,2}:\\d{1,2}")) {
             inputFormat = "yyyy/MM/dd HH:mm:ss";
-        } else if (dateStr.matches("\\d{4}/\\d{1,2}/\\d{1,2} +\\d{1,2}:\\d{1,2}")) {
-            inputFormat = "yyyy/MM/dd HH:mm";
         } else if (dateStr.matches("\\d{4}/\\d{1,2}/\\d{1,2} +\\d{1,2}")) {
             inputFormat = "yyyy/MM/dd HH";
-        } else if (dateStr.matches("\\d{4}/\\d{1,2}/\\d{1,2} +\\d{1,2}")) {
-            inputFormat = "yyyy/MM/dd";
         }
         resultStr = formatDate(dateStr, inputFormat, format);
         return resultStr;
@@ -157,19 +152,19 @@ public class StringUtils {
         }
     }
 
-    public static String[] split(String line, String seperator) {
-        if (line == null || seperator == null || seperator.length() == 0) return null;
+    public static String[] split(String line, String separator) {
+        if (line == null || separator == null || separator.length() == 0) return null;
         ArrayList<String> list = new ArrayList<String>();
         int pos1 = 0;
         int pos2;
         for (;;) {
-            pos2 = line.indexOf(seperator, pos1);
+            pos2 = line.indexOf(separator, pos1);
             if (pos2 < 0) {
                 list.add(line.substring(pos1));
                 break;
             }
             list.add(line.substring(pos1, pos2));
-            pos1 = pos2 + seperator.length();
+            pos1 = pos2 + separator.length();
         }
         for (int i = list.size() - 1; i >= 0 && list.get(i).length() == 0; --i) {
             list.remove(i);
@@ -177,8 +172,8 @@ public class StringUtils {
         return list.toArray(new String[0]);
     }
 
-    public static int[] splitInt(String line, String seperator, int def) {
-        String[] ss = split(line, seperator);
+    public static int[] splitInt(String line, String separator, int def) {
+        String[] ss = split(line, separator);
         int[] r = new int[ss.length];
         for (int i = 0; i < r.length; ++i) {
             r[i] = convertInt(ss[i], def);
@@ -186,8 +181,8 @@ public class StringUtils {
         return r;
     }
 
-    public static long[] splitLong(String line, String seperator, long def) {
-        String[] ss = split(line, seperator);
+    public static long[] splitLong(String line, String separator, long def) {
+        String[] ss = split(line, separator);
         long[] r = new long[ss.length];
         for (int i = 0; i < r.length; ++i) {
             r[i] = convertLong(ss[i], def);
@@ -244,14 +239,14 @@ public class StringUtils {
         if (pos < 0) return s;
         int capacity = dest.length() > src.length() ? s.length() * 2 : s.length();
         StringBuilder sb = new StringBuilder(capacity);
-        int writen = 0;
+        int written = 0;
         for (; pos >= 0;) {
-            sb.append(s, writen, pos);
+            sb.append(s, written, pos);
             sb.append(dest);
-            writen = pos + src.length();
-            pos = s.indexOf(src, writen);
+            written = pos + src.length();
+            pos = s.indexOf(src, written);
         }
-        sb.append(s, writen, s.length());
+        sb.append(s, written, s.length());
         return sb.toString();
     }
 

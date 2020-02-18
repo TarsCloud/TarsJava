@@ -188,6 +188,7 @@ public final class ServantProxyConfig {
 
     public void setEnableSet(boolean enableSet) {
         this.enableSet = enableSet;
+        this.updateSlaveName();
     }
 
     public String getSetDivision() {
@@ -195,9 +196,12 @@ public final class ServantProxyConfig {
     }
 
     public void setSetDivision(String setDivision) {
+        if (StringUtils.isEmpty(setDivision)) {
+            return;
+        }
         this.setDivision = setDivision;
         String[] tmp = StringUtils.split(setDivision, ".");
-        if (tmp != null && tmp.length == 3) {
+        if (tmp != null && tmp.length >= 3) {
             this.slaveSetName = tmp[0];
             this.slaveSetArea = tmp[1];
             this.slaveSetID = tmp[2];

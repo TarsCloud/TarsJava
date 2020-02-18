@@ -18,9 +18,9 @@ package com.qq.tars.net.client;
 
 public interface Callback<T> {
 
-    public void onCompleted(T result);
+    void onCompleted(T result);
 
-    public void onException(Throwable ex);
+    void onException(Throwable ex);
 
-    public void onExpired();
+    void onExpired();
 }

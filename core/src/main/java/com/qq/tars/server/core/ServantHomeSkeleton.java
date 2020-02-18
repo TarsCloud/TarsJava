@@ -16,10 +16,10 @@
 
 package com.qq.tars.server.core;
 
-import java.lang.reflect.Method;
-
 import com.qq.tars.net.core.Processor;
 import com.qq.tars.rpc.protocol.Codec;
+
+import java.lang.reflect.Method;
 
 public class ServantHomeSkeleton extends AppService {
 
@@ -69,17 +69,17 @@ public class ServantHomeSkeleton extends AppService {
         return args;
     }
 
-    private final Object fixValueDataType(Class<?> dataType, Object value) {
+    private Object fixValueDataType(Class<?> dataType, Object value) {
         Object dataValue = value;
 
         if (dataType != null && dataValue != null) {
-            if ("short" == dataType.getName()) {
+            if ("short".equals(dataType.getName())) {
                 dataValue = Short.valueOf(dataValue.toString());
-            } else if ("byte" == dataType.getName()) {
+            } else if ("byte".equals(dataType.getName())) {
                 dataValue = Byte.valueOf(dataValue.toString());
             } else if (char.class == dataType) {
                 dataValue = ((String) value).charAt(0);
-            } else if ("float" == dataType.getName()) {
+            } else if ("float".equals(dataType.getName())) {
                 dataValue = Float.valueOf(dataValue.toString());
             }
         }

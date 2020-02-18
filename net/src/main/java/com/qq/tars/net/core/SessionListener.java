@@ -18,8 +18,8 @@ package com.qq.tars.net.core;
 
 public interface SessionListener {
 
-    public void onSessionCreated(SessionEvent se);
+    void onSessionCreated(SessionEvent se);
 
-    public void onSessionDestoryed(SessionEvent se);
+    void onSessionDestroyed(SessionEvent se);
 
 }

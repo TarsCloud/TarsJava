@@ -16,6 +16,8 @@
 
 package com.qq.tars.common.support;
 
+import java.util.Objects;
+
 public class Holder<T> {
 
     public T value;
@@ -46,10 +48,7 @@ public class Holder<T> {
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;
         Holder<?> other = (Holder<?>) obj;
-        if (value == null) {
-            if (other.value != null) return false;
-        } else if (!value.equals(other.value)) return false;
-        return true;
+        return Objects.equals(this.value,other.value);
     }
 
     @Override

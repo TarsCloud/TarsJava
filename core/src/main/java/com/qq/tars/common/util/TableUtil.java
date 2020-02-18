@@ -39,19 +39,14 @@ public class TableUtil<R, C, V> {
 		if (columns == null) {
 			return null;
 		}
-		V value = columns.get(columnKey);
-		return value;
+		return columns.get(columnKey);
 	}
 	
 	public void set(R rowKey, C columnKey, V value) {
 		if (rowKey == null || columnKey == null) {
 			return;
 		}
-		Map<C, V> columns = table.get(rowKey);
-		if (columns == null) {
-			columns = new LinkedHashMap<C, V>();
-			table.put(rowKey, columns);
-		}
+		Map<C, V> columns = table.computeIfAbsent(rowKey, k -> new LinkedHashMap<C, V>());
 		columns.put(columnKey, value);
 	}
 

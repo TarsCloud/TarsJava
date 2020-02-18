@@ -5,5 +5,5 @@ import com.qq.tars.net.core.Response;
 
 public interface FilterChain {
 	
-	public void doFilter(Request request, Response response) throws Throwable;
+	void doFilter(Request request, Response response) throws Throwable;
 }

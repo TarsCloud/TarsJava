@@ -19,6 +19,9 @@ package com.qq.tars.rpc.exc;
 @SuppressWarnings("serial")
 public class ServerUnknownException extends ServerException {
 
+
+    private static final long serialVersionUID = -1801985076523243390L;
+
     public ServerUnknownException(int ret) {
         super(ret);
     }

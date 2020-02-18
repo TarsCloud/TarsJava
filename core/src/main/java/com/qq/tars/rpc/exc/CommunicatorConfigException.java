@@ -19,6 +19,8 @@ package com.qq.tars.rpc.exc;
 @SuppressWarnings("serial")
 public class CommunicatorConfigException extends ClientException {
 
+    private static final long serialVersionUID = -561177612910425984L;
+
     public CommunicatorConfigException(String message) {
         super(message);
     }

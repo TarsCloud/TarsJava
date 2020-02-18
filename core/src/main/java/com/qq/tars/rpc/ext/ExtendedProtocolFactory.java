@@ -27,11 +27,11 @@ public class ExtendedProtocolFactory implements ProtocolFactory {
 
     private static ExtendedProtocolFactory instance = null;
 
-    public static final ExtendedProtocolFactory getInstance() {
+    public static ExtendedProtocolFactory getInstance() {
         return instance;
     }
 
-    public static final void registerExtendedCodecImpl(Codec codec, String contextName) {
+    public static void registerExtendedCodecImpl(Codec codec, String contextName) {
         if (instance == null) {
             instance = buildExtendedProtocolFactory(codec);
         } else {
@@ -41,7 +41,7 @@ public class ExtendedProtocolFactory implements ProtocolFactory {
         }
     }
 
-    public static final ExtendedProtocolFactory buildExtendedProtocolFactory(Codec codec) {
+    public static ExtendedProtocolFactory buildExtendedProtocolFactory(Codec codec) {
         return new ExtendedProtocolFactory(codec);
     }
 

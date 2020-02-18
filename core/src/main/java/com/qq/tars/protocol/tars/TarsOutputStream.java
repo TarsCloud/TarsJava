@@ -16,15 +16,15 @@
 
 package com.qq.tars.protocol.tars;
 
+import com.qq.tars.common.util.HexUtil;
+import com.qq.tars.protocol.tars.exc.TarsEncodeException;
+
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import com.qq.tars.common.util.HexUtil;
-import com.qq.tars.protocol.tars.exc.TarsEncodeException;
 
 public class TarsOutputStream {
 

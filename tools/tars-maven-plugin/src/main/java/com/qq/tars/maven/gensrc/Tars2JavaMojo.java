@@ -1,39 +1,19 @@
 /**
  * Tencent is pleased to support the open source community by making Tars available.
- *
+ * <p>
  * Copyright (C) 2016 THL A29 Limited, a Tencent company. All rights reserved.
- *
+ * <p>
  * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- *
+ * <p>
  * https://opensource.org/licenses/BSD-3-Clause
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
 package com.qq.tars.maven.gensrc;
-
-import java.io.File;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.antlr.runtime.ANTLRFileStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.Token;
-import org.antlr.runtime.tree.CommonTree;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
 
 import com.qq.tars.maven.parse.TarsLexer;
 import com.qq.tars.maven.parse.TarsParser;
@@ -53,6 +33,25 @@ import com.qq.tars.maven.parse.ast.TarsStruct;
 import com.qq.tars.maven.parse.ast.TarsStructMember;
 import com.qq.tars.maven.parse.ast.TarsType;
 import com.qq.tars.maven.parse.ast.TarsVectorType;
+import org.antlr.runtime.ANTLRFileStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.Token;
+import org.antlr.runtime.tree.CommonTree;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+
+import java.io.File;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Mojo(name = "tars2java", threadSafe = true)
 public class Tars2JavaMojo extends AbstractMojo {
@@ -85,11 +84,7 @@ public class Tars2JavaMojo extends AbstractMojo {
                 TarsRoot root = (TarsRoot) tarsParser.start().getTree();
                 root.setTokenStream(tokens);
                 for (TarsNamespace ns : root.namespaceList()) {
-                    List<TarsNamespace> list = nsMap.get(ns.namespace());
-                    if (list == null) {
-                        list = new ArrayList<TarsNamespace>();
-                        nsMap.put(ns.namespace(), list);
-                    }
+                    List<TarsNamespace> list = nsMap.computeIfAbsent(ns.namespace(), k -> new ArrayList<TarsNamespace>());
                     list.add(ns);
                 }
             } catch (Throwable th) {
@@ -269,7 +264,7 @@ public class Tars2JavaMojo extends AbstractMojo {
         // 定义成员变量
         for (TarsStructMember m : struct.memberList()) {
             out.println("\t@TarsStructProperty(order = " + m.tag() + ", isRequire = " + m.isRequire() + ")");
-            out.println("\tpublic " + type(m.memberType(), nsMap) + " " + m.memberName() + " = " + (m.defaultValue() == null ? typeInit(m.memberType(), nsMap, false) : m.defaultValue()) + ";");
+            out.println("\tpublic " + type(m.memberType(), nsMap) + " " + m.memberName() + " = " + (m.defaultValue() == null ? typeInit(m.memberType(), nsMap, false) : adaptDefaultValue(m)) + ";");
         }
         out.println();
 
@@ -446,6 +441,25 @@ public class Tars2JavaMojo extends AbstractMojo {
         getLog().info("generate Struct " + structClass);
     }
 
+    private String adaptDefaultValue(TarsStructMember m) {
+        String typeSuffix = "";
+        if (m.memberType().isPrimitive()) {
+            PrimitiveType type = m.memberType().asPrimitive().primitiveType();
+            switch (type) {
+                case FLOAT:
+                    typeSuffix = "F";
+                    break;
+                case DOUBLE:
+                    typeSuffix = "D";
+                    break;
+                case LONG:
+                    typeSuffix = "L";
+                    break;
+            }
+        }
+        return m.defaultValue() + typeSuffix;
+    }
+
     private void genCacheVar(String memberName, boolean hasDeclare, TarsType type,
                              Map<String, List<TarsNamespace>> nsMap, PrintWriter out) {
         if (type.isCustom() && !isEnum(type, nsMap)) {
@@ -495,6 +509,7 @@ public class Tars2JavaMojo extends AbstractMojo {
         out.println("import com.qq.tars.protocol.annotation.*;");
         out.println("import com.qq.tars.protocol.tars.annotation.*;");
         out.println("import com.qq.tars.common.support.Holder;");
+        out.println("import java.util.concurrent.CompletableFuture;");
 
         out.println();
 
@@ -506,21 +521,25 @@ public class Tars2JavaMojo extends AbstractMojo {
 
         // 4. print tars methods and prototypes
         for (TarsOperation op : _interface.operationList()) {
-            // 2 print sync method without context
+            // 1 print sync method without context
             out.println(getDoc(op, "\t"));
-            out.println("\tpublic " + type(op.retType(), nsMap) + " " + op.oprationName() + "(" + opertaionParams(null, op.paramList(), null, true, nsMap) + ");");
+            out.println("\tpublic " + type(op.retType(), nsMap) + " " + op.operationName() + "(" + operationParams(null, op.paramList(), null, true, nsMap) + ");");
+
+            // 2 print  promise method without context
+            out.println(getDoc(op, "\t"));
+            out.println("\tCompletableFuture<" + type(op.retType(), true, nsMap) + ">  promise_" + op.operationName() + "(" + operationParams(null, op.paramList(), null, true, nsMap) + ");");
 
             // 3 print sync method with context
             out.println(getDoc(op, "\t"));
-            out.println("\tpublic " + type(op.retType(), nsMap) + " " + op.oprationName() + "(" + opertaionParams(null, op.paramList(), Arrays.asList("@TarsContext java.util.Map<String, String> ctx"), true, nsMap) + ");");
+            out.println("\tpublic " + type(op.retType(), nsMap) + " " + op.operationName() + "(" + operationParams(null, op.paramList(), Arrays.asList("@TarsContext java.util.Map<String, String> ctx"), true, nsMap) + ");");
 
             // 4 print async method without context
             out.println(getDoc(op, "\t"));
-            out.println("\tpublic void async_" + op.oprationName() + "(" + opertaionParams(Arrays.asList("@TarsCallback " + prxClass + "Callback callback"), op.paramList(), null, false, nsMap) + ");");
+            out.println("\tpublic void async_" + op.operationName() + "(" + operationParams(Arrays.asList("@TarsCallback " + prxClass + "Callback callback"), op.paramList(), null, false, nsMap) + ");");
 
             // 5 print async method with context
             out.println(getDoc(op, "\t"));
-            out.println("\tpublic void async_" + op.oprationName() + "(" + opertaionParams(Arrays.asList("@TarsCallback " + prxClass + "Callback callback"), op.paramList(), Arrays.asList("@TarsContext java.util.Map<String, String> ctx"), false, nsMap) + ");");
+            out.println("\tpublic void async_" + op.operationName() + "(" + operationParams(Arrays.asList("@TarsCallback " + prxClass + "Callback callback"), op.paramList(), Arrays.asList("@TarsContext java.util.Map<String, String> ctx"), false, nsMap) + ");");
         }
 
         out.println("}");
@@ -555,7 +574,7 @@ public class Tars2JavaMojo extends AbstractMojo {
         for (TarsOperation op : _interface.operationList()) {
             // 2 print sync method without context
             out.println(getDoc(op, "\t"));
-            out.println("\tpublic " + type(op.retType(), nsMap) + " " + op.oprationName() + "(" + opertaionParams(null, op.paramList(), null, true, nsMap) + ");");
+            out.println("\tpublic " + type(op.retType(), nsMap) + " " + op.operationName() + "(" + operationParams(null, op.paramList(), null, true, nsMap) + ");");
         }
 
         out.println("}");
@@ -585,9 +604,9 @@ public class Tars2JavaMojo extends AbstractMojo {
         for (TarsOperation op : tarsInterface.operationList()) {
             String type = type(op.retType(), false, nsMap);
             if ("void".equals(type) || "Void".equals(type)) {
-                out.println("\tpublic abstract void callback_" + op.oprationName() + "(" + opertaionCallBackParams(null, op.paramList(), null, nsMap) + ");");
+                out.println("\tpublic abstract void callback_" + op.operationName() + "(" + operationCallBackParams(null, op.paramList(), null, nsMap) + ");");
             } else {
-                out.println("\tpublic abstract void callback_" + op.oprationName() + "(" + opertaionCallBackParams(Arrays.asList(type + " ret"), op.paramList(), null, nsMap) + ");");
+                out.println("\tpublic abstract void callback_" + op.operationName() + "(" + operationCallBackParams(Arrays.asList(type + " ret"), op.paramList(), null, nsMap) + ");");
             }
 
             out.println();
@@ -783,7 +802,7 @@ public class Tars2JavaMojo extends AbstractMojo {
         }
     }
 
-    public String opertaionCallBackParams(List<String> beforeParams, List<TarsParam> paramList,
+    public String operationCallBackParams(List<String> beforeParams, List<TarsParam> paramList,
                                           List<String> afterParams, Map<String, List<TarsNamespace>> nsMap) {
         StringBuilder sb = new StringBuilder();
         boolean isFirst = true;
@@ -821,7 +840,7 @@ public class Tars2JavaMojo extends AbstractMojo {
         return sb.toString();
     }
 
-    public String opertaionParams(List<String> beforeParams, List<TarsParam> paramList, List<String> afterParams,
+    public String operationParams(List<String> beforeParams, List<TarsParam> paramList, List<String> afterParams,
                                   boolean isSync, Map<String, List<TarsNamespace>> nsMap) {
         StringBuilder sb = new StringBuilder();
         boolean isFirst = true;

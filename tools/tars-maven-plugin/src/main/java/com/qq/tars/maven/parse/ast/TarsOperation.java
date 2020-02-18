@@ -25,12 +25,12 @@ import org.antlr.runtime.tree.Tree;
 public class TarsOperation extends CommonTree {
 
 	private TarsType retType;
-	private final String oprationName;
+	private final String operationName;
 	private final List<TarsParam> paramList = new ArrayList<TarsParam>();
 
-	public TarsOperation(int tokenType, String oprationName) {
+	public TarsOperation(int tokenType, String operationName) {
 		super(new CommonToken(tokenType));
-		this.oprationName = oprationName;
+		this.operationName = operationName;
 	}
 
 	@Override
@@ -48,8 +48,8 @@ public class TarsOperation extends CommonTree {
 		return retType;
 	}
 
-	public String oprationName() {
-		return oprationName;
+	public String operationName() {
+		return operationName;
 	}
 
 	public List<TarsParam> paramList() {

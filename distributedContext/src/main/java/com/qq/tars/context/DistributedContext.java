@@ -20,16 +20,16 @@ import java.util.Set;
 
 public interface DistributedContext {
 	
-    public void clear();
+    void clear();
 
-    public <T> T get(String name);
+    <T> T get(String name);
 
-    public Set<String> keySet();
+    Set<String> keySet();
 
-    public <T> void put(String name, T value);
+    <T> void put(String name, T value);
 
-    public int size();
+    int size();
     
-    public Map<String, Object> getAttrbuites();
+    Map<String, Object> getAttributes();
 
 }

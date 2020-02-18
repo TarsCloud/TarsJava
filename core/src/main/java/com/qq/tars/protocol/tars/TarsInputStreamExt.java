@@ -16,15 +16,16 @@
 
 package com.qq.tars.protocol.tars;
 
-import java.util.List;
-
 import com.qq.tars.common.util.BeanAccessor;
+import com.qq.tars.common.util.CollectionUtils;
 import com.qq.tars.common.util.CommonUtils;
 import com.qq.tars.protocol.tars.TarsInputStream.HeadData;
 import com.qq.tars.protocol.tars.exc.TarsDecodeException;
 import com.qq.tars.protocol.tars.support.TarsStructInfo;
 import com.qq.tars.protocol.tars.support.TarsStrutPropertyInfo;
 import com.qq.tars.protocol.util.TarsHelper;
+
+import java.util.List;
 
 @SuppressWarnings("unchecked")
 public class TarsInputStreamExt {
@@ -46,7 +47,7 @@ public class TarsInputStreamExt {
             T result = (T) CommonUtils.newInstance(e.getClass());
 
             List<TarsStrutPropertyInfo> list = info.getPropertyList();
-            if (!CommonUtils.isEmptyCollection(list)) {
+            if (CollectionUtils.isNotEmpty(list)) {
                 for (TarsStrutPropertyInfo propertyInfo : list) {
                     Object value = jis.read(propertyInfo.getStamp(), propertyInfo.getOrder(), propertyInfo.isRequire());
                     BeanAccessor.setBeanValue(result, propertyInfo.getName(), value);

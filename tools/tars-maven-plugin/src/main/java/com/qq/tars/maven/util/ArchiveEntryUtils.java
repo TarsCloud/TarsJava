@@ -109,16 +109,16 @@ public final class ArchiveEntryUtils {
         try {
             method = File.class.getMethod("setReadable", new Class[] { Boolean.TYPE, Boolean.TYPE });
 
-            method.invoke(file, new Object[] { Boolean.valueOf(filePermission.isReadable()), Boolean.valueOf(filePermission.isOwnerOnlyReadable()) });
+            method.invoke(file, new Object[] {filePermission.isReadable(), filePermission.isOwnerOnlyReadable()});
 
             method = File.class.getMethod("setExecutable", new Class[] { Boolean.TYPE, Boolean.TYPE });
-            method.invoke(file, new Object[] { Boolean.valueOf(filePermission.isExecutable()), Boolean.valueOf(filePermission.isOwnerOnlyExecutable()) });
+            method.invoke(file, new Object[] {filePermission.isExecutable(), filePermission.isOwnerOnlyExecutable()});
 
             method = File.class.getMethod("setWritable", new Class[] { Boolean.TYPE, Boolean.TYPE });
-            method.invoke(file, new Object[] { Boolean.valueOf(filePermission.isWritable()), Boolean.valueOf(filePermission.isOwnerOnlyWritable()) });
+            method.invoke(file, new Object[] {filePermission.isWritable(), filePermission.isOwnerOnlyWritable()});
         } catch (final Exception e) {
-            logger.error("error calling dynamically file permissons with jvm " + e.getMessage(), e);
-            throw new RuntimeException("error calling dynamically file permissons with jvm " + e.getMessage(), e);
+            logger.error("error calling dynamically file permissions with jvm " + e.getMessage(), e);
+            throw new RuntimeException("error calling dynamically file permissions with jvm " + e.getMessage(), e);
         }
     }
 }

@@ -1,23 +1,21 @@
 package com.qq.tars.support.trace;
 
+import brave.Tracing;
+import brave.opentracing.BraveTracer;
+import com.qq.tars.server.config.ConfigurationManager;
+import com.qq.tars.server.config.ServerConfig;
+import com.qq.tars.support.om.OmConstants;
+import com.qq.tars.support.trace.exc.NotSupportedSuchSampleEncodingException;
+import com.qq.tars.support.trace.exc.NotSupportedSuchSampleTypeException;
 import io.opentracing.Tracer;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import zipkin2.codec.Encoding;
 import zipkin2.reporter.AsyncReporter;
 import zipkin2.reporter.Reporter;
 import zipkin2.reporter.Sender;
 import zipkin2.reporter.urlconnection.URLConnectionSender;
-import brave.Tracing;
-import brave.opentracing.BraveTracer;
 
-import com.qq.tars.server.config.ConfigurationManager;
-import com.qq.tars.server.config.ServerConfig;
-import com.qq.tars.support.om.OmConstants;
-import com.qq.tars.support.trace.exc.NotSupportedSuchSampleEncodeingException;
-import com.qq.tars.support.trace.exc.NotSupportedSuchSampleTypeException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TarsTraceZipkinConfiguration {
 	
@@ -59,7 +57,7 @@ public class TarsTraceZipkinConfiguration {
 		}
 	}
 	
-	private void createSender() throws NotSupportedSuchSampleTypeException, NotSupportedSuchSampleEncodeingException {
+	private void createSender() throws NotSupportedSuchSampleTypeException, NotSupportedSuchSampleEncodingException {
 		if ("http".equals(serverConfig.getSampleType())) {
 			String baseurl = serverConfig.getSampleAddress();
 			String url = baseurl + (baseurl.endsWith("/") ? "" : "/") + "api/v2/spans";
@@ -78,14 +76,14 @@ public class TarsTraceZipkinConfiguration {
 		}
 	}
 	
-	private Encoding createCodec() throws NotSupportedSuchSampleEncodeingException {
+	private Encoding createCodec() throws NotSupportedSuchSampleEncodingException {
 		if ("json".endsWith(serverConfig.getSampleEncoding())) {
 			return Encoding.JSON;
 		}
 		if ("proto".endsWith(serverConfig.getSampleEncoding())) {
 			return Encoding.PROTO3;
 		}
-		throw new NotSupportedSuchSampleEncodeingException("unsupported sample encoding");
+		throw new NotSupportedSuchSampleEncodingException("unsupported sample encoding");
 	}
 
 }

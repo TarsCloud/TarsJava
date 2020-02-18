@@ -1,6 +1,30 @@
-[点我查看中文版](README.zh.md)
 
-### This project is the source code of the Tars RPC framework Java language. ###
+
+Tars Java - An RPC library and framework
+========================================
+[![Latest release](https://img.shields.io/github/v/release/tarsCloud/TarsJava)](https://github.com/TarsCloud/TarsJava/releases/latest)
+
+
+This project is the source code of the Tars RPC framework Java language.
+
+<table>
+  <tr>
+    <td><b>Homepage:</b></td>
+    <td><a href="https://tars.tencent.com/base/tars_index/en/index.html">tarscloud.org</a></td>
+  </tr>
+    <tr>
+      <td><b>中文版:</b></td>
+      <td><a href="README.zh.md">点我查看中文版</a></td>
+    </tr>
+</table>
+
+
+###  Environmental dependence
+- JDK1.8 or above
+- Maven 2.2.1 or above
+
+
+###
 
 
 | Directory               | Features               |
@@ -14,6 +38,5 @@
 | spring             | Source code implementation of spring framework support      |
 
 
-###  Environmental dependence
-- JDK1.8 or above
-- Maven 2.2.1 or above
+
+

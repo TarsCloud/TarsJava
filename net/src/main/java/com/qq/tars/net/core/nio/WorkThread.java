@@ -16,15 +16,14 @@
 
 package com.qq.tars.net.core.nio;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Map;
-
 import com.qq.tars.net.client.ticket.Ticket;
 import com.qq.tars.net.client.ticket.TicketManager;
 import com.qq.tars.net.client.ticket.TimeoutManager;
 import com.qq.tars.net.core.Request;
 import com.qq.tars.net.core.Response;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
 
 public final class WorkThread implements Runnable {
 
@@ -88,7 +87,6 @@ public final class WorkThread implements Runnable {
                     System.out.println(s);
                     return;
                 }
-                fillDitributedContext(ticket.request().getDistributedContext());
                 ticket.notifyResponse(resp);
                 ticket.countDown();
                 TicketManager.removeTicket(ticket.getTicketNumber());
@@ -101,9 +99,6 @@ public final class WorkThread implements Runnable {
         } finally {
             clearDistributedContext();
         }
-    }
-
-    private void fillDitributedContext(Map<String, String> data) {
     }
 
     private void clearDistributedContext() {

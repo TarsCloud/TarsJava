@@ -19,6 +19,9 @@ package com.qq.tars.net.protocol;
 @SuppressWarnings("serial")
 public class ProtocolException extends Exception {
 
+
+    private static final long serialVersionUID = 5220984844274406112L;
+
     public ProtocolException() {
         super();
     }

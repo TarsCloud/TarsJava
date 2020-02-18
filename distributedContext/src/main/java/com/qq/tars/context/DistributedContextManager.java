@@ -15,69 +15,69 @@
  */
 package com.qq.tars.context;
 
-import java.util.Map;
-
 import com.qq.tars.context.exc.CodecException;
 import com.qq.tars.context.impl.DistributedContextImpl;
 
+import java.util.Map;
+
 public class DistributedContextManager {
-	
+
     private static final DistributedContext context = new DistributedContextImpl();
-	
-	private static DistributedContextCodec _codec;
-	
-	private static boolean canCodec() {
-		return _codec == null ? false : true;
-	}
-	
-	public static final DistributedContext getDistributedContext() {
-		return context;
-	}
-	
-	public static final void releaseDistributedContext() {
-		getDistributedContext().clear();
-	}
-	
-	public static void setDistributedContextCodec(DistributedContextCodec codec) {
-		_codec = codec;
-	}
-	
-	public static byte[] serializeContext2Bytes() throws CodecException {
-		if (canCodec()) {
-			return _codec.context2Bytes(getDistributedContext().getAttrbuites());
-		} else {
-			throw new CodecException("codec is null");
-		}
-	}
-	
-	public static void deserializeBytes2Context(byte[] src) throws CodecException {
-		if (canCodec()) {
-			Map<String, Object> attributes = _codec.loadBytes(src);
-			for (Map.Entry<String, Object> attribute : attributes.entrySet()) {
-				getDistributedContext().put(attribute.getKey(), attribute.getValue());
-			}
-		} else {
-			throw new CodecException("codec is null");
-		}
-	}
-	
-	public static String seriallizeContext2String() throws CodecException {
-		if (canCodec()) {
-			return _codec.context2String(getDistributedContext().getAttrbuites());
-		} else {
-			throw new CodecException("codec is null");
-		}
-	}
-	
-	public static void deserializeString2Context(String src) throws CodecException {
-		if (canCodec()) {
-			Map<String, Object> attributes = _codec.loadString(src);
-			for (Map.Entry<String, Object> attribute : attributes.entrySet()) {
-				getDistributedContext().put(attribute.getKey(), attribute.getValue());
-			}
-		} else {
-			throw new CodecException("codec is null");
-		}
-	}
+
+    private static DistributedContextCodec _codec;
+
+    private static boolean canCodec() {
+        return _codec != null;
+    }
+
+    public static DistributedContext getDistributedContext() {
+        return context;
+    }
+
+    public static void releaseDistributedContext() {
+        getDistributedContext().clear();
+    }
+
+    public static void setDistributedContextCodec(DistributedContextCodec codec) {
+        _codec = codec;
+    }
+
+    public static byte[] serializeContext2Bytes() throws CodecException {
+        if (canCodec()) {
+            return _codec.context2Bytes(getDistributedContext().getAttributes());
+        } else {
+            throw new CodecException("codec is null");
+        }
+    }
+
+    public static void deserializeBytes2Context(byte[] src) throws CodecException {
+        if (canCodec()) {
+            Map<String, Object> attributes = _codec.loadBytes(src);
+            for (Map.Entry<String, Object> attribute : attributes.entrySet()) {
+                getDistributedContext().put(attribute.getKey(), attribute.getValue());
+            }
+        } else {
+            throw new CodecException("codec is null");
+        }
+    }
+
+    public static String serializeContext2String() throws CodecException {
+        if (canCodec()) {
+            return _codec.context2String(getDistributedContext().getAttributes());
+        } else {
+            throw new CodecException("codec is null");
+        }
+    }
+
+    public static void deserializeString2Context(String src) throws CodecException {
+        if (canCodec()) {
+            Map<String, Object> attributes = _codec.loadString(src);
+            for (Map.Entry<String, Object> attribute : attributes.entrySet()) {
+                getDistributedContext().put(attribute.getKey(), attribute.getValue());
+            }
+        } else {
+            throw new CodecException("codec is null");
+        }
+    }
 
 }

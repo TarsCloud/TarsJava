@@ -25,5 +25,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TarsContext {
 
-    public String comment() default "";
+    String comment() default "";
 }

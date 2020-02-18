@@ -16,18 +16,17 @@
 
 package com.qq.tars.support.query;
 
-import com.qq.tars.client.util.ParseTools;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.qq.tars.client.Communicator;
 import com.qq.tars.client.ServantProxyConfig;
+import com.qq.tars.client.util.ParseTools;
 import com.qq.tars.common.support.Holder;
 import com.qq.tars.common.util.Constants;
-import com.qq.tars.common.util.StringUtils;
 import com.qq.tars.protocol.util.TarsHelper;
 import com.qq.tars.support.query.prx.EndpointF;
 import com.qq.tars.support.query.prx.QueryFPrx;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class QueryHelper {
 
@@ -42,8 +41,7 @@ public final class QueryHelper {
     }
 
     private QueryFPrx getPrx() {
-        QueryFPrx prx = communicator.stringToProxy(QueryFPrx.class, communicator.getCommunicatorConfig().getLocator());
-        return prx;
+        return communicator.stringToProxy(QueryFPrx.class, communicator.getCommunicatorConfig().getLocator());
     }
 
     public String getServerNodes(ServantProxyConfig config) {

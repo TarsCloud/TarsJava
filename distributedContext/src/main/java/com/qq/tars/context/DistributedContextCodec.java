@@ -18,42 +18,37 @@ package com.qq.tars.context;
 import java.util.Map;
 
 public interface DistributedContextCodec {
-	
-	/**
-	 * 
-	 * @param context
-	 * @return
-	 */
-    public byte[] context2Bytes(Map<String, Object> context);
 
     /**
-     * 
+     * @param context
+     * @return
+     */
+    byte[] context2Bytes(Map<String, Object> context);
+
+    /**
      * @param context
      * @param src
      */
-    public Map<String, Object> loadBytes(byte[] src);
+    Map<String, Object> loadBytes(byte[] src);
 
     /**
-     * 
      * @param context
      * @param src
      * @param offset
      * @param length
      */
-    public Map<String, Object> loadBytes(byte[] src, int offset, int length);
-    
+    Map<String, Object> loadBytes(byte[] src, int offset, int length);
+
     /**
-     * 
      * @param context
      * @return
      */
-    public String context2String(Map<String, Object> context);
-    
+    String context2String(Map<String, Object> context);
+
     /**
-     * 
      * @param context
      * @param src
      */
-    public Map<String, Object> loadString(String src);
+    Map<String, Object> loadString(String src);
 
 }

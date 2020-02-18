@@ -16,6 +16,25 @@
 
 package com.qq.tars.protocol.util;
 
+import com.qq.tars.common.support.Holder;
+import com.qq.tars.common.util.BeanAccessor;
+import com.qq.tars.common.util.CommonUtils;
+import com.qq.tars.common.util.Constants;
+import com.qq.tars.protocol.annotation.Servant;
+import com.qq.tars.protocol.tars.annotation.TarsCallback;
+import com.qq.tars.protocol.tars.annotation.TarsContext;
+import com.qq.tars.protocol.tars.annotation.TarsHolder;
+import com.qq.tars.protocol.tars.annotation.TarsMethod;
+import com.qq.tars.protocol.tars.annotation.TarsMethodParameter;
+import com.qq.tars.protocol.tars.annotation.TarsRouteKey;
+import com.qq.tars.protocol.tars.annotation.TarsStruct;
+import com.qq.tars.protocol.tars.annotation.TarsStructProperty;
+import com.qq.tars.protocol.tars.support.TarsMethodInfo;
+import com.qq.tars.protocol.tars.support.TarsMethodParameterInfo;
+import com.qq.tars.protocol.tars.support.TarsStructInfo;
+import com.qq.tars.protocol.tars.support.TarsStrutPropertyInfo;
+import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -30,23 +49,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.qq.tars.common.support.Holder;
-import com.qq.tars.common.util.BeanAccessor;
-import com.qq.tars.common.util.CommonUtils;
-import com.qq.tars.protocol.annotation.Servant;
-import com.qq.tars.protocol.tars.annotation.TarsCallback;
-import com.qq.tars.protocol.tars.annotation.TarsContext;
-import com.qq.tars.protocol.tars.annotation.TarsHolder;
-import com.qq.tars.protocol.tars.annotation.TarsMethod;
-import com.qq.tars.protocol.tars.annotation.TarsMethodParameter;
-import com.qq.tars.protocol.tars.annotation.TarsRouteKey;
-import com.qq.tars.protocol.tars.annotation.TarsStruct;
-import com.qq.tars.protocol.tars.annotation.TarsStructProperty;
-import com.qq.tars.protocol.tars.support.TarsMethodInfo;
-import com.qq.tars.protocol.tars.support.TarsMethodParameterInfo;
-import com.qq.tars.protocol.tars.support.TarsStructInfo;
-import com.qq.tars.protocol.tars.support.TarsStrutPropertyInfo;
+import java.util.concurrent.CompletableFuture;
 
 public class TarsHelper {
 
@@ -98,21 +101,21 @@ public class TarsHelper {
     public static final String STATUS_RESULT_DESC = "STATUS_RESULT_DESC";
 
     public static final Boolean STAMP_BOOLEAN = Boolean.TRUE;
-    public static final Byte STAMP_BYTE = Byte.valueOf((byte) 0);
-    public static final Short STAMP_SHORT = Short.valueOf((short) 0);
-    public static final Float STAMP_FLOAT = Float.valueOf(0);
-    public static final Integer STAMP_INT = Integer.valueOf(0);
-    public static final Long STAMP_LONG = Long.valueOf(0);
-    public static final Double STAMP_DOUBLE = Double.valueOf(0);
+    public static final Byte STAMP_BYTE = (byte) 0;
+    public static final Short STAMP_SHORT = (short) 0;
+    public static final Float STAMP_FLOAT = (float) 0;
+    public static final Integer STAMP_INT = 0;
+    public static final Long STAMP_LONG = 0L;
+    public static final Double STAMP_DOUBLE = (double) 0;
     public static final String STAMP_STRING = "";
 
-    public static final boolean[] STAMP_BOOLEAN_ARRAY = new boolean[] { true };
-    public static final byte[] STAMP_BYTE_ARRAY = new byte[] { 0 };
-    public static final short[] STAMP_SHORT_ARRAY = new short[] { 0 };
-    public static final int[] STAMP_INT_ARRAY = new int[] { 0 };
-    public static final long[] STAMP_LONG_ARRAY = new long[] { 0 };
-    public static final float[] STAMP_FLOAT_ARRAY = new float[] { 0 };
-    public static final double[] STAMP_DOUBLE_ARRAY = new double[] { 0 };
+    public static final boolean[] STAMP_BOOLEAN_ARRAY = new boolean[]{true};
+    public static final byte[] STAMP_BYTE_ARRAY = new byte[]{0};
+    public static final short[] STAMP_SHORT_ARRAY = new short[]{0};
+    public static final int[] STAMP_INT_ARRAY = new int[]{0};
+    public static final long[] STAMP_LONG_ARRAY = new long[]{0};
+    public static final float[] STAMP_FLOAT_ARRAY = new float[]{0};
+    public static final double[] STAMP_DOUBLE_ARRAY = new double[]{0};
     public static final Map<String, String> STAMP_MAP = new HashMap<String, String>();
 
     static {
@@ -275,7 +278,7 @@ public class TarsHelper {
                         }
 
                         try {
-                            Collections.sort(fieldList, tarsStructFieldsListComparator);
+                            fieldList.sort(tarsStructFieldsListComparator);
                         } catch (Exception e) {
                             throw new RuntimeException("class[" + clazz + "] , Annotation StructProperty order error: " + e.getMessage(), e);
                         }
@@ -370,29 +373,42 @@ public class TarsHelper {
                 if (!isCallback(allParameterAnnotations[order])) {
                     parameterInfo.setStamp(TarsHelper.getParameterStamp(genericParameterType));
                 }
-                
+
                 if (isRoutekey(allParameterAnnotations[order])) {
-                	methodInfo.setRouteKeyIndex(order);
+                    methodInfo.setRouteKeyIndex(order);
                 }
             } catch (Exception e) {
                 throw new RuntimeException("failed to create parameter info:" + method + ", index=[" + order + "]", e);
             }
             order++;
         }
-
         Type returnType = method.getGenericReturnType();
-        if (returnType != void.class) {
+        Type returnOriginType = method.getReturnType();
+
+        if (returnOriginType == CompletableFuture.class) {
+            ParameterizedTypeImpl parameterizedType = (ParameterizedTypeImpl) method.getGenericReturnType();
+            TarsMethodParameterInfo returnInfo = new TarsMethodParameterInfo();
+            returnInfo.setStamp(TarsHelper.getParameterStamp(parameterizedType.getActualTypeArguments()[0]));//CompletableFuture use  gengeric  inner type class
+            returnInfo.setName("result");
+            returnInfo.setOrder(0);
+            methodInfo.setReturnInfo(returnInfo);
+        } else if (returnType != void.class) {
             TarsMethodParameterInfo returnInfo = new TarsMethodParameterInfo();
             returnInfo.setStamp(TarsHelper.getParameterStamp(returnType));
             returnInfo.setName("result");
             returnInfo.setOrder(0);
             methodInfo.setReturnInfo(returnInfo);
+
         }
         return methodInfo;
     }
 
     public static boolean isAsync(String methodName) {
-        return methodName != null && methodName.startsWith("async_");
+        return methodName != null && methodName.startsWith(Constants.TARS_METHOD_ASYNC_START_WITH);
+    }
+
+    public static boolean isPromiseFuture(String methodName) {
+        return methodName != null && methodName.startsWith(Constants.TARS_METHOD_PROMISE_START_WITH);
     }
 
     public static boolean isPing(String methodName) {
@@ -456,17 +472,17 @@ public class TarsHelper {
         }
         return false;
     }
-    
+
     public static boolean isRoutekey(Annotation[] annotations) {
-    	if (annotations == null || annotations.length < 0) {
-    		return false;
-    	}
-    	for (Annotation annotation : annotations) {
-    		if (annotation.annotationType() ==TarsRouteKey.class) {
-    			return true;
-    		}
-    	}
-    	return false;
+        if (annotations == null || annotations.length < 0) {
+            return false;
+        }
+        for (Annotation annotation : annotations) {
+            if (annotation.annotationType() == TarsRouteKey.class) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static boolean isStruct(Class<?> clazz) {
@@ -562,7 +578,7 @@ public class TarsHelper {
             return value;
         } else if (value instanceof Byte && ((Byte) value).intValue() != 0) {
             return value;
-        } else if (value instanceof Boolean && ((Boolean) value).booleanValue() != false) {
+        } else if (value instanceof Boolean && ((Boolean) value).booleanValue()) {
             return value;
         } else if (value instanceof String) {
             return value;
@@ -577,4 +593,6 @@ public class TarsHelper {
     public static Object getHolderValue(Object holder) throws Exception {
         return BeanAccessor.getBeanValue(holder, "value");
     }
+
+
 }

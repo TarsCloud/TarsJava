@@ -16,39 +16,66 @@
 
 package com.qq.tars.rpc.protocol.tars;
 
-import java.lang.reflect.Method;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import com.qq.tars.common.support.ClassLoaderManager;
-import com.qq.tars.common.support.Holder;
+import com.qq.tars.common.util.BeanAccessor;
 import com.qq.tars.common.util.CommonUtils;
-import com.qq.tars.common.util.StringUtils;
-import com.qq.tars.net.core.IoBuffer;
-import com.qq.tars.net.core.Response;
-import com.qq.tars.net.core.Session;
 import com.qq.tars.net.protocol.ProtocolException;
 import com.qq.tars.protocol.tars.TarsInputStream;
 import com.qq.tars.protocol.tars.TarsOutputStream;
 import com.qq.tars.protocol.tars.support.TarsMethodInfo;
 import com.qq.tars.protocol.tars.support.TarsMethodParameterInfo;
 import com.qq.tars.protocol.util.TarsHelper;
-import com.qq.tars.protocol.util.TarsUtil;
 import com.qq.tars.rpc.protocol.tars.support.AnalystManager;
-import com.qq.tars.rpc.protocol.tup.UniAttribute;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public class TarsCodecHelper {
+    TarsOutputStream os = new TarsOutputStream();
+
+
+    public static Object decodePromiseResult(TarsServantResponse response) throws ProtocolException {
+        TarsInputStream is = response.getInputStream();
+        TarsInputStream jis = new TarsInputStream(is.read(new byte[]{}, 6, true));
+        jis.setServerEncoding(response.getCharsetName());
+
+        response.setStatus((HashMap<String, String>) is.read(TarsHelper.STAMP_MAP, 7, false));
+        response.setRemark(is.readString(8, false));
+        response.setContext((HashMap<String, String>) is.read(TarsHelper.STAMP_MAP, 9, false));
+
+        TarsServantRequest request = response.getRequest();
+
+        Map<String, TarsMethodInfo> map = AnalystManager.getInstance().getMethodMapByName(request.getServantName());
+        TarsMethodInfo methodInfo = map.get(request.getFunctionName());
+        TarsMethodInfo futureMethodInfo = request.getMethodInfo();
+        Object result = CommonUtils.newInstance(futureMethodInfo.getReturnInfo().getStamp().getClass());
+
+        //response data
+        TarsMethodParameterInfo returnInfo = methodInfo.getReturnInfo();
+        if (returnInfo != null && Void.TYPE != returnInfo.getType()) {
+            Object obj = jis.read(returnInfo.getStamp(), returnInfo.getOrder(), true);
+            BeanAccessor.setBeanValue(result, futureMethodInfo.getReturnInfo().getName(), obj);
+        }
+
+        //read holder
+        List<TarsMethodParameterInfo> parameterInfoList = methodInfo.getParametersList();
+        for (TarsMethodParameterInfo info : parameterInfoList) {
+            if (TarsHelper.isContext(info.getAnnotations()) || TarsHelper.isCallback(info.getAnnotations())) {
+                continue;
+            }
+
+            if (TarsHelper.isHolder(info.getAnnotations())) {
+                Object obj = jis.read(info.getStamp(), info.getOrder(), false);
+                BeanAccessor.setBeanValue(result, info.getName(), obj);
+            }
+        }
+        return result;
+    }
 
 /*
     public static IoBuffer encodeRequest(TarsServantRequest request, Session session, String charsetName) throws ProtocolException {
         request.setCharsetName(charsetName);
-        TarsOutputStream os = new TarsOutputStream();
         os.setServerEncoding(charsetName);
 
         os.getByteBuffer().putInt(0);

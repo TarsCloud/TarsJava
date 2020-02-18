@@ -16,6 +16,11 @@
 
 package com.qq.tars.rpc.protocol.tup;
 
+import com.qq.tars.protocol.tars.TarsInputStream;
+import com.qq.tars.protocol.tars.TarsOutputStream;
+import com.qq.tars.protocol.tars.TarsStructBase;
+import com.qq.tars.protocol.util.TarsUtil;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,11 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import com.qq.tars.protocol.tars.TarsInputStream;
-import com.qq.tars.protocol.tars.TarsOutputStream;
-import com.qq.tars.protocol.tars.TarsStructBase;
-import com.qq.tars.protocol.util.TarsUtil;
 
 class OldUniAttribute {
 
@@ -85,9 +85,9 @@ class OldUniAttribute {
         _out.write(t, 0);
         byte[] _sBuffer = TarsUtil.getBufArray(_out.getByteBuffer());
         HashMap<String, byte[]> pair = new HashMap<String, byte[]>(1);
-        ArrayList<String> listTpye = new ArrayList<String>(1);
-        checkObjectType(listTpye, t);
-        String className = BasicClassTypeUtil.transTypeList(listTpye);
+        ArrayList<String> listType = new ArrayList<String>(1);
+        checkObjectType(listType, t);
+        String className = BasicClassTypeUtil.transTypeList(listType);
         pair.put(className, _sBuffer);
         cachedData.remove(name);
         _data.put(name, pair);
@@ -218,43 +218,43 @@ class OldUniAttribute {
     }
 
     @SuppressWarnings("unchecked")
-    private void checkObjectType(ArrayList<String> listTpye, Object o) {
+    private void checkObjectType(ArrayList<String> listType, Object o) {
         if (o.getClass().isArray()) {
             if (!o.getClass().getComponentType().toString().equals("byte")) {
                 throw new IllegalArgumentException("only byte[] is supported");
             }
             if (Array.getLength(o) > 0) {
-                listTpye.add("java.util.List");
-                checkObjectType(listTpye, Array.get(o, 0));
+                listType.add("java.util.List");
+                checkObjectType(listType, Array.get(o, 0));
             } else {
-                listTpye.add("Array");
-                listTpye.add("?");
+                listType.add("Array");
+                listType.add("?");
             }
         } else if (o instanceof Array) {
             throw new java.lang.IllegalArgumentException("can not support Array, please use List");
         } else if (o instanceof List) {
-            listTpye.add("java.util.List");
+            listType.add("java.util.List");
             List list = (List) o;
             if (list.size() > 0) {
-                checkObjectType(listTpye, list.get(0));
+                checkObjectType(listType, list.get(0));
             } else {
-                listTpye.add("?");
+                listType.add("?");
             }
         } else if (o instanceof Map) {
-            listTpye.add("java.util.Map");
+            listType.add("java.util.Map");
             Map map = (Map) o;
             if (map.size() > 0) {
                 Iterator it = map.keySet().iterator();
                 Object key = it.next();
                 Object value = map.get(key);
-                listTpye.add(key.getClass().getName());
-                checkObjectType(listTpye, value);
+                listType.add(key.getClass().getName());
+                checkObjectType(listType, value);
             } else {
-                listTpye.add("?");
-                listTpye.add("?");
+                listType.add("?");
+                listType.add("?");
             }
         } else {
-            listTpye.add(o.getClass().getName());
+            listType.add(o.getClass().getName());
         }
     }
 

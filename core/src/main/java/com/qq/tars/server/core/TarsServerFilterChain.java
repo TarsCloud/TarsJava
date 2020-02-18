@@ -1,7 +1,5 @@
 package com.qq.tars.server.core;
 
-import java.util.List;
-
 import com.qq.tars.common.AbstractFilterChain;
 import com.qq.tars.common.Filter;
 import com.qq.tars.common.FilterKind;
@@ -9,6 +7,8 @@ import com.qq.tars.net.core.Request;
 import com.qq.tars.net.core.Response;
 import com.qq.tars.rpc.protocol.tars.TarsServantRequest;
 import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
+
+import java.util.List;
 
 public class TarsServerFilterChain extends AbstractFilterChain<ServantHomeSkeleton> {
 	

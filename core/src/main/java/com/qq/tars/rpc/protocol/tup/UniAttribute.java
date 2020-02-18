@@ -16,14 +16,14 @@
 
 package com.qq.tars.rpc.protocol.tup;
 
+import com.qq.tars.protocol.tars.TarsInputStream;
+import com.qq.tars.protocol.tars.TarsOutputStream;
+import com.qq.tars.protocol.util.TarsUtil;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import com.qq.tars.protocol.tars.TarsInputStream;
-import com.qq.tars.protocol.tars.TarsOutputStream;
-import com.qq.tars.protocol.util.TarsUtil;
 
 public class UniAttribute extends OldUniAttribute {
 
@@ -217,8 +217,7 @@ public class UniAttribute extends OldUniAttribute {
     private Object decodeData(byte[] data, Object proxy) {
         _is.warp(data);
         _is.setServerEncoding(encodeName);
-        Object o = _is.read(proxy, 0, true);
-        return o;
+        return _is.read(proxy, 0, true);
     }
 
     private void saveDataCache(String name, Object o) {

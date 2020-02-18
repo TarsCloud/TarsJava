@@ -17,17 +17,19 @@
 package com.qq.tars.support.stat;
 
 import com.qq.tars.client.Communicator;
-import com.qq.tars.client.util.ClientLogger;
 import com.qq.tars.common.util.StringUtils;
+import com.qq.tars.support.log.LoggerFactory;
 import com.qq.tars.support.stat.prx.StatFPrx;
 import com.qq.tars.support.stat.prx.StatMicMsgBody;
 import com.qq.tars.support.stat.prx.StatMicMsgHead;
+import org.slf4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class StatHelper {
+    private static final Logger logger = LoggerFactory.getClientLogger();
 
     private final static int BATCH_REPORTS = 10;
 
@@ -49,17 +51,17 @@ public final class StatHelper {
     public void report(ProxyStat proxyStat, boolean bFromClient) {
         StatFPrx statFProxy = getPrx();
         if (statFProxy == null) {
-            ClientLogger.getLogger().info("no config stat obj to report");
+            logger.info("no config stat obj to report");
             return;
         }
         if (proxyStat.isEmpty()) {
-            ClientLogger.getLogger().info("no stat need to report");
+            logger.info("no stat need to report");
             return;
         }
         long start = System.currentTimeMillis();
         int i = 0, errorCount = 0, successCount = 0;
         try {
-            HashMap<StatMicMsgHead, StatMicMsgBody> reprotMap = new HashMap<StatMicMsgHead, StatMicMsgBody>();
+            HashMap<StatMicMsgHead, StatMicMsgBody> reportMap = new HashMap<StatMicMsgHead, StatMicMsgBody>();
             for (Entry<ProxyStatHead, ProxyStatBody> statHead : proxyStat.getStats().entrySet()) {
 
                 ProxyStatHead head = statHead.getKey();
@@ -73,34 +75,34 @@ public final class StatHelper {
                 body.clear();
 
                 StatMicMsgHead mHead = new StatMicMsgHead(head.getMasterName(), head.getSlaveName(), head.getInterfaceName(), head.getMasterIp(), head.getSlaveIp(), head.getSlavePort(), head.getReturnValue(), head.getSlaveSetName(), head.getSlaveSetArea(), head.getSlaveSetID(), head.getTafVersion());
-                reprotMap.put(mHead, mbody);
+                reportMap.put(mHead, mbody);
 
-                ClientLogger.getLogger().info("report call|" + statHead.getKey().masterName + "|" + statHead.getKey().slaveIp + ":" + statHead.getKey().slavePort + "|" + statHead.getKey().slaveName + "." + statHead.getKey().interfaceName + "_" + statHead.getKey().getReturnValue() + "(" + statHead.getKey().slaveSetName + "." + statHead.getKey().slaveSetArea + "." + statHead.getKey().slaveSetID + "):" + mbody.count + "_" + mbody.execCount + "_" + mbody.timeoutCount + "_" + mbody.totalRspTime + "_" + mbody.maxRspTime + "_" + mbody.minRspTime);
+                logger.info("report call|" + statHead.getKey().masterName + "|" + statHead.getKey().slaveIp + ":" + statHead.getKey().slavePort + "|" + statHead.getKey().slaveName + "." + statHead.getKey().interfaceName + "_" + statHead.getKey().getReturnValue() + "(" + statHead.getKey().slaveSetName + "." + statHead.getKey().slaveSetArea + "." + statHead.getKey().slaveSetID + "):" + mbody.count + "_" + mbody.execCount + "_" + mbody.timeoutCount + "_" + mbody.totalRspTime + "_" + mbody.maxRspTime + "_" + mbody.minRspTime);
                 i++;
                 if (i % BATCH_REPORTS == 0) {
                     try {
-                        statFProxy.reportMicMsg(reprotMap, bFromClient);
+                        statFProxy.reportMicMsg(reportMap, bFromClient);
                         ++successCount;
                     } catch (Exception e) {
-                        ClientLogger.getLogger().error("error occurred on report proxy stat", e);
+                        logger.error("error occurred on report proxy stat", e);
                         ++errorCount;
                     }
-                    reprotMap = new HashMap<StatMicMsgHead, StatMicMsgBody>();
+                    reportMap = new HashMap<>();
                 }
             }
-            if (reprotMap.size() > 0) {
+            if (reportMap.size() > 0) {
                 try {
-                    statFProxy.reportMicMsg(reprotMap, bFromClient);
+                    statFProxy.reportMicMsg(reportMap, bFromClient);
                     successCount++;
                 } catch (Exception e) {
                     errorCount++;
-                    ClientLogger.getLogger().error("error occurred on report proxy stat", e);
+                    logger.error("error occurred on report proxy stat", e);
                 }
             }
         } catch (Exception e) {
-            ClientLogger.getLogger().error("error occurred on report proxy stat", e);
+            logger.error("error occurred on report proxy stat", e);
         } finally {
-            ClientLogger.getLogger().info("report success:" + successCount + " fail:" + errorCount + " costTime:" + (System.currentTimeMillis() - start));
+            logger.info("report success:" + successCount + " fail:" + errorCount + " costTime:" + (System.currentTimeMillis() - start));
         }
     }
 }

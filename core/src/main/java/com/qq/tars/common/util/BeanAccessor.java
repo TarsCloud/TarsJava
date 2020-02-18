@@ -16,20 +16,20 @@
 
 package com.qq.tars.common.util;
 
+import sun.misc.Unsafe;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import sun.misc.Unsafe;
-
 public class BeanAccessor {
 
     private static Unsafe unsafe;
     private static Map<Class<?>, Map<String, Field>> beaninfoMap;
     private static Map<Class<?>, Map<String, Long>> beanFieldOffsetMap;
-    public static String SERIALVERSIONUID = "serialVersionUID";
+    public static String SERIAL_VERSION_UID = "serialVersionUID";
     public static String FINAL = "final";
     public static String STATIC = "static";
 
@@ -112,7 +112,7 @@ public class BeanAccessor {
                     for (String key : fieldMap.keySet()) {
                         Field field = fieldMap.get(key);
                         String modifiers = Modifier.toString(field.getModifiers());
-                        if (field.getName().equals(SERIALVERSIONUID) || modifiers.contains(FINAL) || modifiers.contains(STATIC)) {
+                        if (field.getName().equals(SERIAL_VERSION_UID) || modifiers.contains(FINAL) || modifiers.contains(STATIC)) {
                             continue;
                         }
                         long offset = getUnsafeInstance().objectFieldOffset(field);
@@ -124,7 +124,7 @@ public class BeanAccessor {
         }
 
         Long result = offsetMap == null ? null : offsetMap.get(fieldName);
-        return result == null ? -1 : result.longValue();
+        return result == null ? -1 : result;
     }
 
     public static Object getBeanValue(Object bean, String fieldName) {

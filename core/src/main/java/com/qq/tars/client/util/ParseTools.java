@@ -122,20 +122,28 @@ public class ParseTools {
         int weightType = 0;
         int weight = 0;
         for (int i = 0; i < items.length; i++) {
-            if (items[i].equals("-h")) {
-                host = items[i + 1];
-            } else if (items[i].equals("-p")) {
-                port = Integer.parseInt(items[i + 1]);
-            } else if (items[i].equals("-a")) {
-                active = Integer.parseInt(items[i + 1]);
-            } else if (items[i].equals("-s")) {
-                setDivision = items[i + 1];
-            } else if (items[i].equals("-e")) {
-                enableAuth = items[i + 1];
-            } else if (items[i].equals("-v")) {
-                weightType = Integer.parseInt(items[i + 1]);
-            } else if (items[i].equals("-w")) {
-                weight = Integer.parseInt(items[i + 1]);
+            switch (items[i]) {
+                case "-h":
+                    host = items[i + 1];
+                    break;
+                case "-p":
+                    port = Integer.parseInt(items[i + 1]);
+                    break;
+                case "-a":
+                    active = Integer.parseInt(items[i + 1]);
+                    break;
+                case "-s":
+                    setDivision = items[i + 1];
+                    break;
+                case "-e":
+                    enableAuth = items[i + 1];
+                    break;
+                case "-v":
+                    weightType = Integer.parseInt(items[i + 1]);
+                    break;
+                case "-w":
+                    weight = Integer.parseInt(items[i + 1]);
+                    break;
             }
         }
         if (StringUtils.isEmpty(host) || port == -1) {

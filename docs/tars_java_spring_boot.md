@@ -5,7 +5,7 @@
 Tars支持使用通过spring boot的方式编写tars服务，使用此功能需要依赖tars-spring-boot-starter.jar包，以及spring boot 2.0及以上版本。你可以将你的servant作为一个Spring bean，注解暴露spring bean即可。
 
 ## demo工程
-demo工程参考[demo工程](https://github.com/Tencent/Tars/tree/master/java/examples/tars-spring-boot-server)
+demo工程参考[demo工程](https://github.com/TarsCloud/TarsJava/tree/master/examples/tars-spring-boot-server)
 
 ## 依赖配置
 
@@ -83,7 +83,7 @@ public class HelloServantImpl implements HelloServant {
 接口的实现类通过注解@TarsServant来暴露服务，其中填写的'HelloObj'为servant名，该名称与管理平台上的名称对应即可。
 
 ## 编写一个Http服务
-此外如果你想使用spring-boot来编写一个http服务，而不使用taf接口的话也是可以的：
+此外如果你想使用spring-boot来编写一个http服务，而不使用tars接口的话也是可以的：
 ```java
 @SpringBootApplication
 @EnableTarsServer

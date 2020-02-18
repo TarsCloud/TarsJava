@@ -31,7 +31,7 @@ public class TarsEurekaInstance extends EurekaInstanceConfigBean {
     @Value("${tars.server.application:unknown}")
     private String appname = "unknown";
 
-    @Value("${tars.server.server-name:unkonwn}")
+    @Value("${tars.server.server-name:unknown}")
     private String servicename = "unknown";
 
     @Value("${tars.server.port:80}")

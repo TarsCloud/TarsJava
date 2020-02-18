@@ -67,7 +67,7 @@ public final class Reactor extends Thread {
 
     public void registerChannel(SelectableChannel channel, int ops, Object attachment) throws IOException {
         if (crashed) {
-            throw new IOException("The reactor thread carsh.... ");
+            throw new IOException("The reactor thread crashed.... ");
         }
 
         if (Thread.currentThread() == this) {

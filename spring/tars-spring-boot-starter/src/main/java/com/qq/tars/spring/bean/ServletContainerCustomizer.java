@@ -16,10 +16,13 @@
 
 package com.qq.tars.spring.bean;
 
+import com.qq.tars.rpc.exc.TarsException;
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.server.config.ServantAdapterConfig;
 import com.qq.tars.server.config.ServerConfig;
 import com.qq.tars.spring.annotation.TarsHttpService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
@@ -32,6 +35,7 @@ import java.net.UnknownHostException;
 import java.util.Map;
 
 public class ServletContainerCustomizer implements WebServerFactoryCustomizer<ConfigurableServletWebServerFactory>, ApplicationContextAware {
+    private static final Logger logger = LoggerFactory.getLogger(ServletContainerCustomizer.class);
     private ApplicationContext applicationContext;
 
     @Override
@@ -44,7 +48,7 @@ public class ServletContainerCustomizer implements WebServerFactoryCustomizer<Co
         Map<String, Object> beans = applicationContext.getBeansWithAnnotation(TarsHttpService.class);
         int port = 8080;
         String host = null;
-        ServerConfig serverCfg = ConfigurationManager.getInstance().getserverConfig();
+        ServerConfig serverCfg = ConfigurationManager.getInstance().getServerConfig();
 
         try {
             for (Object bean : beans.values()) {
@@ -53,7 +57,9 @@ public class ServletContainerCustomizer implements WebServerFactoryCustomizer<Co
 
                 ServantAdapterConfig adapterConfig = ConfigurationManager.getInstance()
                         .getServerConfig().getServantAdapterConfMap().get(homeName);
-
+                if (adapterConfig.getProtocol().equals("tars")) {
+                    throw new TarsException("[TARS] http servant can not use tars protocol");
+                }
                 port = adapterConfig.getEndpoint().port();
                 host = adapterConfig.getEndpoint().host();
             }

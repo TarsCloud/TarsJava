@@ -212,22 +212,6 @@ public final class Client<REQ extends Request, RES extends Response> {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public Future<RES> invokeWithFuture(REQ request) throws IOException {
-        Ticket<Response> ticket = null;
-
-        try {
-            ensureConnected();
-            request.setInvokeStatus(InvokeStatus.FUTURE_CALL);
-            ticket = TicketManager.createTicket(request, session, this.getReadTimeout());
-            session.write(request);
-            return new FutureImpl(ticket);
-        } catch (IOException ex) {
-            if (ticket != null) TicketManager.removeTicket(ticket.getTicketNumber());
-            throw ex;
-        }
-    }
-
     public synchronized void shutdown() throws IOException {
         this.session.asyncClose();
     }
@@ -341,10 +325,10 @@ public final class Client<REQ extends Request, RES extends Response> {
     private String resolveCurrentContextIdentity() {
         String contextIdentity = "";
 
-        Object slefClassLoader = this.getClass().getClassLoader();
+        Object selfClassLoader = this.getClass().getClassLoader();
         Object contextClassLoader = Thread.currentThread().getContextClassLoader();
 
-        if (slefClassLoader != null && contextClassLoader != null && slefClassLoader != contextClassLoader) {
+        if (selfClassLoader != null && contextClassLoader != null && selfClassLoader != contextClassLoader) {
             contextIdentity = contextClassLoader.toString();
         }
 

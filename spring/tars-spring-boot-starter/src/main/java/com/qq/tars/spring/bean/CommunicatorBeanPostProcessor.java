@@ -57,7 +57,7 @@ public class CommunicatorBeanPostProcessor implements BeanPostProcessor {
             }
 
             if (field.getType().getAnnotation(Servant.class) == null) {
-                throw new RuntimeException("[TARS] autoware client failed: target field is not TAF client");
+                throw new RuntimeException("[TARS] autoware client failed: target field is not  tars  client");
             }
 
             String objName = annotation.name();
@@ -72,11 +72,14 @@ public class CommunicatorBeanPostProcessor implements BeanPostProcessor {
 
             config.setEnableSet(annotation.enableSet());
             config.setSetDivision(annotation.setDivision());
+            if (StringUtils.isNotEmpty(annotation.setDivision())) {
+                config.setEnableSet(true);
+                config.setSetDivision(annotation.setDivision());
+            }
             config.setConnections(annotation.connections());
             config.setConnectTimeout(annotation.connectTimeout());
             config.setSyncTimeout(annotation.syncTimeout());
             config.setAsyncTimeout(annotation.asyncTimeout());
-
             config.setTcpNoDelay(annotation.tcpNoDelay());
             config.setCharsetName(annotation.charsetName());
 

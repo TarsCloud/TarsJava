@@ -18,21 +18,14 @@ package com.qq.tars.server.startup;
 
 import com.qq.tars.rpc.exc.TarsException;
 import com.qq.tars.server.apps.XmlAppContext;
-import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.server.core.AppContext;
 import com.qq.tars.server.core.Server;
 
-import java.io.File;
 import java.net.URL;
 
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        Server.loadServerConfig();
-        Server.initCommunicator();
-        Server.configLogger();
-        Server.startManagerService();
-
         AppContext context = null;
         URL servantXML = Main.class.getClassLoader().getResource("servants.xml");
         if (servantXML != null) {
@@ -45,6 +38,6 @@ public class Main {
             System.out.println("[SERVER] servants profile does not exist, start failed.");
             throw new TarsException("servants profile does not exist");
         }
-        new Server(ConfigurationManager.getInstance().getServerConfig()).startUp(context);
+        Server.getInstance().startUp(context);
     }
 }

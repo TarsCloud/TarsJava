@@ -16,6 +16,8 @@
 
 package com.qq.tars.common.util;
 
+import com.qq.tars.rpc.exc.TarsException;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -25,8 +27,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.util.List;
-
-import com.qq.tars.rpc.exc.TarsException;
 
 public class FileUtil {
 

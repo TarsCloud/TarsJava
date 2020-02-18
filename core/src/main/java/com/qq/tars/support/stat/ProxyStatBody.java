@@ -16,6 +16,8 @@
 
 package com.qq.tars.support.stat;
 
+import com.qq.tars.common.util.Constants;
+
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,8 +25,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-
-import com.qq.tars.common.util.Constants;
 
 public class ProxyStatBody {
 

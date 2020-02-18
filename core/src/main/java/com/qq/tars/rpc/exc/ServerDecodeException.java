@@ -19,6 +19,8 @@ package com.qq.tars.rpc.exc;
 @SuppressWarnings("serial")
 public class ServerDecodeException extends ServerException {
 
+    private static final long serialVersionUID = 4753766342873601126L;
+
     public ServerDecodeException(int ret) {
         super(ret);
     }

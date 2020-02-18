@@ -19,8 +19,8 @@ package com.qq.tars.server.core;
 import com.qq.tars.protocol.util.TarsHelper;
 import com.qq.tars.rpc.protocol.tars.TarsServantRequest;
 import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
-import com.qq.tars.support.log.Logger;
-import com.qq.tars.support.log.Logger.LogType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -28,7 +28,7 @@ public final class AsyncContext {
     public static final String PORTAL_CAP_ASYNC_CONTEXT_ATTRIBUTE = "internal.asynccontext";
 
     private Context<TarsServantRequest, TarsServantResponse> context = null;
-    private Logger flowLogger = Logger.getLogger("tarsserver.log", LogType.ALL);
+    private static final Logger flowLogger = LoggerFactory.getLogger("tarsserver");
 
     public static AsyncContext startAsync() throws IOException {
         Context<TarsServantRequest, TarsServantResponse> context = ContextManager.getContext();
@@ -59,7 +59,7 @@ public final class AsyncContext {
     public <T> void setAttribute(String name, T value) {
         this.context.setAttribute(name, value);
     }
-    
+
     public Context getContext() {
         return this.context;
     }
@@ -73,7 +73,7 @@ public final class AsyncContext {
 
         getCapHomeSkeleton().postInvokeCapHomeSkeleton();
         Long startTime = this.context.getAttribute(Context.INTERNAL_START_TIME);
-        TarsServantProcessor.printServiceFlowLog(flowLogger, this.context.request(), response.getRet(), (System.currentTimeMillis() - startTime.longValue()), ex.toString());
+        TarsServantProcessor.printServiceFlowLog(flowLogger, this.context.request(), response.getRet(), (System.currentTimeMillis() - startTime), ex.toString());
 
     }
 
@@ -86,6 +86,6 @@ public final class AsyncContext {
 
         getCapHomeSkeleton().postInvokeCapHomeSkeleton();
         Long startTime = this.context.getAttribute(Context.INTERNAL_START_TIME);
-        TarsServantProcessor.printServiceFlowLog(flowLogger, this.context.request(), response.getRet(), (System.currentTimeMillis() - startTime.longValue()), "");
+        TarsServantProcessor.printServiceFlowLog(flowLogger, this.context.request(), response.getRet(), (System.currentTimeMillis() - startTime), "");
     }
 }

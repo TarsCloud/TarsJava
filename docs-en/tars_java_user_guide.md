@@ -645,14 +645,14 @@ There are two ways to dye logs: active opening and passive opening.
 - Active staining:
 
 > - If the requested client explicitly invokes the dyed opening interface in the framework, the intermediate logs are printed as the dyed logs from the opening switch to the dyed off interface in the explicit call frame.
-> - When the dyeing function is opened, all the initiated TAF requests automatically pass the dyeing state, and the log generated after the request is received will also be printed as a dyed log. After the request is completed, the dyed switch of the transferred service will be automatically closed.
+> - When the dyeing function is opened, all the initiated tars requests automatically pass the dyeing state, and the log generated after the request is received will also be printed as a dyed log. After the request is completed, the dyed switch of the transferred service will be automatically closed.
 
 The example code is as follows:
 
 ```
 DyeingSwitch.enableActiveDyeing("helloServer");   //Open the switch interface automatically, and the parameter indicates the name of the dyed log.
 ...Business processing
-logger.info("hello world");   //At this time, because of the color opening state, the log will print an extra copy to the dyed log.
+loggerInnerImpl.info("hello world");   //At this time, because of the color opening state, the log will print an extra copy to the dyed log.
 ...Business processing
 DyeingSwitch.closeActiveDyeing();    //Active closure of dyed switch interface
 ```

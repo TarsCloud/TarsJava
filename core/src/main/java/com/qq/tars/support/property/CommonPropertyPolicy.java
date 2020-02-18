@@ -16,13 +16,13 @@
 
 package com.qq.tars.support.property;
 
+import com.qq.tars.rpc.exc.TarsException;
+import com.qq.tars.support.property.PropertyReportHelper.Policy;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import com.qq.tars.rpc.exc.TarsException;
-import com.qq.tars.support.property.PropertyReportHelper.Policy;
 
 public class CommonPropertyPolicy {
 
@@ -108,7 +108,7 @@ public class CommonPropertyPolicy {
 
         public Distr(List<Integer> list) {
             if (list == null || list.size() == 0) {
-                throw new TarsException("ProperyReport|Distr initial list object can not be empty");
+                throw new TarsException("PropertyReport|Distr initial list object can not be empty");
             }
 
             this.data = new HashSet<Integer>(list).toArray(II);

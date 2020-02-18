@@ -79,7 +79,7 @@ public class TCPSession extends Session {
             if (channel != null) channel.close();
             if (key != null) key.cancel();
         }catch(IOException e){
-            /*ignore IOException ,when client first clost connection,it cannot be fast unregisterSession*/
+            /*ignore IOException ,when client first close connection,it cannot be fast unregisterSession*/
         }
 
         this.key = null;

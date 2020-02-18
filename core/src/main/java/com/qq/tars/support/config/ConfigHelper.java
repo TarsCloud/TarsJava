@@ -16,10 +16,6 @@
 
 package com.qq.tars.support.config;
 
-import java.io.File;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import com.qq.tars.client.Communicator;
 import com.qq.tars.common.support.Holder;
 import com.qq.tars.common.util.FileUtil;
@@ -27,9 +23,15 @@ import com.qq.tars.rpc.exc.TarsException;
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.support.config.prx.ConfigInfo;
 import com.qq.tars.support.config.prx.ConfigPrx;
-import com.qq.tars.support.om.OmLogger;
+import com.qq.tars.support.log.LoggerFactory;
+import org.slf4j.Logger;
+
+import java.io.File;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ConfigHelper {
+    private static final Logger omLogger = LoggerFactory.getOmLogger();
 
     private static final ConfigHelper Instance = new ConfigHelper();
     private Communicator comm;
@@ -86,10 +88,10 @@ public class ConfigHelper {
             }
             localRename(newFile, fullFileName);
         } catch (TarsException e) {
-            OmLogger.record("Config|load config failed: " + fileName, e);
+            omLogger.error("Config|load config failed: " + fileName, e);
             throw e;
         } catch (Exception e) {
-            OmLogger.record("Config|load config failed: " + fileName, e);
+            omLogger.error("Config|load config failed: " + fileName, e);
             throw new TarsException("Config|load config failed: " + fileName, e);
         }
 

@@ -16,21 +16,21 @@
 
 package com.qq.tars.server.core;
 
-import java.util.HashMap;
-import java.util.concurrent.Executor;
-import java.util.concurrent.TimeUnit;
-
 import com.qq.tars.common.util.concurrent.TaskQueue;
 import com.qq.tars.common.util.concurrent.TaskThreadFactory;
 import com.qq.tars.common.util.concurrent.TaskThreadPoolExecutor;
 import com.qq.tars.server.config.ServantAdapterConfig;
+
+import java.util.HashMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
 public final class ServantThreadPoolManager {
 
     private final static HashMap<String, Executor> threadExecutors = new HashMap<String, Executor>();
 
     public static Executor get(ServantAdapterConfig config) {
-        return getAndcreateExecutor(config);
+        return getAndCreateExecutor(config);
     }
 
     private static synchronized Executor createDefaultExecutor(String key) {
@@ -49,7 +49,7 @@ public final class ServantThreadPoolManager {
         return pool;
     }
 
-    private static synchronized Executor getAndcreateExecutor(ServantAdapterConfig config) {
+    private static synchronized Executor getAndCreateExecutor(ServantAdapterConfig config) {
         String key = config.getHandleGroup();
         Executor executor = null;
 

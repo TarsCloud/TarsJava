@@ -16,11 +16,13 @@
 
 package com.qq.tars.protocol.util;
 
+import com.qq.tars.protocol.tars.TarsStructBase;
+
 import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.List;
-
 import com.qq.tars.protocol.tars.TarsStructBase;
+import java.util.Objects;
 
 public final class TarsUtil {
 
@@ -61,39 +63,39 @@ public final class TarsUtil {
     }
 
     public static boolean equals(Object l, Object r) {
-        return (l == null && r == null) || (l != null && l.equals(r));
+        return Objects.equals(l, r);
     }
 
     public static int compareTo(boolean l, boolean r) {
-        return (l ? 1 : 0) - (r ? 1 : 0);
+        return l == r ? 0 : l ? 1 : -1;
     }
 
     public static int compareTo(byte l, byte r) {
-        return l < r ? -1 : (l > r ? 1 : 0);
+        return Byte.compare(l, r);
     }
 
     public static int compareTo(char l, char r) {
-        return l < r ? -1 : (l > r ? 1 : 0);
+        return Character.compare(l, r);
     }
 
     public static int compareTo(short l, short r) {
-        return l < r ? -1 : (l > r ? 1 : 0);
+        return Short.compare(l, r);
     }
 
     public static int compareTo(int l, int r) {
-        return l < r ? -1 : (l > r ? 1 : 0);
+        return Integer.compare(l, r);
     }
 
     public static int compareTo(long l, long r) {
-        return l < r ? -1 : (l > r ? 1 : 0);
+        return Long.compare(l, r);
     }
 
     public static int compareTo(float l, float r) {
-        return l < r ? -1 : (l > r ? 1 : 0);
+        return Float.compare(l, r);
     }
 
     public static int compareTo(double l, double r) {
-        return l < r ? -1 : (l > r ? 1 : 0);
+        return Double.compare(l, r);
     }
 
     public static <T extends Comparable<T>> int compareTo(T l, T r) {

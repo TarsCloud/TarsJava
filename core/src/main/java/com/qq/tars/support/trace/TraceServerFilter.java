@@ -1,14 +1,6 @@
 package com.qq.tars.support.trace;
 
-import java.util.Map;
-
 import com.qq.tars.common.ClientVersion;
-import io.opentracing.Scope;
-import io.opentracing.Tracer;
-import io.opentracing.propagation.Format;
-import io.opentracing.propagation.TextMapExtractAdapter;
-import io.opentracing.tag.Tags;
-
 import com.qq.tars.common.Filter;
 import com.qq.tars.common.FilterChain;
 import com.qq.tars.common.support.Endpoint;
@@ -18,6 +10,13 @@ import com.qq.tars.net.core.Response;
 import com.qq.tars.rpc.protocol.tars.TarsServantRequest;
 import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 import com.qq.tars.server.config.ConfigurationManager;
+import io.opentracing.Scope;
+import io.opentracing.Tracer;
+import io.opentracing.propagation.Format;
+import io.opentracing.propagation.TextMapExtractAdapter;
+import io.opentracing.tag.Tags;
+
+import java.util.Map;
 
 public class TraceServerFilter implements Filter {
 	
@@ -37,8 +36,8 @@ public class TraceServerFilter implements Filter {
 			
 			TarsServantRequest tarsServantRequest = (TarsServantRequest)request;
 			
-			try(TraceContext traceContext = TraceContext.getIntance().initCurrentTrace(tarsServantRequest.getServantName())) {
-				Tracer tracer = TraceContext.getIntance().getCurrentTracer();
+			try(TraceContext traceContext = TraceContext.getInstance().initCurrentTrace(tarsServantRequest.getServantName())) {
+				Tracer tracer = TraceContext.getInstance().getCurrentTracer();
 				Map<String, String> status = tarsServantRequest.getStatus();
 				if (tracer == null || status == null || status.isEmpty()) {
 					chain.doFilter(request, response);

@@ -16,24 +16,23 @@
 
 package com.qq.tars.server.core;
 
-import java.util.List;
-
 import com.qq.tars.common.Filter;
-import com.qq.tars.common.FilterChain;
 import com.qq.tars.common.FilterKind;
+
+import java.util.List;
 
 public interface AppContext {
 
-    public String getInitParameter(String name);
+    String name();
 
-    public abstract String name();
+    void stop();
 
-    public void stop();
+    ServantHomeSkeleton getCapHomeSkeleton(String homeName);
 
-    public ServantHomeSkeleton getCapHomeSkeleton(String homeName);
-    
-    public List<Filter> getFilters(FilterKind kind);
+    List<Filter> getFilters(FilterKind kind);
 
-    public void init();
+    void addFilter(FilterKind kind, Filter filter);
+
+    void init();
 }
 

@@ -1,14 +1,5 @@
 package com.qq.tars.support.trace;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import io.opentracing.Scope;
-import io.opentracing.Tracer;
-import io.opentracing.propagation.Format;
-import io.opentracing.propagation.TextMapInjectAdapter;
-import io.opentracing.tag.Tags;
-
 import com.qq.tars.common.ClientVersion;
 import com.qq.tars.common.Filter;
 import com.qq.tars.common.FilterChain;
@@ -22,6 +13,14 @@ import com.qq.tars.rpc.protocol.tars.TarsServantRequest;
 import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.server.config.ServerConfig;
+import io.opentracing.Scope;
+import io.opentracing.Tracer;
+import io.opentracing.propagation.Format;
+import io.opentracing.propagation.TextMapInjectAdapter;
+import io.opentracing.tag.Tags;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class TraceClientFilter implements Filter {
 
@@ -45,7 +44,7 @@ public class TraceClientFilter implements Filter {
 		ServerConfig config = ConfigurationManager.getInstance().getServerConfig();
 		DistributedContext context = DistributedContextManager.getDistributedContext();
 		String servantName = context.get(TraceManager.INTERNAL_SERVANT_NAME);
-		Tracer tracer = TraceContext.getIntance().getCurrentTracer();
+		Tracer tracer = TraceContext.getInstance().getCurrentTracer();
 		
         if (tracer == null) {
         	chain.doFilter(request, response);

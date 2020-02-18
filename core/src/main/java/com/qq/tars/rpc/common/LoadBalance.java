@@ -16,15 +16,14 @@
 
 package com.qq.tars.rpc.common;
 
-import java.util.Collection;
-
 import com.qq.tars.rpc.common.exc.NoInvokerException;
+
+import java.util.Collection;
 
 public interface LoadBalance<T> {
 
     /**
-     * 根据负载均衡策略，挑选invoker
-     *
+     * Use load balancing to select invoker
      * @param invokeContext
      * @return
      * @throws NoInvokerException
@@ -32,7 +31,7 @@ public interface LoadBalance<T> {
     Invoker<T> select(InvokeContext invokeContext) throws NoInvokerException;
 
     /**
-     * 通知invoker列表的更新
+     * Refresh local invoker
      * @param invokers
      */
     void refresh(Collection<Invoker<T>> invokers);

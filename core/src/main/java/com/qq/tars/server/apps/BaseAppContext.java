@@ -23,7 +23,13 @@ import com.qq.tars.rpc.protocol.tars.support.AnalystManager;
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.server.config.ServantAdapterConfig;
 import com.qq.tars.server.config.ServerConfig;
-import com.qq.tars.server.core.*;
+import com.qq.tars.server.core.Adapter;
+import com.qq.tars.server.core.AppContext;
+import com.qq.tars.server.core.AppContextListener;
+import com.qq.tars.server.core.AppContextManager;
+import com.qq.tars.server.core.AppService;
+import com.qq.tars.server.core.ServantAdapter;
+import com.qq.tars.server.core.ServantHomeSkeleton;
 import com.qq.tars.support.admin.AdminFServant;
 import com.qq.tars.support.admin.impl.AdminFServantImpl;
 import com.qq.tars.support.om.OmConstants;
@@ -31,23 +37,31 @@ import com.qq.tars.support.trace.TraceCallbackFilter;
 import com.qq.tars.support.trace.TraceClientFilter;
 import com.qq.tars.support.trace.TraceServerFilter;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class BaseAppContext implements AppContext {
     boolean ready = true;
 
-    ConcurrentHashMap<String, ServantHomeSkeleton> skeletonMap = new ConcurrentHashMap<String, ServantHomeSkeleton>();
-    ConcurrentHashMap<String, Adapter> servantAdapterMap = new ConcurrentHashMap<String, Adapter>();
+    ConcurrentHashMap<String, ServantHomeSkeleton> skeletonMap = new ConcurrentHashMap<>();
+    ConcurrentHashMap<String, Adapter> servantAdapterMap = new ConcurrentHashMap<>();
 
-    HashMap<String, String> contextParams = new HashMap<String, String>();
+    HashMap<String, String> contextParams = new HashMap<>();
 
-    Set<AppContextListener> listeners = new HashSet<AppContextListener>(4);
-    
-    Map<FilterKind, List<Filter>> filters = new HashMap<FilterKind, List<Filter>>();
+    Set<AppContextListener> listeners = new HashSet<>(4);
+
+    Map<FilterKind, List<Filter>> filters = new HashMap<>();
 
 
     BaseAppContext() {
+        this.filters.put(FilterKind.SERVER, new LinkedList<>());
+        this.filters.put(FilterKind.CLIENT, new LinkedList<>());
+        this.filters.put(FilterKind.CALLBACK, new LinkedList<>());
     }
 
     @Override
@@ -62,7 +76,7 @@ public abstract class BaseAppContext implements AppContext {
         } catch (Exception ex) {
             ready = false;
             ex.printStackTrace();
-            System.out.println("[SERVER] failed to start the applicaton.");
+            System.out.println("[SERVER] failed to start the application.");
         }
     }
 
@@ -115,26 +129,22 @@ public abstract class BaseAppContext implements AppContext {
             }
         }
     }
-    
+
     void loadDefaultFilter() {
-    	filters.put(FilterKind.SERVER, new LinkedList<Filter>());
-    	filters.put(FilterKind.CLIENT, new LinkedList<Filter>());
-    	filters.put(FilterKind.CALLBACK, new LinkedList<Filter>());
-    	
-    	List<Filter> serverFilters = filters.get(FilterKind.SERVER);
-    	Filter traceServerFilter = new TraceServerFilter();
-    	traceServerFilter.init();
-    	serverFilters.add(traceServerFilter);
-    	
-    	List<Filter> clientFilters = filters.get(FilterKind.CLIENT);
-    	Filter traceClientFilter = new TraceClientFilter();
-    	traceClientFilter.init();
-    	clientFilters.add(traceClientFilter);
-    	
-    	List<Filter> callbackFilters = filters.get(FilterKind.CALLBACK);
-    	Filter traceCallbackFilter = new TraceCallbackFilter();
-    	traceCallbackFilter.init();
-    	callbackFilters.add(traceCallbackFilter);   	
+        List<Filter> serverFilters = filters.get(FilterKind.SERVER);
+        Filter traceServerFilter = new TraceServerFilter();
+        traceServerFilter.init();
+        serverFilters.add(traceServerFilter);
+
+        List<Filter> clientFilters = filters.get(FilterKind.CLIENT);
+        Filter traceClientFilter = new TraceClientFilter();
+        traceClientFilter.init();
+        clientFilters.add(traceClientFilter);
+
+        List<Filter> callbackFilters = filters.get(FilterKind.CALLBACK);
+        Filter traceCallbackFilter = new TraceCallbackFilter();
+        traceCallbackFilter.init();
+        callbackFilters.add(traceCallbackFilter);
     }
 
     void appContextStarted() {
@@ -145,11 +155,6 @@ public abstract class BaseAppContext implements AppContext {
 
     void setAppContext() {
         AppContextManager.getInstance().setAppContext(this);
-    }
-
-    @Override
-    public String getInitParameter(String name) {
-        return contextParams.get(name);
     }
 
     @Override
@@ -164,12 +169,18 @@ public abstract class BaseAppContext implements AppContext {
         }
         return skeletonMap.get(homeName);
     }
-    
+
     @Override
     public List<Filter> getFilters(FilterKind kind) {
         if (!ready) {
             throw new RuntimeException("The application isn't started.");
         }
-    	return filters.get(kind);
+        return filters.get(kind);
+    }
+
+    @Override
+    public void addFilter(FilterKind kind, Filter filter) {
+        List<Filter> filters = this.filters.get(kind);
+        filters.add(filter);
     }
 }

@@ -17,6 +17,7 @@
 package com.qq.tars.client.util;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public final class Pair<F, S> implements Serializable {
 
@@ -33,7 +34,7 @@ public final class Pair<F, S> implements Serializable {
     }
 
     private static <T> boolean eq(T o1, T o2) {
-        return o1 == null ? o2 == null : o1.equals(o2);
+        return Objects.equals(o1, o2);
     }
 
     public boolean equals(Object o) {

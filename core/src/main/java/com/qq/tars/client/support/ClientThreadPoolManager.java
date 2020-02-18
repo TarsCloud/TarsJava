@@ -16,15 +16,15 @@
 
 package com.qq.tars.client.support;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
 import com.qq.tars.client.CommunicatorConfig;
 import com.qq.tars.client.rpc.ServantClient;
 import com.qq.tars.common.util.concurrent.TaskQueue;
 import com.qq.tars.common.util.concurrent.TaskThreadFactory;
 import com.qq.tars.common.util.concurrent.TaskThreadPoolExecutor;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class ClientThreadPoolManager {
 
@@ -59,10 +59,10 @@ public class ClientThreadPoolManager {
     }
 
     private static String resolveCurrentContextIdentity() {
-        Object slefClassLoader = ClientThreadPoolManager.class.getClassLoader();
+        Object selfClassLoader = ClientThreadPoolManager.class.getClassLoader();
         Object contextClassLoader = Thread.currentThread().getContextClassLoader();
         String contextIdentity = ClientThreadPoolManager.class.getName();
-        if (slefClassLoader != null && contextClassLoader != null && slefClassLoader != contextClassLoader) {
+        if (selfClassLoader != null && contextClassLoader != null && selfClassLoader != contextClassLoader) {
             contextIdentity = contextClassLoader.toString();
         }
         return contextIdentity;

@@ -19,7 +19,6 @@ package com.qq.tars.client;
 import com.qq.tars.client.rpc.loadbalance.DefaultLoadBalance;
 import com.qq.tars.client.rpc.tars.TarsProtocolInvoker;
 import com.qq.tars.client.support.ServantCacheManager;
-import com.qq.tars.client.util.ClientLogger;
 import com.qq.tars.client.util.ParseTools;
 import com.qq.tars.common.util.StringUtils;
 import com.qq.tars.protocol.annotation.Servant;
@@ -32,10 +31,14 @@ import com.qq.tars.rpc.exc.CommunicatorConfigException;
 import com.qq.tars.rpc.protocol.Codec;
 import com.qq.tars.rpc.protocol.ServantProtocolFactory;
 import com.qq.tars.rpc.protocol.tars.TarsCodec;
+import com.qq.tars.support.log.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.lang.reflect.Constructor;
 
 class ObjectProxyFactory {
+    private static final Logger logger = LoggerFactory.getClientLogger();
+
 
     private final Communicator communicator;
 
@@ -79,7 +82,7 @@ class ObjectProxyFactory {
             servantProxyConfig.setProtocol(codec.getProtocol());
             protocolInvoker = new TarsProtocolInvoker<T>(api, servantProxyConfig, new ServantProtocolFactory(codec), communicator.getThreadPoolExecutor());
         } else {
-            throw new ClientException(servantProxyConfig.getSimpleObjectName(), "unkonw protocol servant invoker", null);
+            throw new ClientException(servantProxyConfig.getSimpleObjectName(), "unknown protocol servant invoker", null);
         }
         return protocolInvoker;
     }
@@ -129,7 +132,7 @@ class ObjectProxyFactory {
         String endpoints = null;
         if (!ParseTools.hasServerNode(cfg.getObjectName()) && !cfg.isDirectConnection() && !communicatorConfig.getLocator().startsWith(cfg.getSimpleObjectName())) {
             try {
-                /** 从主控拉取server node */
+                /** query server nodes from registerServer */
                 if (RegisterManager.getInstance().getHandler() != null) {
                     endpoints = ParseTools.parse(RegisterManager.getInstance().getHandler().query(cfg.getSimpleObjectName()),
                             cfg.getSimpleObjectName());
@@ -141,9 +144,9 @@ class ObjectProxyFactory {
                 }
                 ServantCacheManager.getInstance().save(communicator.getId(), cfg.getSimpleObjectName(), endpoints, communicatorConfig.getDataPath());
             } catch (CommunicatorConfigException e) {
-                /** 如果失败，从本地绶存文件中拉取 */
+                /** If it fails, pull it from the local cache  file */
                 endpoints = ServantCacheManager.getInstance().get(communicator.getId(), cfg.getSimpleObjectName(), communicatorConfig.getDataPath());
-                ClientLogger.getLogger().error(cfg.getSimpleObjectName() + " error occurred on get by registry, use by local cache=" + endpoints + "|" + e.getLocalizedMessage(), e);
+                logger.error(cfg.getSimpleObjectName() + " error occurred on get by registry, use by local cache=" + endpoints + "|" + e.getLocalizedMessage(), e);
             }
 
             if (StringUtils.isEmpty(endpoints)) {

@@ -17,7 +17,10 @@ package com.qq.tars.context.exc;
 
 @SuppressWarnings("serial")
 public class CodecException extends Exception {
-	
+
+
+    private static final long serialVersionUID = -7241879512164893410L;
+
     public CodecException() {
         super();
     }

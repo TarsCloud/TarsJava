@@ -25,9 +25,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TarsStructProperty {
 
-    public int order();
+    int order();
 
-    public boolean isRequire() default false;
+    boolean isRequire() default false;
 
-    public String comment() default "";
+    String comment() default "";
 }

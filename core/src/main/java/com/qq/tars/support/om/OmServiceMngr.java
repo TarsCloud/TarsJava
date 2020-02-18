@@ -24,7 +24,12 @@ import com.qq.tars.support.config.ConfigHelper;
 import com.qq.tars.support.node.NodeHelper;
 import com.qq.tars.support.notify.NotifyHelper;
 import com.qq.tars.support.property.CommonPropertyPolicy;
-import com.qq.tars.support.property.JvmPropertyPolicy.*;
+import com.qq.tars.support.property.JvmPropertyPolicy.GCNumCount;
+import com.qq.tars.support.property.JvmPropertyPolicy.GCTimeSum;
+import com.qq.tars.support.property.JvmPropertyPolicy.MemoryHeapCommittedAvg;
+import com.qq.tars.support.property.JvmPropertyPolicy.MemoryHeapMaxAvg;
+import com.qq.tars.support.property.JvmPropertyPolicy.MemoryHeapUsedAvg;
+import com.qq.tars.support.property.JvmPropertyPolicy.ThreadNumAvg;
 import com.qq.tars.support.property.PropertyReportHelper;
 import com.qq.tars.support.property.PropertyReportHelper.Policy;
 import com.qq.tars.support.trace.TarsTraceZipkinConfiguration;
@@ -50,7 +55,7 @@ public class OmServiceMngr {
         ConfigHelper.getInstance().setConfigInfo(communicator, app, serverName, basePath);
         NodeHelper.getInstance().setNodeInfo(communicator, app, serverName);
         NotifyHelper.getInstance().setNotifyInfo(communicator, app, serverName);
-        PropertyReportHelper.getInstance().setPropertyInfo(communicator, modualName);
+        PropertyReportHelper.getInstance().init(communicator, modualName);
         NodeHelper.getInstance().reportVersion(ClientVersion.getVersion());
 
         Policy avgPolicy = new CommonPropertyPolicy.Avg();

@@ -19,6 +19,9 @@ package com.qq.tars.protocol.tars.exc;
 @SuppressWarnings("serial")
 public class TarsDecodeException extends RuntimeException {
 
+
+    private static final long serialVersionUID = 6149236324136577031L;
+
     public TarsDecodeException(String string) {
         super(string);
     }

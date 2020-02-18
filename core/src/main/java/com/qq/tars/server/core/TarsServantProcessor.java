@@ -38,11 +38,11 @@ import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.server.config.ServantAdapterConfig;
 import com.qq.tars.server.config.ServerConfig;
-import com.qq.tars.support.log.Logger;
-import com.qq.tars.support.log.Logger.LogType;
+import com.qq.tars.support.log.LoggerFactory;
 import com.qq.tars.support.om.OmServiceMngr;
 import com.qq.tars.support.stat.InvokeStatHelper;
 import com.qq.tars.support.trace.TraceManager;
+import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.Random;
@@ -51,7 +51,7 @@ public class TarsServantProcessor extends Processor {
 
     private static final String FLOW_SEP_FLAG = "|";
     private static final Random rand = new Random(System.currentTimeMillis());
-    private Logger flowLogger = Logger.getLogger("tarsserver.log", LogType.LOCAL);
+    private static final Logger flowLogger = LoggerFactory.getLogger("tarsserver");
 
     public static void printServiceFlowLog(Logger logger, TarsServantRequest request, int status, long cost,
                                            String remark) {
@@ -256,8 +256,8 @@ public class TarsServantProcessor extends Processor {
         }
         TarsMethodInfo methodInfo = request.getMethodInfo();
         if (methodInfo.getRouteKeyIndex() != -1) {
-            Object[] paramters = request.getMethodParameters();
-            Object value = paramters[methodInfo.getRouteKeyIndex()];
+            Object[] parameters = request.getMethodParameters();
+            Object value = parameters[methodInfo.getRouteKeyIndex()];
             if (cache_routeKey.equals(value.toString())) {
                 routeKey = cache_routeKey;
                 fileName = ConfigurationManager.getInstance().getServerConfig().getServerName();
