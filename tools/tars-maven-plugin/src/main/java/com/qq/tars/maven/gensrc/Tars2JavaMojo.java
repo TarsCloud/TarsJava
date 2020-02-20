@@ -504,7 +504,7 @@ public class Tars2JavaMojo extends AbstractMojo {
         for (TarsOperation op : _interface.operationList()) {
             // 1 print sync method without context
             out.println(getDoc(op, "\t"));
-            out.println("\tpublic " + type(op.retType(), nsMap) + " " + op.operationName() + "(" + operationParams(null, op.paramList(), null, true, nsMap) + ");");
+            out.println("\t " + type(op.retType(), nsMap) + " " + op.operationName() + "(" + operationParams(null, op.paramList(), null, true, nsMap) + ");");
 
             // 2 print  promise method without context
             out.println(getDoc(op, "\t"));
@@ -512,15 +512,15 @@ public class Tars2JavaMojo extends AbstractMojo {
 
             // 3 print sync method with context
             out.println(getDoc(op, "\t"));
-            out.println("\tpublic " + type(op.retType(), nsMap) + " " + op.operationName() + "(" + operationParams(null, op.paramList(), Arrays.asList("@TarsContext java.util.Map<String, String> ctx"), true, nsMap) + ");");
+            out.println("\t " + type(op.retType(), nsMap) + " " + op.operationName() + "(" + operationParams(null, op.paramList(), Arrays.asList("@TarsContext java.util.Map<String, String> ctx"), true, nsMap) + ");");
 
             // 4 print async method without context
             out.println(getDoc(op, "\t"));
-            out.println("\tpublic void async_" + op.operationName() + "(" + operationParams(Arrays.asList("@TarsCallback " + prxClass + "Callback callback"), op.paramList(), null, false, nsMap) + ");");
+            out.println("\t void async_" + op.operationName() + "(" + operationParams(Arrays.asList("@TarsCallback " + prxClass + "Callback callback"), op.paramList(), null, false, nsMap) + ");");
 
             // 5 print async method with context
             out.println(getDoc(op, "\t"));
-            out.println("\tpublic void async_" + op.operationName() + "(" + operationParams(Arrays.asList("@TarsCallback " + prxClass + "Callback callback"), op.paramList(), Arrays.asList("@TarsContext java.util.Map<String, String> ctx"), false, nsMap) + ");");
+            out.println("\t void async_" + op.operationName() + "(" + operationParams(Arrays.asList("@TarsCallback " + prxClass + "Callback callback"), op.paramList(), Arrays.asList("@TarsContext java.util.Map<String, String> ctx"), false, nsMap) + ");");
         }
 
         out.println("}");
@@ -555,7 +555,7 @@ public class Tars2JavaMojo extends AbstractMojo {
         for (TarsOperation op : _interface.operationList()) {
             // 2 print sync method without context
             out.println(getDoc(op, "\t"));
-            out.println("\tpublic " + type(op.retType(), nsMap) + " " + op.operationName() + "(" + operationParams(null, op.paramList(), null, true, nsMap) + ");");
+            out.println("\t " + type(op.retType(), nsMap) + " " + op.operationName() + "(" + operationParams(null, op.paramList(), null, true, nsMap) + ");");
         }
 
         out.println("}");
