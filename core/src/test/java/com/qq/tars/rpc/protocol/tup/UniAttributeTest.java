@@ -20,41 +20,41 @@ public class UniAttributeTest {
 	}
 
 	/**
-	 * 重现-解码内容为null.
-	 * 用改动前的版本测试
+	 * reproduce the problem: decode data is null.
+	 * user the old version
 	 */
 	@Test
 	public void reproduceDecodeProblem() {
-		//version2的wup编码
+		//tup version=2 encode
 		String version2HexByteStr = encodeVersion2Fix();
 		System.out.println(version2HexByteStr);
 
-		//对应目前version2的解码工作
+		//devocode tup version=2 now.
 		LogInfo logInfo = decodeVersionV2Now(version2HexByteStr);
 		printLogInfo(logInfo);
 	}
 
 	/**
-	 * 重现-编码失败的问题.
-	 * 用改动前的版本测试
-	 * 解码会报：com.huya.taf.protocol.taf.exc.TafDecodeException: type mismatch
+	 * reproduce the problem: encode tup version=2.
+	 * user the old version.
+	 * the tupProxy client will see：com.huya.taf.protocol.taf.exc.TafDecodeException: type mismatch
 	 */
 	@Test
 	public void reproduceEncodeProblem() {
-		//用目前的version=2的方法去编码
+		//use tup version=2 encode now.
 		String version2HexByteStr = encodeVersion2Now();
 
-		//然后用C++那边正常的version=2的方法去解码.
+		//user the tupVersion=2 decode.
 		LogInfo logInfo = decodeVersionV2Fix(version2HexByteStr);
 		printLogInfo(logInfo);
 	}
 
 	/**
-	 * fix 解码问题
+	 * fix decode tup version=2 problem.
 	 */
 	@Test
 	public void fixDecodeProblem() {
-		//version2的wup编码
+		//version2 wup encode.
 		String version2HexByteStr = encodeVersion2Fix();
 		System.out.println(version2HexByteStr);
 
