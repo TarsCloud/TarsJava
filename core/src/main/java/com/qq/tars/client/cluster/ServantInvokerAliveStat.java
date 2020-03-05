@@ -90,6 +90,7 @@ public class ServantInvokerAliveStat {
                 double radio = div(timeoutCount, totalCount, 2);
                 if (radio > config.getFrequenceFailRadio()) {
                     alive = false;
+                    lastRetryTime = System.currentTimeMillis();
                     ClientLogger.getLogger().info(identity + "|alive=false|radio=" + radio + "|" + toString());
                 }
             }
@@ -97,6 +98,7 @@ public class ServantInvokerAliveStat {
             if (alive) {
                 if (frequenceFailInvoke >= config.getFrequenceFailInvoke() && (frequenceFailInvoke_startTime + 5000) > System.currentTimeMillis()) {
                     alive = false;
+                    lastRetryTime = System.currentTimeMillis();
                     ClientLogger.getLogger().info(identity + "|alive=false|frequenceFailInvoke=" + frequenceFailInvoke + "|" + toString());
                 }
             }
@@ -104,6 +106,7 @@ public class ServantInvokerAliveStat {
             if (alive) {
                 if (netConnectTimeout) {
                     alive = false;
+                    lastRetryTime = System.currentTimeMillis();
                     ClientLogger.getLogger().info(identity + "|alive=false|netConnectTimeout" + "|" + toString());
                 }
             }
