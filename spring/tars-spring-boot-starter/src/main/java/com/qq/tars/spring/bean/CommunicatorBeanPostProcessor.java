@@ -57,13 +57,13 @@ public class CommunicatorBeanPostProcessor implements BeanPostProcessor {
             }
 
             if (field.getType().getAnnotation(Servant.class) == null) {
-                throw new RuntimeException("[TARS] autoware client failed: target field is not  tars  client");
+                throw new RuntimeException("[TARS] autowire client failed: target field is not  tars  client");
             }
 
             String objName = annotation.name();
 
             if (StringUtils.isEmpty(annotation.value())) {
-                throw new RuntimeException("[TARS] autoware client failed: objName is empty");
+                throw new RuntimeException("[TARS] autowire client failed: objName is empty");
             }
 
             ServantProxyConfig config = new ServantProxyConfig(objName);
