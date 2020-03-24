@@ -69,12 +69,12 @@ public class CommunicatorBeanPostProcessor implements BeanPostProcessor {
             ServantProxyConfig config = new ServantProxyConfig(objName);
             CommunicatorConfig communicatorConfig = ConfigurationManager.getInstance().getServerConfig().getCommunicatorConfig();
             config.setModuleName(communicatorConfig.getModuleName(), communicatorConfig.isEnableSet(), communicatorConfig.getSetDivision());
-
-            config.setEnableSet(annotation.enableSet());
-            config.setSetDivision(annotation.setDivision());
+            if (StringUtils.isNotEmpty(communicatorConfig.getSetDivision())) {
+                config.setSetDivision(communicatorConfig.getSetDivision());
+            }
             if (StringUtils.isNotEmpty(annotation.setDivision())) {
-                config.setEnableSet(true);
-                config.setSetDivision(annotation.setDivision());
+                config.setSetDivision(communicatorConfig.getSetDivision());
+                config.setEnableSet(annotation.enableSet());
             }
             config.setConnections(annotation.connections());
             config.setConnectTimeout(annotation.connectTimeout());
