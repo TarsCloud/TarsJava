@@ -1,9 +1,9 @@
 # Contents #
-> * [Environment construction] (#main-chapter-1)
-> * [Service development] (#main-chapter-2)
-> * [Management system] (#main-chapter-3)
-> * [Service naming] (#main-chapter-4)
-> * [Service deployment] (#main-chapter-5)
+> * [Environment construction](#main-chapter-1)
+> * [Service development](#main-chapter-2)
+> * [Management system](#main-chapter-3)
+> * [Service naming](#main-chapter-4)
+> * [Service deployment](#main-chapter-5)
 
 # Quick start to the framework
 

@@ -250,7 +250,7 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
                 TarsInvoker.this,
                 completableFuture);
         //sync call all filter
-        final FilterChain filterChain = new TarsClientFilterChain(filters, objName, FilterKind.CLIENT, client, InvokeStatus.ASYNC_CALL,
+        final FilterChain filterChain = new TarsClientFilterChain(filters, objName, FilterKind.CLIENT, client, InvokeStatus.FUTURE_CALL,
                 callback);
         filterChain.doFilter(request, response);
         return completableFuture;

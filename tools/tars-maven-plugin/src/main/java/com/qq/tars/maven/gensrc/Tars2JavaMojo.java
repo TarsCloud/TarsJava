@@ -1,13 +1,13 @@
 /**
  * Tencent is pleased to support the open source community by making Tars available.
- *
+ * <p>
  * Copyright (C) 2016 THL A29 Limited, a Tencent company. All rights reserved.
- *
+ * <p>
  * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- *
+ * <p>
  * https://opensource.org/licenses/BSD-3-Clause
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -264,7 +264,7 @@ public class Tars2JavaMojo extends AbstractMojo {
         // 定义成员变量
         for (TarsStructMember m : struct.memberList()) {
             out.println("\t@TarsStructProperty(order = " + m.tag() + ", isRequire = " + m.isRequire() + ")");
-            out.println("\tpublic " + type(m.memberType(), nsMap) + " " + m.memberName() + " = " + (m.defaultValue() == null ? typeInit(m.memberType(), nsMap, false) : m.defaultValue()) + ";");
+            out.println("\tpublic " + type(m.memberType(), nsMap) + " " + m.memberName() + " = " + (m.defaultValue() == null ? typeInit(m.memberType(), nsMap, false) : adaptDefaultValue(m)) + ";");
         }
         out.println();
 
@@ -439,6 +439,25 @@ public class Tars2JavaMojo extends AbstractMojo {
         out.close();
 
         getLog().info("generate Struct " + structClass);
+    }
+
+    private String adaptDefaultValue(TarsStructMember m) {
+        String typeSuffix = "";
+        if (m.memberType().isPrimitive()) {
+            PrimitiveType type = m.memberType().asPrimitive().primitiveType();
+            switch (type) {
+                case FLOAT:
+                    typeSuffix = "F";
+                    break;
+                case DOUBLE:
+                    typeSuffix = "D";
+                    break;
+                case LONG:
+                    typeSuffix = "L";
+                    break;
+            }
+        }
+        return m.defaultValue() + typeSuffix;
     }
 
     private void genCacheVar(String memberName, boolean hasDeclare, TarsType type,
