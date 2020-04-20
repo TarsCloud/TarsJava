@@ -26,7 +26,7 @@ import com.qq.tars.server.config.ServantAdapterConfig;
 import com.qq.tars.server.config.ServerConfig;
 import com.qq.tars.support.admin.AdminFServant;
 import com.qq.tars.support.admin.CommandHandler;
-import com.qq.tars.support.admin.CustemCommandHelper;
+import com.qq.tars.support.admin.CustomCommandHelper;
 import com.qq.tars.support.config.ConfigHelper;
 import com.qq.tars.support.log.LoggerFactory;
 import com.qq.tars.support.node.NodeHelper;
@@ -106,7 +106,7 @@ public class AdminFServantImpl implements AdminFServant {
                 result.append(loadDyeing(params)).append("\n");
                 break;
             default:
-                final CommandHandler handler = CustemCommandHelper.getInstance().getCommandHandler(comm);
+                final CommandHandler handler = CustomCommandHelper.getInstance().getCommandHandler(comm);
                 final String cmdName = comm;
                 final String cmdParam = params;
 
