@@ -95,8 +95,9 @@ public class Ticket<T> {
         if(hasRun.compareAndSet(false, true)) {
             this.expired = true;
             if (callback != null) {
-                //超时回调，用业务线程池去处理,防止业务耗时，影响已有的超时任务线程
-                if(getTimeoutFuture()!= null && (getTimeoutFuture().isDone() || getTimeoutFuture().isCancelled())) {   //超时任务已经执行或者已经被取消，已经通知了业务方超时信息(防止超时消息二次通知)
+                //Timeout callback, with the business thread pool to deal with, to prevent business time-consuming, affecting the existing timeout task thread
+                //The timeout task has been executed or has been canceled, and the business party has been notified of the timeout information (to prevent secondary notification of timeout messages)
+                if(getTimeoutFuture()!= null && (getTimeoutFuture().isDone() || getTimeoutFuture().isCancelled())) {
                     System.out.println("task has run or canceled.");
                 } else {
                     selectorManager.getThreadPool().execute(() -> callback.onExpired());
