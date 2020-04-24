@@ -199,7 +199,7 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
 
 
     /**
-     * promise调用
+     * promise call
      * @param method
      * @param args
      * @param context
