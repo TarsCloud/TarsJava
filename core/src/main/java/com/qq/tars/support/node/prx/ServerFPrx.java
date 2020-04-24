@@ -27,50 +27,50 @@ import com.qq.tars.protocol.tars.annotation.TarsContext;
 @Servant
 public interface ServerFPrx {
 	/**
-	 * 向node定时上报serverInfo
-	 * @param serverInfo  服务状态
+	 * Report serverInfo to node regularly
+	 * @param serverInfo  Service status
 	 * @return  int 
 	 */
 	public int keepAlive(ServerInfo serverInfo);
 	/**
-	 * 向node定时上报serverInfo
-	 * @param serverInfo  服务状态
+	 * Report serverInfo to node regularly
+	 * @param serverInfo  Service status
 	 * @return  int 
 	 */
 	public int keepAlive(ServerInfo serverInfo, @TarsContext java.util.Map<String, String> ctx);
 	/**
-	 * 向node定时上报serverInfo
-	 * @param serverInfo  服务状态
+	 * Report serverInfo to node regularly
+	 * @param serverInfo  Service status
 	 * @return  int 
 	 */
 	public void async_keepAlive(@TarsCallback ServerFPrxCallback callback, ServerInfo serverInfo);
 	/**
-	 * 向node定时上报serverInfo
-	 * @param serverInfo  服务状态
+	 * Report serverInfo to node regularly
+	 * @param serverInfo  Service status
 	 * @return  int 
 	 */
 	public void async_keepAlive(@TarsCallback ServerFPrxCallback callback, ServerInfo serverInfo, @TarsContext java.util.Map<String, String> ctx);
 	/**
-	 * 向node上报TARS版本信息
-	 * @param string  版本信息
+	 * Report TARS version information to node
+	 * @param string  Version information
 	 * @return  int 
 	 */
 	public int reportVersion(String app, String serverName, String version);
 	/**
-	 * 向node上报TARS版本信息
-	 * @param string  版本信息
+	 * Report TARS version information to node
+	 * @param string  Version information
 	 * @return  int 
 	 */
 	public int reportVersion(String app, String serverName, String version, @TarsContext java.util.Map<String, String> ctx);
 	/**
-	 * 向node上报TARS版本信息
-	 * @param string  版本信息
+	 * Report TARS version information to node
+	 * @param string  Version information
 	 * @return  int 
 	 */
 	public void async_reportVersion(@TarsCallback ServerFPrxCallback callback, String app, String serverName, String version);
 	/**
-	 * 向node上报TARS版本信息
-	 * @param string  版本信息
+	 * Report TARS version information to node
+	 * @param string  Version information
 	 * @return  int 
 	 */
 	public void async_reportVersion(@TarsCallback ServerFPrxCallback callback, String app, String serverName, String version, @TarsContext java.util.Map<String, String> ctx);
