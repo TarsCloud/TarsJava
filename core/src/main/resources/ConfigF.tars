@@ -85,7 +85,7 @@ module tars
          * @param filename, config file name
          * @param host, ip
          * @param result, prompt
-         * @return int 0: legal, -1:illegal
+         * @return int 0: valid, -1:invalid
          **/
         int checkConfig(string appServerName, string filename, string host, out string result);
 
@@ -110,7 +110,7 @@ module tars
 	     * Check whether the configuration file conforms to the TC_Config format
 	     * @param configInfo, ConfigInfo: Profile information
 	     * @param result, prompt
-	     * @return int 0: legal, -1:illegal
+	     * @return int 0: valid, -1:invalid
 	     **/
 	    int checkConfigByInfo(ConfigInfo configInfo, out string result);
 
