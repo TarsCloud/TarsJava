@@ -23,7 +23,7 @@ package com.qq.tars.support.query.prx;
 import com.qq.tars.rpc.protocol.tars.support.TarsAbstractCallback;
 
 /** 
- * 获取对象endpoint的query接口
+ * Get the query interface of the object endpoint
  */
 public abstract class QueryFPrxCallback extends TarsAbstractCallback {
 
