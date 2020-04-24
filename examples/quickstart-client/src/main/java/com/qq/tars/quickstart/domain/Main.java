@@ -30,21 +30,21 @@ public class Main {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) throws InterruptedException {
-        // 从本地启动的配置
+        // Start configuration locally
         CommunicatorConfig cfg = new CommunicatorConfig();
-        // 从本地启动的Communcator
+        // Start communicator locally
         Communicator communicator = CommunicatorFactory.getInstance().getCommunicator(cfg);
-        //warn 若是部署在tars平台启动的， 只能使用下面的构造器获取communcator
+        //warn If the deployment is started on the tars, you can only use the following constructor to get the communicator
         //Communicator communicator = CommunicatorFactory.getInstance().getCommunicator();
         HelloPrx proxy = communicator.stringToProxy(HelloPrx.class, "TestApp.HelloServer.HelloObj@tcp -h 127.0.0.1 -p 18601 -t 60000");
-        //同步调用
+        //Synchronous call
         String ret = proxy.hello(1000, "Hello World");
         System.out.println(ret);
 
-        //单向调用
+        //One-way call
         proxy.async_hello(null, 1000, "Hello World");
 
-        //异步调用
+        //Asynchronous call
         proxy.async_hello(new HelloPrxCallback() {
 
             @Override

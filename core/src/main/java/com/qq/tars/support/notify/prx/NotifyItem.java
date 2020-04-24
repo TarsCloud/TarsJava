@@ -27,7 +27,7 @@ import com.qq.tars.protocol.tars.annotation.TarsStructProperty;
 import com.qq.tars.protocol.util.TarsUtil;
 
 /**
- * 上报信息的单条内容
+ * A single item of reported information
  */
 @TarsStruct
 public class NotifyItem {

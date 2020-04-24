@@ -29,84 +29,84 @@ import com.qq.tars.protocol.tars.annotation.TarsHolder;
 @Servant
 public interface NotifyPrx {
 	/**
-	 * 框架上报的信息, 保存于数据库中
+	 * The information reported by the framework is stored in the database
 	 * @param sServerName, server name
 	 * @param sThreadId, server current thread id
 	 * @param sMessage, message
 	 **/
 	public void reportServer(String sServerName, String sThreadId, String sMessage);
 	/**
-	 * 框架上报的信息, 保存于数据库中
+	 * The information reported by the framework is stored in the database
 	 * @param sServerName, server name
 	 * @param sThreadId, server current thread id
 	 * @param sMessage, message
 	 **/
 	public void reportServer(String sServerName, String sThreadId, String sMessage, @TarsContext java.util.Map<String, String> ctx);
 	/**
-	 * 框架上报的信息, 保存于数据库中
+	 * The information reported by the framework is stored in the database
 	 * @param sServerName, server name
 	 * @param sThreadId, server current thread id
 	 * @param sMessage, message
 	 **/
 	public void async_reportServer(@TarsCallback NotifyPrxCallback callback, String sServerName, String sThreadId, String sMessage);
 	/**
-	 * 框架上报的信息, 保存于数据库中
+	 * The information reported by the framework is stored in the database
 	 * @param sServerName, server name
 	 * @param sThreadId, server current thread id
 	 * @param sMessage, message
 	 **/
 	public void async_reportServer(@TarsCallback NotifyPrxCallback callback, String sServerName, String sThreadId, String sMessage, @TarsContext java.util.Map<String, String> ctx);
 	/**
-	 * 业务上报的信息, 用于报警
+	 * Business reported information, used for alarm
 	 * @param sServerName, server name
 	 * @param level, notify level
 	 * @param sMessage, message
 	 **/
 	public void notifyServer(String sServerName, int level, String sMessage);
 	/**
-	 * 业务上报的信息, 用于报警
+	 * Business reported information, used for alarm
 	 * @param sServerName, server name
 	 * @param level, notify level
 	 * @param sMessage, message
 	 **/
 	public void notifyServer(String sServerName, int level, String sMessage, @TarsContext java.util.Map<String, String> ctx);
 	/**
-	 * 业务上报的信息, 用于报警
+	 * Business reported information, used for alarm
 	 * @param sServerName, server name
 	 * @param level, notify level
 	 * @param sMessage, message
 	 **/
 	public void async_notifyServer(@TarsCallback NotifyPrxCallback callback, String sServerName, int level, String sMessage);
 	/**
-	 * 业务上报的信息, 用于报警
+	 * Business reported information, used for alarm
 	 * @param sServerName, server name
 	 * @param level, notify level
 	 * @param sMessage, message
 	 **/
 	public void async_notifyServer(@TarsCallback NotifyPrxCallback callback, String sServerName, int level, String sMessage, @TarsContext java.util.Map<String, String> ctx);
 	/**
-	 * 获取上报信息
+	 * Get report information
 	 * @param sServerName, server name
 	 * @param out , notify info detail
 	 * @return int 0=success, others=failed
 	 **/
 	public int getNotifyInfo(NotifyKey stKey, @TarsHolder Holder<NotifyInfo> stInfo);
 	/**
-	 * 获取上报信息
+	 * Get report information
 	 * @param sServerName, server name
 	 * @param out , notify info detail
 	 * @return int 0=success, others=failed
 	 **/
 	public int getNotifyInfo(NotifyKey stKey, @TarsHolder Holder<NotifyInfo> stInfo, @TarsContext java.util.Map<String, String> ctx);
 	/**
-	 * 获取上报信息
+	 * Get report information
 	 * @param sServerName, server name
 	 * @param out , notify info detail
 	 * @return int 0=success, others=failed
 	 **/
 	public void async_getNotifyInfo(@TarsCallback NotifyPrxCallback callback, NotifyKey stKey);
 	/**
-	 * 获取上报信息
+	 * Get report information
 	 * @param sServerName, server name
 	 * @param out , notify info detail
 	 * @return int 0=success, others=failed

@@ -27,63 +27,63 @@ import com.qq.tars.protocol.tars.annotation.TarsContext;
 @Servant
 public interface LogPrx {
 	/**
-	 * 记录远程日志
-	 * @param app, 应用名称
-	 * @param server, 服务名称
-	 * @param file, 文件名称
-	 * @param format, 日志时间格式(%Y%m%d)
-	 * @param buffer, 日志内容
+	 * Record remote logs
+	 * @param app, Application Name
+	 * @param server, Service name
+	 * @param file, File name
+	 * @param format, Log time format(%Y%m%d)
+	 * @param buffer, Log contents
 	 */
 	public void logger(String app, String server, String file, String format, java.util.List<String> buffer);
 	/**
-	 * 记录远程日志
-	 * @param app, 应用名称
-	 * @param server, 服务名称
-	 * @param file, 文件名称
-	 * @param format, 日志时间格式(%Y%m%d)
-	 * @param buffer, 日志内容
+	 * Record remote logs
+	 * @param app, Application Name
+	 * @param server, Service name
+	 * @param file, File name
+	 * @param format, Log time format(%Y%m%d)
+	 * @param buffer, Log contents
 	 */
 	public void logger(String app, String server, String file, String format, java.util.List<String> buffer, @TarsContext java.util.Map<String, String> ctx);
 	/**
-	 * 记录远程日志
-	 * @param app, 应用名称
-	 * @param server, 服务名称
-	 * @param file, 文件名称
-	 * @param format, 日志时间格式(%Y%m%d)
-	 * @param buffer, 日志内容
+	 * Record remote logs
+	 * @param app, Application Name
+	 * @param server, Service name
+	 * @param file, File name
+	 * @param format, Log time format(%Y%m%d)
+	 * @param buffer, Log contents
 	 */
 	public void async_logger(@TarsCallback LogPrxCallback callback, String app, String server, String file, String format, java.util.List<String> buffer);
 	/**
-	 * 记录远程日志
-	 * @param app, 应用名称
-	 * @param server, 服务名称
-	 * @param file, 文件名称
-	 * @param format, 日志时间格式(%Y%m%d)
-	 * @param buffer, 日志内容
+	 * Record remote logs
+	 * @param app, Application Name
+	 * @param server, Service name
+	 * @param file, File name
+	 * @param format, Log time format(%Y%m%d)
+	 * @param buffer, Log contents
 	 */
 	public void async_logger(@TarsCallback LogPrxCallback callback, String app, String server, String file, String format, java.util.List<String> buffer, @TarsContext java.util.Map<String, String> ctx);
 	/**
-	 * 记录远程日志
+	 * Record remote logs
 	 * @param info, LogInfo
-	 * @param buffer, 日志内容
+	 * @param buffer, Log contents
 	 */
 	public void loggerbyInfo(LogInfo info, java.util.List<String> buffer);
 	/**
-	 * 记录远程日志
+	 * Record remote logs
 	 * @param info, LogInfo
-	 * @param buffer, 日志内容
+	 * @param buffer, Log contents
 	 */
 	public void loggerbyInfo(LogInfo info, java.util.List<String> buffer, @TarsContext java.util.Map<String, String> ctx);
 	/**
-	 * 记录远程日志
+	 * Record remote logs
 	 * @param info, LogInfo
-	 * @param buffer, 日志内容
+	 * @param buffer, Log contents
 	 */
 	public void async_loggerbyInfo(@TarsCallback LogPrxCallback callback, LogInfo info, java.util.List<String> buffer);
 	/**
-	 * 记录远程日志
+	 * Record remote logs
 	 * @param info, LogInfo
-	 * @param buffer, 日志内容
+	 * @param buffer, Log contents
 	 */
 	public void async_loggerbyInfo(@TarsCallback LogPrxCallback callback, LogInfo info, java.util.List<String> buffer, @TarsContext java.util.Map<String, String> ctx);
 }
