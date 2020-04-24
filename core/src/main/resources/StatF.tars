@@ -17,19 +17,19 @@
 module tars
 {
 
-//Inter module call package header Mic = module interval call
+//Calling package headers between modules Mic = module interval call
 struct StatMicMsgHead
 {
       0 require string masterName;       //Main calling module name
-      1 require string slaveName;        //Called module name
-      2 require string interfaceName;    //Called module interface name
+      1 require string slaveName;        //The name of the called module
+      2 require string interfaceName;    //The interface name of the called module
       3 require string masterIp;         //Main calling module ip
-      4 require string slaveIp;          //Called module ip
-      5 require int slavePort;           //Called module port
+      4 require string slaveIp;          //The ip of the called module
+      5 require int slavePort;           //The port of the called module
       6 require int returnValue;         //return value
-      7 optional string slaveSetName;    //Called module set name
-      8 optional string slaveSetArea;    //Called module set area name
-      9 optional string slaveSetID;      //Called module set group name
+      7 optional string slaveSetName;    //The set name of the called module
+      8 optional string slaveSetArea;    //The set area name of the called module
+      9 optional string slaveSetID;      //The set group name of the called module
       10 optional string tarsVersion;     //Main calling module tars version
 };
 
@@ -53,10 +53,10 @@ struct StatSampleMsg
 {
       0 require string unid;             //Unique id value
       1 require string masterName;       //Main calling module name
-      2 require string slaveName;        //Called module name
-      3 require string interfaceName;    //Called module interface name
+      2 require string slaveName;        //The name of the called module
+      3 require string interfaceName;    //The interface name of the called module
       4 require string masterIp;         //Main calling module ip
-      5 require string slaveIp;          //Called module ip
+      5 require string slaveIp;          //The ip of the called module
       6 require int depth;               //Depth value
       7 require int width;               //Breadth value
       8 require int parentWidth;         //Parent node breadth value
@@ -68,7 +68,7 @@ struct ProxyInfo
 };
 /**
  *
- * Reporting service interface
+ * Interface to the report service
  *
  **/
 interface StatF
