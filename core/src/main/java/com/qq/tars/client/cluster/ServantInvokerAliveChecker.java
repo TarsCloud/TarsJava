@@ -27,7 +27,11 @@ public class ServantInvokerAliveChecker {
 
     public static ServantInvokerAliveStat get(Url url) {
         String identity = url.toIdentityString();
-        return cache.computeIfAbsent(identity, string -> new ServantInvokerAliveStat(string));
+        ServantInvokerAliveStat servantInvokerAliveStat = cache.get(identity);
+        if (servantInvokerAliveStat == null){
+            cache.putIfAbsent(identity, new ServantInvokerAliveStat(identity));
+        }
+        return cache.get(identity);
     }
 
     public static boolean isAlive(Url url, ServantProxyConfig config, int ret) {

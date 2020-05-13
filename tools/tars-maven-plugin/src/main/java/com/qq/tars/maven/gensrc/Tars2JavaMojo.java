@@ -84,7 +84,11 @@ public class Tars2JavaMojo extends AbstractMojo {
                 TarsRoot root = (TarsRoot) tarsParser.start().getTree();
                 root.setTokenStream(tokens);
                 for (TarsNamespace ns : root.namespaceList()) {
-                    List<TarsNamespace> list = nsMap.computeIfAbsent(ns.namespace(), k -> new ArrayList<TarsNamespace>());
+                    List<TarsNamespace> list = nsMap.get(ns.namespace());
+                    if (list == null){
+                        list  = new ArrayList<TarsNamespace>();
+                        nsMap.putIfAbsent(ns.namespace(), list);
+                    }
                     list.add(ns);
                 }
             } catch (Throwable th) {
