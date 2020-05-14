@@ -46,7 +46,7 @@
         <module>tools</module>
         <module>protobuf</module>
         <module>spring</module>
-        <module>tars-plugins</module>
+<!--        <module>tars-plugins</module>-->
     </modules>
 
     <properties>
