@@ -121,6 +121,7 @@ class ObjectProxyFactory {
         cfg.setStat(communicatorConfig.getStat());
         cfg.setCharsetName(communicatorConfig.getCharsetName());
         cfg.setConnections(communicatorConfig.getConnections());
+        cfg.setRefreshInterval(communicatorConfig.getRefreshEndpointInterval());
         return cfg;
     }
 
