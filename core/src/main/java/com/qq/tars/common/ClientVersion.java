@@ -23,7 +23,7 @@ public final class ClientVersion {
 //    public static final String build = "1";
 
     public static String getVersion() {
-        return "1.6.2";
+        return "1.6.3";
     }
 
     public String toString() {

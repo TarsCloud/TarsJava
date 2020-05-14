@@ -188,8 +188,9 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
             request.setStatus(status);
 
         }
-        FilterChain filterChain = new TarsClientFilterChain(filters, objName, FilterKind.CLIENT, client, 1,
-                new TarsCallbackWrapper(config, request.getFunctionName(), getUrl().getHost(), getUrl().getPort(), request.getBornTime(), request, callback, this));
+        TarsCallbackWrapper tarsCallbackWrapper = callback == null ?
+                null : new TarsCallbackWrapper(config, request.getFunctionName(), getUrl().getHost(), getUrl().getPort(), request.getBornTime(), request, callback, this);
+        FilterChain filterChain = new TarsClientFilterChain(filters, objName, FilterKind.CLIENT, client, InvokeStatus.ASYNC_CALL.ordinal(), tarsCallbackWrapper);
         filterChain.doFilter(request, response);
     }
 
