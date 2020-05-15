@@ -22,6 +22,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${maven_junit_version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>com.tencent.tars</groupId>
             <artifactId>tars-client</artifactId>
             <version>${project.parent.version}</version>
