@@ -43,12 +43,6 @@
             <version>3.1.0</version>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>io.zipkin.reporter2</groupId>
             <artifactId>zipkin-sender-kafka11</artifactId>
             <version>${zipkin-reporter.version}</version>
@@ -68,7 +62,13 @@
             <artifactId>zipkin-sender-urlconnection</artifactId>
             <version>${zipkin-reporter.version}</version>
         </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.2</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 
     <build>
         <plugins>
