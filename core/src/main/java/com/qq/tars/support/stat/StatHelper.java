@@ -48,6 +48,7 @@ public final class StatHelper {
         return prx;
     }
 
+
     public void report(ProxyStat proxyStat, boolean bFromClient) {
         StatFPrx statFProxy = getPrx();
         if (statFProxy == null) {
@@ -63,26 +64,21 @@ public final class StatHelper {
         try {
             HashMap<StatMicMsgHead, StatMicMsgBody> reportMap = new HashMap<StatMicMsgHead, StatMicMsgBody>();
             for (Entry<ProxyStatHead, ProxyStatBody> statHead : proxyStat.getStats().entrySet()) {
-
                 ProxyStatHead head = statHead.getKey();
                 ProxyStatBody body = statHead.getValue();
-
                 HashMap<Integer, Integer> intervalCount = new HashMap<Integer, Integer>();
                 for (Entry<Integer, AtomicInteger> interval : body.intervalCount.entrySet()) {
                     intervalCount.put(interval.getKey(), interval.getValue().get());
                 }
                 StatMicMsgBody mbody = new StatMicMsgBody(body.getCount(), body.getTimeoutCount(), body.getExecCount(), intervalCount, body.getTotalRspTime(), body.getMaxRspTime(), body.getMinRspTime());
                 body.clear();
-
                 StatMicMsgHead mHead = new StatMicMsgHead(head.getMasterName(), head.getSlaveName(), head.getInterfaceName(), head.getMasterIp(), head.getSlaveIp(), head.getSlavePort(), head.getReturnValue(), head.getSlaveSetName(), head.getSlaveSetArea(), head.getSlaveSetID(), head.getTafVersion());
                 reportMap.put(mHead, mbody);
-
                 logger.info("report call|" + statHead.getKey().masterName + "|" + statHead.getKey().slaveIp + ":" + statHead.getKey().slavePort + "|" + statHead.getKey().slaveName + "." + statHead.getKey().interfaceName + "_" + statHead.getKey().getReturnValue() + "(" + statHead.getKey().slaveSetName + "." + statHead.getKey().slaveSetArea + "." + statHead.getKey().slaveSetID + "):" + mbody.count + "_" + mbody.execCount + "_" + mbody.timeoutCount + "_" + mbody.totalRspTime + "_" + mbody.maxRspTime + "_" + mbody.minRspTime);
                 i++;
                 if (i % BATCH_REPORTS == 0) {
                     try {
-                        statFProxy.reportMicMsg(reportMap, bFromClient);
-                        ++successCount;
+                        statFProxy.promise_reportMicMsg(reportMap, bFromClient);
                     } catch (Exception e) {
                         logger.error("error occurred on report proxy stat", e);
                         ++errorCount;
@@ -92,7 +88,7 @@ public final class StatHelper {
             }
             if (reportMap.size() > 0) {
                 try {
-                    statFProxy.reportMicMsg(reportMap, bFromClient);
+                    statFProxy.promise_reportMicMsg(reportMap, bFromClient);
                     successCount++;
                 } catch (Exception e) {
                     errorCount++;

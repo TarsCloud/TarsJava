@@ -27,7 +27,7 @@ import com.qq.tars.protocol.tars.annotation.TarsStructProperty;
 import com.qq.tars.protocol.util.TarsUtil;
 
 /**
- * 上报的信息分页记录
+ * Report information paging record
  */
 @TarsStruct
 public class NotifyInfo {

@@ -19,6 +19,7 @@ package com.qq.tars.server.ha;
 import com.qq.tars.net.core.Session.SessionStatus;
 import com.qq.tars.net.core.SessionEvent;
 import com.qq.tars.net.core.SessionListener;
+import com.qq.tars.support.log.LoggerFactory;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -31,7 +32,7 @@ public class ConnectionSessionListener implements SessionListener {
 
     public ConnectionSessionListener(int connCount) {
         MaxConnCount = connCount;
-        System.out.println("MaxConnCount=" + MaxConnCount);
+        LoggerFactory.getOmLogger().debug("MaxConnCount={}", MaxConnCount);
     }
 
     @Override
@@ -44,8 +45,7 @@ public class ConnectionSessionListener implements SessionListener {
             }
             return;
         }
-
-        System.out.println("onSessionCreated: " + connStat.incrementAndGet());
+        LoggerFactory.getOmLogger().debug("onSessionCreated:{}", connStat.incrementAndGet());
     }
 
     @Override

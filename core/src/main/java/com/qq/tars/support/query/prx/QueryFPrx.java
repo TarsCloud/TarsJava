@@ -27,200 +27,200 @@ import com.qq.tars.protocol.tars.annotation.TarsContext;
 import com.qq.tars.protocol.tars.annotation.TarsHolder;
 
 /** 
- * 获取对象endpoint的query接口
+ * Get the query interface of the object endpoint
  */
 @Servant
 public interface QueryFPrx {
-	/** 根据id获取对象
+	/** Get the object by id
 	 *
-	 * @param id 对象名称
+	 * @param id Object name
 	 *
-	 * @return  返回所有该对象的活动endpoint列表
+	 * @return  Returns a list of all active endpoints for this object
 	 */
 	public java.util.List<EndpointF> findObjectById(String id);
-	/** 根据id获取对象
+	/** Get the object by id
 	 *
-	 * @param id 对象名称
+	 * @param id Object name
 	 *
-	 * @return  返回所有该对象的活动endpoint列表
+	 * @return  Returns a list of all active endpoints for this object
 	 */
 	public java.util.List<EndpointF> findObjectById(String id, @TarsContext java.util.Map<String, String> ctx);
-	/** 根据id获取对象
+	/** Get the object by id
 	 *
-	 * @param id 对象名称
+	 * @param id Object name
 	 *
-	 * @return  返回所有该对象的活动endpoint列表
+	 * @return  Returns a list of all active endpoints for this object
 	 */
 	public void async_findObjectById(@TarsCallback QueryFPrxCallback callback, String id);
-	/** 根据id获取对象
+	/** Get the object by id
 	 *
-	 * @param id 对象名称
+	 * @param id Object name
 	 *
-	 * @return  返回所有该对象的活动endpoint列表
+	 * @return  Returns a list of all active endpoints for this object
 	 */
 	public void async_findObjectById(@TarsCallback QueryFPrxCallback callback, String id, @TarsContext java.util.Map<String, String> ctx);
-	/**根据id获取所有对象,包括活动和非活动对象
+	/**Gets all objects by id, both active and inactive
 	 *
-	 * @param id         对象名称
-	 * @param activeEp   存活endpoint列表
-	 * @param inactiveEp 非存活endpoint列表
-	 * @return:  0-成功  others-失败
+	 * @param id         Object name
+	 * @param activeEp   List of live endpoints
+	 * @param inactiveEp List of non-live endpoints
+	 * @return:  0-success  others-failure
 	 */
 	public int findObjectById4Any(String id, @TarsHolder Holder<java.util.List<EndpointF>> activeEp, @TarsHolder Holder<java.util.List<EndpointF>> inactiveEp);
-	/**根据id获取所有对象,包括活动和非活动对象
+	/**Gets all objects by id, both active and inactive
 	 *
-	 * @param id         对象名称
-	 * @param activeEp   存活endpoint列表
-	 * @param inactiveEp 非存活endpoint列表
-	 * @return:  0-成功  others-失败
+	 * @param id         Object name
+	 * @param activeEp   List of live endpoints
+	 * @param inactiveEp List of non-live endpoints
+	 * @return:  0-success  others-failure
 	 */
 	public int findObjectById4Any(String id, @TarsHolder Holder<java.util.List<EndpointF>> activeEp, @TarsHolder Holder<java.util.List<EndpointF>> inactiveEp, @TarsContext java.util.Map<String, String> ctx);
-	/**根据id获取所有对象,包括活动和非活动对象
+	/**Gets all objects by id, both active and inactive
 	 *
-	 * @param id         对象名称
-	 * @param activeEp   存活endpoint列表
-	 * @param inactiveEp 非存活endpoint列表
-	 * @return:  0-成功  others-失败
+	 * @param id         Object name
+	 * @param activeEp   List of live endpoints
+	 * @param inactiveEp List of non-live endpoints
+	 * @return:  0-success  others-failure
 	 */
 	public void async_findObjectById4Any(@TarsCallback QueryFPrxCallback callback, String id);
-	/**根据id获取所有对象,包括活动和非活动对象
+	/**Gets all objects by id, both active and inactive
 	 *
-	 * @param id         对象名称
-	 * @param activeEp   存活endpoint列表
-	 * @param inactiveEp 非存活endpoint列表
-	 * @return:  0-成功  others-失败
+	 * @param id         Object name
+	 * @param activeEp   List of live endpoints
+	 * @param inactiveEp List of non-live endpoints
+	 * @return:  0-success  others-failure
 	 */
 	public void async_findObjectById4Any(@TarsCallback QueryFPrxCallback callback, String id, @TarsContext java.util.Map<String, String> ctx);
-	/** 根据id获取对象所有endpoint列表,功能同findObjectByIdInSameGroup
+	/** Get all endpoint lists of objects according to id, the function is the same as findObjectByIdInSameGroup
 	 *
-	 * @param id         对象名称
-	 * @param activeEp   存活endpoint列表
-	 * @param inactiveEp 非存活endpoint列表
-	 * @return:  0-成功  others-失败
+	 * @param id         Object name
+	 * @param activeEp   List of live endpoints
+	 * @param inactiveEp List of non-live endpoints
+	 * @return:  0-success  others-failure
 	 */
 	public int findObjectById4All(String id, @TarsHolder Holder<java.util.List<EndpointF>> activeEp, @TarsHolder Holder<java.util.List<EndpointF>> inactiveEp);
-	/** 根据id获取对象所有endpoint列表,功能同findObjectByIdInSameGroup
+	/** Get all endpoint lists of objects according to id, the function is the same as findObjectByIdInSameGroup
 	 *
-	 * @param id         对象名称
-	 * @param activeEp   存活endpoint列表
-	 * @param inactiveEp 非存活endpoint列表
-	 * @return:  0-成功  others-失败
+	 * @param id         Object name
+	 * @param activeEp   List of live endpoints
+	 * @param inactiveEp List of non-live endpoints
+	 * @return:  0-success  others-failure
 	 */
 	public int findObjectById4All(String id, @TarsHolder Holder<java.util.List<EndpointF>> activeEp, @TarsHolder Holder<java.util.List<EndpointF>> inactiveEp, @TarsContext java.util.Map<String, String> ctx);
-	/** 根据id获取对象所有endpoint列表,功能同findObjectByIdInSameGroup
+	/** Get all endpoint lists of objects according to id, the function is the same as findObjectByIdInSameGroup
 	 *
-	 * @param id         对象名称
-	 * @param activeEp   存活endpoint列表
-	 * @param inactiveEp 非存活endpoint列表
-	 * @return:  0-成功  others-失败
+	 * @param id         Object name
+	 * @param activeEp   List of live endpoints
+	 * @param inactiveEp List of non-live endpoints
+	 * @return:  0-success  others-failure
 	 */
 	public void async_findObjectById4All(@TarsCallback QueryFPrxCallback callback, String id);
-	/** 根据id获取对象所有endpoint列表,功能同findObjectByIdInSameGroup
+	/** Get all endpoint lists of objects according to id, the function is the same as findObjectByIdInSameGroup
 	 *
-	 * @param id         对象名称
-	 * @param activeEp   存活endpoint列表
-	 * @param inactiveEp 非存活endpoint列表
-	 * @return:  0-成功  others-失败
+	 * @param id         Object name
+	 * @param activeEp   List of live endpoints
+	 * @param inactiveEp List of non-live endpoints
+	 * @return:  0-success  others-failure
 	 */
 	public void async_findObjectById4All(@TarsCallback QueryFPrxCallback callback, String id, @TarsContext java.util.Map<String, String> ctx);
-	/** 根据id获取对象同组endpoint列表
+	/** Get the same group endpoint list of objects according to id
 	 *
-	 * @param id         对象名称
-	 * @param activeEp   存活endpoint列表
-	 * @param inactiveEp 非存活endpoint列表
-	 * @return:  0-成功  others-失败
+	 * @param id         Object name
+	 * @param activeEp   List of live endpoints
+	 * @param inactiveEp List of non-live endpoints
+	 * @return:  0-success  others-failure
 	 */
 	public int findObjectByIdInSameGroup(String id, @TarsHolder Holder<java.util.List<EndpointF>> activeEp, @TarsHolder Holder<java.util.List<EndpointF>> inactiveEp);
-	/** 根据id获取对象同组endpoint列表
+	/** Get the same group endpoint list of objects according to id
 	 *
-	 * @param id         对象名称
-	 * @param activeEp   存活endpoint列表
-	 * @param inactiveEp 非存活endpoint列表
-	 * @return:  0-成功  others-失败
+	 * @param id         Object name
+	 * @param activeEp   List of live endpoints
+	 * @param inactiveEp List of non-live endpoints
+	 * @return:  0-success  others-failure
 	 */
 	public int findObjectByIdInSameGroup(String id, @TarsHolder Holder<java.util.List<EndpointF>> activeEp, @TarsHolder Holder<java.util.List<EndpointF>> inactiveEp, @TarsContext java.util.Map<String, String> ctx);
-	/** 根据id获取对象同组endpoint列表
+	/** Get the same group endpoint list of objects according to id
 	 *
-	 * @param id         对象名称
-	 * @param activeEp   存活endpoint列表
-	 * @param inactiveEp 非存活endpoint列表
-	 * @return:  0-成功  others-失败
+	 * @param id         Object name
+	 * @param activeEp   List of live endpoints
+	 * @param inactiveEp List of non-live endpoints
+	 * @return:  0-success  others-failure
 	 */
 	public void async_findObjectByIdInSameGroup(@TarsCallback QueryFPrxCallback callback, String id);
-	/** 根据id获取对象同组endpoint列表
+	/** Get the same group endpoint list of objects according to id
 	 *
-	 * @param id         对象名称
-	 * @param activeEp   存活endpoint列表
-	 * @param inactiveEp 非存活endpoint列表
-	 * @return:  0-成功  others-失败
+	 * @param id         Object name
+	 * @param activeEp   List of live endpoints
+	 * @param inactiveEp List of non-live endpoints
+	 * @return:  0-success  others-failure
 	 */
 	public void async_findObjectByIdInSameGroup(@TarsCallback QueryFPrxCallback callback, String id, @TarsContext java.util.Map<String, String> ctx);
-	/** 根据id获取对象指定归属地的endpoint列表
+	/** Get the endpoint list of the specified home location of the object according to id
 	 *
-	 * @param id         对象名称
-	 * @param activeEp   存活endpoint列表
-	 * @param inactiveEp 非存活endpoint列表
-	 * @return:  0-成功  others-失败
+	 * @param id         Object name
+	 * @param activeEp   List of live endpoints
+	 * @param inactiveEp List of non-live endpoints
+	 * @return:  0-success  others-failure
 	 */
 	public int findObjectByIdInSameStation(String id, String sStation, @TarsHolder Holder<java.util.List<EndpointF>> activeEp, @TarsHolder Holder<java.util.List<EndpointF>> inactiveEp);
-	/** 根据id获取对象指定归属地的endpoint列表
+	/** Get the endpoint list of the specified home location of the object according to id
 	 *
-	 * @param id         对象名称
-	 * @param activeEp   存活endpoint列表
-	 * @param inactiveEp 非存活endpoint列表
-	 * @return:  0-成功  others-失败
+	 * @param id         Object name
+	 * @param activeEp   List of live endpoints
+	 * @param inactiveEp List of non-live endpoints
+	 * @return:  0-success  others-failure
 	 */
 	public int findObjectByIdInSameStation(String id, String sStation, @TarsHolder Holder<java.util.List<EndpointF>> activeEp, @TarsHolder Holder<java.util.List<EndpointF>> inactiveEp, @TarsContext java.util.Map<String, String> ctx);
-	/** 根据id获取对象指定归属地的endpoint列表
+	/** Get the endpoint list of the specified home location of the object according to id
 	 *
-	 * @param id         对象名称
-	 * @param activeEp   存活endpoint列表
-	 * @param inactiveEp 非存活endpoint列表
-	 * @return:  0-成功  others-失败
+	 * @param id         Object name
+	 * @param activeEp   List of live endpoints
+	 * @param inactiveEp List of non-live endpoints
+	 * @return:  0-success  others-failure
 	 */
 	public void async_findObjectByIdInSameStation(@TarsCallback QueryFPrxCallback callback, String id, String sStation);
-	/** 根据id获取对象指定归属地的endpoint列表
+	/** Get the endpoint list of the specified home location of the object according to id
 	 *
-	 * @param id         对象名称
-	 * @param activeEp   存活endpoint列表
-	 * @param inactiveEp 非存活endpoint列表
-	 * @return:  0-成功  others-失败
+	 * @param id         Object name
+	 * @param activeEp   List of live endpoints
+	 * @param inactiveEp List of non-live endpoints
+	 * @return:  0-success  others-failure
 	 */
 	public void async_findObjectByIdInSameStation(@TarsCallback QueryFPrxCallback callback, String id, String sStation, @TarsContext java.util.Map<String, String> ctx);
-	/** 根据id获取对象同组endpoint列表
+	/** Get the same group endpoint list of objects according to id
 	 *
-	 * @param id         对象名称
-	 * @param setId      set全称,格式为setname.setarea.setgroup
-	 * @param activeEp   存活endpoint列表
-	 * @param inactiveEp 非存活endpoint列表
-	 * @return:  0-成功  others-失败
+	 * @param id         Object name
+	 * @param setId      The full name of set, the format is setname.setarea.setgroup
+	 * @param activeEp   List of live endpoints
+	 * @param inactiveEp List of non-live endpoints
+	 * @return:  0-success  others-failure
 	 */
 	public int findObjectByIdInSameSet(String id, String setId, @TarsHolder Holder<java.util.List<EndpointF>> activeEp, @TarsHolder Holder<java.util.List<EndpointF>> inactiveEp);
-	/** 根据id获取对象同组endpoint列表
+	/** Get the same group endpoint list of objects according to id
 	 *
-	 * @param id         对象名称
-	 * @param setId      set全称,格式为setname.setarea.setgroup
-	 * @param activeEp   存活endpoint列表
-	 * @param inactiveEp 非存活endpoint列表
-	 * @return:  0-成功  others-失败
+	 * @param id         Object name
+	 * @param setId      The full name of set, the format is setname.setarea.setgroup
+	 * @param activeEp   List of live endpoints
+	 * @param inactiveEp List of non-live endpoints
+	 * @return:  0-success  others-failure
 	 */
 	public int findObjectByIdInSameSet(String id, String setId, @TarsHolder Holder<java.util.List<EndpointF>> activeEp, @TarsHolder Holder<java.util.List<EndpointF>> inactiveEp, @TarsContext java.util.Map<String, String> ctx);
-	/** 根据id获取对象同组endpoint列表
+	/** Get the same group endpoint list of objects according to id
 	 *
-	 * @param id         对象名称
-	 * @param setId      set全称,格式为setname.setarea.setgroup
-	 * @param activeEp   存活endpoint列表
-	 * @param inactiveEp 非存活endpoint列表
-	 * @return:  0-成功  others-失败
+	 * @param id         Object name
+	 * @param setId      The full name of set, the format is setname.setarea.setgroup
+	 * @param activeEp   List of live endpoints
+	 * @param inactiveEp List of non-live endpoints
+	 * @return:  0-success  others-failure
 	 */
 	public void async_findObjectByIdInSameSet(@TarsCallback QueryFPrxCallback callback, String id, String setId);
-	/** 根据id获取对象同组endpoint列表
+	/** Get the same group endpoint list of objects according to id
 	 *
-	 * @param id         对象名称
-	 * @param setId      set全称,格式为setname.setarea.setgroup
-	 * @param activeEp   存活endpoint列表
-	 * @param inactiveEp 非存活endpoint列表
-	 * @return:  0-成功  others-失败
+	 * @param id         Object name
+	 * @param setId      The full name of set, the format is setname.setarea.setgroup
+	 * @param activeEp   List of live endpoints
+	 * @param inactiveEp List of non-live endpoints
+	 * @return:  0-success  others-failure
 	 */
 	public void async_findObjectByIdInSameSet(@TarsCallback QueryFPrxCallback callback, String id, String setId, @TarsContext java.util.Map<String, String> ctx);
 }

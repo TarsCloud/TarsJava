@@ -1,9 +1,9 @@
 # Contents #
-> * [Environment construction] (#main-chapter-1)
-> * [Service development] (#main-chapter-2)
-> * [Management system] (#main-chapter-3)
-> * [Service naming] (#main-chapter-4)
-> * [Service deployment] (#main-chapter-5)
+> * [Environment construction](#main-chapter-1)
+> * [Service development](#main-chapter-2)
+> * [Management system](#main-chapter-3)
+> * [Service naming](#main-chapter-4)
+> * [Service deployment](#main-chapter-5)
 
 # Quick start to the framework
 
@@ -48,7 +48,7 @@ Add a dependency jar package by modifying pom.xml
 <dependency>
 		<groupId>com.tencent.tars</groupId>
      	<artifactId>tars-server</artifactId>
-     	<version>1.7.0-SNAPSHOT</version>
+     	<version>1.7.1</version>
      	<type>jar</type>
 </dependency>
 ```
@@ -59,7 +59,7 @@ Add a dependency jar package by modifying pom.xml
 <plugin>
 	<groupId>com.tencent.tars</groupId>
    	<artifactId>tars-maven-plugin</artifactId>
-   	<version>1.7.0-SNAPSHOT</version>
+   	<version>1.7.1</version>
   	<configuration>
    		<tars2JavaConfig>
   			<tarsFiles>
@@ -102,7 +102,7 @@ Tars provides plugins to compile and generate java code, only need to add java f
 <plugin>
 	<groupId>com.tencent.tars</groupId>
 	<artifactId>tars-maven-plugin</artifactId>
-	<version>  1.7.0</version>
+	<version>  1.7.1</version>
 	<configuration>
 		<tars2JavaConfig>
 			<!-- tars file location -->
@@ -179,7 +179,7 @@ Execute "mvn package" in the project root directory to generate the war package,
 <dependency>
 	<groupId>com.tencent.tars</groupId>
    	<artifactId>tars-client</artifactId>
-   	<version>  1.7.0</version>
+   	<version>  1.7.1</version>
    	<type>jar</type>
 </dependency>
 ```
@@ -190,7 +190,7 @@ Execute "mvn package" in the project root directory to generate the war package,
   <plugin>
    	<groupId>com.tencent.tars</groupId>
    	<artifactId>tars-maven-plugin</artifactId>
-   	<version>  1.7.0</version>
+   	<version>  1.7.1</version>
    	<configuration>
    		<tars2JavaConfig>
    			<!-- tars file location -->

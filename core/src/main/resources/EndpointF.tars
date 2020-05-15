@@ -17,7 +17,7 @@
 module tars
 {
     /**
-     * 端口信息
+     * Port information
      */
     struct EndpointF
     {
