@@ -69,6 +69,17 @@ class ObjectProxyFactory {
         return new ObjectProxy<T>(api, servantProxyConfig, loadBalance, protocolInvoker, communicator);
     }
 
+    public void addSetDivisionInfo(ServantProxyConfig cfg, String setDivision) {
+        CommunicatorConfig communicatorConfig = communicator.getCommunicatorConfig();
+        if (StringUtils.isNotEmpty(communicatorConfig.getSetDivision()) && communicatorConfig.isEnableSet()) {
+            cfg.setSetDivision(communicatorConfig.getSetDivision());
+        }
+        //Custom priority
+        if (StringUtils.isNotEmpty(setDivision)) {
+            cfg.setSetDivision(setDivision);
+        }
+    }
+
     private <T> ProtocolInvoker<T> createProtocolInvoker(Class<T> api,
                                                          ServantProxyConfig servantProxyConfig) throws ClientException {
         ProtocolInvoker<T> protocolInvoker = null;
@@ -111,13 +122,9 @@ class ObjectProxyFactory {
         CommunicatorConfig communicatorConfig = communicator.getCommunicatorConfig();
         ServantProxyConfig cfg = new ServantProxyConfig(communicator.getId(), communicatorConfig.getLocator(), objName);
         cfg.setModuleName(communicatorConfig.getModuleName(), communicatorConfig.isEnableSet(), communicatorConfig.getSetDivision());
-        if (setDivision != null) {
-            cfg.setEnableSet(true);
-            cfg.setSetDivision(setDivision);
-        }
+        addSetDivisionInfo(cfg, setDivision);
         cfg.setAsyncTimeout(communicatorConfig.getAsyncInvokeTimeout());
         cfg.setSyncTimeout(communicatorConfig.getSyncInvokeTimeout());
-
         cfg.setStat(communicatorConfig.getStat());
         cfg.setCharsetName(communicatorConfig.getCharsetName());
         cfg.setConnections(communicatorConfig.getConnections());
