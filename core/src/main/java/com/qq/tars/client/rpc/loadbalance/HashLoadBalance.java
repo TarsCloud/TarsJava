@@ -84,9 +84,10 @@ public class HashLoadBalance<T> implements LoadBalance<T> {
                 list.add(invoker);
             }
         }
-        //TODO When all is not available. Whether to randomly extract one
+
         if (list.isEmpty()) {
-            throw new NoInvokerException(config.getSimpleObjectName() + " try to select active invoker, size=" + sortedInvokers.size() + ", no such active connection invoker");
+            logger.info(config.getSimpleObjectName() + " try to select active invoker, size=" + sortedInvokers.size() + ", no such active connection invoker");
+            list.addAll(sortedInvokers);
         }
 
         Invoker<T> invoker = list.get((int) (hash % list.size()));
