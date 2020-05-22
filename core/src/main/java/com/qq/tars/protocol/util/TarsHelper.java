@@ -466,6 +466,7 @@ public class TarsHelper {
             TarsMethodParameterInfo parameterInfo = new TarsMethodParameterInfo();
             parametersList.add(parameterInfo);
             try {
+                parameterInfo.setType(genericParameterType);
                 parameterInfo.setName(name);
                 parameterInfo.setOrder(isAsync(method.getName()) ? order : order + 1);
                 parameterInfo.setAnnotations(allParameterAnnotations[order]);
@@ -490,14 +491,15 @@ public class TarsHelper {
             returnInfo.setStamp(TarsHelper.getParameterStamp(parameterizedType.getActualTypeArguments()[0]));//CompletableFuture use  gengeric  inner type class
             returnInfo.setName("result");
             returnInfo.setOrder(0);
+            returnInfo.setType(returnType);
             methodInfo.setReturnInfo(returnInfo);
         } else if (returnType != void.class) {
             TarsMethodParameterInfo returnInfo = new TarsMethodParameterInfo();
             returnInfo.setStamp(TarsHelper.getParameterStamp(returnType));
             returnInfo.setName("result");
             returnInfo.setOrder(0);
+            returnInfo.setType(returnType);
             methodInfo.setReturnInfo(returnInfo);
-
         }
         return methodInfo;
     }
