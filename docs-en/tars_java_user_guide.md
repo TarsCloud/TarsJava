@@ -314,8 +314,8 @@ Normally, after receiving the request, B needs to return to A after the interfac
 ​	//Interface implementation
 ​	...
 ​	
-	//Back packet after asynchronous processing
-	context.writeResult(...);
+​	//Back packet after asynchronous processing
+​	context.writeResult(...);
 
 ## Client development
 
@@ -504,26 +504,6 @@ Note:
 The asynchronous promise call is a new feature of Tars v1.7.0. This method returns a CompletableFuture object. CompletableFuture is a newly added class in jdk1.8. It implements the Future \<T> and CompletionStage \<T> interfaces and provides very powerful asynchronous programming functions. Before jdk1.8, we mainly used Future or registered callback function to complete asynchronous programming. However, these two methods have certain defects. When Future calls get() to get the result, if the operation is not completed, it will wait all the time, which may cause a waste of CPU time. Furthermore, Future cannot complete chained calls, and cannot perform further operations on the results obtained from the previous Future.  For the callback method, with the continuous nesting of callback functions, it will cause the phenomenon of callback pyramid. Therefore, CompletableFuture was introduced in Tars v1.7.0, which can perform a series of subsequent operations in a callback manner by registering triggers.
 
 The API of CompletabileFuture generally has two forms: the one with Async suffix and the one without Async suffix. The method without the Async suffix will be executed by the current calling thread, and the method with the Async suffix is divided into two cases. If Executor is passed in the parameter, a thread will be obtained from the Executor to execute the task. Otherwise, a thread obtained from the global ForkJoinPool.commonPool () will perform these tasks.
-
-CompletableFuture provides processing operations when the calculation result is completed, and all return a CompletableFuture object, so you can perform chained calls. Common operations are as follows:
-
-- thenApply：The parameter is the result of the previous CompletableFuture, and it returns the CompletableFuture object holding the new result
-- thenRun：No parameters, returns a CompletableFuture object with no results
-- thenAccept：The parameter is the result of the last CompletableFuture, and it returns a CompletableFuture object with no result
-- handle：The parameters are the result of the last CompletableFuture (null when exception occurs) and throwable (null when operation completes normally), and it returns a CompletableFuture object holding the new result
-- whenComplete：The parameters are the result of the last CompletableFuture (null when exception occurs) and throwable (null when operation completes normally) and it returns the same result as the previous CompletableFuture
-
-A simple example is as follows:
-
-```java
-public static void main(String[] args) throws Exception {
-        CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> {
-            return 10;
-        });
-        CompletableFuture<String> result = future.thenApply(i -> i + 10).thenApply(i-> String.valueOf(i));
-        System.out.println(result.get()); // 20
-    }
-```
 
 #### Set mode invoke
 
