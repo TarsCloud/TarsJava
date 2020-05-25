@@ -17,76 +17,76 @@
 module tars
 {
 
-//Calling package headers between modules Mic = module interval call
-struct StatMicMsgHead
-{
-      0 require string masterName;       //Main calling module name
-      1 require string slaveName;        //The name of the called module
-      2 require string interfaceName;    //The interface name of the called module
-      3 require string masterIp;         //Main calling module ip
-      4 require string slaveIp;          //The ip of the called module
-      5 require int slavePort;           //The port of the called module
-      6 require int returnValue;         //return value
-      7 optional string slaveSetName;    //The set name of the called module
-      8 optional string slaveSetArea;    //The set area name of the called module
-      9 optional string slaveSetID;      //The set group name of the called module
-      10 optional string tarsVersion;     //Main calling module tars version
-};
+    //Calling package headers between modules Mic = module interval call
+    struct StatMicMsgHead
+    {
+        0  require  string masterName;    //Main calling module name
+        1  require  string slaveName;     //The name of the called module
+        2  require  string interfaceName; //The interface name of the called module
+        3  require  string masterIp;      //Main calling module ip
+        4  require  string slaveIp;       //The ip of the called module
+        5  require  int    slavePort;     //The port of the called module
+        6  require  int    returnValue;   //return value
+        7  optional string slaveSetName;  //The set name of the called module
+        8  optional string slaveSetArea;  //The set area name of the called module
+        9  optional string slaveSetID;    //The set group name of the called module
+        10 optional string tarsVersion;   //Main calling module tars version
+    };
 
-key[StatMicMsgHead, masterName, slaveName,interfaceName,masterIp,slaveIp,slavePort,returnValue, slaveSetName, slaveSetArea, slaveSetID, tarsVersion];
-   
-//Inter module call package body protocol
-struct StatMicMsgBody
-{
-      0 require int count;                  //Successful call count
-      1 require int timeoutCount;           //Timeout call count
-      2 require int execCount;              //Exception call count
-                                            //The following fields are used for statistics for successful calls
-      3 require map<int,int> intervalCount; //Call count in time interval
-      4 require long totalRspTime;          //The total response time is used to calculate the average time
-      5 require int maxRspTime;             //Maximum response time
-      6 require int minRspTime;             //Minimum response time
-};
+    key[StatMicMsgHead, masterName, slaveName, interfaceName, masterIp, slaveIp, slavePort, returnValue, slaveSetName, slaveSetArea, slaveSetID, tarsVersion];
 
-//Call sampling information between modules
-struct StatSampleMsg
-{
-      0 require string unid;             //Unique id value
-      1 require string masterName;       //Main calling module name
-      2 require string slaveName;        //The name of the called module
-      3 require string interfaceName;    //The interface name of the called module
-      4 require string masterIp;         //Main calling module ip
-      5 require string slaveIp;          //The ip of the called module
-      6 require int depth;               //Depth value
-      7 require int width;               //Breadth value
-      8 require int parentWidth;         //Parent node breadth value
-};
+    //Inter module call package body protocol
+    struct StatMicMsgBody
+    {
+        0 require int           count;         //Successful call count
+        1 require int           timeoutCount;  //Timeout call count
+        2 require int           execCount;     //Exception call count
+                                               //The following fields are used for statistics for successful calls
+        3 require map<int, int> intervalCount; //Call count in time interval
+        4 require long          totalRspTime;  //The total response time is used to calculate the average time
+        5 require int           maxRspTime;    //Maximum response time
+        6 require int           minRspTime;    //Minimum response time
+    };
 
-struct ProxyInfo
-{
-	0 require bool bFromClient;//Whether from the client
-};
-/**
- *
- * Interface to the report service
- *
- **/
-interface StatF
-{
-      /**
-      * Report calling information between modules   Mic = module interval call
-      * @param statmsg,             Report information
-      * @param bFromServer,         Report source  bFromClient: true （Reporting initiated by the client) false （Reporting initiated by the server)
-      * @return int,                Return 0 means success
-      */
-      int reportMicMsg( map<StatMicMsgHead,StatMicMsgBody> msg, bool bFromClient);
-      
-      /**
-      * Report sampling information between modules   Mic = module interval call
-      * @param msg,               Report information
-       * @return int,                 Return 0 means success
-      */
-      int reportSampleMsg(vector<StatSampleMsg> msg);
-};
+    //Call sampling information between modules
+    struct StatSampleMsg
+    {
+        0 require string unid;          //Unique id value
+        1 require string masterName;    //Main calling module name
+        2 require string slaveName;     //The name of the called module
+        3 require string interfaceName; //The interface name of the called module
+        4 require string masterIp;      //Main calling module ip
+        5 require string slaveIp;       //The ip of the called module
+        6 require int    depth;         //Depth value
+        7 require int    width;         //Breadth value
+        8 require int    parentWidth;   //Parent node breadth value
+    };
+
+    struct ProxyInfo
+    {
+        0 require bool bFromClient; //Whether from the client
+    };
+    /**
+     *
+     * Interface to the report service
+     *
+     **/
+    interface StatF
+    {
+        /**
+         * Report calling information between modules   Mic = module interval call
+         * @param statmsg,             Report information
+         * @param bFromServer,         Report source  bFromClient: true （Reporting initiated by the client) false （Reporting initiated by the server)
+         * @return int,                Return 0 means success
+         */
+        int reportMicMsg(map<StatMicMsgHead, StatMicMsgBody> msg, bool bFromClient);
+
+        /**
+         * Report sampling information between modules   Mic = module interval call
+         * @param msg,               Report information
+         * @return int,                 Return 0 means success
+         */
+        int reportSampleMsg(vector<StatSampleMsg> msg);
+    };
 
 }; 

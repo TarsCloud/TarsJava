@@ -13,19 +13,19 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
- 
+
 module tars
 {
     interface AdminF
     {
         /**
-        * Close service
-        */
+         * Close service
+         */
         void shutdown();
 
         /**
-        * Notification service
-        */
+         * Notification service
+         */
         string notify(string command);
     };
 };
