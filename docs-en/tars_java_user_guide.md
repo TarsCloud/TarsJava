@@ -309,11 +309,11 @@ Asynchronous nesting represents the following:
 Normally, after receiving the request, B needs to return to A after the interface is processed, so it cannot be implemented if B also initiates an asynchronous request to C in the interface Therefore, it is necessary to declare startup asynchronism in the implementation interface method to achieve asynchronous calls across services.
 
 ​	
-	//Declarations start asynchronous context
-	AsyncContext context = AsyncContext.startAsync();
-	//Interface implementation
-	...
-	
+​	//Declarations start asynchronous context
+​	AsyncContext context = AsyncContext.startAsync();
+​	//Interface implementation
+​	...
+​	
 	//Back packet after asynchronous processing
 	context.writeResult(...);
 
@@ -499,6 +499,32 @@ Note:
 > * When the server returns, the callback_hello of HelloPrxCallback will be responded.
 > * If the call returns an exception or timeout, the callback_exception will be called, and the value of RET is defined as follows.
 
+#### Promise invoke
+
+The asynchronous promise call is a new feature of Tars v1.7.0. This method returns a CompletableFuture object. CompletableFuture is a newly added class in jdk1.8. It implements the Future \<T> and CompletionStage \<T> interfaces and provides very powerful asynchronous programming functions. Before jdk1.8, we mainly used Future or registered callback function to complete asynchronous programming. However, these two methods have certain defects. When Future calls get() to get the result, if the operation is not completed, it will wait all the time, which may cause a waste of CPU time. Furthermore, Future cannot complete chained calls, and cannot perform further operations on the results obtained from the previous Future.  For the callback method, with the continuous nesting of callback functions, it will cause the phenomenon of callback pyramid. Therefore, CompletableFuture was introduced in Tars v1.7.0, which can perform a series of subsequent operations in a callback manner by registering triggers.
+
+The API of CompletabileFuture generally has two forms: the one with Async suffix and the one without Async suffix. The method without the Async suffix will be executed by the current calling thread, and the method with the Async suffix is divided into two cases. If Executor is passed in the parameter, a thread will be obtained from the Executor to execute the task. Otherwise, a thread obtained from the global ForkJoinPool.commonPool () will perform these tasks.
+
+CompletableFuture provides processing operations when the calculation result is completed, and all return a CompletableFuture object, so you can perform chained calls. Common operations are as follows:
+
+- thenApply：The parameter is the result of the previous CompletableFuture, and it returns the CompletableFuture object holding the new result
+- thenRun：No parameters, returns a CompletableFuture object with no results
+- thenAccept：The parameter is the result of the last CompletableFuture, and it returns a CompletableFuture object with no result
+- handle：The parameters are the result of the last CompletableFuture (null when exception occurs) and throwable (null when operation completes normally), and it returns a CompletableFuture object holding the new result
+- whenComplete：The parameters are the result of the last CompletableFuture (null when exception occurs) and throwable (null when operation completes normally) and it returns the same result as the previous CompletableFuture
+
+A simple example is as follows:
+
+```java
+public static void main(String[] args) throws Exception {
+        CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> {
+            return 10;
+        });
+        CompletableFuture<String> result = future.thenApply(i -> i + 10).thenApply(i-> String.valueOf(i));
+        System.out.println(result.get()); // 20
+    }
+```
+
 #### Set mode invoke
 
 At present, the framework has already supported the deployment of business in set mode. After set deployment, the calls between businesses are transparent to the business deveploment. But because some services have special needs, after deploying set, the client can specify the set name to invoke the server, so the framework increases the function of the client to specify the set name to invoke the service on the basis of the set deployment.
@@ -661,6 +687,37 @@ Illustration:
 
 > - When the dyed log is opened, the parameter passed is recommended to fill in the service name. If it is null, the default name is default.
 > - The log level and log type of the dyed log are the same as the original log. If the original log is only local, the dyed log is only local, and the original log will be remote to play the long distance dyed log.
+
+Logback is used as the logging system in the new version of TarsJava, so MDC can be used to dye the logs. MDC is a technology provided by Logback to record logs in multiple threads. It holds a ThreadLocal object inside which stores a Map, so users can add key-value pairs to it as needed. By implementing Filter and using MDC, dyeing of logs can be achieved:
+
+```java
+public class MyFilter implements Filter {
+    private static final String TRACE_ID = "traceId"; 
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        ...
+        boolean success = putMDC(...);
+        ...
+        try {
+            chain.doFilter(request, response);
+        } finally {
+            if(success) {
+                MDC.remove(TRACE_ID);
+            }
+        }
+    }
+
+    private boolean putMDC(...) {
+        if (...){
+            String traceId = ...
+            MDC.put(TRACE_ID, traceId);
+        	return true;
+        }
+        return false;
+    }
+```
+
+
 
 - Passive staining:
 
