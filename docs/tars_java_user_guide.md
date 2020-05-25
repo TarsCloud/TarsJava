@@ -497,6 +497,32 @@ prx.async_hello(new HelloPrxCallback() {
 > * 当接收到服务端返回时，HelloPrxCallback的callback_hello会被响应。
 > * 如果调用返回异常或超时，则callback_exception会被调用，ret的值定义如下：
 
+#### promise调用
+
+异步的promise调用方式是Tars v1.7.0新增的功能，该方法返回了一个CompletableFuture对象。CompletableFuture是jdk1.8中新加入的类，它实现了Future\<T>， CompletionStage\<T>两个接口，提供了十分强大的异步编程功能。在jdk1.8之前主要采用Future或注册CallBack函数来完成异步编程，这两种方式均存在一定的缺陷。Future在调用get方法获取结果时，若操作尚未完成会一直进行等待，此时可能造成CPU时间的浪费。并且Future无法组合完成链式调用，不能为上一个Future获得的结果执行更进一步的操作。而CallBack方式随着回调函数的不断嵌套，则会造成回调金字塔的现象。因此，在Tars v1.7.0版本中引入了CompletableFuture，可以通过注册触发器以回调的方式执行一系列的后续操作。
+
+CompletableFuture的API一般会有带Async后缀和不带Async后缀两种形式，不带Async后缀的方法会由当前的调用线程来执行任务，而带Async后缀的方法则分为两种情况，若在参数中传入了Executor，则会从传入的线程池获取一个线程去执行任务，否则从全局的 ForkJoinPool.commonPool()中获取一个线程中执行这些任务。
+
+CompletableFuture提供了对计算结果完成时的处理操作，并都会返回一个CompletableFuture对象，因此可以执行链式调用，常见的操作有：
+
+- thenApply：参数为上一个CompletableFuture的结果，返回持有新结果的CompletableFuture对象
+- thenRun：无参数，返回无结果的CompletableFuture对象
+- thenAccept：参数为上一个CompletableFuture的结果，返回无结果的CompletableFuture对象
+- handle：参数为上一个CompletableFuture的结果（异常完成时为空）和异常（正常完成时为空），返回持有新结果的CompletableFuture对象
+- whenComplete：参数为上一个CompletableFuture的结果（异常完成时为空）和异常（正常完成时为空），返回和上一个CompletableFuture相同的结果
+
+一个简单的结果转换示例如下：
+
+```Java
+public static void main(String[] args) throws Exception {
+        CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> {
+            return 10;
+        });
+        CompletableFuture<String> result = future.thenApply(i -> i + 10).thenApply(i-> String.valueOf(i));
+        System.out.println(result.get()); // 20
+    }
+```
+
 #### set方式调用
 
 目前框架已经支持业务按set方式进行部署，按set部署之后，各个业务之间的调用对开业务发来说是透明的。但是由于有些业务有特殊需求，需要在按set部署之后，客户端可以指定set名称来调用服务端，因此框架则按set部署的基础上增加了客户端可以指定set名称去调用业务服务的功能。
@@ -660,6 +686,37 @@ DyeingSwitch.closeActiveDyeing();    //主动关闭染色开关接口
 
 > - 开启染色日志时传递的参数推荐填写服务名，如果填写为null则默认名称为default;
 > - 染色日志的日志级别和日志类型与原本日志相同，如果原本日志只打本地，那么染色日志也只打本地，原本日志要打远程染色日志才会打远程;
+
+在新版的TarsJava中使用了Logback作为日志系统，因此可以使用MDC来实现对日志的染色。MDC是Logback提供的在多线程中记录日志的一种技术，它的内部持有一个ThreadLocal对象，其中存储了一个Map，因此用户可以根据需要向其中添加键值对。通过实现Filter，配合MDC可以实现对日志的染色：
+
+```java
+public class MyFilter implements Filter {
+    private static final String TRACE_ID = "traceId"; 
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        ...
+        boolean success = putMDC(...);
+        ...
+        try {
+            chain.doFilter(request, response);
+        } finally {
+            if(success) {
+                MDC.remove(TRACE_ID);
+            }
+        }
+    }
+
+    private boolean putMDC(...) {
+        if (...){
+            String traceId = ...
+            MDC.put(TRACE_ID, traceId);
+        	return true;
+        }
+        return false;
+    }
+```
+
+
 
 - 被动染色：
 
