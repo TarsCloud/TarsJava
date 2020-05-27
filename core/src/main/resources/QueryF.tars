@@ -18,7 +18,7 @@
 
 module tars
 {
-    /** 
+    /**
      * Get the query interface of the object endpoint
      */
 
@@ -31,15 +31,15 @@ module tars
          * @return  Returns a list of all active endpoints for this object
          */
         vector<EndpointF> findObjectById(string id);
-		
-		/**Get all objects by id, including active and inactive objects
-		*
+
+        /**Get all objects by id, including active and inactive objects
+         *
          * @param id         Object name
          * @param activeEp   List of live endpoints
          * @param inactiveEp List of non-live endpoints
          * @return:  0-success  others-failure
          */
-		int findObjectById4Any(string id, out vector<EndpointF> activeEp, out vector<EndpointF> inactiveEp);
+        int findObjectById4Any(string id, out vector<EndpointF> activeEp, out vector<EndpointF> inactiveEp);
 
         /** Get all endpoint lists of objects according to id, the function is the same as findObjectByIdInSameGroup
          *
@@ -49,7 +49,7 @@ module tars
          * @return:  0-success  others-failure
          */
         int findObjectById4All(string id, out vector<EndpointF> activeEp, out vector<EndpointF> inactiveEp);
-        
+
         /** Get the same group endpoint list of objects according to id
          *
          * @param id         Object name
@@ -68,16 +68,16 @@ module tars
          * @return:  0-success  others-failure
          */
         int findObjectByIdInSameStation(string id, string sStation, out vector<EndpointF> activeEp, out vector<EndpointF> inactiveEp);
-		
-		/** Get the same group endpoint list of objects according to id
-		*
-		* @param id         Object name
-		* @param setId      The full name of set, the format is setname.setarea.setgroup
-		* @param activeEp   List of live endpoints
-		* @param inactiveEp List of non-live endpoints
-		* @return:  0-success  others-failure
-		*/
-		int findObjectByIdInSameSet(string id, string setId, out vector<EndpointF> activeEp, out vector<EndpointF> inactiveEp);
+
+        /** Get the same group endpoint list of objects according to id
+         *
+         * @param id         Object name
+         * @param setId      The full name of set, the format is setname.setarea.setgroup
+         * @param activeEp   List of live endpoints
+         * @param inactiveEp List of non-live endpoints
+         * @return:  0-success  others-failure
+         */
+        int findObjectByIdInSameSet(string id, string setId, out vector<EndpointF> activeEp, out vector<EndpointF> inactiveEp);
 
     };
 

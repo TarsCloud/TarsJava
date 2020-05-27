@@ -13,41 +13,41 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
- 
+
 module tars
 {
-	struct ConfigInfo
-	{
-		//Application name
-		0 require string appname;
-		//Service name
-		1 require string servername;
-		//Profile name
-		2 require string filename;
-		//Whether to only get the application configuration, the default is false, if true, servername can be empty
-		3 require bool bAppOnly=false;
-		//Service node(ip)
-		4 optional string host;
-		//Set group name
-		5 optional string setdivision;
-	};
-	
-	struct GetConfigListInfo
-	{
-		//Application name
-		0 require string appname;
-		//Service name
-		1 optional string servername;
-		//Whether to only get the application configuration, the default is false, if true, only pull the application level list, other levels are invalid
-		2 optional bool bAppOnly=false;
-		//Service node(ip)，if you want the machine level, please assign a value
-		3 optional string host="";
-		//Set group name, if you want to pull the set level, please assign a value
-		4 optional string setdivision="";
-		//Container level, if you want to pull the container level, please assign a value
-		5 optional string containername="";
-	};
-	
+    struct ConfigInfo
+    {
+        //Application name
+        0 require  string appname;
+        //Service name
+        1 require  string servername;
+        //Profile name
+        2 require  string filename;
+        //Whether to only get the application configuration, the default is false, if true, servername can be empty
+        3 require  bool   bAppOnly = false;
+        //Service node(ip)
+        4 optional string host;
+        //Set group name
+        5 optional string setdivision;
+    };
+
+    struct GetConfigListInfo
+    {
+        //Application name
+        0 require  string appname;
+        //Service name
+        1 optional string servername;
+        //Whether to only get the application configuration, the default is false, if true, only pull the application level list, other levels are invalid
+        2 optional bool   bAppOnly      = false;
+        //Service node(ip)，if you want the machine level, please assign a value
+        3 optional string host          = "";
+        //Set group name, if you want to pull the set level, please assign a value
+        4 optional string setdivision   = "";
+        //Container level, if you want to pull the container level, please assign a value
+        5 optional string containername = "";
+    };
+
     /**
      * config obj to load server's system config.
      **/
@@ -66,7 +66,7 @@ module tars
          * @param app, app name
          * @param server, server name
          * @param filename, config file name
-      	 * @param config, Configuration file content
+         * @param config, Configuration file content
          **/
         int loadConfig(string app, string server, string filename, out string config);
 
@@ -89,30 +89,30 @@ module tars
          **/
         int checkConfig(string appServerName, string filename, string host, out string result);
 
-	    /**
-	     * Read the configuration file list of the node where the service is located
-	     * 
-	     * @param configInfo, ConfigInfo: Profile information. If there is no set group information, please set setdivision is empty ""
-	     * @param vf, config file name
-	     * @return int 0: success, -1:failure
-	     **/
-	    int ListConfigByInfo(ConfigInfo configInfo, out vector<string> vf);
+        /**
+         * Read the configuration file list of the node where the service is located
+         *
+         * @param configInfo, ConfigInfo: Profile information. If there is no set group information, please set setdivision is empty ""
+         * @param vf, config file name
+         * @return int 0: success, -1:failure
+         **/
+        int ListConfigByInfo(ConfigInfo configInfo, out vector<string> vf);
 
-	    /**
-	     * Read configuration file
-	     * @param configInfo, ConfigInfo: Profile information
-	     * @param config, Configuration file content
-	     * @return int 0: success, -1:failure
-	     **/
-	    int loadConfigByInfo(ConfigInfo configInfo, out string config);
+        /**
+         * Read configuration file
+         * @param configInfo, ConfigInfo: Profile information
+         * @param config, Configuration file content
+         * @return int 0: success, -1:failure
+         **/
+        int loadConfigByInfo(ConfigInfo configInfo, out string config);
 
-	    /**
-	     * Check whether the configuration file conforms to the TC_Config format
-	     * @param configInfo, ConfigInfo: Profile information
-	     * @param result, prompt
-	     * @return int 0: valid, -1:invalid
-	     **/
-	    int checkConfigByInfo(ConfigInfo configInfo, out string result);
+        /**
+         * Check whether the configuration file conforms to the TC_Config format
+         * @param configInfo, ConfigInfo: Profile information
+         * @param result, prompt
+         * @return int 0: valid, -1:invalid
+         **/
+        int checkConfigByInfo(ConfigInfo configInfo, out string result);
 
     };
 };

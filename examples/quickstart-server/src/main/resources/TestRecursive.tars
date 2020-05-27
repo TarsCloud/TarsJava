@@ -14,19 +14,11 @@
  * specific language governing permissions and limitations under the License.
  */
 
-module tars
+module TestApp
 {
-    interface AdminF
+    struct TestRecursive
     {
-        /**
-         * Close service
-         */
-        void shutdown();
-
-        /**
-         * Notification service
-         */
-        string notify(string command);
+        0 optional int value;
+        1 optional TestRecursive testRecursive;
     };
 };
-
