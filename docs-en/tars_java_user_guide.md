@@ -572,6 +572,211 @@ Illustration: remote log service must be pre applied before long log.
 > * LogType.REMOTE: Only print remote logs
 > * LogType.All : Print local and remote logs
 
+### Logback log system
+
+After TarsJava v1.7, Logback was used as the Tars log system. The configuration of Logback is very flexible and can provide users with more powerful log functions.
+
+#### Architecture
+
+Logback log system consists of three parts, namely Logger, Appender, Layout:
+
+- Logger: Each Logger is attached to a LoggerContext, which is used to generate Loggers and arrange them into a tree-like hierarchy. Logger is a named entity. Their names are case sensitive and follow hierarchical naming rules:
+
+  > Named Hierarchy
+  >
+  > A logger is said to be an ancestor of another logger if its name followed by a dot is a prefix of the descendant logger name. A logger is said to be a parent of a child logger if there are no ancestors between itself and the descendant logger.
+
+  Loggers can be assigned different levels, namely TRACE, DEBUG, INFO, WARN and ERROR. If the effective level of the Logger is q and the request level of the log record is p, the log request will be executed only when p≥q. The default effective level of root Logger is DEBUG.
+
+  > Level rules: TRACE < DEBUG < INFO <  WARN < ERROR
+
+If no level is set for the Logger, then it will inherit an assigned level from its closest ancestor. A simple example is as follows:
+
+| Logger name | Assigned level | Effective level |
+| ----------- | -------------- | --------------- |
+| root        | DEBUG          | DEBUG           |
+| X           | INFO           | INFO            |
+| X.Y         | none           | INFO            |
+| X.Y.Z       | none           | INFO            |
+
+- Appender: The component for writing log events, you can specify the log output to the console, files, remote servers, and databases.
+- Layout: Format and output log information.
+
+#### Configuration
+
+Logback will first look for *logback-test.xml* and *logback.xml* configuration files in the class path. If it is not found, the default *BasicConfigurator* will be used. The basic structure of the configuration file can be described as, \<configuration\> element, containing zero or more \<appender\> elements, followed by zero or more \<logger\> elements, followed by at most one \<root\> element. The official document gives the structure of the configuration file as follows:
+
+![Logback-config](../docs/images/Logback-config.png)
+
+A typical logback.xml configuration file format is as follows:
+
+```xml
+<configuration scan="true" scanPeriod="60 seconds" debug="false">  
+    <property name="Logname" value="demo" /> 
+    <contextName>${Logname}</contextName> 
+    
+    
+    <appender>
+        ···
+    </appender>   
+    
+    <logger>
+        ···
+    </logger>
+    
+    <root>             
+       ···
+    </root>  
+</configuration>  
+```
+
+1. \<configuration\>
+
+It provides three configuration options:
+
+- scan：true means that when the configuration file changes, the configuration file will be reloaded automatically, the default value is true.
+- scanPeriod：The time interval for scanning the configuration file for changes. The default time unit is milliseconds. You can set the unit to milliseconds, seconds, minutes, or hours.
+- debug：true means to print Logback internal log information, the default value is false.
+
+```xml
+<configuration scan="true" scanPeriod="30 seconds" debug="false"> 
+  ...
+</configuration> 
+```
+
+2. \<contextName\>
+
+It is used to set the name of LoggerContext. The default context name is "default". Once set, the context name cannot be changed.
+
+```xml
+<contextName>myAppName</contextName> 
+```
+
+3. \<property\>
+
+You can use this variable to define variables in the configuration file, or you can load them in batches from external property files or external resources. The variable can then be used in the form of $ {variable name}.
+
+```xml
+<property name="USER_HOME" value="/home/log" />
+```
+
+4. \<appender\>
+
+The components responsible for writing log events. There are several common types
+
+- ConsoleAppender: Output log to console
+
+  ```xml
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+      <encoder>
+          <pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n</pattern>
+      </encoder>
+  </appender>
+  ```
+
+- FileAppender: Output log to file
+
+  ```xml
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+      <!-- Set the file to be written -->
+      <file>testFile.log</file>
+      <!-- Whether to append to the end of the file -->
+      <append>true</append>
+      <!-- set immediateFlush to false for much higher logging throughput -->
+      <immediateFlush>true</immediateFlush>
+      <encoder>
+        <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+      </encoder>
+  </appender>
+  ```
+
+- RollingFileAppender: You can first output the log to a specified file, and once a certain condition is met, then log to another file. (extends FileAppender class)
+
+  ```xml
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+      <file>logFile.log</file>
+      <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <!-- daily rollover -->
+        <fileNamePattern>logFile.%d{yyyy-MM-dd}.log</fileNamePattern>
+  
+        <!-- keep 30 days' worth of history capped at 3GB total size -->
+        <maxHistory>30</maxHistory>
+        <totalSizeCap>3GB</totalSizeCap>
+  
+      </rollingPolicy>
+  
+      <encoder>
+        <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+      </encoder>
+  </appender> 
+  ```
+
+  In addition to the above time rolling strategy, there is also a **FixedWindowRollingPolicy**。
+
+5. \<logger\>
+
+You can set the log printing level of a certain package or a specific class, and add appender.
+
+- name：Make a package or a class of logger constraints
+- level：Assign print level
+- addtivity：Whether to pass the print information to the superior logger, the default is true
+- \<appender-ref\>：Add this appender to logger
+
+```xml
+<logger name="chapters.configuration" level="DEBUG">
+    <appender-ref ref="STDOUT" />
+</logger>
+```
+
+6. \<root\>
+
+It is also the \<logger \> element. Only the level attribute is used to set the print level, and you can also use <appender-ref \> to add appenders.
+
+```xml
+<root level="debug">
+    <appender-ref ref="STDOUT" />
+</root>
+```
+
+A complete logback.xml configuration is as follows:
+
+```xml
+<configuration>
+
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <file>myApp.log</file>
+    <encoder>
+      <pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="chapters.configuration">
+    <appender-ref ref="FILE" />
+  </logger>
+
+  <root level="debug">
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>
+```
+
+#### Logback usage
+
+You can obtain the corresponding logger by calling the LoggerFactory.getLogger method, and then use the logger to complete the log recording.
+
+```java
+Logger logger = LoggerFactory.getLogger("name");
+logger.info("Hello World!");
+```
+
+For more information on the use of Logback, please refer to [Logback Official Document](http://logback.qos.ch/manual/index.html).
+
 ## Service management
 
 The service framework can support dynamic receiving commands to handle related business logic, such as dynamic update configuration, etc.
