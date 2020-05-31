@@ -62,6 +62,8 @@ public class TarsHelper {
 
     public static final short VERSION3 = 0x03;
 
+    public static final short VERSIONJSON = 0x09;
+
     public static final byte NORMAL = 0x00;
 
     public static final byte ONEWAY = 0x01;
@@ -251,6 +253,55 @@ public class TarsHelper {
         throw new RuntimeException("Generic Type: " + type + " no permission, please check it.");
     }
 
+    public static Object getNewParameterStamp(Type type) {
+        if (type instanceof Class<?>) {
+            Class<?> clazz = (Class<?>) type;
+            if (CommonUtils.isJavaBase(clazz) || clazz.isArray() || isStruct(clazz)) {
+                return getNewJavaBaseOrArrayOrJavaBeanStamp((Class<?>) type);
+            } else {
+                return clazz;
+            }
+        } else if (type instanceof ParameterizedType) {
+            ParameterizedType parameterizedType = (ParameterizedType) type;
+            Class<?> clazz = (Class<?>) parameterizedType.getRawType();
+            if (isStruct(clazz)) {
+                return getNewJavaBaseOrArrayOrJavaBeanStamp((Class<?>) type);
+            } else if (isMap(clazz)) {
+                Type[] types = parameterizedType.getActualTypeArguments();
+                Type keyType = types[0];
+                Type valueType = types[1];
+
+                Object key = getNewParameterStamp(keyType);
+                Object value = getNewParameterStamp(valueType);
+                Map<Object, Object> map = new HashMap<Object, Object>(1);
+                map.put(key, value);
+                return map;
+            } else if (isCollection(clazz)) {
+                Type[] types = parameterizedType.getActualTypeArguments();
+                Type valueType = types[0];
+                Object e = getNewParameterStamp(valueType);
+                List<Object> list = new ArrayList<Object>(1);
+                list.add(e);
+                return list;
+            } else if (isHolder(clazz)) {
+                Type[] types = parameterizedType.getActualTypeArguments();
+                if (Holder.class == clazz) {
+                    return getNewParameterStamp(types[0]);
+                } else {
+                    throw new RuntimeException("getStamp for Holder Not Implement Yet, parameterizedType=" + parameterizedType);
+                }
+            }
+        } else if (type instanceof GenericArrayType) {
+            GenericArrayType genericArrayType = (GenericArrayType) type;
+            Type componentType = genericArrayType.getGenericComponentType();
+            Object component = getNewParameterStamp(componentType);
+            Object[] array = (Object[]) Array.newInstance(component.getClass(), 1);
+            array[0] = component;
+            return array;
+        }
+        throw new RuntimeException("Generic Type: " + type + " no permission, please check it.");
+    }
+
     public static TarsMethodParameterInfo createParameterInfo(Type genericParameterType) {
         if (genericParameterType == null) {
             throw new NullPointerException("genericParameterType is null.");
@@ -260,6 +311,54 @@ public class TarsHelper {
         Object stamp = getParameterStamp(genericParameterType);
         parameterInfo.setStamp(stamp);
         return parameterInfo;
+    }
+
+    public static Object getNewJavaBaseOrArrayOrJavaBeanStamp(Class<?> clazz) {
+        if (clazz == boolean.class || clazz == Boolean.class) {
+            return new Boolean(true);
+        } else if (clazz == byte.class || clazz == Byte.class) {
+            return Byte.valueOf((byte) 0);
+        } else if (clazz == short.class || clazz == Short.class) {
+            return Short.valueOf((short) 0);
+        } else if (clazz == int.class || clazz == Integer.class) {
+            return Integer.valueOf(0);
+        } else if (clazz == long.class || clazz == Long.class) {
+            return Long.valueOf(0);
+        } else if (clazz == float.class || clazz == Float.class) {
+            return Float.valueOf(0);
+        } else if (clazz == double.class || clazz == Double.class) {
+            return Double.valueOf(0);
+        } else if (clazz == String.class) {
+            return new String("");
+        } else if (clazz == boolean[].class) {
+            return new boolean[] { true };
+        } else if (clazz == byte[].class) {
+            return new byte[] { 0 };
+        } else if (clazz == short[].class) {
+            return new short[] { 0 };
+        } else if (clazz == int[].class) {
+            return new int[] { 0 };
+        } else if (clazz == long[].class) {
+            return new long[] { 0 };
+        } else if (clazz == float[].class) {
+            return new float[] { 0 };
+        } else if (clazz == double[].class) {
+            return  new double[] { 0 };
+        }
+
+        Object stamp = null;
+        if (stamp == null) {
+            if (clazz.isArray()) {
+                Class<?> componentType = clazz.getComponentType();
+                Object[] array = (Object[]) Array.newInstance(componentType, 1);
+                Object e = getNewJavaBaseOrArrayOrJavaBeanStamp(componentType);
+                array[0] = e;
+                stamp = array;
+            } else {
+                stamp = CommonUtils.newInstance(clazz);
+            }
+        }
+        return stamp;
     }
 
     public static TarsStructInfo getStructInfo(Class<?> clazz) {
@@ -367,6 +466,7 @@ public class TarsHelper {
             TarsMethodParameterInfo parameterInfo = new TarsMethodParameterInfo();
             parametersList.add(parameterInfo);
             try {
+                parameterInfo.setType(genericParameterType);
                 parameterInfo.setName(name);
                 parameterInfo.setOrder(isAsync(method.getName()) ? order : order + 1);
                 parameterInfo.setAnnotations(allParameterAnnotations[order]);
@@ -391,14 +491,15 @@ public class TarsHelper {
             returnInfo.setStamp(TarsHelper.getParameterStamp(parameterizedType.getActualTypeArguments()[0]));//CompletableFuture use  gengeric  inner type class
             returnInfo.setName("result");
             returnInfo.setOrder(0);
+            returnInfo.setType(returnType);
             methodInfo.setReturnInfo(returnInfo);
         } else if (returnType != void.class) {
             TarsMethodParameterInfo returnInfo = new TarsMethodParameterInfo();
             returnInfo.setStamp(TarsHelper.getParameterStamp(returnType));
             returnInfo.setName("result");
             returnInfo.setOrder(0);
+            returnInfo.setType(returnType);
             methodInfo.setReturnInfo(returnInfo);
-
         }
         return methodInfo;
     }

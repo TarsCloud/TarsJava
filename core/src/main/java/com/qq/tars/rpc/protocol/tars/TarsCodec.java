@@ -38,6 +38,11 @@ import com.qq.tars.rpc.protocol.ServantResponse;
 import com.qq.tars.rpc.protocol.tars.support.AnalystManager;
 import com.qq.tars.rpc.protocol.tup.UniAttribute;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -78,7 +83,7 @@ public class TarsCodec extends Codec {
                 }
             } else if (TarsHelper.VERSION2 == response.getVersion() || TarsHelper.VERSION3 == response.getVersion()) {
                 jos.write(response.getMessageType(), 3);
-                jos.write(response.getTicketNumber(), 4);
+                jos.write(response.getRequestId(), 4);
                 String servantName = response.getRequest().getServantName();
                 jos.write(servantName, 5);
                 jos.write(response.getRequest().getFunctionName(), 6);
@@ -89,6 +94,17 @@ public class TarsCodec extends Codec {
                 }
                 if (response.getStatus() != null) {
                     jos.write(response.getStatus(), 10);
+                }
+            } else if (response.getVersion() == TarsHelper.VERSIONJSON) {
+                jos.write(response.getRequestId(), 3);
+                jos.write(response.getMessageType(), 4);
+                jos.write(response.getRet(), 5);
+                jos.write(encodeJsonResult(response, charsetName), 6);
+                if (response.getStatus() != null) {
+                    jos.write(response.getStatus(), 7);
+                }
+                if (response.getRet() != TarsHelper.SERVERSUCCESS) {
+                    jos.write(StringUtils.isEmpty(response.getRemark()) ? "" : response.getRemark(), 8);
                 }
             } else {
                 response.setRet(TarsHelper.SERVERENCODEERR);
@@ -147,6 +163,55 @@ public class TarsCodec extends Codec {
         return ajos.toByteArray();
     }
 
+    protected byte[] encodeJsonResult(TarsServantResponse response, String charsetName) {
+        TarsServantRequest request = response.getRequest();
+        if (TarsHelper.isPing(request.getFunctionName())) {
+            return new byte[]{};
+        }
+
+        // 服务端接口响应
+        JSONObject object = new JSONObject();
+
+        int ret = response.getRet();
+        Map<String, TarsMethodInfo> methodInfoMap = AnalystManager.getInstance().getMethodMapByName(request.getServantName());
+        if (ret == TarsHelper.SERVERSUCCESS && methodInfoMap != null) {
+            TarsMethodInfo methodInfo = methodInfoMap.get(request.getFunctionName());
+            TarsMethodParameterInfo returnInfo = methodInfo.getReturnInfo();
+            if (returnInfo != null && returnInfo.getType() != Void.TYPE && response.getResult() != null) {
+                try {
+                    object.put(TarsHelper.STAMP_STRING, response.getResult());
+                } catch (Exception e) {
+                    System.err.println("server encode json ret :" + response.getResult() + ", with ex:" + e);
+                }
+            }
+
+            Object value = null;
+            List<TarsMethodParameterInfo> parametersList = methodInfo.getParametersList();
+            for (TarsMethodParameterInfo parameterInfo : parametersList) {
+                if (TarsHelper.isHolder(parameterInfo.getAnnotations())) {
+                    value = request.getMethodParameters()[parameterInfo.getOrder() - 1];
+                    if (value != null) {
+                        try {
+                            object.put(parameterInfo.getName(), TarsHelper.getHolderValue(value));
+                        } catch (Exception e) {
+                            System.err.println("server encode json holder :" + value + ", with ex:" + e);
+                        }
+                    }
+                }
+            }
+        }
+
+        String result = object.toString();
+        try {
+            byte[] data = result.getBytes(charsetName);
+            return data;
+        } catch (UnsupportedEncodingException e) {
+            System.err.println("server encode json encode :" + result + ", with charset:" + charsetName
+                    + ", with ex: " + e);
+            return new byte[]{};
+        }
+    }
+
     protected byte[] encodeWupResult(TarsServantResponse response, String charsetName) {
         TarsServantRequest request = response.getRequest();
         UniAttribute unaOut = new UniAttribute();
@@ -197,7 +262,7 @@ public class TarsCodec extends Codec {
         os.write(request.getVersion(), 1);
         os.write(request.getPacketType(), 2);
         os.write(request.getMessageType(), 3);
-        os.write(request.getTicketNumber(), 4);
+        os.write(request.getRequestId(), 4);
         os.write(request.getServantName(), 5);
         os.write(request.getFunctionName(), 6);
         os.write(encodeRequestParams(request, charsetName), 7);
@@ -330,30 +395,9 @@ public class TarsCodec extends Codec {
                 if (TarsHelper.VERSION == request.getVersion()) {//request
                     parameters = decodeRequestBody(data, request.getCharsetName(), methodInfo);
                 } else if (TarsHelper.VERSION2 == request.getVersion() || TarsHelper.VERSION3 == request.getVersion()) {
-                    //wup request
-                    UniAttribute unaIn = new UniAttribute();
-                    unaIn.setEncodeName(request.getCharsetName());
-
-                    if (request.getVersion() == TarsHelper.VERSION2) {
-                        unaIn.decodeVersion2(data);
-                    } else if (request.getVersion() == TarsHelper.VERSION3) {
-                        unaIn.decodeVersion3(data);
-                    }
-
-                    Object value = null;
-                    for (TarsMethodParameterInfo parameterInfo : parametersList) {
-                        if (TarsHelper.isHolder(parameterInfo.getAnnotations())) {
-                            String holderName = TarsHelper.getHolderName(parameterInfo.getAnnotations());
-                            if (!StringUtils.isEmpty(holderName)) {
-                                value = new Holder<Object>(unaIn.getByClass(holderName, parameterInfo.getStamp()));
-                            } else {
-                                value = new Holder<Object>();
-                            }
-                        } else {
-                            value = unaIn.getByClass(parameterInfo.getName(), parameterInfo.getStamp());
-                        }
-                        parameters[i++] = value;
-                    }
+                    parameters = decodeRequestWupBody(data, request.getVersion(), request.getCharsetName(), methodInfo);
+                } else if (TarsHelper.VERSIONJSON == request.getVersion()) {
+                    parameters = decodeRequestJsonBody(data, request.getCharsetName(), methodInfo);
                 } else {
                     request.setRet(TarsHelper.SERVERDECODEERR);
                     System.err.println("un supported protocol, ver=" + request.getVersion());
@@ -383,9 +427,88 @@ public class TarsCodec extends Codec {
         Object value = null;
         for (TarsMethodParameterInfo parameterInfo : parametersList) {
             if (TarsHelper.isHolder(parameterInfo.getAnnotations())) {
-                value = new Holder<Object>(jis.read(parameterInfo.getStamp(), parameterInfo.getOrder(), false));
+                Object response = jis.read(parameterInfo.getStamp(), parameterInfo.getOrder(), false);
+                if (response != null) {
+                    value = new Holder<>(response);
+                } else {
+                    // new a response value
+                    value = new Holder<>(TarsHelper.getNewParameterStamp(parameterInfo.getType()));
+                }
             } else {
                 value = jis.read(parameterInfo.getStamp(), parameterInfo.getOrder(), false);
+            }
+            parameters[i++] = value;
+        }
+
+        return parameters;
+    }
+
+    protected Object[] decodeRequestWupBody(byte[] data, int version, String charset,
+            TarsMethodInfo methodInfo) throws Exception {
+        //wup request
+        UniAttribute unaIn = new UniAttribute();
+        unaIn.setEncodeName(charsetName);
+
+        if (version == TarsHelper.VERSION2) {
+            unaIn.decodeVersion2(data);
+        } else if (version == TarsHelper.VERSION3) {
+            unaIn.decodeVersion3(data);
+        }
+
+        List<TarsMethodParameterInfo> parametersList = methodInfo.getParametersList();
+        Object[] parameters = new Object[parametersList.size()];
+
+        int i = 0;
+        Object value = null;
+        for (TarsMethodParameterInfo parameterInfo : parametersList) {
+            if (TarsHelper.isHolder(parameterInfo.getAnnotations())) {
+                String holderName = TarsHelper.getHolderName(parameterInfo.getAnnotations());
+                if (unaIn.containsKey(holderName)) {
+                    value = new Holder<>(unaIn.getByClass(holderName, parameterInfo.getStamp()));
+                } else {
+                    // new a response
+                    value = new Holder<>(TarsHelper.getNewParameterStamp(parameterInfo.getType()));
+                }
+            } else {
+                value = unaIn.getByClass(parameterInfo.getName(), parameterInfo.getStamp());
+            }
+            parameters[i++] = value;
+        }
+
+        return parameters;
+    }
+
+    protected Object[] decodeRequestJsonBody(byte[] data, String charset,
+            TarsMethodInfo methodInfo) throws Exception {
+        // 解析json串
+        JSONObject jsonObject = JSON.parseObject(new String(data, charset));
+
+        // 按字段反序列化
+        int i = 0;
+        Object value = null;
+
+        List<TarsMethodParameterInfo> parametersList = methodInfo.getParametersList();
+        Object[] parameters = new Object[parametersList.size()];
+
+        for (TarsMethodParameterInfo parameterInfo : parametersList) {
+            if (TarsHelper.isHolder(parameterInfo.getAnnotations())) {
+                if (jsonObject.containsKey(parameterInfo.getName())) {
+                    value = new Holder<>(JSON.parseObject(jsonObject.get(parameterInfo.getName()).toString(),
+                            parameterInfo.getType()));
+                } else {
+                    // new response, can not use cache
+                    value = new Holder<>(TarsHelper.getNewParameterStamp(parameterInfo.getType()));
+                }
+            } else {
+                if (jsonObject.containsKey(parameterInfo.getName())) {
+                    value = JSON.parseObject(jsonObject.get(parameterInfo.getName()).toString(),
+                            parameterInfo.getType());
+                } else {
+                    throw new ProtocolException("no found parameter, the context[ROOT], "
+                            + "serviceName[" + methodInfo.getServiceName()
+                            + "], methodName[" + methodInfo.getMethodName()
+                            + "], parameter[" + parameterInfo.getName() + "]");
+                }
             }
             parameters[i++] = value;
         }
