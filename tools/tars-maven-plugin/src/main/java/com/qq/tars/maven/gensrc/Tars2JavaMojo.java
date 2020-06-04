@@ -875,20 +875,45 @@ public class Tars2JavaMojo extends AbstractMojo {
     }
 
     private static String packageName(String packagePrefixName, String namespace) {
+        if (!packagePrefixName.endsWith(".")) {
+            packagePrefixName += ".";
+        }
         return packagePrefixName + namespace.toLowerCase();
     }
 
     public static String fieldGetter(String fieldName, TarsType type) {
-        if (type.isPrimitive() && (type.asPrimitive()).primitiveType() == TarsPrimitiveType.PrimitiveType.BOOL && fieldName.startsWith("is")) {
-            return fieldName;
+        if (type.isPrimitive() && (type.asPrimitive()).primitiveType() == PrimitiveType.BOOL) {
+            if (!fieldName.startsWith("is")) {
+                return "is" + firstUpStr(fieldName);
+            }
+            if (fieldName.length() <= 2) {
+                return "is" + firstUpStr(fieldName);
+            }
+            String third = fieldName.substring(2, 3);
+            if (third.toUpperCase().equals(third)) {
+                return fieldName;
+            } else {
+                return "is" + firstUpStr(fieldName);
+            }
         } else {
             return "get" + firstUpStr(fieldName);
         }
     }
 
     public static String fieldSetter(String fieldName, TarsType type) {
-        if (type.isPrimitive() && (type.asPrimitive()).primitiveType() == TarsPrimitiveType.PrimitiveType.BOOL && fieldName.startsWith("is")) {
-            return "set" + fieldName.substring(2);
+        if (type.isPrimitive() && (type.asPrimitive()).primitiveType() == PrimitiveType.BOOL) {
+            if (!fieldName.startsWith("is")) {
+                return "set" + firstUpStr(fieldName);
+            }
+            if (fieldName.length() <= 2) {
+                return "set" + firstUpStr(fieldName);
+            }
+            String third = fieldName.substring(2, 3);
+            if (third.toUpperCase().equals(third)) {
+                return "set" + firstUpStr(fieldName.substring(2));
+            } else {
+                return "set" + firstUpStr(fieldName);
+            }
         } else {
             return "set" + firstUpStr(fieldName);
         }
