@@ -21,7 +21,7 @@ This project is the source code of the Tars RPC framework Java language.
 
 ###  Environmental dependence
 - JDK1.8 or above
-- Maven 2.2.1 or above
+- Maven 3.5 or above
 
 
 ###
