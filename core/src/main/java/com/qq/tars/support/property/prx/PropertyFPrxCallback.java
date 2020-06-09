@@ -24,7 +24,7 @@ import com.qq.tars.rpc.protocol.tars.support.TarsAbstractCallback;
 
 /**
  *
- * 上报服务的接口
+ * Reporting service interface
  *
  **/
 public abstract class PropertyFPrxCallback extends TarsAbstractCallback {

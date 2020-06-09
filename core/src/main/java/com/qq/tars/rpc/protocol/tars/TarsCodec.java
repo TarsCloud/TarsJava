@@ -223,6 +223,8 @@ public class TarsCodec extends Codec {
         unaOut.setEncodeName(charsetName);
         if (response.getVersion() == TarsHelper.VERSION3) {
             unaOut.useVersion3();
+        } else if(response.getVersion() == TarsHelper.VERSION2) {
+            unaOut.setNewDataNull();
         }
 
         int ret = response.getRet();

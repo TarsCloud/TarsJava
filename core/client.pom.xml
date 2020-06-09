@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.tencent.tars</groupId>
         <artifactId>tars-parent</artifactId>
-        <version>1.7.0-SNAPSHOT</version>
+        <version>1.7.1</version>
     </parent>
     <artifactId>tars-client</artifactId>
     <name>${project.artifactId}</name>
@@ -43,12 +43,6 @@
             <version>3.1.0</version>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>io.zipkin.reporter2</groupId>
             <artifactId>zipkin-sender-kafka11</artifactId>
             <version>${zipkin-reporter.version}</version>
@@ -67,6 +61,12 @@
             <groupId>io.zipkin.reporter2</groupId>
             <artifactId>zipkin-sender-urlconnection</artifactId>
             <version>${zipkin-reporter.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${maven_junit_version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

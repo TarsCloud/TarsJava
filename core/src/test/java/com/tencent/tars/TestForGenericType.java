@@ -1,7 +1,7 @@
 package com.tencent.tars;
 
 import junit.framework.Assert;
-import junit.framework.TestCase;
+import org.junit.Test;
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 import java.lang.reflect.InvocationTargetException;
@@ -10,13 +10,14 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class TestForGenericType extends TestCase {
+public class TestForGenericType {
     public static class TestsMethod {
         public CompletableFuture<List<Integer>> getFuture() {
             return new CompletableFuture<>();
         }
     }
 
+    @Test
     public void testGenerictype() throws InvocationTargetException, IllegalAccessException, InstantiationException {
         CompletableFuture<Integer> completableFuture = new CompletableFuture<>();
         Method[] methods = TestsMethod.class.getMethods();

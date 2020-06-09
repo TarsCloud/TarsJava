@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.tencent.tars</groupId>
         <artifactId>tars-parent</artifactId>
-        <version>1.7.0-SNAPSHOT</version>
+        <version>1.7.1</version>
     </parent>
     <artifactId>tars-core</artifactId>
     <name>${project.artifactId}</name>
@@ -22,6 +22,12 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${maven_junit_version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>

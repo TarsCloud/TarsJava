@@ -26,33 +26,33 @@ import com.qq.tars.protocol.tars.annotation.TarsContext;
 
 /**
  *
- * 上报服务的接口
+ * Reporting service interface
  *
  **/
 @Servant
 public interface PropertyFPrx {
 	/**
-	 * 上报属性统计信息   Prop = property
-	 * @param statmsg,             上报信息
-	 * @return int,                返回0表示成功
+	 * Report attribute statistics information   Prop = property
+	 * @param statmsg,             Report information
+	 * @return int,                Return 0 means success
 	 */
 	public int reportPropMsg(java.util.Map<StatPropMsgHead, StatPropMsgBody> statmsg);
 	/**
-	 * 上报属性统计信息   Prop = property
-	 * @param statmsg,             上报信息
-	 * @return int,                返回0表示成功
+	 * Report attribute statistics information   Prop = property
+	 * @param statmsg,             Report information
+	 * @return int,                Return 0 means success
 	 */
 	public int reportPropMsg(java.util.Map<StatPropMsgHead, StatPropMsgBody> statmsg, @TarsContext java.util.Map<String, String> ctx);
 	/**
-	 * 上报属性统计信息   Prop = property
-	 * @param statmsg,             上报信息
-	 * @return int,                返回0表示成功
+	 * Report attribute statistics information   Prop = property
+	 * @param statmsg,             Report information
+	 * @return int,                Return 0 means success
 	 */
 	public void async_reportPropMsg(@TarsCallback PropertyFPrxCallback callback, java.util.Map<StatPropMsgHead, StatPropMsgBody> statmsg);
 	/**
-	 * 上报属性统计信息   Prop = property
-	 * @param statmsg,             上报信息
-	 * @return int,                返回0表示成功
+	 * Report attribute statistics information   Prop = property
+	 * @param statmsg,             Report information
+	 * @return int,                Return 0 means success
 	 */
 	public void async_reportPropMsg(@TarsCallback PropertyFPrxCallback callback, java.util.Map<StatPropMsgHead, StatPropMsgBody> statmsg, @TarsContext java.util.Map<String, String> ctx);
 }
