@@ -62,7 +62,7 @@ public class TarsHelper {
 
     public static final short VERSION3 = 0x03;
 
-    public static final short VERSIONJSON = 0x09;
+    public static final short VERSIONJSON = 0x05;
 
     public static final byte NORMAL = 0x00;
 

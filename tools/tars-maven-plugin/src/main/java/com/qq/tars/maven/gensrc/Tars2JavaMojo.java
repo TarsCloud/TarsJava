@@ -264,7 +264,24 @@ public class Tars2JavaMojo extends AbstractMojo {
         // 定义成员变量
         for (TarsStructMember m : struct.memberList()) {
             out.println("\t@TarsStructProperty(order = " + m.tag() + ", isRequire = " + m.isRequire() + ")");
-            out.println("\tpublic " + type(m.memberType(), nsMap) + " " + m.memberName() + " = " + (m.defaultValue() == null ? typeInit(m.memberType(), nsMap, false) : m.defaultValue()) + ";");
+            String defaultValue = (m.defaultValue() == null ? typeInit(m.memberType(), nsMap, false) : m.defaultValue());
+            if (m.memberType().isPrimitive()) {
+                TarsPrimitiveType primitiveType = m.memberType().asPrimitive();
+                if (primitiveType.primitiveType().equals(PrimitiveType.LONG)) {
+                    if (!defaultValue.endsWith("l") && !defaultValue.endsWith("L")) {
+                        defaultValue = defaultValue + "L";
+                    }
+                } else if (primitiveType.primitiveType().equals(PrimitiveType.FLOAT)) {
+                    if (!defaultValue.endsWith("f") && !defaultValue.endsWith("F")) {
+                        defaultValue = defaultValue + "F";
+                    }
+                } else if (primitiveType.primitiveType().equals(PrimitiveType.DOUBLE)) {
+                    if (!defaultValue.endsWith("d") && !defaultValue.endsWith("D")) {
+                        defaultValue = defaultValue + "D";
+                    }
+                }
+            }
+            out.println("\tpublic " + type(m.memberType(), nsMap) + " " + m.memberName() + " = " + defaultValue + ";");
         }
         out.println();
 
