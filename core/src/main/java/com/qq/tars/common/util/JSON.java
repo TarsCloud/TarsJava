@@ -26,5 +26,4 @@ public class JSON {
     public static <T> T fromJson(final String str, Type type) {
         return gson.fromJson(str, type);
     }
-
 }

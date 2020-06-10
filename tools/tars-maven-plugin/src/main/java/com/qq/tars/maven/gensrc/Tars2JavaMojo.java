@@ -270,7 +270,24 @@ public class Tars2JavaMojo extends AbstractMojo {
         // 定义成员变量
         for (TarsStructMember m : struct.memberList()) {
             out.println("\t@TarsStructProperty(order = " + m.tag() + ", isRequire = " + m.isRequire() + ")");
-            out.println("\tpublic " + type(m.memberType(), nsMap) + " " + m.memberName() + " = " + (m.defaultValue() == null ? typeInit(m.memberType(), nsMap, false) : adaptDefaultValue(m)) + ";");
+            String defaultValue = (m.defaultValue() == null ? typeInit(m.memberType(), nsMap, false) : m.defaultValue());
+            if (m.memberType().isPrimitive()) {
+                TarsPrimitiveType primitiveType = m.memberType().asPrimitive();
+                if (primitiveType.primitiveType().equals(PrimitiveType.LONG)) {
+                    if (!defaultValue.endsWith("l") && !defaultValue.endsWith("L")) {
+                        defaultValue = defaultValue + "L";
+                    }
+                } else if (primitiveType.primitiveType().equals(PrimitiveType.FLOAT)) {
+                    if (!defaultValue.endsWith("f") && !defaultValue.endsWith("F")) {
+                        defaultValue = defaultValue + "F";
+                    }
+                } else if (primitiveType.primitiveType().equals(PrimitiveType.DOUBLE)) {
+                    if (!defaultValue.endsWith("d") && !defaultValue.endsWith("D")) {
+                        defaultValue = defaultValue + "D";
+                    }
+                }
+            }
+            out.println("\tpublic " + type(m.memberType(), nsMap) + " " + m.memberName() + " = " + defaultValue + ";");
         }
         out.println();
 
@@ -1046,20 +1063,45 @@ public class Tars2JavaMojo extends AbstractMojo {
     }
 
     private static String packageName(String packagePrefixName, String namespace) {
+        if (!packagePrefixName.endsWith(".")) {
+            packagePrefixName += ".";
+        }
         return packagePrefixName + namespace.toLowerCase();
     }
 
     public static String fieldGetter(String fieldName, TarsType type) {
-        if (type.isPrimitive() && (type.asPrimitive()).primitiveType() == TarsPrimitiveType.PrimitiveType.BOOL && fieldName.startsWith("is")) {
-            return fieldName;
+        if (type.isPrimitive() && (type.asPrimitive()).primitiveType() == PrimitiveType.BOOL) {
+            if (!fieldName.startsWith("is")) {
+                return "is" + firstUpStr(fieldName);
+            }
+            if (fieldName.length() <= 2) {
+                return "is" + firstUpStr(fieldName);
+            }
+            String third = fieldName.substring(2, 3);
+            if (third.toUpperCase().equals(third)) {
+                return fieldName;
+            } else {
+                return "is" + firstUpStr(fieldName);
+            }
         } else {
             return "get" + firstUpStr(fieldName);
         }
     }
 
     public static String fieldSetter(String fieldName, TarsType type) {
-        if (type.isPrimitive() && (type.asPrimitive()).primitiveType() == TarsPrimitiveType.PrimitiveType.BOOL && fieldName.startsWith("is")) {
-            return "set" + fieldName.substring(2);
+        if (type.isPrimitive() && (type.asPrimitive()).primitiveType() == PrimitiveType.BOOL) {
+            if (!fieldName.startsWith("is")) {
+                return "set" + firstUpStr(fieldName);
+            }
+            if (fieldName.length() <= 2) {
+                return "set" + firstUpStr(fieldName);
+            }
+            String third = fieldName.substring(2, 3);
+            if (third.toUpperCase().equals(third)) {
+                return "set" + firstUpStr(fieldName.substring(2));
+            } else {
+                return "set" + firstUpStr(fieldName);
+            }
         } else {
             return "set" + firstUpStr(fieldName);
         }

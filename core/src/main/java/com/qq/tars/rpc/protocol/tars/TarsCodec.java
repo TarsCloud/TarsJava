@@ -169,8 +169,6 @@ public class TarsCodec extends Codec {
         }
 
         // 服务端接口响应
-
-
         JsonObject object = new JsonObject();
 
         int ret = response.getRet();
@@ -181,6 +179,7 @@ public class TarsCodec extends Codec {
             if (returnInfo != null && returnInfo.getType() != Void.TYPE && response.getResult() != null) {
                 try {
                     JsonElement jsonElement = JSON.toJsonTree(response.getResult());
+                    // System.out.println("requestId: " + request.getRequestId() + ", charset: " + request.getCharsetName() + ", ret: " + jsonElement.toString());
                     object.add(TarsHelper.STAMP_STRING, jsonElement);
                 } catch (Exception e) {
                     System.err.println("server encode json ret :" + response.getResult() + ", with ex:" + e);
@@ -194,7 +193,9 @@ public class TarsCodec extends Codec {
                     value = request.getMethodParameters()[parameterInfo.getOrder() - 1];
                     if (value != null) {
                         try {
-                            object.add(parameterInfo.getName(), JSON.toJsonTree(TarsHelper.getHolderValue(value)));
+                            JsonElement jsonElement = JSON.toJsonTree(TarsHelper.getHolderValue(value));
+                            // System.out.println("requestId: " + request.getRequestId() + ", charset: " + request.getCharsetName() + ", holder: " + jsonElement.toString());
+                            object.add(parameterInfo.getName(), jsonElement);
                         } catch (Exception e) {
                             System.err.println("server encode json holder :" + value + ", with ex:" + e);
                         }
@@ -399,6 +400,7 @@ public class TarsCodec extends Codec {
                 } else if (TarsHelper.VERSION2 == request.getVersion() || TarsHelper.VERSION3 == request.getVersion()) {
                     parameters = decodeRequestWupBody(data, request.getVersion(), request.getCharsetName(), methodInfo);
                 } else if (TarsHelper.VERSIONJSON == request.getVersion()) {
+                    // System.out.println("requestId: " + request.getRequestId() + ", charset: " + request.getCharsetName() + ", data: " + new String(data, request.getCharsetName()));
                     parameters = decodeRequestJsonBody(data, request.getCharsetName(), methodInfo);
                 } else {
                     request.setRet(TarsHelper.SERVERDECODEERR);
@@ -495,17 +497,21 @@ public class TarsCodec extends Codec {
         for (TarsMethodParameterInfo parameterInfo : parametersList) {
             if (TarsHelper.isHolder(parameterInfo.getAnnotations())) {
                 if (jsonObject.has(parameterInfo.getName())) {
-                    value = new Holder<>(JSON.fromJson(jsonObject.get(parameterInfo.getName()).toString(),
-                            parameterInfo.getType()));
+                    String reqStr = jsonObject.get(parameterInfo.getName()).toString();
+                    // System.out.println("holder has " + parameterInfo.getName() + ", str: " + reqStr);
+                    value = new Holder<>(JSON.fromJson(reqStr, parameterInfo.getType()));
                 } else {
+                    // System.out.println("holder has no " + parameterInfo.getName());
                     // new response, can not use cache
                     value = new Holder<>(TarsHelper.getNewParameterStamp(parameterInfo.getType()));
                 }
             } else {
                 if (jsonObject.has(parameterInfo.getName())) {
-                    value = JSON.fromJson(jsonObject.get(parameterInfo.getName()).toString(),
-                            parameterInfo.getType());
+                    String reqStr = jsonObject.get(parameterInfo.getName()).toString();
+                    // System.out.println("request has " + parameterInfo.getName() + ", str: " + reqStr);
+                    value = JSON.fromJson(reqStr, parameterInfo.getType());
                 } else {
+                    System.out.println("request has no " + parameterInfo.getName() + ", exception.");
                     throw new ProtocolException("no found parameter, the context[ROOT], "
                             + "serviceName[" + methodInfo.getServiceName()
                             + "], methodName[" + methodInfo.getMethodName()
