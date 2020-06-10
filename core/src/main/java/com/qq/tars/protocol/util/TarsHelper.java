@@ -62,7 +62,7 @@ public class TarsHelper {
 
     public static final short VERSION3 = 0x03;
 
-    public static final short VERSIONJSON = 0x09;
+    public static final short VERSIONJSON = 0x05;
 
     public static final byte NORMAL = 0x00;
 
@@ -588,9 +588,9 @@ public class TarsHelper {
 
     public static boolean isStruct(Class<?> clazz) {
         boolean isStruct = clazz.isAnnotationPresent(TarsStruct.class);
-        if (isStruct) {
-            getStructInfo(clazz);
-        }
+//        if (isStruct) {
+//            getStructInfo(clazz);
+//        }
         return isStruct;
     }
 
