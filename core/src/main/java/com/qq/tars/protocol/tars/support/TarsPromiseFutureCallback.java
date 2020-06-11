@@ -54,7 +54,7 @@ public class TarsPromiseFutureCallback<V> implements Callback<TarsServantRespons
 
             }
             if (response.getRet() != TarsHelper.SERVERSUCCESS) {
-                throw ServerException.makeException(response.getRet());
+                throw ServerException.makeException(response.getRet(), response.getRemark());
             }
             TarsPromiseFutureCallback.this.completableFuture.complete((V) response.getResult());
         } catch (Throwable ex) {

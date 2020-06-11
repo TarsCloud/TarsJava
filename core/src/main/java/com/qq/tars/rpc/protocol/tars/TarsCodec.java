@@ -553,6 +553,8 @@ public class TarsCodec extends Codec {
         response.setRet(is.read((int) 0, 5, true));
         if (response.getRet() == TarsHelper.SERVERSUCCESS) {
             response.setInputStream(is);
+        } else {
+            response.setRemark(is.read(TarsHelper.STAMP_STRING, 8, true));
         }
 
         return response;
