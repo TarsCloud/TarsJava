@@ -119,6 +119,14 @@ public class Ticket<T> {
     }
 
     public void notifyResponse(T response) {
+        // succ. to received response and will do some expensive logic
+        // cancel timeout ticket task before the expensive logic for avoiding unnecessary callback_expire
+        countDown();
+        TicketManager.removeTicket(ticketNumber);
+        if(timeoutFuture != null) {
+            TimeoutManager.cancelTimeoutTask(this);
+        }
+
         this.response = response;
         if (this.callback != null) this.callback.onCompleted(response);
         if (ticketListener != null) ticketListener.onResponseReceived(this);
