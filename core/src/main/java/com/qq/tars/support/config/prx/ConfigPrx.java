@@ -32,219 +32,219 @@ import com.qq.tars.protocol.tars.annotation.TarsHolder;
 @Servant
 public interface ConfigPrx {
 	/**
-	 * 读取配置文件列表
+	 * Read the configuration file list
 	 * @param app, app name
 	 * @param server, server name
 	 * @param vf, config file name
 	 **/
 	public int ListConfig(String app, String server, @TarsHolder Holder<java.util.List<String>> vf);
 	/**
-	 * 读取配置文件列表
+	 * Read the configuration file list
 	 * @param app, app name
 	 * @param server, server name
 	 * @param vf, config file name
 	 **/
 	public int ListConfig(String app, String server, @TarsHolder Holder<java.util.List<String>> vf, @TarsContext java.util.Map<String, String> ctx);
 	/**
-	 * 读取配置文件列表
+	 * Read the configuration file list
 	 * @param app, app name
 	 * @param server, server name
 	 * @param vf, config file name
 	 **/
 	public void async_ListConfig(@TarsCallback ConfigPrxCallback callback, String app, String server);
 	/**
-	 * 读取配置文件列表
+	 * Read the configuration file list
 	 * @param app, app name
 	 * @param server, server name
 	 * @param vf, config file name
 	 **/
 	public void async_ListConfig(@TarsCallback ConfigPrxCallback callback, String app, String server, @TarsContext java.util.Map<String, String> ctx);
 	/**
-	 * 读取配置文件
+	 * Read the configuration file list
 	 * @param app, app name
 	 * @param server, server name
 	 * @param filename, config file name
-	 * @param config, 配置文件内容
+	 * @param config, Configuration file content
 	 **/
 	public int loadConfig(String app, String server, String filename, @TarsHolder Holder<String> config);
 	/**
-	 * 读取配置文件
+	 * Read the configuration file list
 	 * @param app, app name
 	 * @param server, server name
 	 * @param filename, config file name
-	 * @param config, 配置文件内容
+	 * @param config, Configuration file content
 	 **/
 	public int loadConfig(String app, String server, String filename, @TarsHolder Holder<String> config, @TarsContext java.util.Map<String, String> ctx);
 	/**
-	 * 读取配置文件
+	 * Read the configuration file list
 	 * @param app, app name
 	 * @param server, server name
 	 * @param filename, config file name
-	 * @param config, 配置文件内容
+	 * @param config, Configuration file content
 	 **/
 	public void async_loadConfig(@TarsCallback ConfigPrxCallback callback, String app, String server, String filename);
 	/**
-	 * 读取配置文件
+	 * Read the configuration file list
 	 * @param app, app name
 	 * @param server, server name
 	 * @param filename, config file name
-	 * @param config, 配置文件内容
+	 * @param config, Configuration file content
 	 **/
 	public void async_loadConfig(@TarsCallback ConfigPrxCallback callback, String app, String server, String filename, @TarsContext java.util.Map<String, String> ctx);
 	/**
-	 * 根据host读取文件
+	 * Read file according to host
 	 * @param appServer, app.server
 	 * @param filename, config file name
 	 * @param host, ip
-	 * @param config, 配置文件内容
+	 * @param config, Configuration file content
 	 **/
 	public int loadConfigByHost(String appServerName, String filename, String host, @TarsHolder Holder<String> config);
 	/**
-	 * 根据host读取文件
+	 * Read file according to host
 	 * @param appServer, app.server
 	 * @param filename, config file name
 	 * @param host, ip
-	 * @param config, 配置文件内容
+	 * @param config, Configuration file content
 	 **/
 	public int loadConfigByHost(String appServerName, String filename, String host, @TarsHolder Holder<String> config, @TarsContext java.util.Map<String, String> ctx);
 	/**
-	 * 根据host读取文件
+	 * Read file according to host
 	 * @param appServer, app.server
 	 * @param filename, config file name
 	 * @param host, ip
-	 * @param config, 配置文件内容
+	 * @param config, Configuration file content
 	 **/
 	public void async_loadConfigByHost(@TarsCallback ConfigPrxCallback callback, String appServerName, String filename, String host);
 	/**
-	 * 根据host读取文件
+	 * Read file according to host
 	 * @param appServer, app.server
 	 * @param filename, config file name
 	 * @param host, ip
-	 * @param config, 配置文件内容
+	 * @param config, Configuration file content
 	 **/
 	public void async_loadConfigByHost(@TarsCallback ConfigPrxCallback callback, String appServerName, String filename, String host, @TarsContext java.util.Map<String, String> ctx);
 	/**
-	 * 检查配置文件是否服务TC_Config格式
+	 * Check whether the configuration file conforms to the TC_Config format
 	 * @param appServer, app.server
 	 * @param filename, config file name
 	 * @param host, ip
-	 * @param result, 提示
-	 * @return int 0: 合法, -1:非法
+	 * @param result, prompt
+	 * @return int 0: legal, -1:illegal
 	 **/
 	public int checkConfig(String appServerName, String filename, String host, @TarsHolder Holder<String> result);
 	/**
-	 * 检查配置文件是否服务TC_Config格式
+	 * Check whether the configuration file conforms to the TC_Config format
 	 * @param appServer, app.server
 	 * @param filename, config file name
 	 * @param host, ip
-	 * @param result, 提示
-	 * @return int 0: 合法, -1:非法
+	 * @param result, prompt
+	 * @return int 0: legal, -1:illegal
 	 **/
 	public int checkConfig(String appServerName, String filename, String host, @TarsHolder Holder<String> result, @TarsContext java.util.Map<String, String> ctx);
 	/**
-	 * 检查配置文件是否服务TC_Config格式
+	 * Check whether the configuration file conforms to the TC_Config format
 	 * @param appServer, app.server
 	 * @param filename, config file name
 	 * @param host, ip
-	 * @param result, 提示
-	 * @return int 0: 合法, -1:非法
+	 * @param result, prompt
+	 * @return int 0: legal, -1:illegal
 	 **/
 	public void async_checkConfig(@TarsCallback ConfigPrxCallback callback, String appServerName, String filename, String host);
 	/**
-	 * 检查配置文件是否服务TC_Config格式
+	 * Check whether the configuration file conforms to the TC_Config format
 	 * @param appServer, app.server
 	 * @param filename, config file name
 	 * @param host, ip
-	 * @param result, 提示
-	 * @return int 0: 合法, -1:非法
+	 * @param result, prompt
+	 * @return int 0: legal, -1:illegal
 	 **/
 	public void async_checkConfig(@TarsCallback ConfigPrxCallback callback, String appServerName, String filename, String host, @TarsContext java.util.Map<String, String> ctx);
 	/**
-	 * 读取服务所在节点的配置文件列表
+	 * Read the configuration file list of the node where the service is located
 	 * 
-	 * @param configInfo, ConfigInfo 配置文件信息，如果没有set分组信息，请设置setdivision为空""
+	 * @param configInfo, ConfigInfo: Configuration file information, if there is no set group information, please set setdivision is empty ""
 	 * @param vf, config file name
-	 * @return int 0: 成功, -1:失败
+	 * @return int 0: success, -1:failure
 	 **/
 	public int ListConfigByInfo(ConfigInfo configInfo, @TarsHolder Holder<java.util.List<String>> vf);
 	/**
-	 * 读取服务所在节点的配置文件列表
+	 * Read the configuration file list of the node where the service is located
 	 * 
-	 * @param configInfo, ConfigInfo 配置文件信息，如果没有set分组信息，请设置setdivision为空""
+	 * @param configInfo, ConfigInfo: Configuration file information, if there is no set group information, please set setdivision is empty ""
 	 * @param vf, config file name
-	 * @return int 0: 成功, -1:失败
+	 * @return int 0: success, -1:failure
 	 **/
 	public int ListConfigByInfo(ConfigInfo configInfo, @TarsHolder Holder<java.util.List<String>> vf, @TarsContext java.util.Map<String, String> ctx);
 	/**
-	 * 读取服务所在节点的配置文件列表
+	 * Read the configuration file list of the node where the service is located
 	 * 
-	 * @param configInfo, ConfigInfo 配置文件信息，如果没有set分组信息，请设置setdivision为空""
+	 * @param configInfo, ConfigInfo: Configuration file information, if there is no set group information, please set setdivision is empty ""
 	 * @param vf, config file name
-	 * @return int 0: 成功, -1:失败
+	 * @return int 0: success, -1:failure
 	 **/
 	public void async_ListConfigByInfo(@TarsCallback ConfigPrxCallback callback, ConfigInfo configInfo);
 	/**
-	 * 读取服务所在节点的配置文件列表
+	 * Read the configuration file list of the node where the service is located
 	 * 
-	 * @param configInfo, ConfigInfo 配置文件信息，如果没有set分组信息，请设置setdivision为空""
+	 * @param configInfo, ConfigInfo: Configuration file information, if there is no set group information, please set setdivision is empty ""
 	 * @param vf, config file name
-	 * @return int 0: 成功, -1:失败
+	 * @return int 0: success, -1:failure
 	 **/
 	public void async_ListConfigByInfo(@TarsCallback ConfigPrxCallback callback, ConfigInfo configInfo, @TarsContext java.util.Map<String, String> ctx);
 	/**
-	 * 读取配置文件
-	 * @param configInfo, ConfigInfo 配置文件信息
-	 * @param config, 配置文件内容
-	 * @return int 0: 成功, -1:失败
+	 * Read configuration file
+	 * @param configInfo, ConfigInfo: Configuration file information
+	 * @param config, Configuration file content
+	 * @return int 0: success, -1:failure
 	 **/
 	public int loadConfigByInfo(ConfigInfo configInfo, @TarsHolder Holder<String> config);
 	/**
-	 * 读取配置文件
-	 * @param configInfo, ConfigInfo 配置文件信息
-	 * @param config, 配置文件内容
-	 * @return int 0: 成功, -1:失败
+	 * Read configuration file
+	 * @param configInfo, ConfigInfo: Configuration file information
+	 * @param config, Configuration file content
+	 * @return int 0: success, -1:failure
 	 **/
 	public int loadConfigByInfo(ConfigInfo configInfo, @TarsHolder Holder<String> config, @TarsContext java.util.Map<String, String> ctx);
 	/**
-	 * 读取配置文件
-	 * @param configInfo, ConfigInfo 配置文件信息
-	 * @param config, 配置文件内容
-	 * @return int 0: 成功, -1:失败
+	 * Read configuration file
+	 * @param configInfo, ConfigInfo: Configuration file information
+	 * @param config, Configuration file content
+	 * @return int 0: success, -1:failure
 	 **/
 	public void async_loadConfigByInfo(@TarsCallback ConfigPrxCallback callback, ConfigInfo configInfo);
 	/**
-	 * 读取配置文件
-	 * @param configInfo, ConfigInfo 配置文件信息
-	 * @param config, 配置文件内容
-	 * @return int 0: 成功, -1:失败
+	 * Read configuration file
+	 * @param configInfo, ConfigInfo: Configuration file information
+	 * @param config, Configuration file content
+	 * @return int 0: success, -1:failure
 	 **/
 	public void async_loadConfigByInfo(@TarsCallback ConfigPrxCallback callback, ConfigInfo configInfo, @TarsContext java.util.Map<String, String> ctx);
 	/**
-	 * 检查配置文件是否符合TC_Config格式
-	 * @param configInfo, ConfigInfo 配置文件信息
-	 * @param result, 提示
-	 * @return int 0: 合法, -1:非法
+	 * Check whether the configuration file conforms to the TC_Config format
+	 * @param configInfo, ConfigInfo: Configuration file information
+	 * @param result, prompt
+	 * @return int 0: legal, -1:illegal
 	 **/
 	public int checkConfigByInfo(ConfigInfo configInfo, @TarsHolder Holder<String> result);
 	/**
-	 * 检查配置文件是否符合TC_Config格式
-	 * @param configInfo, ConfigInfo 配置文件信息
-	 * @param result, 提示
-	 * @return int 0: 合法, -1:非法
+	 * Check whether the configuration file conforms to the TC_Config format
+	 * @param configInfo, ConfigInfo: Configuration file information
+	 * @param result, prompt
+	 * @return int 0: legal, -1:illegal
 	 **/
 	public int checkConfigByInfo(ConfigInfo configInfo, @TarsHolder Holder<String> result, @TarsContext java.util.Map<String, String> ctx);
 	/**
-	 * 检查配置文件是否符合TC_Config格式
-	 * @param configInfo, ConfigInfo 配置文件信息
-	 * @param result, 提示
-	 * @return int 0: 合法, -1:非法
+	 * Check whether the configuration file conforms to the TC_Config format
+	 * @param configInfo, ConfigInfo: Configuration file information
+	 * @param result, prompt
+	 * @return int 0: legal, -1:illegal
 	 **/
 	public void async_checkConfigByInfo(@TarsCallback ConfigPrxCallback callback, ConfigInfo configInfo);
 	/**
-	 * 检查配置文件是否符合TC_Config格式
-	 * @param configInfo, ConfigInfo 配置文件信息
-	 * @param result, 提示
-	 * @return int 0: 合法, -1:非法
+	 * Check whether the configuration file conforms to the TC_Config format
+	 * @param configInfo, ConfigInfo: Configuration file information
+	 * @param result, prompt
+	 * @return int 0: legal, -1:illegal
 	 **/
 	public void async_checkConfigByInfo(@TarsCallback ConfigPrxCallback callback, ConfigInfo configInfo, @TarsContext java.util.Map<String, String> ctx);
 }

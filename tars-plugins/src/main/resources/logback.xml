@@ -1,0 +1,25 @@
+<configuration>
+
+    <appender name="loggerServerAppender" class="com.tencent.logback.logserver.TarsLoggerServerAppender">
+        <encoder>
+            <pattern>%msg</pattern>
+        </encoder>
+        <!--  tars.tarslog.LogObj@tcp -h 10.172.0.111 -t 3000 -p 18993 -->
+        <logserverObjname>tars.tarslog.LogObj@tcp -h 10.172.0.111 -t 3000 -p 18993</logserverObjname>
+        <appName>test</appName>
+        <serviceName>hello</serviceName>
+    </appender>
+
+    <logger name="remoteLogger" additivity="false" level="info">
+        <appender-ref ref="loggerServerAppender"/>
+    </logger>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="debug">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

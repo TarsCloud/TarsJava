@@ -19,6 +19,7 @@ package com.qq.tars.client.rpc;
 import com.qq.tars.client.ServantProxyConfig;
 import com.qq.tars.client.support.ClientPoolManager;
 import com.qq.tars.client.util.ParseTools;
+import com.qq.tars.common.support.ScheduledExecutorManager;
 import com.qq.tars.common.util.Constants;
 import com.qq.tars.net.core.nio.SelectorManager;
 import com.qq.tars.net.protocol.ProtocolFactory;
@@ -36,6 +37,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
     private static final Logger logger = LoggerFactory.getClientLogger();
@@ -70,7 +72,8 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
         logger.info("try to refresh " + servantProxyConfig.getSimpleObjectName());
         final List<Invoker<T>> invokers = new ArrayList<>(allInvoker);//copy invoker for destroy
         this.allInvoker = this.initInvoker();
-        destroy(invokers);
+
+        ScheduledExecutorManager.getInstance().schedule(() -> destroy(invokers), Math.max(servantProxyConfig.getAsyncTimeout(), servantProxyConfig.getSyncTimeout()), TimeUnit.MILLISECONDS);
     }
 
     protected ServantClient[] getClients(Url url) throws IOException {

@@ -16,6 +16,7 @@
 
 package com.qq.tars.support.stat;
 
+import com.qq.tars.common.ClientVersion;
 import com.qq.tars.common.util.Constants;
 
 import java.util.ArrayList;
@@ -51,7 +52,11 @@ public class ProxyStat {
     }
 
     private ProxyStatBody getStatBody(ProxyStatHead head) {
-        return stat.computeIfAbsent(head, param -> new ProxyStatBody(DEFAULT_TIME_STAT_INTERVAL));
+        ProxyStatBody body = stat.get(head);
+        if (body == null){
+            stat.putIfAbsent(head, new ProxyStatBody(DEFAULT_TIME_STAT_INTERVAL));
+        }
+        return stat.get(head);
     }
 
     public void addInvokeTime(ProxyStatHead head, long costTimeMill, int result) {
@@ -73,7 +78,7 @@ public class ProxyStat {
     public void addInvokeTimeByServer(String masterName, String application, String server, String slaveSetName, String slaveSetArea, String slaveSetID, String methodName,
                                       String masterIp, String slaveIp, int slavePort, int result, long costTimeMill) {
         String slaveName = slaveSetName != null ? String.format("%s.%s.%s%s%s", application, server, slaveSetName, slaveSetArea, slaveSetID) : String.format("%s.%s", application, server);
-        ProxyStatHead head = new ProxyStatHead(masterName, slaveName, methodName, masterIp, slaveIp, slavePort, result, slaveSetName, slaveSetArea, slaveSetID, "");
+        ProxyStatHead head = new ProxyStatHead(masterName, slaveName, methodName, masterIp, slaveIp, slavePort, result, slaveSetName, slaveSetArea, slaveSetID, ClientVersion.getVersion());
         addInvokeTime(head, costTimeMill, result);
     }
 

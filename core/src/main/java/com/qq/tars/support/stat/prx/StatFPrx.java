@@ -24,63 +24,72 @@ import com.qq.tars.protocol.annotation.Servant;
 import com.qq.tars.protocol.tars.annotation.TarsCallback;
 import com.qq.tars.protocol.tars.annotation.TarsContext;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
- *
- * 上报服务的接口
- *
+ * Interface to the report service
  **/
 @Servant
 public interface StatFPrx {
-	/**
-	 * 上报模块间调用信息 Mic = module interval call
-	 * @param statmsg,             上报信息
-	 * @param bFromServer,         上报源  bFromClient: true 客户端发起的上报 false 服务端发起上报
-	 * @return int,                返回0表示成功
-	 */
-	public int reportMicMsg(java.util.Map<StatMicMsgHead, StatMicMsgBody> msg, boolean bFromClient);
-	/**
-	 * 上报模块间调用信息 Mic = module interval call
-	 * @param statmsg,             上报信息
-	 * @param bFromServer,         上报源  bFromClient: true 客户端发起的上报 false 服务端发起上报
-	 * @return int,                返回0表示成功
-	 */
-	public int reportMicMsg(java.util.Map<StatMicMsgHead, StatMicMsgBody> msg, boolean bFromClient, @TarsContext java.util.Map<String, String> ctx);
-	/**
-	 * 上报模块间调用信息 Mic = module interval call
-	 * @param statmsg,             上报信息
-	 * @param bFromServer,         上报源  bFromClient: true 客户端发起的上报 false 服务端发起上报
-	 * @return int,                返回0表示成功
-	 */
-	public void async_reportMicMsg(@TarsCallback StatFPrxCallback callback, java.util.Map<StatMicMsgHead, StatMicMsgBody> msg, boolean bFromClient);
-	/**
-	 * 上报模块间调用信息 Mic = module interval call
-	 * @param statmsg,             上报信息
-	 * @param bFromServer,         上报源  bFromClient: true 客户端发起的上报 false 服务端发起上报
-	 * @return int,                返回0表示成功
-	 */
-	public void async_reportMicMsg(@TarsCallback StatFPrxCallback callback, java.util.Map<StatMicMsgHead, StatMicMsgBody> msg, boolean bFromClient, @TarsContext java.util.Map<String, String> ctx);
-	/**
-	 * 上报模块间调用采样信息 Mic = module interval call
-	 * @param msg,               上报信息
-	 * @return int,                返回0表示成功
-	 */
-	public int reportSampleMsg(java.util.List<StatSampleMsg> msg);
-	/**
-	 * 上报模块间调用采样信息 Mic = module interval call
-	 * @param msg,               上报信息
-	 * @return int,                返回0表示成功
-	 */
-	public int reportSampleMsg(java.util.List<StatSampleMsg> msg, @TarsContext java.util.Map<String, String> ctx);
-	/**
-	 * 上报模块间调用采样信息 Mic = module interval call
-	 * @param msg,               上报信息
-	 * @return int,                返回0表示成功
-	 */
-	public void async_reportSampleMsg(@TarsCallback StatFPrxCallback callback, java.util.List<StatSampleMsg> msg);
-	/**
-	 * 上报模块间调用采样信息 Mic = module interval call
-	 * @param msg,               上报信息
-	 * @return int,                返回0表示成功
-	 */
-	public void async_reportSampleMsg(@TarsCallback StatFPrxCallback callback, java.util.List<StatSampleMsg> msg, @TarsContext java.util.Map<String, String> ctx);
+    /**
+     * Report calling information between modules Mic = module interval call
+     * @param statmsg,     Report information
+     * @param bFromServer, Report source  bFromClient: true (Reporting initiated by the client) false (Reporting initiated by the server)
+     * @return int,                Return 0 means success
+     */
+    public int reportMicMsg(java.util.Map<StatMicMsgHead, StatMicMsgBody> msg, boolean bFromClient);
+
+    /**
+     * Report calling information between modules Mic = module interval call
+     * @param statmsg,     Report information
+     * @param bFromServer, Report source  bFromClient: true (Reporting initiated by the client) false (Reporting initiated by the server)
+     * @return int,                Return 0 means success
+     */
+    public int reportMicMsg(java.util.Map<StatMicMsgHead, StatMicMsgBody> msg, boolean bFromClient, @TarsContext java.util.Map<String, String> ctx);
+
+    /**
+     * Report calling information between modules Mic = module interval call
+     * @param statmsg,     Report information
+     * @param bFromServer, Report source  bFromClient: true (Reporting initiated by the client) false (Reporting initiated by the server)
+     * @return int,                Return 0 means success
+     */
+    public void async_reportMicMsg(@TarsCallback StatFPrxCallback callback, java.util.Map<StatMicMsgHead, StatMicMsgBody> msg, boolean bFromClient);
+
+    CompletableFuture<Integer> promise_reportMicMsg(java.util.Map<StatMicMsgHead, StatMicMsgBody> msg, boolean bFromClient);
+
+    /**
+     * Report calling information between modules Mic = module interval call
+     * @param statmsg,     Report information
+     * @param bFromServer, Report source  bFromClient: true (Reporting initiated by the client) false (Reporting initiated by the server)
+     * @return int,                Return 0 means success
+     */
+    public void async_reportMicMsg(@TarsCallback StatFPrxCallback callback, java.util.Map<StatMicMsgHead, StatMicMsgBody> msg, boolean bFromClient, @TarsContext java.util.Map<String, String> ctx);
+
+    /**
+     * 上报模块间调用采样信息 Mic = module interval call
+     * @param msg, Report information
+     * @return int,                Return 0 means success
+     */
+    public int reportSampleMsg(java.util.List<StatSampleMsg> msg);
+
+    /**
+     * 上报模块间调用采样信息 Mic = module interval call
+     * @param msg, Report information
+     * @return int,                Return 0 means success
+     */
+    public int reportSampleMsg(java.util.List<StatSampleMsg> msg, @TarsContext java.util.Map<String, String> ctx);
+
+    /**
+     * 上报模块间调用采样信息 Mic = module interval call
+     * @param msg, Report information
+     * @return int,                Return 0 means success
+     */
+    public void async_reportSampleMsg(@TarsCallback StatFPrxCallback callback, java.util.List<StatSampleMsg> msg);
+
+    /**
+     * 上报模块间调用采样信息 Mic = module interval call
+     * @param msg, Report information
+     * @return int,                Return 0 means success
+     */
+    public void async_reportSampleMsg(@TarsCallback StatFPrxCallback callback, java.util.List<StatSampleMsg> msg, @TarsContext java.util.Map<String, String> ctx);
 }

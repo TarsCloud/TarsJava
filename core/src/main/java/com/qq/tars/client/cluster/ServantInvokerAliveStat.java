@@ -29,13 +29,13 @@ public class ServantInvokerAliveStat {
     private static final Logger logger = LoggerFactory.getClientLogger();
 
     private final String identity;
-    private AtomicBoolean lastCallSucess = new AtomicBoolean(true);
+    private final AtomicBoolean lastCallSuccess = new AtomicBoolean(true);
     private long timeout_startTime = 0;
-    private long frequenceFailInvoke = 0;
-    private long frequenceFailInvoke_startTime = 0;
+    private long frequencyFailInvoke = 0;
+    private long frequencyFailInvoke_startTime = 0;
     private long timeoutCount = 0;
     private long failedCount = 0;
-    private long succCount = 0;
+    private long successCount = 0;
     private boolean netConnectTimeout = false;
     private boolean alive = true;
     private long lastRetryTime = 0;
@@ -50,28 +50,28 @@ public class ServantInvokerAliveStat {
 
     public synchronized void onCallFinished(int ret, ServantProxyConfig config) {
         if (ret == Constants.INVOKE_STATUS_SUCC) {
-            frequenceFailInvoke = 0;
-            frequenceFailInvoke_startTime = 0;
-            lastCallSucess.set(true);
+            frequencyFailInvoke = 0;
+            frequencyFailInvoke_startTime = 0;
+            lastCallSuccess.set(true);
             netConnectTimeout = false;
-            succCount++;
+            successCount++;
         } else if (ret == Constants.INVOKE_STATUS_TIMEOUT) {
-            if (!lastCallSucess.get()) {
-                frequenceFailInvoke++;
+            if (!lastCallSuccess.get()) {
+                frequencyFailInvoke++;
             } else {
-                lastCallSucess.set(false);
-                frequenceFailInvoke = 1;
-                frequenceFailInvoke_startTime = System.currentTimeMillis();
+                lastCallSuccess.set(false);
+                frequencyFailInvoke = 1;
+                frequencyFailInvoke_startTime = System.currentTimeMillis();
             }
             netConnectTimeout = false;
             timeoutCount++;
         } else if (ret == Constants.INVOKE_STATUS_EXEC) {
-            if (!lastCallSucess.get()) {
-                frequenceFailInvoke++;
+            if (!lastCallSuccess.get()) {
+                frequencyFailInvoke++;
             } else {
-                lastCallSucess.set(false);
-                frequenceFailInvoke = 1;
-                frequenceFailInvoke_startTime = System.currentTimeMillis();
+                lastCallSuccess.set(false);
+                frequencyFailInvoke = 1;
+                frequencyFailInvoke_startTime = System.currentTimeMillis();
             }
             netConnectTimeout = false;
             failedCount++;
@@ -82,30 +82,33 @@ public class ServantInvokerAliveStat {
         if ((timeout_startTime + config.getCheckInterval()) < System.currentTimeMillis()) {
             timeoutCount = 0;
             failedCount = 0;
-            succCount = 0;
+            successCount = 0;
             timeout_startTime = System.currentTimeMillis();
         }
 
         if (alive) {
-            long totalCount = timeoutCount + failedCount + succCount;
+            long totalCount = timeoutCount + failedCount + successCount;
             if (timeoutCount >= config.getMinTimeoutInvoke()) {
                 double radio = div(timeoutCount, totalCount, 2);
                 if (radio > config.getFrequenceFailRadio()) {
                     alive = false;
+                    lastRetryTime = System.currentTimeMillis();
                     logger.info(identity + "|alive=false|radio=" + radio + "|" + toString());
                 }
             }
 
             if (alive) {
-                if (frequenceFailInvoke >= config.getFrequenceFailInvoke() && (frequenceFailInvoke_startTime + 5000) > System.currentTimeMillis()) {
+                if (frequencyFailInvoke >= config.getFrequenceFailInvoke() && (frequencyFailInvoke_startTime + 5000) > System.currentTimeMillis()) {
                     alive = false;
-                    logger.info("{}|alive=false|frequenceFailInvoke={}|{}", identity, frequenceFailInvoke, toString());
+                    lastRetryTime = System.currentTimeMillis();
+                    logger.info("{}|alive=false|frequenceFailInvoke={}|{}", identity, frequencyFailInvoke, toString());
                 }
             }
 
             if (alive) {
                 if (netConnectTimeout) {
                     alive = false;
+                    lastRetryTime = System.currentTimeMillis();
                     logger.info("{}|alive=false|netConnectTimeout|{}", identity, toString());
                 }
             }
@@ -126,16 +129,16 @@ public class ServantInvokerAliveStat {
 
     public String toString() {
         StringBuilder build = new StringBuilder();
-        build.append("lastCallSucc:").append(lastCallSucess.get()).append("|");
+        build.append("lastCallSucc:").append(lastCallSuccess.get()).append("|");
         build.append("timeoutCount:").append(timeoutCount).append("|");
         build.append("failedCount:").append(failedCount).append("|");
-        build.append("succCount:").append(succCount).append("|");
+        build.append("succCount:").append(successCount).append("|");
         build.append("available:").append(alive).append("|");
         build.append("netConnectTimeout:").append(netConnectTimeout).append("|");
 
         build.append("timeout_startTime:").append(new Date(timeout_startTime)).append("|");
-        build.append("frequenceFailInvoke:").append(frequenceFailInvoke).append("|");
-        build.append("frequenceFailInvoke_startTime:").append(new Date(frequenceFailInvoke_startTime)).append("|");
+        build.append("frequenceFailInvoke:").append(frequencyFailInvoke).append("|");
+        build.append("frequenceFailInvoke_startTime:").append(new Date(frequencyFailInvoke_startTime)).append("|");
         build.append("lastRetryTime:").append(new Date(lastRetryTime));
         return build.toString();
     }

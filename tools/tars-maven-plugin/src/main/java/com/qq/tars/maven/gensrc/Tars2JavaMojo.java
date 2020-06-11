@@ -84,7 +84,11 @@ public class Tars2JavaMojo extends AbstractMojo {
                 TarsRoot root = (TarsRoot) tarsParser.start().getTree();
                 root.setTokenStream(tokens);
                 for (TarsNamespace ns : root.namespaceList()) {
-                    List<TarsNamespace> list = nsMap.computeIfAbsent(ns.namespace(), k -> new ArrayList<TarsNamespace>());
+                    List<TarsNamespace> list = nsMap.get(ns.namespace());
+                    if (list == null) {
+                        list = new ArrayList<TarsNamespace>();
+                        nsMap.put(ns.namespace(), list);
+                    }
                     list.add(ns);
                 }
             } catch (Throwable th) {
@@ -264,7 +268,24 @@ public class Tars2JavaMojo extends AbstractMojo {
         // 定义成员变量
         for (TarsStructMember m : struct.memberList()) {
             out.println("\t@TarsStructProperty(order = " + m.tag() + ", isRequire = " + m.isRequire() + ")");
-            out.println("\tpublic " + type(m.memberType(), nsMap) + " " + m.memberName() + " = " + (m.defaultValue() == null ? typeInit(m.memberType(), nsMap, false) : adaptDefaultValue(m)) + ";");
+            String defaultValue = (m.defaultValue() == null ? typeInit(m.memberType(), nsMap, false) : m.defaultValue());
+            if (m.memberType().isPrimitive()) {
+                TarsPrimitiveType primitiveType = m.memberType().asPrimitive();
+                if (primitiveType.primitiveType().equals(PrimitiveType.LONG)) {
+                    if (!defaultValue.endsWith("l") && !defaultValue.endsWith("L")) {
+                        defaultValue = defaultValue + "L";
+                    }
+                } else if (primitiveType.primitiveType().equals(PrimitiveType.FLOAT)) {
+                    if (!defaultValue.endsWith("f") && !defaultValue.endsWith("F")) {
+                        defaultValue = defaultValue + "F";
+                    }
+                } else if (primitiveType.primitiveType().equals(PrimitiveType.DOUBLE)) {
+                    if (!defaultValue.endsWith("d") && !defaultValue.endsWith("D")) {
+                        defaultValue = defaultValue + "D";
+                    }
+                }
+            }
+            out.println("\tpublic " + type(m.memberType(), nsMap) + " " + m.memberName() + " = " + defaultValue + ";");
         }
         out.println();
 
@@ -523,7 +544,7 @@ public class Tars2JavaMojo extends AbstractMojo {
         for (TarsOperation op : _interface.operationList()) {
             // 1 print sync method without context
             out.println(getDoc(op, "\t"));
-            out.println("\tpublic " + type(op.retType(), nsMap) + " " + op.operationName() + "(" + operationParams(null, op.paramList(), null, true, nsMap) + ");");
+            out.println("\t " + type(op.retType(), nsMap) + " " + op.operationName() + "(" + operationParams(null, op.paramList(), null, true, nsMap) + ");");
 
             // 2 print  promise method without context
             out.println(getDoc(op, "\t"));
@@ -531,15 +552,15 @@ public class Tars2JavaMojo extends AbstractMojo {
 
             // 3 print sync method with context
             out.println(getDoc(op, "\t"));
-            out.println("\tpublic " + type(op.retType(), nsMap) + " " + op.operationName() + "(" + operationParams(null, op.paramList(), Arrays.asList("@TarsContext java.util.Map<String, String> ctx"), true, nsMap) + ");");
+            out.println("\t " + type(op.retType(), nsMap) + " " + op.operationName() + "(" + operationParams(null, op.paramList(), Arrays.asList("@TarsContext java.util.Map<String, String> ctx"), true, nsMap) + ");");
 
             // 4 print async method without context
             out.println(getDoc(op, "\t"));
-            out.println("\tpublic void async_" + op.operationName() + "(" + operationParams(Arrays.asList("@TarsCallback " + prxClass + "Callback callback"), op.paramList(), null, false, nsMap) + ");");
+            out.println("\t void async_" + op.operationName() + "(" + operationParams(Arrays.asList("@TarsCallback " + prxClass + "Callback callback"), op.paramList(), null, false, nsMap) + ");");
 
             // 5 print async method with context
             out.println(getDoc(op, "\t"));
-            out.println("\tpublic void async_" + op.operationName() + "(" + operationParams(Arrays.asList("@TarsCallback " + prxClass + "Callback callback"), op.paramList(), Arrays.asList("@TarsContext java.util.Map<String, String> ctx"), false, nsMap) + ");");
+            out.println("\t void async_" + op.operationName() + "(" + operationParams(Arrays.asList("@TarsCallback " + prxClass + "Callback callback"), op.paramList(), Arrays.asList("@TarsContext java.util.Map<String, String> ctx"), false, nsMap) + ");");
         }
 
         out.println("}");
@@ -574,7 +595,7 @@ public class Tars2JavaMojo extends AbstractMojo {
         for (TarsOperation op : _interface.operationList()) {
             // 2 print sync method without context
             out.println(getDoc(op, "\t"));
-            out.println("\tpublic " + type(op.retType(), nsMap) + " " + op.operationName() + "(" + operationParams(null, op.paramList(), null, true, nsMap) + ");");
+            out.println("\t " + type(op.retType(), nsMap) + " " + op.operationName() + "(" + operationParams(null, op.paramList(), null, true, nsMap) + ");");
         }
 
         out.println("}");
@@ -860,18 +881,13 @@ public class Tars2JavaMojo extends AbstractMojo {
             }
             if (p.isOut()) {
                 sb.append(isFirst ? "" : ", ");
-                if (tars2JavaConfig.isServant() && tars2JavaConfig.isTup()) {
-                    sb.append("@TarsHolder(name=\"").append(p.paramName()).append("\") Holder<").append(type(p.paramType(), true, nsMap)).append("> ").append(p.paramName());
-                } else {
-                    sb.append("@TarsHolder Holder<").append(type(p.paramType(), true, nsMap)).append("> ").append(p.paramName());
-                }
+                sb.append("@TarsHolder(name=\"").append(p.paramName()).append("\") Holder<").append(type(p.paramType(), true, nsMap)).append("> ").append(p.paramName());
             } else {
                 sb.append(isFirst ? "" : ", ");
-                if (tars2JavaConfig.isServant() && tars2JavaConfig.isTup()) {
-                    sb.append("@TarsMethodParameter(name=\"").append(p.paramName()).append("\")").append(type(p.paramType(), nsMap)).append(" ").append(p.paramName());
-                } else {
-                    sb.append(type(p.paramType(), nsMap)).append(" ").append(p.paramName());
+                if (p.isRouteKey()) {
+                    sb.append("@TarsRouteKey ");
                 }
+                sb.append("@TarsMethodParameter(name=\"").append(p.paramName()).append("\")").append(type(p.paramType(), nsMap)).append(" ").append(p.paramName());
             }
             if (isFirst) {
                 isFirst = false;
@@ -899,20 +915,45 @@ public class Tars2JavaMojo extends AbstractMojo {
     }
 
     private static String packageName(String packagePrefixName, String namespace) {
+        if (!packagePrefixName.endsWith(".")) {
+            packagePrefixName += ".";
+        }
         return packagePrefixName + namespace.toLowerCase();
     }
 
     public static String fieldGetter(String fieldName, TarsType type) {
-        if (type.isPrimitive() && (type.asPrimitive()).primitiveType() == TarsPrimitiveType.PrimitiveType.BOOL && fieldName.startsWith("is")) {
-            return fieldName;
+        if (type.isPrimitive() && (type.asPrimitive()).primitiveType() == PrimitiveType.BOOL) {
+            if (!fieldName.startsWith("is")) {
+                return "is" + firstUpStr(fieldName);
+            }
+            if (fieldName.length() <= 2) {
+                return "is" + firstUpStr(fieldName);
+            }
+            String third = fieldName.substring(2, 3);
+            if (third.toUpperCase().equals(third)) {
+                return fieldName;
+            } else {
+                return "is" + firstUpStr(fieldName);
+            }
         } else {
             return "get" + firstUpStr(fieldName);
         }
     }
 
     public static String fieldSetter(String fieldName, TarsType type) {
-        if (type.isPrimitive() && (type.asPrimitive()).primitiveType() == TarsPrimitiveType.PrimitiveType.BOOL && fieldName.startsWith("is")) {
-            return "set" + fieldName.substring(2);
+        if (type.isPrimitive() && (type.asPrimitive()).primitiveType() == PrimitiveType.BOOL) {
+            if (!fieldName.startsWith("is")) {
+                return "set" + firstUpStr(fieldName);
+            }
+            if (fieldName.length() <= 2) {
+                return "set" + firstUpStr(fieldName);
+            }
+            String third = fieldName.substring(2, 3);
+            if (third.toUpperCase().equals(third)) {
+                return "set" + firstUpStr(fieldName.substring(2));
+            } else {
+                return "set" + firstUpStr(fieldName);
+            }
         } else {
             return "set" + firstUpStr(fieldName);
         }

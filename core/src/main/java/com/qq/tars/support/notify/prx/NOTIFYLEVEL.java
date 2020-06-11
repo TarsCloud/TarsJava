@@ -21,7 +21,7 @@
 package com.qq.tars.support.notify.prx;
 
 /**
- * 定义上报信息的等级
+ * Define the level of reported information
  */
 public enum NOTIFYLEVEL {
 

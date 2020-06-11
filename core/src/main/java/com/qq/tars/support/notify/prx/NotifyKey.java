@@ -27,7 +27,7 @@ import com.qq.tars.protocol.tars.annotation.TarsStructProperty;
 import com.qq.tars.protocol.util.TarsUtil;
 
 /**
- * notify信息的键值
+ * Key value of notify information
  */
 @TarsStruct
 public class NotifyKey {

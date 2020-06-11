@@ -36,15 +36,15 @@ public class TimeoutManager {
 		@Override
 		public void run() {
 			try {
-				TicketManager.removeTicket(this.ticket.getTicketNumber());   //从ticketmanager中移除掉ticket
-				this.ticket.expired();   //触发超时回调，通知业务方
+				TicketManager.removeTicket(this.ticket.getTicketNumber());   //Remove ticket from ticketmanager
+				this.ticket.expired();   //Trigger timeout callback to notify business party
 			} catch(Exception e) {
 				System.out.println("timeout exception:" + e);
 			}
 		}
 	}
 	/**
-	 * 	添加定时任务到线程池执行
+	 * 	Add timed tasks to the thread pool for execution
 	 * @param task
 	 * @param timeout ms
 	 * @return
@@ -54,7 +54,7 @@ public class TimeoutManager {
 	}
 
 	/**
-	 * cancel超时的定时任务
+	 * Cancels timed tasks that timeout
 	 * @param ticket
 	 * @return
 	 */

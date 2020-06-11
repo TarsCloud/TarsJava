@@ -26,6 +26,7 @@ import com.qq.tars.support.query.prx.EndpointF;
 import com.qq.tars.support.query.prx.QueryFPrx;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public final class QueryHelper {
@@ -59,7 +60,7 @@ public final class QueryHelper {
         if (ret != TarsHelper.SERVERSUCCESS) {
             return null;
         }
-
+        Collections.sort(activeEp.getValue());
         StringBuilder value = new StringBuilder();
         if (activeEp.value != null && !activeEp.value.isEmpty()) {
             for (EndpointF endpointF : activeEp.value) {
