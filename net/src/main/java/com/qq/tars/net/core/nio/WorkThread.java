@@ -88,11 +88,6 @@ public final class WorkThread implements Runnable {
                     return;
                 }
                 ticket.notifyResponse(resp);
-                ticket.countDown();
-                TicketManager.removeTicket(ticket.getTicketNumber());
-                if(ticket.getTimeoutFuture() != null) {   //成功收到包,取消超时任务
-                    TimeoutManager.cancelTimeoutTask(ticket);
-                }
             }
         } catch (Exception ex) {
             ex.printStackTrace();

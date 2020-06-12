@@ -82,13 +82,11 @@ public class Ticket<T> {
 
     public boolean await(long timeout, TimeUnit unit) throws InterruptedException {
         boolean status = this.latch.await(timeout, unit);
-        checkExpired();
-        return status;
-    }
-
-    public void await() throws InterruptedException {
-        this.latch.await();
-        checkExpired();
+        if (!status || expired) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public void expired() {
@@ -119,7 +117,16 @@ public class Ticket<T> {
     }
 
     public void notifyResponse(T response) {
+        // succ. to received response and will do some expensive logic
+        // cancel timeout ticket task before the expensive logic for avoiding unnecessary callback_expire
+        TicketManager.removeTicket(ticketNumber);
+        if(timeoutFuture != null) {
+            TimeoutManager.cancelTimeoutTask(this);
+        }
+
         this.response = response;
+        countDown();
+
         if (this.callback != null) this.callback.onCompleted(response);
         if (ticketListener != null) ticketListener.onResponseReceived(this);
     }
@@ -138,10 +145,6 @@ public class Ticket<T> {
 
     public int getTicketNumber() {
         return this.ticketNumber;
-    }
-
-    protected void checkExpired() {
-        if (this.expired) throw new RuntimeException("", new IOException("The operation has timed out."));
     }
 
     public static void setTicketListener(TicketListener listener) {
