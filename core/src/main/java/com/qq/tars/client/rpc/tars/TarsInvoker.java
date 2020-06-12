@@ -78,7 +78,7 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
                 TarsServantResponse response = invokeWithSync(method, inv.getArguments(), inv.getAttachments());
                 ret = response.getRet() == TarsHelper.SERVERSUCCESS ? Constants.INVOKE_STATUS_SUCC : Constants.INVOKE_STATUS_EXEC;
                 if (response.getRet() != TarsHelper.SERVERSUCCESS) {
-                    throw ServerException.makeException(response.getRet());
+                    throw ServerException.makeException(response.getRet(), response.getRemark());
                 }
                 return response.getResult();
             }
