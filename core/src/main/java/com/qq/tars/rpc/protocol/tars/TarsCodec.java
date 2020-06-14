@@ -182,7 +182,7 @@ public class TarsCodec extends Codec {
                 try {
                     JsonElement jsonElement = JSON.toJsonTree(response.getResult());
                     // System.out.println("requestId: " + request.getRequestId() + ", charset: " + request.getCharsetName() + ", ret: " + jsonElement.toString());
-                    object.add(TarsHelper.STAMP_STRING, jsonElement);
+                    object.add("tars_ret", jsonElement);
                 } catch (Exception e) {
                     System.err.println("server encode json ret :" + response.getResult() + ", with ex:" + e);
                 }
