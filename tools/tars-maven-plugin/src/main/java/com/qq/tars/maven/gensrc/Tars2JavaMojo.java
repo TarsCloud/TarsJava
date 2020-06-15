@@ -150,7 +150,7 @@ public class Tars2JavaMojo extends AbstractMojo {
                     genServant(dirPath, packageName, ns.namespace(), tarsInterface, nsMap);
                 } else {
                     genPrx(dirPath, packageName, ns.namespace(), tarsInterface, nsMap);
-                    genPrxCallback(dirPath, packageName, ns.namespace(), tarsInterface, nsMap);
+//                    genPrxCallback(dirPath, packageName, ns.namespace(), tarsInterface, nsMap);
                 }
             }
         }
@@ -525,21 +525,26 @@ public class Tars2JavaMojo extends AbstractMojo {
             out.println(getDoc(op, "\t"));
             out.println("\t " + type(op.retType(), nsMap) + " " + op.operationName() + "(" + operationParams(null, op.paramList(), null, true, nsMap) + ");");
 
-            // 2 print  promise method without context
-            out.println(getDoc(op, "\t"));
-            out.println("\tCompletableFuture<" + type(op.retType(), true, nsMap) + ">  promise_" + op.operationName() + "(" + operationParams(null, op.paramList(), null, true, nsMap) + ");");
-
-            // 3 print sync method with context
+            // 2 print sync method with context
             out.println(getDoc(op, "\t"));
             out.println("\t " + type(op.retType(), nsMap) + " " + op.operationName() + "(" + operationParams(null, op.paramList(), Arrays.asList("@TarsContext java.util.Map<String, String> ctx"), true, nsMap) + ");");
 
-            // 4 print async method without context
+            // 3 print promise method without context
             out.println(getDoc(op, "\t"));
-            out.println("\t void async_" + op.operationName() + "(" + operationParams(Arrays.asList("@TarsCallback " + prxClass + "Callback callback"), op.paramList(), null, false, nsMap) + ");");
+            out.println("\t CompletableFuture<" + type(op.retType(), true, nsMap) + ">  promise_" + op.operationName() + "(" + operationParams(null, op.paramList(), null, true, nsMap) + ");");
 
-            // 5 print async method with context
+            // 4 print promise method without context
             out.println(getDoc(op, "\t"));
-            out.println("\t void async_" + op.operationName() + "(" + operationParams(Arrays.asList("@TarsCallback " + prxClass + "Callback callback"), op.paramList(), Arrays.asList("@TarsContext java.util.Map<String, String> ctx"), false, nsMap) + ");");
+            out.println("\t CompletableFuture<" + type(op.retType(), true, nsMap) + ">  promise_" + op.operationName() + "(" + operationParams(null, op.paramList(), Arrays.asList("@TarsContext java.util.Map<String, String> ctx"), true, nsMap) + ");");
+
+
+//            // 4 print async method without context
+//            out.println(getDoc(op, "\t"));
+//            out.println("\t void async_" + op.operationName() + "(" + operationParams(Arrays.asList("@TarsCallback " + prxClass + "Callback callback"), op.paramList(), null, false, nsMap) + ");");
+//
+//            // 5 print async method with context
+//            out.println(getDoc(op, "\t"));
+//            out.println("\t void async_" + op.operationName() + "(" + operationParams(Arrays.asList("@TarsCallback " + prxClass + "Callback callback"), op.paramList(), Arrays.asList("@TarsContext java.util.Map<String, String> ctx"), false, nsMap) + ");");
         }
 
         out.println("}");
