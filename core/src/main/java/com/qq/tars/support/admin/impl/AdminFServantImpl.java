@@ -121,7 +121,7 @@ public class AdminFServantImpl implements AdminFServant {
 
                     handleThread.start();
 
-                    result.append("custem command: cmdName=").append(cmdName).append(", params=").append(cmdParam).append("\n");
+                    result.append("custom command: cmdName=").append(cmdName).append(", params=").append(cmdParam).append("\n");
                 } else {
                     result.append("invalid command.\n");
                 }

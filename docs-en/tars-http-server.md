@@ -56,7 +56,7 @@ The following configuration needs to be added in pom.xml:
     <dependency>
       <groupId>com.tencent.tars</groupId>
       <artifactId>tars-spring-boot-starter</artifactId>
-      <version>1.7.0-SNAPSHOT</version>
+      <version>1.7.2</version>
     </dependency>
   </dependencies>
 ```

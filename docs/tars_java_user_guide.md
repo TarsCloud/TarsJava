@@ -21,7 +21,7 @@
 <dependency>
     <groupId>com.tencent.tars</groupId>
     <artifactId>tars-server</artifactId>
-    <version>1.7.1</version>
+    <version>1.7.2</version>
     <type>jar</type>
 </dependency>
 ```
@@ -30,7 +30,7 @@
 <plugin>
     <groupId>com.tencent.tars</groupId>
     <artifactId>tars-maven-plugin</artifactId>
-    <version>1.7.1</version>
+    <version>1.7.2</version>
     <configuration>
 	<tars2JavaConfig>
 	    <tarsFiles>
@@ -65,7 +65,7 @@ module TestApp
 <plugin>
 	<groupId>com.tencent.tars</groupId>
 	<artifactId>tars-maven-plugin</artifactId>
-	<version>1.7.1</version>
+	<version>1.7.2</version>
 	<configuration>
 		<tars2JavaConfig>
 			<!-- tars文件位置 -->
@@ -796,7 +796,7 @@ TARS服务框架目前内置命令：
 只需注册相关命令以及命令处理类，如下
 
 ```java
-CustemCommandHelper.getInstance().registerCustemHandler("cmdName",new CommandHandler() {
+CustomCommandHelper.getInstance().registerCustomHandler("cmdName",new CommandHandler() {
 ```
 
 ```java
