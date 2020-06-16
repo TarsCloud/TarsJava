@@ -88,6 +88,8 @@ public class TarsHelper {
 
     public static final int SERVEROVERLOAD = -9;
 
+    public final static int SERVERINTERFACEERR = -10;
+
     public final static int SERVERUNKNOWNERR = -99;
 
     public static final int MESSAGETYPENULL = 0x00;

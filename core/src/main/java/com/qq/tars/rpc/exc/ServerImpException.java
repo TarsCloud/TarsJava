@@ -14,11 +14,17 @@
  * specific language governing permissions and limitations under the License.
  */
 
-module TestApp
-{
-    struct TestRecursive
-    {
-        0 optional int value;
-        1 optional TestRecursive testRecursive;
-    };
-};
+package com.qq.tars.rpc.exc;
+
+@SuppressWarnings("serial")
+public class ServerImpException extends ServerException {
+	private static final long serialVersionUID = 1801985076523243391L;
+
+    public ServerImpException(int ret) {
+        super(ret);
+    }
+
+    public ServerImpException(int ret, String message) {
+        super(ret, message);
+    }
+}
