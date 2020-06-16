@@ -13,48 +13,48 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
- 
+
 module tars
 {
-	struct ConfigInfo
-	{
-		//业务名称
-		0 require string appname;
-		//服务名称
-		1 require string servername;
-		//配置文件名称
-		2 require string filename;
-		//是否只获取应用配置,默认为false,如果为true则servername可以为空
-		3 require bool bAppOnly=false;
-		//服务所在节点(ip)
-		4 optional string host;
-		//set分组名称
-		5 optional string setdivision;
-	};
-	
-	struct GetConfigListInfo
-	{
-		//业务名称
-		0 require string appname;
-		//服务名称
-		1 optional string servername;
-		//是否只获取应用配置,默认为false,如果为true只拉取应用级别的列表，其它级别无效
-		2 optional bool bAppOnly=false;
-		//服务所在节点(ip)，要机器级别的，请赋值
-		3 optional string host="";
-		//set分组名称,需要拉取set级别的，请赋值
-		4 optional string setdivision="";
-		//容器级别，需要拉取容器级别的，请赋值
-		5 optional string containername="";
-	};
-	
+    struct ConfigInfo
+    {
+        //Application name
+        0 require  string appname;
+        //Service name
+        1 require  string servername;
+        //Profile name
+        2 require  string filename;
+        //Whether to only get the application configuration, the default is false, if true, servername can be empty
+        3 require  bool   bAppOnly = false;
+        //Service node(ip)
+        4 optional string host;
+        //Set group name
+        5 optional string setdivision;
+    };
+
+    struct GetConfigListInfo
+    {
+        //Application name
+        0 require  string appname;
+        //Service name
+        1 optional string servername;
+        //Whether to only get the application configuration, the default is false, if true, only pull the application level list, other levels are invalid
+        2 optional bool   bAppOnly      = false;
+        //Service node(ip)，if you want the machine level, please assign a value
+        3 optional string host          = "";
+        //Set group name, if you want to pull the set level, please assign a value
+        4 optional string setdivision   = "";
+        //Container level, if you want to pull the container level, please assign a value
+        5 optional string containername = "";
+    };
+
     /**
      * config obj to load server's system config.
      **/
     interface Config
     {
         /**
-         * 读取配置文件列表
+         * Read configuration file list
          * @param app, app name
          * @param server, server name
          * @param vf, config file name
@@ -62,57 +62,57 @@ module tars
         int ListConfig(string app, string server, out vector<string> vf);
 
         /**
-         * 读取配置文件
+         * Read configuration file
          * @param app, app name
          * @param server, server name
          * @param filename, config file name
-      	 * @param config, 配置文件内容
+         * @param config, Configuration file content
          **/
         int loadConfig(string app, string server, string filename, out string config);
 
         /**
-         * 根据host读取文件
+         * Read file according to host
          * @param appServer, app.server
          * @param filename, config file name
          * @param host, ip
-         * @param config, 配置文件内容
+         * @param config, Configuration file content
          **/
         int loadConfigByHost(string appServerName, string filename, string host, out string config);
 
         /**
-         * 检查配置文件是否服务TC_Config格式
+         * Check whether the configuration file conforms to the TC_Config format
          * @param appServer, app.server
          * @param filename, config file name
          * @param host, ip
-         * @param result, 提示
-         * @return int 0: 合法, -1:非法
+         * @param result, prompt
+         * @return int 0: valid, -1:invalid
          **/
         int checkConfig(string appServerName, string filename, string host, out string result);
 
-	    /**
-	     * 读取服务所在节点的配置文件列表
-	     * 
-	     * @param configInfo, ConfigInfo 配置文件信息，如果没有set分组信息，请设置setdivision为空""
-	     * @param vf, config file name
-	     * @return int 0: 成功, -1:失败
-	     **/
-	    int ListConfigByInfo(ConfigInfo configInfo, out vector<string> vf);
+        /**
+         * Read the configuration file list of the node where the service is located
+         *
+         * @param configInfo, ConfigInfo: Profile information. If there is no set group information, please set setdivision is empty ""
+         * @param vf, config file name
+         * @return int 0: success, -1:failure
+         **/
+        int ListConfigByInfo(ConfigInfo configInfo, out vector<string> vf);
 
-	    /**
-	     * 读取配置文件
-	     * @param configInfo, ConfigInfo 配置文件信息
-	     * @param config, 配置文件内容
-	     * @return int 0: 成功, -1:失败
-	     **/
-	    int loadConfigByInfo(ConfigInfo configInfo, out string config);
+        /**
+         * Read configuration file
+         * @param configInfo, ConfigInfo: Profile information
+         * @param config, Configuration file content
+         * @return int 0: success, -1:failure
+         **/
+        int loadConfigByInfo(ConfigInfo configInfo, out string config);
 
-	    /**
-	     * 检查配置文件是否符合TC_Config格式
-	     * @param configInfo, ConfigInfo 配置文件信息
-	     * @param result, 提示
-	     * @return int 0: 合法, -1:非法
-	     **/
-	    int checkConfigByInfo(ConfigInfo configInfo, out string result);
+        /**
+         * Check whether the configuration file conforms to the TC_Config format
+         * @param configInfo, ConfigInfo: Profile information
+         * @param result, prompt
+         * @return int 0: valid, -1:invalid
+         **/
+        int checkConfigByInfo(ConfigInfo configInfo, out string result);
 
     };
 };

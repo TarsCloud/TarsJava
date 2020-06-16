@@ -46,7 +46,11 @@ public class TableUtil<R, C, V> {
 		if (rowKey == null || columnKey == null) {
 			return;
 		}
-		Map<C, V> columns = table.computeIfAbsent(rowKey, k -> new LinkedHashMap<C, V>());
+		Map<C, V> columns = table.get(rowKey);
+		if (columns == null) {
+			columns = new LinkedHashMap<C, V>();
+			table.putIfAbsent(rowKey, columns);
+		}
 		columns.put(columnKey, value);
 	}
 

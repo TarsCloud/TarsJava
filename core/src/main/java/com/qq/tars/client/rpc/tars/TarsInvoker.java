@@ -78,7 +78,7 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
                 TarsServantResponse response = invokeWithSync(method, inv.getArguments(), inv.getAttachments());
                 ret = response.getRet() == TarsHelper.SERVERSUCCESS ? Constants.INVOKE_STATUS_SUCC : Constants.INVOKE_STATUS_EXEC;
                 if (response.getRet() != TarsHelper.SERVERSUCCESS) {
-                    throw ServerException.makeException(response.getRet());
+                    throw ServerException.makeException(response.getRet(), response.getRemark());
                 }
                 return response.getResult();
             }
@@ -192,14 +192,15 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
             request.setStatus(status);
 
         }
-        FilterChain filterChain = new TarsClientFilterChain(filters, objName, FilterKind.CLIENT, client, InvokeStatus.ASYNC_CALL,
-                new TarsCallbackWrapper(config, request.getFunctionName(), getUrl().getHost(), getUrl().getPort(), request.getBornTime(), request, callback, this));
+        TarsCallbackWrapper tarsCallbackWrapper = callback == null ?
+                null : new TarsCallbackWrapper(config, request.getFunctionName(), getUrl().getHost(), getUrl().getPort(), request.getBornTime(), request, callback, this);
+        FilterChain filterChain = new TarsClientFilterChain(filters, objName, FilterKind.CLIENT, client, InvokeStatus.ASYNC_CALL, tarsCallbackWrapper);
         filterChain.doFilter(request, response);
     }
 
 
     /**
-     * promise调用
+     * promise call
      * @param method
      * @param args
      * @param context

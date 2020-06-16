@@ -27,7 +27,7 @@ import com.qq.tars.protocol.tars.annotation.TarsStructProperty;
 import com.qq.tars.protocol.util.TarsUtil;
 
 /**
- * 端口信息
+ * Port information
  */
 @TarsStruct
 public class EndpointF implements Comparable<EndpointF> {

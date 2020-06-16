@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.tencent.tars</groupId>
         <artifactId>tars-parent</artifactId>
-        <version>1.7.0</version>
+        <version>1.7.2</version>
     </parent>
     <artifactId>tars-server</artifactId>
     <name>${project.artifactId}</name>
@@ -21,6 +21,12 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${maven_junit_version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>com.tencent.tars</groupId>
             <artifactId>tars-client</artifactId>

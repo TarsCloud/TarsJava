@@ -16,8 +16,42 @@
 
 module TestApp
 {
+	enum ENUM_TYPE {
+		ET_A,
+		ET_B,
+	};
+
+	struct TestInfo
+	{
+		0 optional byte c = 1;
+		1 optional short i1 = 2;
+		2 optional int i2 = 3;
+		3 optional long l = 4;
+		4 optional float f = 5.0f;
+		5 optional double d = 6.1d;
+		6 optional string s = "test";
+		7 optional vector<string> vs;
+		8 optional map<int, string> ms;
+		9 optional vector<double>   vd;
+		10 optional map<float, double>  mfd;
+		11 optional ENUM_TYPE et;
+		12 optional bool b = true;
+		13 optional bool is = false;
+		14 optional bool isBool = true;
+		15 optional bool isbool = false;
+		16 require string rstr;
+	};
+
+	struct TestInfoEx
+	{
+		0 optional TestInfo bi;
+		1 optional vector<TestInfo> vbi;
+		2 optional map<string, TestInfo> mbi;
+	};
+
 	interface Hello
 	{
 	    string hello(int no, string name);
+		int helloJson(TestInfo tie, out TestInfoEx otie);
 	};
 };

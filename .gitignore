@@ -9,4 +9,4 @@ target/
 .project
 .classpath
 *.dat
-
+examples/**/testapp/*.java

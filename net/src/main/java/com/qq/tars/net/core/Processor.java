@@ -19,4 +19,6 @@ package com.qq.tars.net.core;
 public abstract class Processor {
 
     public abstract Response process(Request request, Session session);
+
+    public abstract void overload(Request request, Session session);
 }

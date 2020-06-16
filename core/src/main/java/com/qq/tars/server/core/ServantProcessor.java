@@ -37,4 +37,10 @@ public class ServantProcessor extends Processor {
         }
         return response;
     }
+
+    @Override
+    public void overload(Request request, Session session) {
+
+    }
+
 }

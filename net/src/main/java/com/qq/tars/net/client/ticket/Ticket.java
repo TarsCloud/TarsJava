@@ -82,21 +82,20 @@ public class Ticket<T> {
 
     public boolean await(long timeout, TimeUnit unit) throws InterruptedException {
         boolean status = this.latch.await(timeout, unit);
-        checkExpired();
-        return status;
-    }
-
-    public void await() throws InterruptedException {
-        this.latch.await();
-        checkExpired();
+        if (!status || expired) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public void expired() {
         if(hasRun.compareAndSet(false, true)) {
             this.expired = true;
             if (callback != null) {
-                //超时回调，用业务线程池去处理,防止业务耗时，影响已有的超时任务线程
-                if(getTimeoutFuture()!= null && (getTimeoutFuture().isDone() || getTimeoutFuture().isCancelled())) {   //超时任务已经执行或者已经被取消，已经通知了业务方超时信息(防止超时消息二次通知)
+                //Timeout callback, with the business thread pool to deal with, to prevent business time-consuming, affecting the existing timeout task thread
+                //The timeout task has been executed or has been canceled, and the business party has been notified of the timeout information (to prevent secondary notification of timeout messages)
+                if(getTimeoutFuture()!= null && (getTimeoutFuture().isDone() || getTimeoutFuture().isCancelled())) {
                     System.out.println("task has run or canceled.");
                 } else {
                     selectorManager.getThreadPool().execute(() -> callback.onExpired());
@@ -118,7 +117,16 @@ public class Ticket<T> {
     }
 
     public void notifyResponse(T response) {
+        // succ. to received response and will do some expensive logic
+        // cancel timeout ticket task before the expensive logic for avoiding unnecessary callback_expire
+        TicketManager.removeTicket(ticketNumber);
+        if(timeoutFuture != null) {
+            TimeoutManager.cancelTimeoutTask(this);
+        }
+
         this.response = response;
+        countDown();
+
         if (this.callback != null) this.callback.onCompleted(response);
         if (ticketListener != null) ticketListener.onResponseReceived(this);
     }
@@ -137,10 +145,6 @@ public class Ticket<T> {
 
     public int getTicketNumber() {
         return this.ticketNumber;
-    }
-
-    protected void checkExpired() {
-        if (this.expired) throw new RuntimeException("", new IOException("The operation has timed out."));
     }
 
     public static void setTicketListener(TicketListener listener) {

@@ -21,7 +21,7 @@
 <dependency>
     <groupId>com.tencent.tars</groupId>
     <artifactId>tars-server</artifactId>
-    <version>1.7.0</version>
+    <version>1.7.2</version>
     <type>jar</type>
 </dependency>
 ```
@@ -30,7 +30,7 @@
 <plugin>
     <groupId>com.tencent.tars</groupId>
     <artifactId>tars-maven-plugin</artifactId>
-    <version>1.7.0</version>
+    <version>1.7.2</version>
     <configuration>
 	<tars2JavaConfig>
 	    <tarsFiles>
@@ -65,7 +65,7 @@ module TestApp
 <plugin>
 	<groupId>com.tencent.tars</groupId>
 	<artifactId>tars-maven-plugin</artifactId>
-	<version>1.7.0</version>
+	<version>1.7.2</version>
 	<configuration>
 		<tars2JavaConfig>
 			<!-- tars文件位置 -->
@@ -497,6 +497,12 @@ prx.async_hello(new HelloPrxCallback() {
 > * 当接收到服务端返回时，HelloPrxCallback的callback_hello会被响应。
 > * 如果调用返回异常或超时，则callback_exception会被调用，ret的值定义如下：
 
+#### promise调用
+
+异步的promise调用方式是Tars v1.7.0新增的功能，该方法返回了一个CompletableFuture对象。CompletableFuture是jdk1.8中新加入的类，它实现了Future\<T>， CompletionStage\<T>两个接口，提供了十分强大的异步编程功能。在jdk1.8之前主要采用Future或注册CallBack函数来完成异步编程，这两种方式均存在一定的缺陷。Future在调用get方法获取结果时，若操作尚未完成会一直进行等待，此时可能造成CPU时间的浪费。并且Future无法组合完成链式调用，不能为上一个Future获得的结果执行更进一步的操作。而CallBack方式随着回调函数的不断嵌套，则会造成回调金字塔的现象。因此，在Tars v1.7.0版本中引入了CompletableFuture，可以通过注册触发器以回调的方式执行一系列的后续操作。
+
+CompletableFuture的API一般会有带Async后缀和不带Async后缀两种形式，不带Async后缀的方法会由当前的调用线程来执行任务，而带Async后缀的方法则分为两种情况，若在参数中传入了Executor，则会从传入的线程池获取一个线程去执行任务，否则从全局的 ForkJoinPool.commonPool()中获取一个线程中执行这些任务。
+
 #### set方式调用
 
 目前框架已经支持业务按set方式进行部署，按set部署之后，各个业务之间的调用对开业务发来说是透明的。但是由于有些业务有特殊需求，需要在按set部署之后，客户端可以指定set名称来调用服务端，因此框架则按set部署的基础上增加了客户端可以指定set名称去调用业务服务的功能。
@@ -564,6 +570,210 @@ private final static Logger FLOW_LOGGER = Logger.getLogger("flow", LogType.LOCAL
 > * LogType.REMOTE只打远程日志
 > * LogType.All 打本地和远程日志
 
+#### Logback日志系统
+
+TarsJava 1.7版本之后使用了Logback作为日志系统，Logback提供了十分灵活的配置项，可以为用户提供更加强大的日志功能。 
+
+##### 日志系统结构
+
+Logback日志系统由三部分组成，分别是Logger, Appender, Layout：
+
+- Logger：日志记录器，每个Logger会附加到一个LoggerContext中，后者用于生成Logger，并将它们排列成树状层次结构。Logger是命名实体。它们的名称区分大小写，并且遵循分层命名规则：
+
+  > 命名层次结构：如果一个记录器的名称后有一个点，则该记录器是另一个记录器的祖先，该记录器的名称是该子记录器名称的前缀。如果记录器与子记录器之间没有祖先，则称该记录器为子记录器的父级
+
+  Logger可以设置不同级别，分别是TRACE、DEBUG、INFO、WARN 和 ERROR。若Logger的有效级别为q，日志记录的请求级别为p，只有当p≥q时，该日志请求才会被执行。（root Logger 默认有效级别是 DEBUG)
+
+  > 级别排序规则： TRACE < DEBUG < INFO <  WARN < ERROR
+
+  如果没有为Logger设置一个级别，那么它将从其最接近的祖先那里继承一个已分配的级别，一个简单的示例如下：
+
+  | Logger name | Assigned level | Effective level |
+  | ----------- | -------------- | --------------- |
+  | root        | DEBUG          | DEBUG           |
+  | X           | INFO           | INFO            |
+  | X.Y         | none           | INFO            |
+  | X.Y.Z       | none           | INFO            |
+
+- Appender：用于编写日志事件的组件，可以指定日志输出到控制台、文件、远程服务器以及数据库等。
+
+- Layout：将日志信息进行格式化输出
+
+##### 配置文件
+
+Logback会首先会在类路径下寻找*logback-test.xml*和*logback.xml*配置文件，若没有找到，则会使用默认的*BasicConfigurator*。配置文件的基本结构为\<configuration\>元素中包含多个\<appender\>和\<logger\>元素和最多一个\<root\>元素，官方文档中给出了配置文件的结构图如下：
+
+![Logback-config](images/Logback-config.png)
+
+一个典型的logback.xml配置文件格式如下：
+
+```xml
+<configuration scan="true" scanPeriod="60 seconds" debug="false">  
+    <property name="Logname" value="demo" /> 
+    <contextName>${Logname}</contextName> 
+    
+    
+    <appender>
+        ···
+    </appender>   
+    
+    <logger>
+        ···
+    </logger>
+    
+    <root>             
+       ···
+    </root>  
+</configuration>  
+```
+
+1. \<configuration\>
+
+\<configuration\>标签提供了三个配置选项：
+
+- scan：true表示当配置文件更改时，会自动重新加载配置文件，默认值为true
+- scanPeriod：扫描配置文件是否发生更改的时间间隔，默认时间单位为毫秒，可以自行设置单位为毫秒、秒、分钟或者小时
+- debug：true表示打印Logback内部日志信息，默认值为false
+
+```xml
+<configuration scan="true" scanPeriod="30 seconds" debug="false"> 
+  ...
+</configuration> 
+```
+
+2. \<contextName\>
+
+用于设置LoggerContext的名称，默认的上下文名称为"default"，一旦设置之后，上下文名字不能再被更改。
+
+```xml
+<contextName>myAppName</contextName> 
+```
+
+3. \<property\>
+
+使用该变量可以在配置文件中定义变量，也可以从外部属性文件或者外部资源中批量加载。之后通过${变量名}的形式可以调用该变量。
+
+```xml
+<property name="USER_HOME" value="/home/log" />
+```
+
+4. \<appender\>
+
+负责写日志任务的组件，常用的有以下几类：
+
+- ConsoleAppender：将日志输出到控制台
+
+  ```xml
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+      <encoder>
+          <pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n</pattern>
+      </encoder>
+  </appender>
+  ```
+
+- FileAppender：将日志输出到文件
+
+  ```xml
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+      <!-- 设置被写入的文件 -->
+      <file>testFile.log</file>
+      <!-- 是否追加到文件末尾 -->
+      <append>true</append>
+      <!-- 设置false可获取更高吞吐量 -->
+      <immediateFlush>true</immediateFlush>
+      <encoder>
+        <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+      </encoder>
+  </appender>
+  ```
+
+- RollingFileAppender：可以先将日志输出到指定文件，一旦满足某个条件时，再将日志记录到另一个文件。（FileAppender的子类）
+
+  ```xml
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+      <file>logFile.log</file>
+      <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <!-- 按天滚动 -->
+        <fileNamePattern>logFile.%d{yyyy-MM-dd}.log</fileNamePattern>
+  
+        <!-- 保留30天的历史记录，上限为3GB -->
+        <maxHistory>30</maxHistory>
+        <totalSizeCap>3GB</totalSizeCap>
+  
+      </rollingPolicy>
+  
+      <encoder>
+        <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+      </encoder>
+  </appender> 
+  ```
+
+  除上述的时间滚动策略以外，还有固定窗口滚动策略**FixedWindowRollingPolicy**。
+
+5. \<logger\>
+
+可以设置某一个包或者具体的某一个类的日志打印级别，并添加appender。
+
+- name：制定logger约束的某一个包或某一个类
+- level：设置打印级别
+- addtivity：是否向上级logger传递打印信息，默认为true
+- \<appender-ref\>：添加这个appender到logger
+
+```xml
+<logger name="chapters.configuration" level="DEBUG">
+    <appender-ref ref="STDOUT" />
+</logger>
+```
+
+6. \<root\>
+
+也是\<logger\>元素，是根logger，仅有level一个属性用于设置打印级别，同时也可以使用<appender-ref\>来添加appender。
+
+```xml
+<root level="debug">
+    <appender-ref ref="STDOUT" />
+</root>
+```
+
+一个完整的logback.xml配置如下：
+
+```xml
+<configuration>
+
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <file>myApp.log</file>
+    <encoder>
+      <pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="chapters.configuration">
+    <appender-ref ref="FILE" />
+  </logger>
+
+  <root level="debug">
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>
+```
+
+##### 日志使用
+
+通过调用LoggerFactory.getLogger方法即可获取相应的日志记录器，之后使用记录器来完成来完成日志的记录。
+
+```java
+Logger logger = LoggerFactory.getLogger("name");
+logger.info("Hello World!");
+```
+
+更多关于Logback的使用，请参考[Logback官方文档](http://logback.qos.ch/manual/index.html)。
+
 ## 服务管理
 
 服务框架可以支持动态接收命令，来处理相关的业务逻辑，例如：动态更新配置等。
@@ -586,7 +796,7 @@ TARS服务框架目前内置命令：
 只需注册相关命令以及命令处理类，如下
 
 ```java
-CustemCommandHelper.getInstance().registerCustemHandler("cmdName",new CommandHandler() {
+CustomCommandHelper.getInstance().registerCustomHandler("cmdName",new CommandHandler() {
 ```
 
 ```java
@@ -660,6 +870,37 @@ DyeingSwitch.closeActiveDyeing();    //主动关闭染色开关接口
 
 > - 开启染色日志时传递的参数推荐填写服务名，如果填写为null则默认名称为default;
 > - 染色日志的日志级别和日志类型与原本日志相同，如果原本日志只打本地，那么染色日志也只打本地，原本日志要打远程染色日志才会打远程;
+
+在新版的TarsJava中使用了Logback作为日志系统，因此可以使用MDC来实现对日志的染色。MDC是Logback提供的在多线程中记录日志的一种技术，它的内部持有一个ThreadLocal对象，其中存储了一个Map，因此用户可以根据需要向其中添加键值对。通过实现Filter，配合MDC可以实现对日志的染色：
+
+```java
+public class MyFilter implements Filter {
+    private static final String TRACE_ID = "traceId"; 
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        ...
+        boolean success = putMDC(...);
+        ...
+        try {
+            chain.doFilter(request, response);
+        } finally {
+            if(success) {
+                MDC.remove(TRACE_ID);
+            }
+        }
+    }
+
+    private boolean putMDC(...) {
+        if (...){
+            String traceId = ...
+            MDC.put(TRACE_ID, traceId);
+        	return true;
+        }
+        return false;
+    }
+```
+
+
 
 - 被动染色：
 

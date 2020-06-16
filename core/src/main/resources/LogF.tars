@@ -16,48 +16,48 @@
 
 module tars
 {
-	struct LogInfo
-	{
-		//业务名称
-		0 require string appname;
-		//服务名称
-		1 require string servername;
-		//日志文件名称
-		2 require string sFilename;
-     	        //时间格式
-    	        3 require string sFormat;
-		//set分组名称
-		4 optional string setdivision;
-		// 日志文件名是否带.log后缀
-		5 optional bool	 bHasSufix=true;
-		// 是否允许框架在日志文件名上增加业务相关的标识
-		6 optional bool  bHasAppNamePrefix=true;
-		// 框架内部的日期和时间部分是否加上[]符号
-		7 optional bool  bHasSquareBracket=false;
-		// 日志文件名中用户自定义字符与日期字符间的连接符，默认是"_"
-		8 optional string sConcatStr="_";
-		// 日志内容项之间的分隔符，默认是"|"
-		9 optional string sSepar="|";
-		//按天/小时/分钟输出日志时的记录类型,例如,按一天:day或者1day;按两小时:2hour;按10分钟:10minute
-		10 optional string sLogType = "";
-	};
+    struct LogInfo
+    {
+        //Application name
+        0  require  string appname;
+        //Service name
+        1  require  string servername;
+        //Log file name
+        2  require  string sFilename;
+        //Time format
+        3  require  string sFormat;
+        //Set group name
+        4  optional string setdivision;
+        // Whether the log file name has a .log suffix
+        5  optional bool   bHasSufix         = true;
+        // Whether to allow the framework to add business-related identifiers to log file names
+        6  optional bool   bHasAppNamePrefix = true;
+        // Whether the [] symbol added to the date and time part of the framework
+        7  optional bool   bHasSquareBracket = false;
+        // The connector between the user-defined character and the date character in the log file name, the default is "_"
+        8  optional string sConcatStr        = "_";
+        // The separator between log content items, the default is "|"
+        9  optional string sSepar            = "|";
+        // Record type when outputting logs by day / hour / minute, for example, by one day: day or 1day; by two hours: 2hour; by 10 minutes: 10minute
+        10 optional string sLogType          = "";
+    };
     interface Log
     {
         /**
-		* 记录远程日志
-		* @param app, 应用名称
-		* @param server, 服务名称
-		* @param file, 文件名称
-		* @param format, 日志时间格式(%Y%m%d)
-		* @param buffer, 日志内容
-		*/
+         * Record remote logs
+         * @param app, Application Name
+         * @param server, Service name
+         * @param file, File name
+         * @param format, Log time format(%Y%m%d)
+         * @param buffer, Log content
+         */
         void loggerInnerImpl(string app, string server, string file, string format, vector<string> buffer);
 
-	   /**
-		* 记录远程日志
-		* @param info, LogInfo
-		* @param buffer, 日志内容
-		*/
+        /**
+         * Record remote logs
+         * @param info, LogInfo
+         * @param buffer, Log content
+         */
         void loggerbyInfo(LogInfo info, vector<string> buffer);
     };
 };
