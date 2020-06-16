@@ -32,6 +32,10 @@ import com.qq.tars.net.core.Response;
 import com.qq.tars.net.core.Session;
 import com.qq.tars.protocol.tars.support.TarsMethodInfo;
 import com.qq.tars.protocol.util.TarsHelper;
+import com.qq.tars.rpc.exc.ServerDecodeException;
+import com.qq.tars.rpc.exc.ServerException;
+import com.qq.tars.rpc.exc.ServerNoServantException;
+import com.qq.tars.rpc.exc.ServerOverloadException;
 import com.qq.tars.rpc.exc.TarsException;
 import com.qq.tars.rpc.protocol.tars.TarsServantRequest;
 import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
@@ -42,6 +46,7 @@ import com.qq.tars.support.log.LoggerFactory;
 import com.qq.tars.support.om.OmServiceMngr;
 import com.qq.tars.support.stat.InvokeStatHelper;
 import com.qq.tars.support.trace.TraceManager;
+import java.lang.reflect.InvocationTargetException;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -121,20 +126,23 @@ public class TarsServantProcessor extends Processor {
             response = createResponse(request, session);
             response.setTicketNumber(req.getTicketNumber());
 
-            if (response.getRet() != TarsHelper.SERVERSUCCESS || TarsHelper.isPing(request.getFunctionName())) {
+            if (TarsHelper.isPing(request.getFunctionName())) {
                 return response;
             }
+
+            if (response.getRet() != TarsHelper.SERVERSUCCESS) {
+                throw new ServerDecodeException(response.getRet(), "decode error.");
+            }
+
             int maxWaitingTimeInQueue = ConfigurationManager.getInstance().getServerConfig().getServantAdapterConfMap().get(request.getServantName()).getQueueTimeout();
             waitingTime = (int) (startTime - req.getBornTime());
             if (waitingTime > maxWaitingTimeInQueue) {
-                throw new TarsException("Wait too long, server busy.");
+                throw new ServerOverloadException(TarsHelper.SERVEROVERLOAD, "queue timeout.");
             }
 
-//            container = ContainerManager.getContainer(AppContainer.class);
             Context<?, ?> context = ContextManager.registerContext(request, response);
             context.setAttribute(Context.INTERNAL_START_TIME, startTime);
             context.setAttribute(Context.INTERNAL_CLIENT_IP, session.getRemoteIp());
-//            context.setAttribute(Context.INTERNAL_APP_NAME, container.getDefaultAppContext().name());
             context.setAttribute(Context.INTERNAL_SERVICE_NAME, request.getServantName());
             context.setAttribute(Context.INTERNAL_METHOD_NAME, request.getFunctionName());
             context.setAttribute(Context.INTERNAL_SESSION_DATA, session);
@@ -145,19 +153,31 @@ public class TarsServantProcessor extends Processor {
             distributedContext.put(TraceManager.INTERNAL_SERVANT_NAME, request.getServantName());
 
             appContext = AppContextManager.getInstance().getAppContext();
-            if (appContext == null) throw new RuntimeException("failed to find the application named:[ROOT]");
+            if (appContext == null) {
+                throw new ServerNoServantException(TarsHelper.SERVERNOSERVANTERR, "empty appContext.");
+            }
 
-//            Thread.currentThread().setContextClassLoader(appContext.getAppContextClassLoader());
             preInvokeSkeleton();
             skeleton = appContext.getCapHomeSkeleton(request.getServantName());
-            if (skeleton == null)
-                throw new RuntimeException("failed to find the servant named[" + request.getServantName() + "]");
+            if (skeleton == null) {
+                throw new ServerNoServantException(TarsHelper.SERVERNOSERVANTERR, "empty servantImp.");
+            }
             List<Filter> filters = AppContextManager.getInstance().getAppContext().getFilters(FilterKind.SERVER);
             FilterChain filterChain = new TarsServerFilterChain(filters, request.getServantName(), FilterKind.SERVER, skeleton);
             filterChain.doFilter(request, response);
         } catch (Throwable cause) {
             cause.printStackTrace();
             System.err.println("ERROR: " + cause.getMessage());
+
+            // 错误码
+            int errCode = TarsHelper.SERVERUNKNOWNERR;
+            if (cause instanceof ServerException) {
+                errCode = ((ServerException) cause).getRet();
+            } else if (cause instanceof InvocationTargetException) {
+                errCode = TarsHelper.SERVERINTERFACEERR;
+            } else if (cause instanceof IllegalArgumentException) {
+                errCode = TarsHelper.SERVERDECODEERR;
+            }
 
             if (response.isAsyncMode()) {
                 try {
@@ -170,7 +190,7 @@ public class TarsServantProcessor extends Processor {
             } else {
                 response.setResult(null);
                 response.setCause(cause);
-                response.setRet(TarsHelper.SERVERUNKNOWNERR);
+                response.setRet(errCode);
                 remark = cause.toString();
             }
         } finally {
@@ -186,6 +206,25 @@ public class TarsServantProcessor extends Processor {
             reportServerStat(request, response, startTime);
         }
         return response;
+    }
+
+    @Override
+    public void overload(Request req, Session session) {
+        TarsServantRequest request = (TarsServantRequest) req;
+        TarsServantResponse response = createResponse(request, session);
+
+        if (!TarsHelper.isPing(request.getFunctionName())) {
+            if (response.getRet() == TarsHelper.SERVERSUCCESS) {
+                response.setRet(TarsHelper.SERVEROVERLOAD);
+            }
+        }
+
+        try {
+            session.write(response);
+        } catch (Throwable e) {
+            // ignore the exception, keep the same without overload() and client will be timeout
+            // is there a better op. ?
+        }
     }
 
     private void reportServerStat(TarsServantRequest request, TarsServantResponse response, long startTime) {

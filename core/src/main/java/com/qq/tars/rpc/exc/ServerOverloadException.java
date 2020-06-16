@@ -14,11 +14,17 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.qq.tars.net.core;
+package com.qq.tars.rpc.exc;
 
-public abstract class Processor {
+@SuppressWarnings("serial")
+public class ServerOverloadException extends ServerException {
 
-    public abstract Response process(Request request, Session session);
+	private static final long serialVersionUID = 4753766342873601126L;
+    public ServerOverloadException(int ret) {
+        super(ret);
+    }
 
-    public abstract void overload(Request request, Session session);
+    public ServerOverloadException(int ret, String message) {
+        super(ret, message);
+    }
 }

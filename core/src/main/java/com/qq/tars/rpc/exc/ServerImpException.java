@@ -14,11 +14,17 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.qq.tars.net.core;
+package com.qq.tars.rpc.exc;
 
-public abstract class Processor {
+@SuppressWarnings("serial")
+public class ServerImpException extends ServerException {
+	private static final long serialVersionUID = 1801985076523243391L;
 
-    public abstract Response process(Request request, Session session);
+    public ServerImpException(int ret) {
+        super(ret);
+    }
 
-    public abstract void overload(Request request, Session session);
+    public ServerImpException(int ret, String message) {
+        super(ret, message);
+    }
 }
