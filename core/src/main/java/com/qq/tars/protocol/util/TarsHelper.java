@@ -56,42 +56,38 @@ public class TarsHelper {
     public final static int PACKAGE_MAX_LENGTH = 10 * 1024 * 1024;
     public final static int HEAD_SIZE = 4;
 
+    ////////////////////////////////////////////////////////////////
+    // 定义协议的版本号
     public static final short VERSION = 0x01;
-
     public static final short VERSION2 = 0x02;
-
     public static final short VERSION3 = 0x03;
-
     public static final short VERSIONJSON = 0x05;
 
+    ////////////////////////////////////////////////////////////////
+    // 定义消息的类型
     public static final byte NORMAL = 0x00;
-
     public static final byte ONEWAY = 0x01;
 
+    ////////////////////////////////////////////////////////////////
+    // TARS定义的返回码
     public final static int SERVERSUCCESS = 0;
-
     public final static int SERVERDECODEERR = -1;
-
     public final static int SERVERENCODEERR = -2;
-
     public final static int SERVERNOFUNCERR = -3;
-
     public final static int SERVERNOSERVANTERR = -4;
-
     public final static int SERVERRESETGRID = -5;
-
     public final static int SERVERQUEUETIMEOUT = -6;
-
     public final static int ASYNCCALLTIMEOUT = -7;
-
+    public final static int INVOKETIMEOUT = -7;
     public final static int PROXYCONNECTERR = -8;
-
     public static final int SERVEROVERLOAD = -9;
+    public static final int ADAPTERNULL = -10;
 
-    public final static int SERVERINTERFACEERR = -10;
-
+    public final static int SERVERUNCATCHEDERR = -98;
     public final static int SERVERUNKNOWNERR = -99;
 
+    /////////////////////////////////////////////////////////////////
+    // 定义按位的消息状态类型,可复合
     public static final int MESSAGETYPENULL = 0x00;
     public static final int MESSAGETYPEHASH = 0x01;
     public static final int MESSAGETYPEGRID = 0x02;
@@ -100,8 +96,9 @@ public class TarsHelper {
     public static final int MESSAGETYPEASYNC = 0x10;
     public static final int MESSAGETYPELOADED = 0x20;
 
-    public static final String STATUS_RESULT_CODE = "STATUS_RESULT_CODE";
+    /////////////////////////////////////////////////////////////////
 
+    public static final String STATUS_RESULT_CODE = "STATUS_RESULT_CODE";
     public static final String STATUS_RESULT_DESC = "STATUS_RESULT_DESC";
 
     public static final Boolean STAMP_BOOLEAN = Boolean.TRUE;

@@ -57,7 +57,7 @@ public class ServerException extends TarsException {
             return new ServerResetGridException(ret, message);
         } else if (ret == SERVEROVERLOAD) {
             return new ServerOverloadException(ret, message);
-        } else if (ret == SERVERINTERFACEERR) {
+        } else if (ret == SERVERUNCATCHEDERR) {
             return new ServerImpException(ret, message);
         } else {
             return new ServerUnknownException(ret, message);
