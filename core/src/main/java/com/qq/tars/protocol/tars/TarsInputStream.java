@@ -18,6 +18,8 @@ package com.qq.tars.protocol.tars;
 
 import com.qq.tars.common.util.HexUtil;
 import com.qq.tars.protocol.tars.exc.TarsDecodeException;
+import com.qq.tars.support.log.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
@@ -27,6 +29,8 @@ import java.nio.ByteBuffer;
 import java.util.*;
 
 public final class TarsInputStream {
+
+    private static final Logger omLogger = LoggerFactory.getOmLogger();
 
     private ByteBuffer bs; // byte buffer
 
@@ -101,7 +105,8 @@ public final class TarsInputStream {
                 skip(len);
                 skipField(hd.type);
             }
-        } catch (TarsDecodeException | BufferUnderflowException e) {
+        } catch (TarsDecodeException | BufferUnderflowException | IllegalArgumentException e) {
+            omLogger.debug("skipToTag exType:{} exMsg:{}", e.getClass().getName(), e.getMessage());
         }
         return false;
     }
