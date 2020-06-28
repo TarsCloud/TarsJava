@@ -35,8 +35,7 @@ import com.qq.tars.protocol.util.TarsHelper;
 import com.qq.tars.rpc.exc.ServerDecodeException;
 import com.qq.tars.rpc.exc.ServerException;
 import com.qq.tars.rpc.exc.ServerNoServantException;
-import com.qq.tars.rpc.exc.ServerOverloadException;
-import com.qq.tars.rpc.exc.TarsException;
+import com.qq.tars.rpc.exc.ServerQueueTimeoutException;
 import com.qq.tars.rpc.protocol.tars.TarsServantRequest;
 import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 import com.qq.tars.server.config.ConfigurationManager;
@@ -137,7 +136,7 @@ public class TarsServantProcessor extends Processor {
             int maxWaitingTimeInQueue = ConfigurationManager.getInstance().getServerConfig().getServantAdapterConfMap().get(request.getServantName()).getQueueTimeout();
             waitingTime = (int) (startTime - req.getBornTime());
             if (waitingTime > maxWaitingTimeInQueue) {
-                throw new ServerOverloadException(TarsHelper.SERVEROVERLOAD, "queue timeout.");
+                throw new ServerQueueTimeoutException(TarsHelper.SERVERQUEUETIMEOUT, "queue timeout.");
             }
 
             Context<?, ?> context = ContextManager.registerContext(request, response);
@@ -174,7 +173,7 @@ public class TarsServantProcessor extends Processor {
             if (cause instanceof ServerException) {
                 errCode = ((ServerException) cause).getRet();
             } else if (cause instanceof InvocationTargetException) {
-                errCode = TarsHelper.SERVERINTERFACEERR;
+                errCode = TarsHelper.SERVERUNCATCHEDERR;
             } else if (cause instanceof IllegalArgumentException) {
                 errCode = TarsHelper.SERVERDECODEERR;
             }
@@ -221,9 +220,10 @@ public class TarsServantProcessor extends Processor {
 
         try {
             session.write(response);
-        } catch (Throwable e) {
+        } catch (Throwable ex) {
             // ignore the exception, keep the same without overload() and client will be timeout
             // is there a better op. ?
+            ex.printStackTrace();
         }
     }
 
