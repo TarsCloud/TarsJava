@@ -499,7 +499,7 @@ public class TarsCodec extends Codec {
                 if (jsonObject.has(parameterInfo.getName())) {
                     String reqStr = jsonObject.get(parameterInfo.getName()).toString();
                     // System.out.println("holder has " + parameterInfo.getName() + ", str: " + reqStr);
-                    value = new Holder<>(JSON.fromJson(reqStr, parameterInfo.getStamp().getType()));
+                    value = new Holder<>(JSON.fromJson(reqStr, parameterInfo.getStamp().getClass()));
                 } else {
                     // System.out.println("holder has no " + parameterInfo.getName());
                     // new response, can not use cache
