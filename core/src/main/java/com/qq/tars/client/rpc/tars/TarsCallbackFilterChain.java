@@ -35,7 +35,7 @@ public class TarsCallbackFilterChain extends AbstractFilterChain<Callback<TarsSe
 		                throw new TarsException(tarsServantResponse.getCause());
 		            }
 		            if (tarsServantResponse.getRet() != TarsHelper.SERVERSUCCESS) {
-		                throw ServerException.makeException(tarsServantResponse.getRet());
+		                throw ServerException.makeException(tarsServantResponse.getRet(), tarsServantResponse.getRemark());
 		            }
 		            if (target != null) {
 		                this.target.onCompleted(tarsServantResponse);

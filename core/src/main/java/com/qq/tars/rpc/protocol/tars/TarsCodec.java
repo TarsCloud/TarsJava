@@ -16,10 +16,13 @@
 
 package com.qq.tars.rpc.protocol.tars;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.qq.tars.common.support.ClassLoaderManager;
 import com.qq.tars.common.support.Holder;
 import com.qq.tars.common.util.CollectionUtils;
 import com.qq.tars.common.util.Constants;
+import com.qq.tars.common.util.JSON;
 import com.qq.tars.common.util.StringUtils;
 import com.qq.tars.net.core.IoBuffer;
 import com.qq.tars.net.core.Request;
@@ -37,11 +40,6 @@ import com.qq.tars.rpc.protocol.ServantRequest;
 import com.qq.tars.rpc.protocol.ServantResponse;
 import com.qq.tars.rpc.protocol.tars.support.AnalystManager;
 import com.qq.tars.rpc.protocol.tup.UniAttribute;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
-import com.qq.tars.common.util.JSON;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
@@ -223,7 +221,7 @@ public class TarsCodec extends Codec {
         unaOut.setEncodeName(charsetName);
         if (response.getVersion() == TarsHelper.VERSION3) {
             unaOut.useVersion3();
-        } else if(response.getVersion() == TarsHelper.VERSION2) {
+        } else if (response.getVersion() == TarsHelper.VERSION2) {
             unaOut.setNewDataNull();
         }
 
@@ -450,7 +448,7 @@ public class TarsCodec extends Codec {
     }
 
     protected Object[] decodeRequestWupBody(byte[] data, int version, String charset,
-            TarsMethodInfo methodInfo) throws Exception {
+                                            TarsMethodInfo methodInfo) throws Exception {
         //wup request
         UniAttribute unaIn = new UniAttribute();
         unaIn.setEncodeName(charsetName);
@@ -485,7 +483,7 @@ public class TarsCodec extends Codec {
     }
 
     protected Object[] decodeRequestJsonBody(byte[] data, String charset,
-            TarsMethodInfo methodInfo) throws Exception {
+                                             TarsMethodInfo methodInfo) throws Exception {
         // 解析json串
         JsonObject jsonObject = JSON.fromJson(new String(data, charset), JsonObject.class);
 
@@ -555,6 +553,8 @@ public class TarsCodec extends Codec {
         response.setRet(is.read((int) 0, 5, true));
         if (response.getRet() == TarsHelper.SERVERSUCCESS) {
             response.setInputStream(is);
+        } else {
+            response.setRemark(is.read(TarsHelper.STAMP_STRING, 8, true));
         }
 
         return response;

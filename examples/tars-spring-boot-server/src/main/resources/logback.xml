@@ -1,0 +1,5 @@
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <!-- root级别   DEBUG -->
+    <root level="ERROR">
+    </root>
+</configuration>

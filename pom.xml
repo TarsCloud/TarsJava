@@ -10,7 +10,7 @@
 
     <groupId>com.tencent.tars</groupId>
     <artifactId>tars-parent</artifactId>
-    <version>1.7.1</version>
+    <version>1.7.2</version>
     <packaging>pom</packaging>
     <name>Tars</name>
     <description>Super POM For Projects</description>
@@ -46,7 +46,9 @@
         <module>tools</module>
         <module>protobuf</module>
         <module>spring</module>
-        <!--        <module>tars-plugins</module>-->
+        <module>core/server.pom.xml</module>
+        <module>core/client.pom.xml</module>
+        <module>tars-plugins</module>
     </modules>
 
     <properties>

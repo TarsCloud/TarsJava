@@ -587,9 +587,9 @@ public class TarsHelper {
 
     public static boolean isStruct(Class<?> clazz) {
         boolean isStruct = clazz.isAnnotationPresent(TarsStruct.class);
-        if (isStruct) {
-            getStructInfo(clazz);
-        }
+//        if (isStruct) {
+//            getStructInfo(clazz);
+//        }
         return isStruct;
     }
 

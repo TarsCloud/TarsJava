@@ -1,3 +1,18 @@
+/**
+ * Tencent is pleased to support the open source community by making Tars available.
+ * <p>
+ * Copyright (C) 2016 THL A29 Limited, a Tencent company. All rights reserved.
+ * <p>
+ * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ * <p>
+ * https://opensource.org/licenses/BSD-3-Clause
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.qq.tars.protocol.tars.support;
 
 
@@ -16,10 +31,7 @@ import org.slf4j.Logger;
 
 import java.util.concurrent.CompletableFuture;
 
-/**
- * jce的CompletableFuture的实现
- * @author Kerrigan
- */
+
 public class TarsPromiseFutureCallback<V> implements Callback<TarsServantResponse> {
     private static final Logger logger = LoggerFactory.getClientLogger();
 
@@ -54,7 +66,7 @@ public class TarsPromiseFutureCallback<V> implements Callback<TarsServantRespons
 
             }
             if (response.getRet() != TarsHelper.SERVERSUCCESS) {
-                throw ServerException.makeException(response.getRet());
+                throw ServerException.makeException(response.getRet(), response.getRemark());
             }
             TarsPromiseFutureCallback.this.completableFuture.complete((V) response.getResult());
         } catch (Throwable ex) {

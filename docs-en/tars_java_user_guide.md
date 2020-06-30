@@ -21,7 +21,7 @@ Add dependent jar packages in the build project **pom.xml**
 <dependency>
     <groupId>com.tencent.tars</groupId>
     <artifactId>tars-server</artifactId>
-    <version>  1.7.1</version>
+    <version>  1.7.2</version>
     <type>jar</type>
 </dependency>
 ```
@@ -30,7 +30,7 @@ Add dependent jar packages in the build project **pom.xml**
 <plugin>
     <groupId>com.tencent.tars</groupId>
     <artifactId>tars-maven-plugin</artifactId>
-    <version>  1.7.1</version>
+    <version>  1.7.2</version>
     <configuration>
 	<tars2JavaConfig>
 	    <tarsFiles>
@@ -65,7 +65,7 @@ Provide plug-in compile to generate java code, add java file configuration in ta
 <plugin>
 	<groupId>com.tencent.tars</groupId>
 	<artifactId>tars-maven-plugin</artifactId>
-	<version>  1.7.1</version>
+	<version>  1.7.2</version>
 	<configuration>
 		<tars2JavaConfig>
 			<!-- Tars file location -->
@@ -309,13 +309,13 @@ Asynchronous nesting represents the following:
 Normally, after receiving the request, B needs to return to A after the interface is processed, so it cannot be implemented if B also initiates an asynchronous request to C in the interface Therefore, it is necessary to declare startup asynchronism in the implementation interface method to achieve asynchronous calls across services.
 
 ​	
-	//Declarations start asynchronous context
-	AsyncContext context = AsyncContext.startAsync();
-	//Interface implementation
-	...
-	
-	//Back packet after asynchronous processing
-	context.writeResult(...);
+​	//Declarations start asynchronous context
+​	AsyncContext context = AsyncContext.startAsync();
+​	//Interface implementation
+​	...
+​	
+​	//Back packet after asynchronous processing
+​	context.writeResult(...);
 
 ## Client development
 
@@ -499,6 +499,12 @@ Note:
 > * When the server returns, the callback_hello of HelloPrxCallback will be responded.
 > * If the call returns an exception or timeout, the callback_exception will be called, and the value of RET is defined as follows.
 
+#### Promise invoke
+
+The asynchronous promise call is a new feature of Tars v1.7.0. This method returns a CompletableFuture object. CompletableFuture is a newly added class in jdk1.8. It implements the Future \<T> and CompletionStage \<T> interfaces and provides very powerful asynchronous programming functions. Before jdk1.8, we mainly used Future or registered callback function to complete asynchronous programming. However, these two methods have certain defects. When Future calls get() to get the result, if the operation is not completed, it will wait all the time, which may cause a waste of CPU time. Furthermore, Future cannot complete chained calls, and cannot perform further operations on the results obtained from the previous Future.  For the callback method, with the continuous nesting of callback functions, it will cause the phenomenon of callback pyramid. Therefore, CompletableFuture was introduced in Tars v1.7.0, which can perform a series of subsequent operations in a callback manner by registering triggers.
+
+The API of CompletabileFuture generally has two forms: the one with Async suffix and the one without Async suffix. The method without the Async suffix will be executed by the current calling thread, and the method with the Async suffix is divided into two cases. If Executor is passed in the parameter, a thread will be obtained from the Executor to execute the task. Otherwise, a thread obtained from the global ForkJoinPool.commonPool () will perform these tasks.
+
 #### Set mode invoke
 
 At present, the framework has already supported the deployment of business in set mode. After set deployment, the calls between businesses are transparent to the business deveploment. But because some services have special needs, after deploying set, the client can specify the set name to invoke the server, so the framework increases the function of the client to specify the set name to invoke the service on the basis of the set deployment.
@@ -566,6 +572,211 @@ Illustration: remote log service must be pre applied before long log.
 > * LogType.REMOTE: Only print remote logs
 > * LogType.All : Print local and remote logs
 
+### Logback log system
+
+After TarsJava v1.7, Logback was used as the Tars log system. The configuration of Logback is very flexible and can provide users with more powerful log functions.
+
+#### Architecture
+
+Logback log system consists of three parts, namely Logger, Appender, Layout:
+
+- Logger: Each Logger is attached to a LoggerContext, which is used to generate Loggers and arrange them into a tree-like hierarchy. Logger is a named entity. Their names are case sensitive and follow hierarchical naming rules:
+
+  > Named Hierarchy
+  >
+  > A logger is said to be an ancestor of another logger if its name followed by a dot is a prefix of the descendant logger name. A logger is said to be a parent of a child logger if there are no ancestors between itself and the descendant logger.
+
+  Loggers can be assigned different levels, namely TRACE, DEBUG, INFO, WARN and ERROR. If the effective level of the Logger is q and the request level of the log record is p, the log request will be executed only when p≥q. The default effective level of root Logger is DEBUG.
+
+  > Level rules: TRACE < DEBUG < INFO <  WARN < ERROR
+
+If no level is set for the Logger, then it will inherit an assigned level from its closest ancestor. A simple example is as follows:
+
+| Logger name | Assigned level | Effective level |
+| ----------- | -------------- | --------------- |
+| root        | DEBUG          | DEBUG           |
+| X           | INFO           | INFO            |
+| X.Y         | none           | INFO            |
+| X.Y.Z       | none           | INFO            |
+
+- Appender: The component for writing log events, you can specify the log output to the console, files, remote servers, and databases.
+- Layout: Format and output log information.
+
+#### Configuration
+
+Logback will first look for *logback-test.xml* and *logback.xml* configuration files in the class path. If it is not found, the default *BasicConfigurator* will be used. The basic structure of the configuration file can be described as, \<configuration\> element, containing zero or more \<appender\> elements, followed by zero or more \<logger\> elements, followed by at most one \<root\> element. The official document gives the structure of the configuration file as follows:
+
+![Logback-config](../docs/images/Logback-config.png)
+
+A typical logback.xml configuration file format is as follows:
+
+```xml
+<configuration scan="true" scanPeriod="60 seconds" debug="false">  
+    <property name="Logname" value="demo" /> 
+    <contextName>${Logname}</contextName> 
+    
+    
+    <appender>
+        ···
+    </appender>   
+    
+    <logger>
+        ···
+    </logger>
+    
+    <root>             
+       ···
+    </root>  
+</configuration>  
+```
+
+1. \<configuration\>
+
+It provides three configuration options:
+
+- scan：true means that when the configuration file changes, the configuration file will be reloaded automatically, the default value is true.
+- scanPeriod：The time interval for scanning the configuration file for changes. The default time unit is milliseconds. You can set the unit to milliseconds, seconds, minutes, or hours.
+- debug：true means to print Logback internal log information, the default value is false.
+
+```xml
+<configuration scan="true" scanPeriod="30 seconds" debug="false"> 
+  ...
+</configuration> 
+```
+
+2. \<contextName\>
+
+It is used to set the name of LoggerContext. The default context name is "default". Once set, the context name cannot be changed.
+
+```xml
+<contextName>myAppName</contextName> 
+```
+
+3. \<property\>
+
+You can use this variable to define variables in the configuration file, or you can load them in batches from external property files or external resources. The variable can then be used in the form of $ {variable name}.
+
+```xml
+<property name="USER_HOME" value="/home/log" />
+```
+
+4. \<appender\>
+
+The components responsible for writing log events. There are several common types
+
+- ConsoleAppender: Output log to console
+
+  ```xml
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+      <encoder>
+          <pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n</pattern>
+      </encoder>
+  </appender>
+  ```
+
+- FileAppender: Output log to file
+
+  ```xml
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+      <!-- Set the file to be written -->
+      <file>testFile.log</file>
+      <!-- Whether to append to the end of the file -->
+      <append>true</append>
+      <!-- set immediateFlush to false for much higher logging throughput -->
+      <immediateFlush>true</immediateFlush>
+      <encoder>
+        <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+      </encoder>
+  </appender>
+  ```
+
+- RollingFileAppender: You can first output the log to a specified file, and once a certain condition is met, then log to another file. (extends FileAppender class)
+
+  ```xml
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+      <file>logFile.log</file>
+      <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <!-- daily rollover -->
+        <fileNamePattern>logFile.%d{yyyy-MM-dd}.log</fileNamePattern>
+  
+        <!-- keep 30 days' worth of history capped at 3GB total size -->
+        <maxHistory>30</maxHistory>
+        <totalSizeCap>3GB</totalSizeCap>
+  
+      </rollingPolicy>
+  
+      <encoder>
+        <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+      </encoder>
+  </appender> 
+  ```
+
+  In addition to the above time rolling strategy, there is also a **FixedWindowRollingPolicy**。
+
+5. \<logger\>
+
+You can set the log printing level of a certain package or a specific class, and add appender.
+
+- name：Make a package or a class of logger constraints
+- level：Assign print level
+- addtivity：Whether to pass the print information to the superior logger, the default is true
+- \<appender-ref\>：Add this appender to logger
+
+```xml
+<logger name="chapters.configuration" level="DEBUG">
+    <appender-ref ref="STDOUT" />
+</logger>
+```
+
+6. \<root\>
+
+It is also the \<logger \> element. Only the level attribute is used to set the print level, and you can also use <appender-ref \> to add appenders.
+
+```xml
+<root level="debug">
+    <appender-ref ref="STDOUT" />
+</root>
+```
+
+A complete logback.xml configuration is as follows:
+
+```xml
+<configuration>
+
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <file>myApp.log</file>
+    <encoder>
+      <pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="chapters.configuration">
+    <appender-ref ref="FILE" />
+  </logger>
+
+  <root level="debug">
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>
+```
+
+#### Logback usage
+
+You can obtain the corresponding logger by calling the LoggerFactory.getLogger method, and then use the logger to complete the log recording.
+
+```java
+Logger logger = LoggerFactory.getLogger("name");
+logger.info("Hello World!");
+```
+
+For more information on the use of Logback, please refer to [Logback Official Document](http://logback.qos.ch/manual/index.html).
+
 ## Service management
 
 The service framework can support dynamic receiving commands to handle related business logic, such as dynamic update configuration, etc.
@@ -588,7 +799,7 @@ The custom command sending mode of the service is sent through the custom comman
 Just register related commands and command processing classes, as follows:
 
 ```java
-CustemCommandHelper.getInstance().registerCustemHandler("cmdName",new CommandHandler() {
+CustomCommandHelper.getInstance().registerCustomHandler("cmdName",new CommandHandler() {
 ```
 
 ```java
@@ -661,6 +872,37 @@ Illustration:
 
 > - When the dyed log is opened, the parameter passed is recommended to fill in the service name. If it is null, the default name is default.
 > - The log level and log type of the dyed log are the same as the original log. If the original log is only local, the dyed log is only local, and the original log will be remote to play the long distance dyed log.
+
+Logback is used as the logging system in the new version of TarsJava, so MDC can be used to dye the logs. MDC is a technology provided by Logback to record logs in multiple threads. It holds a ThreadLocal object inside which stores a Map, so users can add key-value pairs to it as needed. By implementing Filter and using MDC, dyeing of logs can be achieved:
+
+```java
+public class MyFilter implements Filter {
+    private static final String TRACE_ID = "traceId"; 
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        ...
+        boolean success = putMDC(...);
+        ...
+        try {
+            chain.doFilter(request, response);
+        } finally {
+            if(success) {
+                MDC.remove(TRACE_ID);
+            }
+        }
+    }
+
+    private boolean putMDC(...) {
+        if (...){
+            String traceId = ...
+            MDC.put(TRACE_ID, traceId);
+        	return true;
+        }
+        return false;
+    }
+```
+
+
 
 - Passive staining:
 

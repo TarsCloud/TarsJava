@@ -5,7 +5,7 @@
     <parent>
         <artifactId>tars-parent</artifactId>
         <groupId>com.tencent.tars</groupId>
-        <version>1.7.1</version>
+        <version>1.7.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>tars-plugins</artifactId>
@@ -28,12 +28,12 @@
         <dependency>
             <groupId>com.tencent.tars</groupId>
             <artifactId>tars-client</artifactId>
-            <version>1.7.1</version>
+            <version>1.7.2</version>
         </dependency>
         <dependency>
             <groupId>com.tencent.tars</groupId>
             <artifactId>tars-server</artifactId>
-            <version>1.7.1</version>
+            <version>1.7.2</version>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>

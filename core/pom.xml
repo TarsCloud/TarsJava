@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.tencent.tars</groupId>
         <artifactId>tars-parent</artifactId>
-        <version>1.7.1</version>
+        <version>1.7.2</version>
     </parent>
     <artifactId>tars-core</artifactId>
     <name>${project.artifactId}</name>
@@ -72,7 +72,7 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.8.2</version>
+            <version>${gson.version}</version>
         </dependency>
     </dependencies>
 </project>

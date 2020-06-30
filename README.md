@@ -10,7 +10,7 @@ This project is the source code of the Tars RPC framework Java language.
 <table>
   <tr>
     <td><b>Homepage:</b></td>
-    <td><a href="https://tars.tencent.com/base/tars_index/en/index.html">tarscloud.org</a></td>
+    <td><a href="https://tarscloud.org">tarscloud.org</a></td>
   </tr>
     <tr>
       <td><b>中文版:</b></td>
@@ -21,7 +21,7 @@ This project is the source code of the Tars RPC framework Java language.
 
 ###  Environmental dependence
 - JDK1.8 or above
-- Maven 2.2.1 or above
+- Maven 3.5 or above
 
 
 ###

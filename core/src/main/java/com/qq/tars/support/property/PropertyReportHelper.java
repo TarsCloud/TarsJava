@@ -17,6 +17,8 @@
 package com.qq.tars.support.property;
 
 import com.qq.tars.client.Communicator;
+import com.qq.tars.client.CommunicatorConfig;
+import com.qq.tars.net.util.Utils;
 import com.qq.tars.rpc.exc.TarsException;
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.support.log.LoggerFactory;
@@ -66,8 +68,20 @@ public class PropertyReportHelper {
         private Collection<Policy> policies;
         private String propRptName;
         private String moduleName;
+        private String ip = "";
+        private String setName = "";
+        private String setArea = "";
+        private String setID = "";
 
         public PropertyReporter(String moduleName, String propRptName, Policy[] policies) {
+            CommunicatorConfig config = ConfigurationManager.getInstance().getServerConfig().getCommunicatorConfig();
+
+            this.moduleName = !config.isEnableSet() ? moduleName : String.format("%s.%s%s%s", moduleName, config.getSetName(), config.getSetArea(), config.getSetID());
+            if (config.isEnableSet()) {
+                this.setName = config.getSetName();
+                this.setArea = config.getSetArea();
+                this.setID = config.getSetID();
+            }
             this.propRptName = propRptName;
 
             if (ConfigurationManager.getInstance().getCommunicatorConfig().isEnableSet()) {
@@ -76,12 +90,17 @@ public class PropertyReportHelper {
             } else {
                 this.moduleName = moduleName;
             }
+            this.ip = ConfigurationManager.getInstance().getServerConfig().getLocalIP();
 
             Map<String, Policy> map = new HashMap<String, Policy>();
             for (Policy policy : policies)
                 map.put(policy.desc(), policy);
             this.policies = map.values();
+
+            this.ip = Utils.getLocalIp();
+
         }
+
 
         public void report(int value) {
             for (Policy policy : policies)
@@ -90,11 +109,11 @@ public class PropertyReportHelper {
 
         public ReportData getReportData() {
             int len = 0;
-            StatPropMsgHead head = new StatPropMsgHead(moduleName, "", propRptName, null, null, null, null, 1);
+            StatPropMsgHead head = new StatPropMsgHead(moduleName, this.ip, propRptName, setName, setArea, setID, null, 1);
             len += moduleName.length() + propRptName.length();
             int size = policies.size();
             len += PROPERTY_PROTOCOL_LEN + size;
-            List<StatPropInfo> statPropInfos = new ArrayList<StatPropInfo>();
+            List<StatPropInfo> statPropInfos = new ArrayList<StatPropInfo>(policies.size());
             for (Policy policy : policies) {
                 String desc = policy.desc();
                 String value = policy.get();
