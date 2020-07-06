@@ -61,8 +61,6 @@ public class Tars2JavaMojo extends AbstractMojo {
 
     private AtomicInteger var = new AtomicInteger(0);
 
-    enum IsSetType {ISSET_NONE, ISSET_PRIMITIVE, ISSET_BITSET}
-
     public void execute() throws MojoExecutionException, MojoFailureException {
         // 1. check configurations
         if (!tars2JavaConfig.packagePrefixName.endsWith(".")) {
@@ -291,27 +289,6 @@ public class Tars2JavaMojo extends AbstractMojo {
         }
         out.println();
 
-        // isset data
-        int optionals = 0;
-        for (TarsStructMember m : struct.memberList()) {
-            if (!typeCanBeNull(m.memberType(), nsMap)) {
-                out.println("\tprivate static final int __" + m.memberName().toUpperCase() + "_ISSET_ID = " + optionals + ";");
-                optionals++;
-            }
-        }
-        StringBuilder outprimitiveType = new StringBuilder("");
-        IsSetType isSetType = needIsSet(struct, outprimitiveType, nsMap);
-        switch (isSetType){
-            case ISSET_NONE:
-                break;
-            case ISSET_PRIMITIVE:
-                out.println("\tprivate " + outprimitiveType.toString() + " __isset_bitfield = 0;");
-                break;
-            case ISSET_BITSET:
-                out.println("\tprivate java.util.BitSet __isset_bit_vector = new java.util.BitSet(" + optionals + ");");
-        }
-        out.println();
-
         // 生成 getter setter
         for (TarsStructMember m : struct.memberList()) {
             out.println("\tpublic " + type(m.memberType(), nsMap) + " " + fieldGetter(m.memberName(), m.memberType()) + "() {");
@@ -321,36 +298,6 @@ public class Tars2JavaMojo extends AbstractMojo {
 
             out.println("\tpublic void " + fieldSetter(m.memberName(), m.memberType()) + "(" + type(m.memberType(), nsMap) + " " + m.memberName() + ") {");
             out.println("\t\tthis." + m.memberName() + " = " + m.memberName() + ";");
-            if (!typeCanBeNull(m.memberType(), nsMap)) {
-                out.println("\t\tset" + firstUpStr(m.memberName()) + "IsSet(true);");
-            }
-            out.println("\t}");
-            out.println();
-
-            // isSet method
-            out.println("\t/** Returns true if field " + m.memberName() + " is set (has been assigned a value) and false otherwise */");
-            out.println("\tpublic boolean isSet" + firstUpStr(m.memberName()) + "() {");
-            if (typeCanBeNull(m.memberType(), nsMap)) {
-                out.println("\t\treturn this." + m.memberName() + " != null;");
-            } else if (isSetType == IsSetType.ISSET_PRIMITIVE) {
-                out.println("\t\treturn EncodingUtils.testBit(__isset_bitfield, __" + m.memberName().toUpperCase() + "_ISSET_ID);");
-            } else {
-                out.println("\t\treturn __isset_bit_vector.get(__" + m.memberName().toUpperCase() + "_ISSET_ID);");
-            }
-            out.println("\t}");
-            out.println();
-
-            // setFieldIsSet method
-            out.println("\tpublic void set" + firstUpStr(m.memberName()) + "IsSet(boolean value) {");
-            if (typeCanBeNull(m.memberType(), nsMap)) {
-                out.println("\t\tif (!value) {");
-                out.println("\t\t\tthis." + m.memberName() + " = null;");
-                out.println("\t\t}");
-            } else if (isSetType == IsSetType.ISSET_PRIMITIVE) {
-                out.println("\t\t__isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __" + m.memberName().toUpperCase() + "_ISSET_ID, value);");
-            } else {
-                out.println("\t\t__isset_bit_vector.set(__" + m.memberName().toUpperCase() + "_ISSET_ID, value);");
-            }
             out.println("\t}");
             out.println();
         }
@@ -451,40 +398,22 @@ public class Tars2JavaMojo extends AbstractMojo {
         out.println("\t@Override");
         out.println("\tpublic String toString() {");
         out.println("\t\tStringBuilder sb = new StringBuilder(\"" + struct.structName() + "(\");");
-        out.println("\t\tboolean first = true;");
-        out.println();
 
         boolean first = true;
         for (TarsStructMember m : struct.memberList()) {
-            boolean couldBeUnSet = !m.isRequire();
-            if (couldBeUnSet){
-                out.println("\t\tif (isSet" + firstUpStr(m.memberName()) + "()) {");
-            }
             if (!first) {
-                if (couldBeUnSet) out.print("\t");
-                out.println("\t\tif (!first) sb.append(\", \");");
+                out.println("\t\tsb.append(\", \");");
             }
-            if (couldBeUnSet) out.print("\t");
             out.println("\t\tsb.append(\"" + m.memberName() +  ":\");");
             boolean canBeNull = typeCanBeNull(m.memberType(), nsMap);
             if (canBeNull) {
-                if (couldBeUnSet) out.print("\t");
                 out.println("\t\tif (this." +  m.memberName() + " == null) {");
-                if (couldBeUnSet) out.print("\t");
                 out.println("\t\t\tsb.append(\"null\");");
-                if (couldBeUnSet) out.print("\t");
                 out.println("\t\t} else {");
                 out.print("\t");
             }
-            if (couldBeUnSet) out.print("\t");
             out.println("\t\tsb.append(this." + m.memberName() + ");");
             if (canBeNull) {
-                if (couldBeUnSet) out.print("\t");
-                out.println("\t\t}");
-            }
-            if (couldBeUnSet) out.print("\t");
-            out.println("\t\tfirst = false;");
-            if (couldBeUnSet) {
                 out.println("\t\t}");
             }
             first = false;
@@ -860,33 +789,6 @@ public class Tars2JavaMojo extends AbstractMojo {
             }
         }
         return canBeNull;
-    }
-
-    private IsSetType needIsSet(TarsStruct struct, StringBuilder outPrimitiveType, Map<String, List<TarsNamespace>> nsMap) {
-        int count = 0;
-        for (TarsStructMember m : struct.memberList()) {
-            if (!typeCanBeNull(m.memberType(), nsMap)) {
-                count++;
-            }
-        }
-        if (count == 0) {
-            return IsSetType.ISSET_NONE;
-        } else if (count <= 64){
-            if (outPrimitiveType != null) {
-                if (count <= 8) {
-                    outPrimitiveType.append("byte");
-                } else if (count <= 16) {
-                    outPrimitiveType.append("short");
-                } else if (count <= 32) {
-                    outPrimitiveType.append("int");
-                } else if (count <= 64) {
-                    outPrimitiveType.append("long");
-                }
-            }
-            return IsSetType.ISSET_PRIMITIVE;
-        } else {
-            return IsSetType.ISSET_BITSET;
-        }
     }
 
     private String typeInit(TarsType jt, Map<String, List<TarsNamespace>> nsMap, boolean useDefault) {
