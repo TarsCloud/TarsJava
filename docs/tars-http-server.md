@@ -56,7 +56,7 @@ Tars平台支持HTTP服务的部署，使用@TarsHttpService注解即可将服�
     <dependency>
       <groupId>com.tencent.tars</groupId>
       <artifactId>tars-spring-boot-starter</artifactId>
-      <version>1.7.0-SNAPSHOT</version>
+      <version>1.7.0</version>
     </dependency>
   </dependencies>
 ```
