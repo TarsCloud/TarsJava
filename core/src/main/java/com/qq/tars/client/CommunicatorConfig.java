@@ -32,7 +32,7 @@ public class CommunicatorConfig {
     private int refreshEndpointInterval = 60000;
     private int reportInterval = 60000;
 
-    private String stat = Constants.default_stat;
+    private String stat = null;
     private String property = null;
 
     private int sampleRate = 0;

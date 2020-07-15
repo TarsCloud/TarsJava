@@ -18,6 +18,7 @@ package com.qq.tars.support.property;
 
 import com.qq.tars.client.Communicator;
 import com.qq.tars.client.CommunicatorConfig;
+import com.qq.tars.common.util.StringUtils;
 import com.qq.tars.net.util.Utils;
 import com.qq.tars.rpc.exc.TarsException;
 import com.qq.tars.server.config.ConfigurationManager;
@@ -183,8 +184,12 @@ public class PropertyReportHelper {
             if (!initialized) {
                 return;
             }
-
-            PropertyFPrx propertyFPrx = communicator.stringToProxy(PropertyFPrx.class, ConfigurationManager.getInstance().getServerConfig().getCommunicatorConfig().getProperty());
+            String property=ConfigurationManager.getInstance().getServerConfig().getCommunicatorConfig().getProperty();
+            if(StringUtils.isEmpty(property)){
+                omLogger.info("no config property obj to report");
+                return;
+            }
+            PropertyFPrx propertyFPrx = communicator.stringToProxy(PropertyFPrx.class, property);
 
             Map<StatPropMsgHead, StatPropMsgBody> sendData = new HashMap<StatPropMsgHead, StatPropMsgBody>();
             int sendLen = 0;
