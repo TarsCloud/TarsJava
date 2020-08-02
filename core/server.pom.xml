@@ -18,6 +18,7 @@
         <brave-opentracing.version>0.31.1</brave-opentracing.version>
         <zipkin-reporter.version>2.7.4</zipkin-reporter.version>
         <ch.qos.logback.version>1.2.3</ch.qos.logback.version>
+        <asm.version>5.0.4</asm.version>
     </properties>
 
     <dependencies>
@@ -67,6 +68,11 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>${ch.qos.logback.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+            <version>${asm.version}</version>
         </dependency>
     </dependencies>
     <build>

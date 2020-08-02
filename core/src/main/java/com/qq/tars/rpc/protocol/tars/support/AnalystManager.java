@@ -47,8 +47,8 @@ public final class AnalystManager {
         return context_cache.get(objName);
     }
 
-    public void registry(String contextName, Class<?> api, String objName) {
-        Map<Method, TarsMethodInfo> methodsMap = TarsHelper.getMethodInfo(api, objName);
+    public void registry(Class<?> api, Object servant, String objName) {
+        Map<Method, TarsMethodInfo> methodsMap = TarsHelper.getMethodInfo(api, servant, objName);
         if (methodsMap != null && !methodsMap.isEmpty()) {
             Map<String, TarsMethodInfo> methodMap = new HashMap<String, TarsMethodInfo>();
             for (Entry<Method, TarsMethodInfo> entry : methodsMap.entrySet()) {

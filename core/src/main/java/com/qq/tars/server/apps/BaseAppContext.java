@@ -122,7 +122,7 @@ public abstract class BaseAppContext implements AppContext {
                 if (api.isAssignableFrom(ExtendedServant.class)) {
                     continue;
                 }
-                AnalystManager.getInstance().registry(name(), api, skeleton.name());
+                AnalystManager.getInstance().registry(api, skeleton.getServant(), skeleton.name());
             } catch (Exception e) {
                 System.err.println("app[] init servant[" + api.getName() + "] failed");
                 e.printStackTrace();
