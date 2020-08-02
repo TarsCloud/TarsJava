@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -189,7 +189,7 @@ public final class ObjectProxy<T> implements ServantProxy, InvocationHandler {
                 } else {
                     nodes = communicator.getQueryHelper().getServerNodes(servantProxyConfig);
                 }
-                if (nodes != null && !nodes.equals(servantProxyConfig.getObjectName())) {
+                if (nodes != null && !serverNodesEquals(nodes, servantProxyConfig.getObjectName())) {
                     servantCacheManager.save(communicator.getId(), servantProxyConfig.getSimpleObjectName(), nodes, communicator.getCommunicatorConfig().getDataPath());
                     servantProxyConfig.setObjectName(nodes);
                     refresh();
@@ -201,6 +201,24 @@ public final class ObjectProxy<T> implements ServantProxy, InvocationHandler {
                 logger.info("ServantNodeRefresher run({}), use: {}", servantProxyConfig.getSimpleObjectName(), (System.currentTimeMillis() - begin));
             }
         }
+    }
+
+    private static boolean serverNodesEquals(String leftNodes, String rightNodes) {
+        List<Url> leftUrls = ParseTools.parse(new ServantProxyConfig(leftNodes));
+        List<Url> rightUrls = ParseTools.parse(new ServantProxyConfig(rightNodes));
+        if (leftUrls.size() != rightUrls.size()) {
+            return false;
+        }
+        Collections.sort(leftUrls);
+        Collections.sort(rightUrls);
+        Iterator<Url> leftIter = leftUrls.iterator();
+        Iterator<Url> rightIter = rightUrls.iterator();
+        while (leftIter.hasNext() && rightIter.hasNext()) {
+            if (!Objects.equals(leftIter.next(), rightIter.next())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private class ServantStatReporter implements Runnable {
