@@ -549,7 +549,7 @@ public class TarsHelper {
             public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
                 org.objectweb.asm.Type[] argumentTypes = org.objectweb.asm.Type.getArgumentTypes(desc);
                 if (!method.getName().equals(name) || !matchTypes(argumentTypes, methodParameterTypes)) {
-                    return null;
+                    return super.visitMethod(access, name, desc, signature, exceptions);
                 }
                 return new MethodVisitor(Opcodes.ASM5) {
                     @Override
@@ -558,6 +558,7 @@ public class TarsHelper {
                         if (0 <= paramIndex && paramIndex < paramLength) {
                             paramNames[paramIndex] = name;
                         }
+                        super.visitLocalVariable(name, desc, signature, start, end, index);
                     }
                 };
 
