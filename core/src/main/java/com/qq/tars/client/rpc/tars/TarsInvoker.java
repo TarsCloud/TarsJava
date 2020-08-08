@@ -37,6 +37,7 @@ import com.qq.tars.protocol.util.TarsHelper;
 import com.qq.tars.rpc.common.Url;
 import com.qq.tars.rpc.exc.NotConnectedException;
 import com.qq.tars.rpc.exc.ServerException;
+import com.qq.tars.rpc.exc.TarsException;
 import com.qq.tars.rpc.exc.TimeoutException;
 import com.qq.tars.rpc.protocol.tars.TarsServantRequest;
 import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
@@ -79,6 +80,9 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
                 ret = response.getRet() == TarsHelper.SERVERSUCCESS ? Constants.INVOKE_STATUS_SUCC : Constants.INVOKE_STATUS_EXEC;
                 if (response.getRet() != TarsHelper.SERVERSUCCESS) {
                     throw ServerException.makeException(response.getRet(), response.getRemark());
+                }
+                if (response.getCause() != null) {
+                    throw new TarsException(response.getCause());
                 }
                 return response.getResult();
             }
