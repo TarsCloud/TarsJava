@@ -131,7 +131,7 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
         } catch (Throwable t) {
             logger.error("error occurred on init invoker|" + servantProxyConfig.getObjectName(), t);
         }
-        return (ConcurrentHashSet<Invoker<T>>) Collections.EMPTY_SET;
+        return new ConcurrentHashSet<>();
     }
 
     private void addInvokers(Collection<Url> urls) {
