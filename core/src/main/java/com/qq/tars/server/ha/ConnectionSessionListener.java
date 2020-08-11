@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ConnectionSessionListener implements SessionListener {
 
-    private final AtomicInteger connStat = new AtomicInteger(0);
+    private int connStat = 0;
 
     private final int MaxConnCount;
 
@@ -37,7 +37,7 @@ public class ConnectionSessionListener implements SessionListener {
 
     @Override
     public synchronized void onSessionCreated(SessionEvent se) {
-        if (connStat.get() >= MaxConnCount) {
+        if (connStat >= MaxConnCount) {
             try {
                 System.out.println("reached the max connection threshold, close the session.");
                 se.getSession().close();
@@ -45,13 +45,15 @@ public class ConnectionSessionListener implements SessionListener {
             }
             return;
         }
-        LoggerFactory.getOmLogger().debug("onSessionCreated:{}", connStat.incrementAndGet());
+        connStat++;
+        LoggerFactory.getOmLogger().debug("onSessionCreated:{}", connStat);
     }
 
     @Override
     public synchronized void onSessionDestroyed(SessionEvent se) {
-        if ((se.getSession() == null || se.getSession().getStatus() == SessionStatus.CLOSED) && connStat.get() > 0) {
-            System.out.println("onSessionDestroyed: " + connStat.decrementAndGet());
+        if ((se.getSession() == null || se.getSession().getStatus() == SessionStatus.CLOSED) && connStat > 0) {
+            connStat--;
+            System.out.println("onSessionDestroyed: " + connStat);
         }
     }
 }
