@@ -32,12 +32,10 @@ import com.qq.tars.support.log.LoggerFactory;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
     private static final Logger logger = LoggerFactory.getClientLogger();
@@ -70,10 +68,26 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
 
     public void refresh() {
         logger.info("try to refresh " + servantProxyConfig.getSimpleObjectName());
-        final List<Invoker<T>> invokers = new ArrayList<>(allInvoker);//copy invoker for destroy
-        this.allInvoker = this.initInvoker();
+        Set<Url> currentUrls = new HashSet<>(ParseTools.parse(servantProxyConfig));
+        Map<Url, Invoker<T>> prevUrlInvokerMap = new HashMap<>(allInvoker.size());
+        List<Invoker<T>> brokenInvokers = new ArrayList<>();
+        for (Invoker<T> invoker : allInvoker) {
+            Url url = invoker.getUrl();
+            prevUrlInvokerMap.put(url, invoker);
+            if (!currentUrls.contains(url)) {
+                brokenInvokers.add(invoker);
+            }
+        }
+        List<Url> newUrls = new ArrayList<>();
+        for (Url url : currentUrls) {
+            if (!prevUrlInvokerMap.containsKey(url)) {
+                newUrls.add(url);
+            }
+        }
 
-        ScheduledExecutorManager.getInstance().schedule(() -> destroy(invokers), Math.max(servantProxyConfig.getAsyncTimeout(), servantProxyConfig.getSyncTimeout()), TimeUnit.MILLISECONDS);
+        addInvokers(newUrls);
+        // only destroy broken invokers
+        ScheduledExecutorManager.getInstance().schedule(() -> destroy(brokenInvokers), Math.max(servantProxyConfig.getAsyncTimeout(), servantProxyConfig.getSyncTimeout()), TimeUnit.MILLISECONDS);
     }
 
     protected ServantClient[] getClients(Url url) throws IOException {
@@ -113,25 +127,37 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
         try {
             logger.info("try to init invoker|conf={}" + servantProxyConfig.toString());
             final List<Url> list = ParseTools.parse(servantProxyConfig);
-            final ConcurrentHashSet<Invoker<T>> needRefreshInvokers = new ConcurrentHashSet<>();
-            for (Url url : list) {
-                try {
-                    boolean active = url.getParameter(Constants.TARS_CLIENT_ACTIVE, false);
-                    if (active) {
-                        logger.info("try to init invoker|active={} |{}", active, url.toIdentityString());
-                        needRefreshInvokers.add(create(api, url));
-                    } else {
-                        logger.info("inactive invoker can't to init|active={}|{}", active, url.toIdentityString());
-                    }
-                } catch (Throwable e) {
-                    logger.error("error occurred on init invoker|" + url.toIdentityString(), e);
-                }
-            }
-            return needRefreshInvokers;
+            return createInvokers(list);
         } catch (Throwable t) {
             logger.error("error occurred on init invoker|" + servantProxyConfig.getObjectName(), t);
         }
-        return (ConcurrentHashSet<Invoker<T>>) Collections.EMPTY_SET;
+        return new ConcurrentHashSet<>();
+    }
+
+    private void addInvokers(Collection<Url> urls) {
+        logger.info("try to add invokers|url={}", urls.stream().map(Url::toIdentityString).collect(Collectors.toList()));
+        ConcurrentHashSet<Invoker<T>> invokers = createInvokers(urls);
+        if (!invokers.isEmpty()) {
+            allInvoker.addAll(invokers);
+        }
+    }
+
+    private ConcurrentHashSet<Invoker<T>> createInvokers(Collection<Url> list) {
+        final ConcurrentHashSet<Invoker<T>> invokers = new ConcurrentHashSet<>();
+        for (Url url : list) {
+            try {
+                boolean active = url.getParameter(Constants.TARS_CLIENT_ACTIVE, false);
+                if (active) {
+                    logger.info("try to init invoker|active={} |{}", active, url.toIdentityString());
+                    invokers.add(create(api, url));
+                } else {
+                    logger.info("inactive invoker can't to init|active={}|{}", active, url.toIdentityString());
+                }
+            } catch (Throwable e) {
+                logger.error("error occurred on init invoker|" + url.toIdentityString(), e);
+            }
+        }
+        return invokers;
     }
 
     private void destroy(Collection<Invoker<T>> invokers) {
