@@ -33,6 +33,7 @@ public class TarsServantRequest extends ServantRequest implements java.io.Serial
     private int messageType;
     private String servantName;
     private String functionName;
+    private byte[] data;
     private int timeout; // iTimeout
     private Map<String, String> status;
     private Map<String, String> context;
@@ -115,6 +116,14 @@ public class TarsServantRequest extends ServantRequest implements java.io.Serial
 
     public void setRequestId(int requestId) {
         this.setTicketNumber(requestId);
+    }
+
+    public byte[] getData() {
+        return data;
+    }
+
+    public void setData(byte[] data) {
+        this.data = data;
     }
 
     public int getTimeout() {
