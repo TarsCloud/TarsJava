@@ -21,7 +21,7 @@ Add dependent jar packages in the build project **pom.xml**
 <dependency>
     <groupId>com.tencent.tars</groupId>
     <artifactId>tars-server</artifactId>
-    <version>  1.7.1</version>
+    <version>  1.7.2</version>
     <type>jar</type>
 </dependency>
 ```
@@ -30,7 +30,7 @@ Add dependent jar packages in the build project **pom.xml**
 <plugin>
     <groupId>com.tencent.tars</groupId>
     <artifactId>tars-maven-plugin</artifactId>
-    <version>  1.7.1</version>
+    <version>  1.7.2</version>
     <configuration>
 	<tars2JavaConfig>
 	    <tarsFiles>
@@ -65,7 +65,7 @@ Provide plug-in compile to generate java code, add java file configuration in ta
 <plugin>
 	<groupId>com.tencent.tars</groupId>
 	<artifactId>tars-maven-plugin</artifactId>
-	<version>  1.7.1</version>
+	<version>  1.7.2</version>
 	<configuration>
 		<tars2JavaConfig>
 			<!-- Tars file location -->
@@ -799,7 +799,7 @@ The custom command sending mode of the service is sent through the custom comman
 Just register related commands and command processing classes, as follows:
 
 ```java
-CustemCommandHelper.getInstance().registerCustemHandler("cmdName",new CommandHandler() {
+CustomCommandHelper.getInstance().registerCustomHandler("cmdName",new CommandHandler() {
 ```
 
 ```java

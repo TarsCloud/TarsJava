@@ -180,7 +180,7 @@ public class TarsCodec extends Codec {
                 try {
                     JsonElement jsonElement = JSON.toJsonTree(response.getResult());
                     // System.out.println("requestId: " + request.getRequestId() + ", charset: " + request.getCharsetName() + ", ret: " + jsonElement.toString());
-                    object.add(TarsHelper.STAMP_STRING, jsonElement);
+                    object.add("tars_ret", jsonElement);
                 } catch (Exception e) {
                     System.err.println("server encode json ret :" + response.getResult() + ", with ex:" + e);
                 }
@@ -338,12 +338,20 @@ public class TarsCodec extends Codec {
             int requestId = jis.read(TarsHelper.STAMP_INT.intValue(), 4, true);
             String servantName = jis.readString(5, true);
             String methodName = jis.readString(6, true);
+            byte[] data = jis.read(TarsHelper.STAMP_BYTE_ARRAY, 7, true);//数据
+            int timeout = jis.read(TarsHelper.STAMP_INT.intValue(), 8, true);//超时时间
+            Map<String, String> context = (Map<String, String>) jis.read(TarsHelper.STAMP_MAP, 9, true);//Map<String, String> context
+            Map<String, String> status = (Map<String, String>) jis.read(TarsHelper.STAMP_MAP, 10, true);
             request.setVersion(version);
             request.setPacketType(packetType);
             request.setMessageType(messageType);
             request.setRequestId(requestId);
             request.setServantName(servantName);
             request.setFunctionName(methodName);
+            request.setData(data);
+            request.setTimeout(timeout);
+            request.setContext(context);
+            request.setStatus(status);
             request.setInputStream(jis);
             request.setCharsetName(charsetName);
         } catch (Exception e) {
@@ -368,14 +376,6 @@ public class TarsCodec extends Codec {
             oldClassLoader = Thread.currentThread().getContextClassLoader();
             Thread.currentThread().setContextClassLoader(resolveProtocolClassLoader());
             String methodName = request.getFunctionName();
-            byte[] data = jis.read(TarsHelper.STAMP_BYTE_ARRAY, 7, true);//数据
-            int timeout = jis.read(TarsHelper.STAMP_INT.intValue(), 8, true);//超时时间
-            Map<String, String> context = (Map<String, String>) jis.read(TarsHelper.STAMP_MAP, 9, true);//Map<String, String> context
-            Map<String, String> status = (Map<String, String>) jis.read(TarsHelper.STAMP_MAP, 10, true);
-
-            request.setTimeout(timeout);
-            request.setContext(context);
-            request.setStatus(status);
 
             String servantName = request.getServantName();
             Map<String, TarsMethodInfo> methodInfoMap = AnalystManager.getInstance().getMethodMapByName(servantName);
@@ -396,12 +396,12 @@ public class TarsCodec extends Codec {
                 Object[] parameters = new Object[parametersList.size()];
                 int i = 0;
                 if (TarsHelper.VERSION == request.getVersion()) {//request
-                    parameters = decodeRequestBody(data, request.getCharsetName(), methodInfo);
+                    parameters = decodeRequestBody(request.getData(), request.getCharsetName(), methodInfo);
                 } else if (TarsHelper.VERSION2 == request.getVersion() || TarsHelper.VERSION3 == request.getVersion()) {
-                    parameters = decodeRequestWupBody(data, request.getVersion(), request.getCharsetName(), methodInfo);
+                    parameters = decodeRequestWupBody(request.getData(), request.getVersion(), request.getCharsetName(), methodInfo);
                 } else if (TarsHelper.VERSIONJSON == request.getVersion()) {
                     // System.out.println("requestId: " + request.getRequestId() + ", charset: " + request.getCharsetName() + ", data: " + new String(data, request.getCharsetName()));
-                    parameters = decodeRequestJsonBody(data, request.getCharsetName(), methodInfo);
+                    parameters = decodeRequestJsonBody(request.getData(), request.getCharsetName(), methodInfo);
                 } else {
                     request.setRet(TarsHelper.SERVERDECODEERR);
                     System.err.println("un supported protocol, ver=" + request.getVersion());
@@ -553,6 +553,8 @@ public class TarsCodec extends Codec {
         response.setRet(is.read((int) 0, 5, true));
         if (response.getRet() == TarsHelper.SERVERSUCCESS) {
             response.setInputStream(is);
+        } else {
+            response.setRemark(is.read(TarsHelper.STAMP_STRING, 8, true));
         }
 
         return response;

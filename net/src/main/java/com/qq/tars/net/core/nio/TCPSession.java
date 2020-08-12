@@ -23,6 +23,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.qq.tars.net.client.ticket.Ticket;
@@ -125,6 +126,8 @@ public class TCPSession extends Session {
                     try {
                         request.resetBornTime();
                         selectorManager.getThreadPool().execute(new WorkThread(request, selectorManager));
+                    } catch (RejectedExecutionException e) {
+                        selectorManager.getProcessor().overload(request, request.getIoSession());
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
