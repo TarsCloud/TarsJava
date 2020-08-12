@@ -10,3 +10,4 @@ target/
 .classpath
 *.dat
 examples/**/testapp/
+**/.DS_Store
