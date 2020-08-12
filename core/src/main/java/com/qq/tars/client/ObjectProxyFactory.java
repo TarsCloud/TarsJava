@@ -55,6 +55,8 @@ class ObjectProxyFactory {
             servantProxyConfig.setModuleName(communicator.getCommunicatorConfig().getModuleName(), communicator.getCommunicatorConfig().isEnableSet(), communicator.getCommunicatorConfig().getSetDivision());
             servantProxyConfig.setLocator(communicator.getCommunicatorConfig().getLocator());
             addSetDivisionInfo(servantProxyConfig, setDivision);
+            servantProxyConfig.setRefreshInterval(communicator.getCommunicatorConfig().getRefreshEndpointInterval());
+            servantProxyConfig.setReportInterval(communicator.getCommunicatorConfig().getReportInterval());
         }
 
         updateServantEndpoints(servantProxyConfig);
@@ -118,6 +120,7 @@ class ObjectProxyFactory {
         cfg.setCharsetName(communicatorConfig.getCharsetName());
         cfg.setConnections(communicatorConfig.getConnections());
         cfg.setRefreshInterval(communicatorConfig.getRefreshEndpointInterval());
+        cfg.setReportInterval(communicator.getCommunicatorConfig().getReportInterval());
         return cfg;
     }
 
