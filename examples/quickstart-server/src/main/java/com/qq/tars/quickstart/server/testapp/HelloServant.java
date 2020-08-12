@@ -13,9 +13,4 @@ import com.qq.tars.common.support.Holder;
 public interface HelloServant {
 
 	 String hello(@TarsMethodParameter(name="no")int no, @TarsMethodParameter(name="name")String name);
-<<<<<<< HEAD
-
-	 int helloJson(@TarsMethodParameter(name="tie")TestInfo tie, @TarsHolder(name="otie") Holder<TestInfoEx> otie);
-=======
->>>>>>> c003611... fixed example servant to support http+json protocol
 }
