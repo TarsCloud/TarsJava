@@ -26,6 +26,15 @@ public class TarsMethodParameterInfo {
     private Object stamp;
     private Type type;
     private Annotation[] annotations;
+    private Type innerType = null;
+
+    public Type getInnerType() {
+        return innerType;
+    }
+
+    public void setInnerType(Type innerType) {
+        this.innerType = innerType;
+    }
 
     public String getName() {
         return name;
