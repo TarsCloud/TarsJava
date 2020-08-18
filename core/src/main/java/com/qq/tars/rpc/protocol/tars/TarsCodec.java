@@ -49,6 +49,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 public class TarsCodec extends Codec {
 
@@ -609,7 +610,10 @@ public class TarsCodec extends Codec {
         TarsInputStream jis = new TarsInputStream(data);
         jis.setServerEncoding(charset);
 
-        if (returnInfo != null && Void.TYPE != returnInfo.getType()) {
+        if (returnInfo != null && Void.TYPE != returnInfo.getType() && returnInfo.getType() != CompletableFuture.class) {
+            values.add(jis.read(returnInfo.getStamp(), returnInfo.getOrder(), true));
+            // dont decode  return Object when  function return use  CompletableFuture<void>
+        } else if (returnInfo != null && returnInfo.getType() == CompletableFuture.class && returnInfo.getInnerType() != null && returnInfo.getInnerType() != Void.TYPE) {
             values.add(jis.read(returnInfo.getStamp(), returnInfo.getOrder(), true));
         }
 
