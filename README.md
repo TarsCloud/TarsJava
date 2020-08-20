@@ -122,7 +122,7 @@ The following configuration needs to be added in pom.xml:
 <plugin>
 	<groupId>com.tencent.tars</groupId>
 	<artifactId>tars-maven-plugin</artifactId>
-	<version>1.7.0</version>
+	<version>1.7.2</version>
 	<configuration>
 		<tars2JavaConfig>
 			<!-- tars file location -->
@@ -229,6 +229,7 @@ public class QuickStartApplication {
     }
 }
 ```
+Using spring-boot-maven-plugin, execute `mvn package` in the root directory to package it into a jar.
 
 
 
@@ -283,7 +284,7 @@ The following configuration needs to be added in pom.xml:
         <dependency>
             <groupId>com.tencent.tars</groupId>
             <artifactId>tars-spring-boot-starter</artifactId>
-            <version>1.7.0</version>
+            <version>1.7.2</version>
         </dependency>
     </dependencies>
 ```
@@ -295,7 +296,7 @@ The following configuration needs to be added in pom.xml:
 <plugin>
 	<groupId>com.tencent.tars</groupId>
 	<artifactId>tars-maven-plugin</artifactId>
-	<version>1.7.0</version>
+	<version>1.7.2</version>
 	<configuration>
 		<tars2JavaConfig>
 			<!-- tars file location -->
@@ -368,7 +369,7 @@ public interface HelloPrx {
 }
 ```
 
-The promise call is a new feature of Tars v1.7.0. For specific use, please refer to the [Tars file reference](./tars-reference.md).
+The promise call is a new feature of Tars v1.7.2. For specific use, please refer to the [Tars file reference](./docs-en/tars-reference.md).
 
 ##### Client interface file definition
 
@@ -393,7 +394,7 @@ Next, we need to use the tars-maven-plugin to generate client service interface 
 <plugin>
 	<groupId>com.tencent.tars</groupId>
 	<artifactId>tars-maven-plugin</artifactId>
-	<version>1.7.0</version>
+	<version>1.7.2</version>
 	<configuration>
 		<tars2JavaConfig>
 			<!-- tars file location -->
@@ -471,37 +472,6 @@ public class ClientServantImpl implements ClientServant {
 
 ```
 
-Configuration provided by annotation:
-
-```java
-@Target({ ElementType.FIELD })
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface TarsClient {
-    @AliasFor("name")
-    String value() default "";
-
-    @AliasFor("value")
-    String name() default "";
-
-    String setDivision() default "";
-
-    int connections() default Constants.default_connections;
-
-    int connectTimeout() default Constants.default_connect_timeout;
-
-    int syncTimeout() default Constants.default_sync_timeout;
-
-    int asyncTimeout() default Constants.default_async_timeout;
-
-    boolean enableSet() default false;
-
-    boolean tcpNoDelay() default false;
-
-    String charsetName() default "UTF-8";
-}
-```
-
 ##### Tars service enabling
 
 Finally, add @EnableTarsServer annotation in the spring boot startup class App to enable Tars service:
@@ -522,14 +492,9 @@ Using spring-boot-maven-plugin, execute `mvn package` in the root directory to p
 
  
 
-## Tars Spring-Cloud instructions
-
 ### Function description
 
 Tars-java is compatible with the Spring Cloud system, users can integrate the Tars-java into Spring Cloud.
-
-
-
 | Directory               | Features               |
 | ------------------ | ---------------- |
 | net                | Source code implementation of Java language net framework         |
