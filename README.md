@@ -29,7 +29,7 @@ This project is the source code of the Tars RPC framework Java language.
 
 This guide uses Docker to complete the deployment of Tars.[Macos、 Linux]
 
-**2. Start TarsFramework in Docker**
+** Start TarsFramework in Docker**
 
 ```bash
 docker pull tarscloud/framework:latest
