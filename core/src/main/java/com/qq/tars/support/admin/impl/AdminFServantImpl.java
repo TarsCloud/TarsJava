@@ -139,7 +139,6 @@ public class AdminFServantImpl implements AdminFServant {
             result = "set log level failed, level is empty";
         } else {
             level = level.trim().toUpperCase();
-            LoggerFactory.resetLogBack();
             LoggerFactory.resetLogLevel(Level.toLevel(level));
             result = "set log level [" + level + "] ok";
         }
