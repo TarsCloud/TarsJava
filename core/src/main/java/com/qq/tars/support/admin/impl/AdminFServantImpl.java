@@ -140,6 +140,7 @@ public class AdminFServantImpl implements AdminFServant {
         } else {
             level = level.trim().toUpperCase();
             LoggerFactory.resetLogLevel(Level.toLevel(level));
+            LoggerFactory.resetLogBack();
             result = "set log level [" + level + "] ok";
         }
 
