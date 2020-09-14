@@ -44,8 +44,4 @@ public class LoggerFactoryManager {
     public LoggerFactory getHandler() {
         return handler;
     }
-
-    public static void main(String[] args) {
-         System.out.println(instance.getHandler());
-    }
 }
