@@ -53,7 +53,7 @@ public class LoggerFactoryLogbackImpl implements com.qq.tars.common.logger.Logge
             if (StringUtils.isEmpty(level)) {
                 level = Level.ERROR.name();
             }
-            int maxHistory = Integer.parseInt(System.getProperty("tars-logback-max"));
+            int maxHistory = ConfigurationManager.getInstance().getServerConfig().getLogMaxHistry();
             String appName = ConfigurationManager.getInstance().getServerConfig().getApplication();
             String serverName = ConfigurationManager.getInstance().getServerConfig().getServerName();
             initLogger(String.format("%s%s.%s.log", basePath, appName, serverName), Logger.ROOT_LOGGER_NAME, level, maxHistory);

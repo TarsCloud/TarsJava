@@ -22,6 +22,7 @@ import com.qq.tars.common.util.Config;
 import com.qq.tars.support.om.OmConstants;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -50,7 +51,17 @@ public class ServerConfig {
     private boolean tcpNoDelay = false;
     private int udpBufferSize = 4096;
 
-    private String charsetName = "UTF-8";
+    private int logMaxHistry = 15;
+
+    public int getLogMaxHistry() {
+        return logMaxHistry;
+    }
+
+    public void setLogMaxHistry(int logMaxHistry) {
+        this.logMaxHistry = logMaxHistry;
+    }
+
+    private String charsetName = StandardCharsets.UTF_8.name();
 
     private LinkedHashMap<String, ServantAdapterConfig> servantAdapterConfMap;
     private CommunicatorConfig communicatorConfig;
@@ -65,9 +76,9 @@ public class ServerConfig {
         node = conf.get("/tars/application/server<node>");
         basePath = conf.get("/tars/application/server<basepath>");
         dataPath = conf.get("/tars/application/server<datapath>");
+        logMaxHistry = conf.getInt("/tars/application/server<maxHistory>", 15);
 
-        charsetName = conf
-                .get("/tars/application/server<charsetname>", "UTF-8");
+        charsetName = conf.get("/tars/application/server<charsetname>", "UTF-8");
 
         config = conf.get("/tars/application/server<config>");
         notify = conf.get("/tars/application/server<notify>");
