@@ -34,6 +34,7 @@ public class LoggerFactoryManager {
         } else {
             handler = null;
         }
+
     }
 
     public void setHandler(LoggerFactory handler) {
@@ -42,5 +43,9 @@ public class LoggerFactoryManager {
 
     public LoggerFactory getHandler() {
         return handler;
+    }
+
+    public static void main(String[] args) {
+         System.out.println(instance.getHandler());
     }
 }

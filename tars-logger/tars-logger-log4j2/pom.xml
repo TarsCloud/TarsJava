@@ -10,8 +10,6 @@
 
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
-    <artifactId>logger-log4j2</artifactId>
-
+    <artifactId>tars-logger-log4j2</artifactId>
 
 </project>
