@@ -19,6 +19,7 @@ package com.qq.tars.server.core;
 import com.qq.tars.client.Communicator;
 import com.qq.tars.client.CommunicatorConfig;
 import com.qq.tars.client.CommunicatorFactory;
+import com.qq.tars.common.logger.LoggerFactoryManager;
 import com.qq.tars.common.util.BeanAccessor;
 import com.qq.tars.net.core.SessionManager;
 import com.qq.tars.server.config.ConfigurationManager;
@@ -40,8 +41,14 @@ public class Server {
     private Server() {
         System.out.println("[TARS] start server construction");
         loadServerConfig();
+        initLogger();
         initCommunicator();
         startManagerService();
+
+    }
+
+    public void initLogger() {
+        LoggerFactoryManager.getInstance().getHandler().start();
     }
 
     public static Server getInstance() {
