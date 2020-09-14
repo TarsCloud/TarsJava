@@ -1,4 +1,4 @@
-package com.qq.tars.spi.logger;
+package com.qq.tars.logger;
 
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;

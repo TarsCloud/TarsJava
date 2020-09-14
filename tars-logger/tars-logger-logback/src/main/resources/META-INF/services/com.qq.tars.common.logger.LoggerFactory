@@ -1,1 +1,1 @@
-com.qq.tars.spi.logger.LoggerFactoryLogbackImpl
+com.qq.tars.logger.LoggerFactoryLogbackImpl
