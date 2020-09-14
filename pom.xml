@@ -49,6 +49,9 @@
         <module>core/server.pom.xml</module>
         <module>core/client.pom.xml</module>
         <module>tars-plugins</module>
+        <module>tars-logger</module>
+        <module>logger-log4j2</module>
+        <module>tars-logger-log4j</module>
     </modules>
 
     <properties>

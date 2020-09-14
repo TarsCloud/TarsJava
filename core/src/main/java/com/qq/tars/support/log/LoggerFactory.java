@@ -16,65 +16,39 @@
 
 package com.qq.tars.support.log;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.joran.spi.JoranException;
-import com.qq.tars.server.config.ConfigurationManager;
-
-import java.io.File;
+import com.qq.tars.common.logger.LoggerFactoryManager;
+import org.slf4j.Logger;
+import org.slf4j.event.Level;
 
 public class LoggerFactory {
-    private static final LoggerContext logContext;
     private static final String CLIENT_LOG_NAME = "TARS_CLIENT_LOGGER";
     private static final String OM_LOG_NAME = "OM_LOGGER";
 
 
-    static {
-        logContext = (LoggerContext) org.slf4j.LoggerFactory.getILoggerFactory();
-    }
-
-
     public static int resetLogBack() {
-        JoranConfigurator configurator = new JoranConfigurator();
-        configurator.setContext(logContext);
-        logContext.reset();
-        try {
-            File file = new File(ConfigurationManager.getInstance().getServerConfig().getBasePath() + "/conf/logback.xml");
-            if (file.exists()) {
-                configurator.doConfigure(file);
-            } else {
-                configurator.doConfigure(LoggerFactory.class.getResource("logback.xml"));
-            }
-            return 0;
-        } catch (JoranException e) {
-            e.printStackTrace();
-            return -1;
-        }
+        return LoggerFactoryManager.getInstance().getHandler().reloadConfig();
     }
 
     public static void resetLogLevel(Level level) {
-        Logger root = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-        root.setLevel(level);
+        LoggerFactoryManager.getInstance().getHandler().setLoggerLevel(Logger.ROOT_LOGGER_NAME, level);
     }
 
     public static Logger getLogger() {
-        return logContext.getLogger("");
+        return org.slf4j.LoggerFactory.getLogger("");
     }
 
 
     public static Logger getLogger(String logName) {
-        return logContext.getLogger(logName);
+        return org.slf4j.LoggerFactory.getLogger(logName);
     }
 
     public static Logger getOmLogger() {
-        return logContext.getLogger(OM_LOG_NAME);
+        return org.slf4j.LoggerFactory.getLogger(OM_LOG_NAME);
     }
 
 
     public static Logger getClientLogger() {
-        return LoggerFactory.getLogger(CLIENT_LOG_NAME);
+        return org.slf4j.LoggerFactory.getLogger(CLIENT_LOG_NAME);
     }
 
 }

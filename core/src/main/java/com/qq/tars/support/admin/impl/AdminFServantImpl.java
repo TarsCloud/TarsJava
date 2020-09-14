@@ -16,9 +16,9 @@
 
 package com.qq.tars.support.admin.impl;
 
-import ch.qos.logback.classic.Level;
 import com.qq.tars.client.CommunicatorConfig;
 import com.qq.tars.common.ClientVersion;
+import com.qq.tars.common.logger.LoggerFactoryManager;
 import com.qq.tars.common.util.DyeingKeyCache;
 import com.qq.tars.common.util.StringUtils;
 import com.qq.tars.server.config.ConfigurationManager;
@@ -33,6 +33,7 @@ import com.qq.tars.support.node.NodeHelper;
 import com.qq.tars.support.notify.NotifyHelper;
 import com.qq.tars.support.om.OmConstants;
 import org.slf4j.Logger;
+import org.slf4j.event.Level;
 
 import java.util.Map.Entry;
 
@@ -134,17 +135,24 @@ public class AdminFServantImpl implements AdminFServant {
 
     private String setLoggerLevel(String level) {
         String result = null;
-
         if (StringUtils.isEmpty(level)) {
             result = "set log level failed, level is empty";
         } else {
             level = level.trim().toUpperCase();
-            LoggerFactory.resetLogLevel(Level.toLevel(level));
-            LoggerFactory.resetLogBack();
+            LoggerFactoryManager.getInstance().getHandler().setLoggerLevel(Logger.ROOT_LOGGER_NAME, getLevelFromName(level));
             result = "set log level [" + level + "] ok";
         }
 
         return result;
+    }
+
+    public static Level getLevelFromName(String name) {
+        for (Level level : Level.values()) {
+            if (name.equals(level.name())) {
+                return level;
+            }
+        }
+        return Level.ERROR;
     }
 
     private String viewConn() {
