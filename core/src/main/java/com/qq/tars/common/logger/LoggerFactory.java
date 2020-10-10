@@ -4,6 +4,10 @@ package com.qq.tars.common.logger;
 import org.slf4j.event.Level;
 
 public interface LoggerFactory {
+
+     String CLIENT_LOG_NAME = "TARS_CLIENT_LOGGER";
+     String OM_LOG_NAME = "OM_LOGGER";
+
     /**
      * reload all logger config
      */

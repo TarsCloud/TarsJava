@@ -57,11 +57,6 @@
             <artifactId>zipkin-sender-urlconnection</artifactId>
             <version>${zipkin-reporter.version}</version>
         </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${ch.qos.logback.version}</version>
-        </dependency>
     </dependencies>
     <build>
         <plugins>

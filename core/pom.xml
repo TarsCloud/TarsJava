@@ -28,6 +28,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.tencent.tars</groupId>
             <artifactId>tars-net</artifactId>
             <version>${project.parent.version}</version>

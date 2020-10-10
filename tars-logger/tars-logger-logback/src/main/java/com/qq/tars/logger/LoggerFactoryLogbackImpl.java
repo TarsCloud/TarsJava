@@ -16,8 +16,6 @@ import java.io.File;
 
 public class LoggerFactoryLogbackImpl implements com.qq.tars.common.logger.LoggerFactory {
     private LoggerContext logContext;
-    private static final String CLIENT_LOG_NAME = "TARS_CLIENT_LOGGER";
-    private static final String OM_LOG_NAME = "OM_LOGGER";
 
     @Override
     public int reloadConfig() {
