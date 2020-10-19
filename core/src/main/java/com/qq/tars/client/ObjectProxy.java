@@ -189,7 +189,7 @@ public final class ObjectProxy<T> implements ServantProxy, InvocationHandler {
                 } else {
                     nodes = communicator.getQueryHelper().getServerNodes(servantProxyConfig);
                 }
-                if (nodes != null && !nodes.equals(servantProxyConfig.getObjectName())) {
+                if (nodes != null && !(nodes == servantProxyConfig.getObjectName())) {
                     servantCacheManager.save(communicator.getId(), servantProxyConfig.getSimpleObjectName(), nodes, communicator.getCommunicatorConfig().getDataPath());
                     servantProxyConfig.setObjectName(nodes);
                     refresh();
