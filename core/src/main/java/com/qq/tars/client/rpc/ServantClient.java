@@ -22,32 +22,23 @@ import com.qq.tars.net.client.ticket.TicketManager;
 import com.qq.tars.net.core.Request.InvokeStatus;
 import com.qq.tars.net.core.Session;
 import com.qq.tars.net.core.Session.SessionStatus;
-import com.qq.tars.net.core.nio.SelectorManager;
-import com.qq.tars.net.core.nio.TCPSession;
-import com.qq.tars.net.core.nio.UDPSession;
-import com.qq.tars.rpc.exc.NotConnectedException;
+import com.qq.tars.protocol.tars.TarsOutputStream;
 import com.qq.tars.rpc.exc.TimeoutException;
 import com.qq.tars.rpc.protocol.ServantRequest;
 import com.qq.tars.rpc.protocol.ServantResponse;
 import com.qq.tars.support.log.LoggerFactory;
 import org.slf4j.Logger;
 
+
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.nio.channels.DatagramChannel;
-import java.nio.channels.SelectableChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.SocketChannel;
 import java.util.concurrent.TimeUnit;
 
-public class ServantClient {
+public class ServantClient implements RPCClient {
     private static final Logger logger = LoggerFactory.getClientLogger();
 
     private Session session = null;
     private String host = null;
     private int port = -1;
-    private SelectorManager selectorManager = null;
     private long asyncTimeout = 1000;
     private long syncTimeout = 1000;
     private long connectTimeout = 200;
@@ -57,72 +48,18 @@ public class ServantClient {
     private boolean tcpNoDelay = false;
     private static final int INVALID_TRAFFIC_CLASS_VALUE = -1;
 
-    public ServantClient(String ip, int port, SelectorManager selectorManager, boolean udpMode) {
+    public ServantClient(String ip, int port, boolean udpMode) {
         this.host = ip;
         this.port = port;
         this.udpMode = udpMode;
-        this.selectorManager = selectorManager;
     }
 
-    protected synchronized void reConnect() throws IOException {
-        if (isNotConnected()) {
-            SocketAddress server = new InetSocketAddress(this.host, this.port);
-            SelectableChannel channel = null;
-            Session temp = null;
-            int event;
+    public synchronized void reConnect() throws IOException {
 
-            if (this.udpMode) {
-                channel = DatagramChannel.open();
-                channel.configureBlocking(false);
-
-                temp = new UDPSession(this.selectorManager);
-                ((UDPSession) temp).setBufferSize(bufferSize);
-                ((UDPSession) temp).setTarget(server);
-                event = SelectionKey.OP_READ;
-                temp.setStatus(SessionStatus.CLIENT_CONNECTED);
-            } else {
-                channel = SocketChannel.open();
-                channel.configureBlocking(false);
-                try {
-                    if (this.tc != INVALID_TRAFFIC_CLASS_VALUE) {
-                        ((SocketChannel) channel).socket().setTrafficClass(this.tc);
-                    }
-                } catch (Exception ex) {
-                    logger.error(ex.getLocalizedMessage());
-                }
-                ((SocketChannel) channel).connect(server);
-
-                temp = new TCPSession(this.selectorManager);
-                ((TCPSession) temp).setTcpNoDelay(this.tcpNoDelay);
-                event = SelectionKey.OP_CONNECT;
-            }
-
-            temp.setChannel(channel);
-            temp.setKeepAlive(selectorManager.isKeepAlive());
-
-            this.selectorManager.nextReactor().registerChannel(channel, event, temp);
-
-            if (!this.udpMode) {
-                if (!temp.waitToConnect(this.connectTimeout)) {
-                    temp.asyncClose();
-                    throw new TimeoutException("connect " + this.connectTimeout + "ms timed out to " + this.getAddress());
-                }
-
-                if (temp.getStatus() == SessionStatus.NOT_CONNECTED) {
-                    temp.asyncClose();
-                    throw new NotConnectedException("connect failed to " + this.getAddress());
-                } else if (temp.getStatus() == SessionStatus.CLOSED) {
-                    throw new NotConnectedException("connect failed to " + this.getAddress());
-                }
-            }
-            this.session = temp;
-        }
     }
 
     public void ensureConnected() throws IOException {
-        if (isNotConnected()) {
-            reConnect();
-        }
+
     }
 
     public <T extends ServantResponse> T invokeWithSync(ServantRequest request) throws IOException {
@@ -163,7 +100,7 @@ public class ServantClient {
         try {
             ensureConnected();
             request.setInvokeStatus(InvokeStatus.ASYNC_CALL);
-            ticket = TicketManager.createTicket(request, session, this.asyncTimeout, callback, selectorManager);
+            ticket = TicketManager.createTicket(request, session, this.asyncTimeout);
 
             Session current = session;
             current.write(request);
@@ -180,7 +117,7 @@ public class ServantClient {
         try {
             ensureConnected();
             request.setInvokeStatus(InvokeStatus.FUTURE_CALL);
-            ticket = TicketManager.createTicket(request, session, this.asyncTimeout, callback, selectorManager);
+            ticket = TicketManager.createTicket(request, session, this.asyncTimeout, callback);
 
             Session current = session;
             current.write(request);
@@ -211,26 +148,11 @@ public class ServantClient {
     }
 
     public void setTrafficClass(int tc) {
-        if (this.session != null && this.session instanceof TCPSession) {
-            try {
-                ((SocketChannel) ((TCPSession) this.session).getChannel()).socket().setTrafficClass(tc);
-            } catch (Exception ex) {
-                logger.error(ex.getLocalizedMessage());
-            }
-        }
-        this.tc = tc;
+
     }
 
     public void setTcpNoDelay(boolean on) {
-        this.tcpNoDelay = on;
 
-        if (this.session != null && this.session instanceof TCPSession) {
-            try {
-                ((SocketChannel) ((TCPSession) this.session).getChannel()).socket().setTcpNoDelay(on);
-            } catch (Exception ex) {
-                logger.error(ex.getLocalizedMessage());
-            }
-        }
     }
 
     public long getConnectTimeout() {
@@ -267,5 +189,13 @@ public class ServantClient {
 
     public String toString() {
         return "ServantClient [client=" + getAddress() + "]";
+    }
+
+
+
+    public static void main(String[] args){
+
+
+        TarsOutputStream tarsOutputStream  = new TarsOutputStream();
     }
 }

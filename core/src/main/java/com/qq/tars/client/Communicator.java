@@ -64,22 +64,28 @@ public final class Communicator {
         return stringToProxy(clazz, objName, setDivision, null, null, null);
     }
 
-    public <T> T stringToProxy(Class<T> clazz, ServantProxyConfig servantProxyConfig) throws CommunicatorConfigException {
-        return stringToProxy(clazz, servantProxyConfig.getObjectName(), servantProxyConfig.getSetDivision(), servantProxyConfig, null, null);
+    public <T> T stringToProxy(Class<T> clazz, ServantProxyConfig servantProxyConfig)
+            throws CommunicatorConfigException {
+        return stringToProxy(clazz, servantProxyConfig.getObjectName(), servantProxyConfig.getSetDivision(),
+                servantProxyConfig, null, null);
     }
 
     @Deprecated
-    public <T> T stringToProxy(Class<T> clazz, ServantProxyConfig servantProxyConfig, LoadBalance<T> loadBalance) throws CommunicatorConfigException {
-        return stringToProxy(clazz, servantProxyConfig.getObjectName(), servantProxyConfig.getSetDivision(), servantProxyConfig, loadBalance, null);
+    public <T> T stringToProxy(Class<T> clazz, ServantProxyConfig servantProxyConfig, LoadBalance<T> loadBalance)
+            throws CommunicatorConfigException {
+        return stringToProxy(clazz, servantProxyConfig.getObjectName(), servantProxyConfig.getSetDivision(),
+                servantProxyConfig, loadBalance, null);
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T stringToProxy(Class<T> clazz, String objName, String setDivision, ServantProxyConfig servantProxyConfig,
-                                LoadBalance<T> loadBalance, ProtocolInvoker<T> protocolInvoker) throws CommunicatorConfigException {
+    private <T> T stringToProxy(Class<T> clazz, String objName, String setDivision,
+            ServantProxyConfig servantProxyConfig, LoadBalance<T> loadBalance, ProtocolInvoker<T> protocolInvoker)
+            throws CommunicatorConfigException {
         if (!inited.get()) {
             throw new CommunicatorConfigException("communicator uninitialized!");
         }
-        return (T) getServantProxyFactory().getServantProxy(clazz, objName, setDivision, servantProxyConfig, loadBalance, protocolInvoker);
+        return (T) getServantProxyFactory().getServantProxy(clazz, objName, setDivision, servantProxyConfig,
+                loadBalance, protocolInvoker);
     }
 
     @Deprecated
@@ -92,7 +98,7 @@ public final class Communicator {
         ScheduledExecutorManager.getInstance().shutdownNow();
         TicketManager.shutdown();
         TimeoutManager.shutdown();
-        for (Iterator<Object> it = servantProxyFactory.getProxyIterator(); it.hasNext(); ) {
+        for (Iterator<Object> it = servantProxyFactory.getProxyIterator(); it.hasNext();) {
             Object proxy = it.next();
             ((ObjectProxy) Proxy.getInvocationHandler(proxy)).destroy();
         }

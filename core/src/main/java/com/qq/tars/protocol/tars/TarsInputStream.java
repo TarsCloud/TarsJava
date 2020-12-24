@@ -16,22 +16,31 @@
 
 package com.qq.tars.protocol.tars;
 
+//import com.qq.tars.common.util.HexUtil;
+//import com.qq.tars.protocol.tars.TarsInputStreamExt;
+//import com.qq.tars.protocol.tars.TarsStructBase;
+
 import com.qq.tars.common.util.HexUtil;
 import com.qq.tars.protocol.tars.exc.TarsDecodeException;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.nio.BufferUnderflowException;
-import java.nio.ByteBuffer;
-import java.util.*;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public final class TarsInputStream {
-
-    private ByteBuffer bs; // byte buffer
+    //private ByteBuffer bs; // 缓冲区
+    private ByteBuf bs;
 
     public static class HeadData {
-
         public byte type;
         public int tag;
 
@@ -45,17 +54,17 @@ public final class TarsInputStream {
 
     }
 
-    public TarsInputStream(ByteBuffer bs) {
+    public TarsInputStream(ByteBuf bs) {
         this.bs = bs;
     }
 
     public TarsInputStream(byte[] bs) {
-        this.bs = ByteBuffer.wrap(bs);
+        this.bs = Unpooled.wrappedBuffer(bs);
     }
 
     public TarsInputStream(byte[] bs, int pos) {
-        this.bs = ByteBuffer.wrap(bs);
-        this.bs.position(pos);
+        this.bs = Unpooled.wrappedBuffer(bs);
+        this.bs.readBytes(pos);
     }
 
     public void warp(byte[] bs) {
@@ -63,15 +72,17 @@ public final class TarsInputStream {
     }
 
     public void wrap(byte[] bs) {
-        this.bs = ByteBuffer.wrap(bs);
+        //this.bs = ByteBuffer.wrap(bs);
+        this.bs = Unpooled.wrappedBuffer(bs);
     }
 
-    public static int readHead(HeadData hd, ByteBuffer bb) {
-        byte b = bb.get();
+    public static int readHead(HeadData hd, ByteBuf bb) {
+        //byte b = bb.get();
+        byte b = bb.readByte();
         hd.type = (byte) (b & 15);
         hd.tag = ((b & (15 << 4)) >> 4);
         if (hd.tag == 15) {
-            hd.tag = (bb.get() & 0x00ff);
+            hd.tag = (bb.readByte() & 0x00ff);
             return 2;
         }
         return 1;
@@ -86,7 +97,8 @@ public final class TarsInputStream {
     }
 
     private void skip(int len) {
-        bs.position(bs.position() + len);
+        //bs.position(bs.position() + len);
+        bs.readBytes(bs.readerIndex() + len);
     }
 
     public boolean skipToTag(int tag) {
@@ -101,7 +113,8 @@ public final class TarsInputStream {
                 skip(len);
                 skipField(hd.type);
             }
-        } catch (TarsDecodeException | BufferUnderflowException e) {
+        } catch (TarsDecodeException e) {
+        } catch (BufferUnderflowException e) {
         }
         return false;
     }
@@ -141,13 +154,14 @@ public final class TarsInputStream {
                 skip(8);
                 break;
             case TarsStructBase.STRING1: {
-                int len = bs.get();
+                //int len = bs.get();
+                int len = bs.readByte();
                 if (len < 0) len += 256;
                 skip(len);
                 break;
             }
             case TarsStructBase.STRING4: {
-                skip(bs.getInt());
+                skip(bs.readInt());
                 break;
             }
             case TarsStructBase.MAP: {
@@ -197,7 +211,7 @@ public final class TarsInputStream {
                     c = 0x0;
                     break;
                 case TarsStructBase.BYTE:
-                    c = bs.get();
+                    c = bs.readByte();
                     break;
                 default:
                     throw new TarsDecodeException("type mismatch.");
@@ -217,10 +231,10 @@ public final class TarsInputStream {
                     n = 0;
                     break;
                 case TarsStructBase.BYTE:
-                    n = (short) bs.get();
+                    n = (short) bs.readByte();
                     break;
                 case TarsStructBase.SHORT:
-                    n = bs.getShort();
+                    n = bs.readShort();
                     break;
                 default:
                     throw new TarsDecodeException("type mismatch.");
@@ -240,13 +254,13 @@ public final class TarsInputStream {
                     n = 0;
                     break;
                 case TarsStructBase.BYTE:
-                    n = bs.get();
+                    n = bs.readByte();
                     break;
                 case TarsStructBase.SHORT:
-                    n = bs.getShort();
+                    n = bs.readShort();
                     break;
                 case TarsStructBase.INT:
-                    n = bs.getInt();
+                    n = bs.readInt();
                     break;
                 default:
                     throw new TarsDecodeException("type mismatch.");
@@ -266,16 +280,16 @@ public final class TarsInputStream {
                     n = 0;
                     break;
                 case TarsStructBase.BYTE:
-                    n = bs.get();
+                    n = bs.readByte();
                     break;
                 case TarsStructBase.SHORT:
-                    n = bs.getShort();
+                    n = bs.readShort();
                     break;
                 case TarsStructBase.INT:
-                    n = bs.getInt();
+                    n = bs.readInt();
                     break;
                 case TarsStructBase.LONG:
-                    n = bs.getLong();
+                    n = bs.readLong();
                     break;
                 default:
                     throw new TarsDecodeException("type mismatch.");
@@ -295,7 +309,7 @@ public final class TarsInputStream {
                     n = 0;
                     break;
                 case TarsStructBase.FLOAT:
-                    n = bs.getFloat();
+                    n = bs.readFloat();
                     break;
                 default:
                     throw new TarsDecodeException("type mismatch.");
@@ -315,10 +329,10 @@ public final class TarsInputStream {
                     n = 0;
                     break;
                 case TarsStructBase.FLOAT:
-                    n = bs.getFloat();
+                    n = bs.readFloat();
                     break;
                 case TarsStructBase.DOUBLE:
-                    n = bs.getDouble();
+                    n = bs.readDouble();
                     break;
                 default:
                     throw new TarsDecodeException("type mismatch.");
@@ -335,19 +349,20 @@ public final class TarsInputStream {
             readHead(hd);
             switch (hd.type) {
                 case TarsStructBase.STRING1: {
-                    int len = bs.get();
+                    int len = bs.readByte();
                     if (len < 0) len += 256;
                     byte[] ss = new byte[len];
-                    bs.get(ss);
+                    //bs.get(ss);
+                    bs.readBytes(ss);
                     s = HexUtil.bytes2HexStr(ss);
                 }
                 break;
                 case TarsStructBase.STRING4: {
-                    int len = bs.getInt();
+                    int len = bs.readInt();
                     if (len > TarsStructBase.MAX_STRING_LENGTH || len < 0)
                         throw new TarsDecodeException("String too long: " + len);
                     byte[] ss = new byte[len];
-                    bs.get(ss);
+                    bs.readBytes(ss);
                     s = HexUtil.bytes2HexStr(ss);
                 }
                 break;
@@ -366,10 +381,10 @@ public final class TarsInputStream {
             readHead(hd);
             switch (hd.type) {
                 case TarsStructBase.STRING1: {
-                    int len = bs.get();
+                    int len = bs.readByte();
                     if (len < 0) len += 256;
                     byte[] ss = new byte[len];
-                    bs.get(ss);
+                    bs.readBytes(ss);
                     try {
                         s = new String(ss, sServerEncoding);
                     } catch (UnsupportedEncodingException e) {
@@ -378,11 +393,12 @@ public final class TarsInputStream {
                 }
                 break;
                 case TarsStructBase.STRING4: {
-                    int len = bs.getInt();
+                    int len = bs.readInt();
                     if (len > TarsStructBase.MAX_STRING_LENGTH || len < 0)
                         throw new TarsDecodeException("String too long: " + len);
                     byte[] ss = new byte[len];
-                    bs.get(ss);
+                    //bs.get(ss);
+                    bs.readBytes(ss);
                     try {
                         s = new String(ss, sServerEncoding);
                     } catch (UnsupportedEncodingException e) {
@@ -406,10 +422,11 @@ public final class TarsInputStream {
             readHead(hd);
             switch (hd.type) {
                 case TarsStructBase.STRING1: {
-                    int len = bs.get();
+                    int len = bs.readByte();
                     if (len < 0) len += 256;
                     byte[] ss = new byte[len];
-                    bs.get(ss);
+                    //bs.get(ss);
+                    bs.readBytes(ss);
                     try {
                         s = new String(ss, sServerEncoding);
                     } catch (UnsupportedEncodingException e) {
@@ -418,11 +435,12 @@ public final class TarsInputStream {
                 }
                 break;
                 case TarsStructBase.STRING4: {
-                    int len = bs.getInt();
+                    int len = bs.readInt();
                     if (len > TarsStructBase.MAX_STRING_LENGTH || len < 0)
                         throw new TarsDecodeException("String too long: " + len);
                     byte[] ss = new byte[len];
-                    bs.get(ss);
+                    //bs.get(ss);
+                    bs.readBytes(ss);
                     try {
                         s = new String(ss, sServerEncoding);
                     } catch (UnsupportedEncodingException e) {
@@ -539,13 +557,13 @@ public final class TarsInputStream {
                                 skip(8);
                                 break;
                             case TarsStructBase.STRING1: {
-                                int len = bs.get();
+                                int len = bs.readByte();
                                 if (len < 0) len += 256;
                                 skip(len);
                             }
                             break;
                             case TarsStructBase.STRING4: {
-                                skip(bs.getInt());
+                                skip(bs.readInt());
                             }
                             break;
                             case TarsStructBase.MAP: {
@@ -625,7 +643,8 @@ public final class TarsInputStream {
                     if (size < 0)
                         throw new TarsDecodeException("invalid size, tag: " + tag + ", type: " + hd.type + ", " + hh.type + ", size: " + size);
                     lr = new byte[size];
-                    bs.get(lr);
+                    //bs.get(lr);
+                    bs.readBytes(lr);
                     break;
                 }
                 case TarsStructBase.LIST: {
@@ -771,7 +790,9 @@ public final class TarsInputStream {
         }
         T[] tt = readArrayImpl(l.get(0), tag, isRequire);
         if (tt == null) return null;
-        ArrayList<T> ll = new ArrayList<T>(Arrays.asList(tt));
+        ArrayList<T> ll = new ArrayList<T>();
+        for (int i = 0; i < tt.length; ++i)
+            ll.add(tt[i]);
         return ll;
     }
 
@@ -892,7 +913,7 @@ public final class TarsInputStream {
         }
     }
 
-    protected String sServerEncoding = "GBK";
+    protected String sServerEncoding = StandardCharsets.UTF_8.toString();
 
     public int setServerEncoding(String se) {
         sServerEncoding = se;
@@ -900,7 +921,8 @@ public final class TarsInputStream {
     }
 
 
-    public ByteBuffer getBs() {
-        return bs;
+    public byte[] getBs() {
+        return bs.array();
     }
 }
+

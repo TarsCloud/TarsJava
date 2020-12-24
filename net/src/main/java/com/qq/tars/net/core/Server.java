@@ -16,21 +16,15 @@
 
 package com.qq.tars.net.core;
 
+import com.qq.tars.net.protocol.ProtocolFactory;
+import com.qq.tars.net.util.Utils;
+
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.channels.DatagramChannel;
-import java.nio.channels.SelectableChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.ServerSocketChannel;
 import java.util.Properties;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
-import com.qq.tars.net.core.nio.SelectorManager;
-import com.qq.tars.net.protocol.ProtocolFactory;
-import com.qq.tars.net.util.Utils;
 
 public abstract class Server {
 
@@ -42,7 +36,6 @@ public abstract class Server {
 
     private ProtocolFactory protocolFactory = null;
 
-    private SelectorManager selectorManager = null;
 
     private Processor processor = null;
 
@@ -79,7 +72,6 @@ public abstract class Server {
         this.protocolFactory = protocolFactory;
         this.processor = processor;
         this.threadPool = new ThreadPoolExecutor(minPoolSize, maxPoolSize, 120, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(20000));
-        this.selectorManager = new SelectorManager(Utils.getSelectorPoolSize(), protocolFactory, threadPool, processor, keepAlive, "server", this.udpMode);
     }
 
     public void startUp(String args[]) throws Exception {
@@ -89,29 +81,7 @@ public abstract class Server {
     }
 
     protected void startNIOServer() throws Exception {
-        SelectableChannel server = null;
-        int interestKey;
 
-        //1. Start reactor service
-        selectorManager.start();
-
-        //2. Start server on the specified port
-        if (this.udpMode) {
-            server = DatagramChannel.open();
-            ((DatagramChannel) server).socket().bind(new InetSocketAddress(host, port));
-            interestKey = SelectionKey.OP_READ;
-        } else {
-            server = ServerSocketChannel.open();
-            ((ServerSocketChannel) server).socket().bind(new InetSocketAddress(host, port), 1024);
-            interestKey = SelectionKey.OP_ACCEPT;
-
-        }
-
-        server.configureBlocking(false);
-
-        //3. Choose one reactor to handle NIO event
-        selectorManager.getReactor(0).registerChannel(server, interestKey);
-        System.out.println("INFO: NAMI Server started on port " + String.valueOf(port) + "...");
 
     }
 

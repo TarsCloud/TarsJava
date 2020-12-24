@@ -17,11 +17,9 @@
 package com.qq.tars.client.rpc;
 
 import com.qq.tars.client.ServantProxyConfig;
-import com.qq.tars.client.support.ClientPoolManager;
 import com.qq.tars.client.util.ParseTools;
 import com.qq.tars.common.support.ScheduledExecutorManager;
 import com.qq.tars.common.util.Constants;
-import com.qq.tars.net.core.nio.SelectorManager;
 import com.qq.tars.net.protocol.ProtocolFactory;
 import com.qq.tars.rpc.common.Invoker;
 import com.qq.tars.rpc.common.ProtocolInvoker;
@@ -32,7 +30,14 @@ import com.qq.tars.support.log.LoggerFactory;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -43,7 +48,6 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
     protected final ServantProxyConfig servantProxyConfig;
     protected final ThreadPoolExecutor threadPoolExecutor;
     protected final ProtocolFactory protocolFactory;
-    protected volatile SelectorManager selectorManager = null;
     protected volatile ConcurrentHashSet<Invoker<T>> allInvoker = new ConcurrentHashSet<>();
 
     public ServantProtocolInvoker(Class<T> api, ServantProxyConfig config, ProtocolFactory protocolFactory,
@@ -63,7 +67,6 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
 
     public void destroy() {
         destroy(allInvoker);
-        this.selectorManager.stop();
     }
 
     public void refresh() {
@@ -90,33 +93,24 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
         ScheduledExecutorManager.getInstance().schedule(() -> destroy(brokenInvokers), Math.max(servantProxyConfig.getAsyncTimeout(), servantProxyConfig.getSyncTimeout()), TimeUnit.MILLISECONDS);
     }
 
-    protected ServantClient[] getClients(Url url) throws IOException {
+    protected RPCClient[] getClients(Url url) throws IOException {
         int connections = url.getParameter(Constants.TARS_CLIENT_CONNECTIONS, Constants.default_connections);
-        ServantClient[] clients = new ServantClient[connections];
+        RPCClient[] clients = new NettyServantClient[connections];
         for (int i = 0; i < clients.length; i++) {
             clients[i] = initClient(url);
         }
         return clients;
     }
 
-    protected ServantClient initClient(Url url) {
-        ServantClient client = null;
+    protected RPCClient initClient(Url url) {
+        RPCClient client = null;
         try {
             boolean tcpNoDelay = url.getParameter(Constants.TARS_CLIENT_TCPNODELAY, false);
             long connectTimeout = url.getParameter(Constants.TARS_CLIENT_CONNECTTIMEOUT, Constants.default_connect_timeout);
             long syncTimeout = url.getParameter(Constants.TARS_CLIENT_SYNCTIMEOUT, Constants.default_sync_timeout);
             long asyncTimeout = url.getParameter(Constants.TARS_CLIENT_ASYNCTIMEOUT, Constants.default_async_timeout);
             boolean udpMode = url.getParameter(Constants.TARS_CLIENT_UDPMODE, false);
-
-            if (this.selectorManager == null) {
-                this.selectorManager = ClientPoolManager.getSelectorManager(this.protocolFactory, this.threadPoolExecutor, true, udpMode, this.servantProxyConfig);
-            }
-
-            client = new ServantClient(url.getHost(), url.getPort(), this.selectorManager, udpMode);
-            client.setConnectTimeout(connectTimeout);
-            client.setSyncTimeout(syncTimeout);
-            client.setAsyncTimeout(asyncTimeout);
-            client.setTcpNoDelay(tcpNoDelay);
+            client = new NettyServantClient(servantProxyConfig);
         } catch (Throwable e) {
             throw new ClientException(servantProxyConfig.getSimpleObjectName(), "Fail to create client|" + url.toIdentityString() + "|" + e.getLocalizedMessage(), e);
         }

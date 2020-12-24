@@ -42,9 +42,8 @@ import java.util.concurrent.TimeUnit;
 public final class ObjectProxy<T> implements ServantProxy, InvocationHandler {
     private static final Logger logger = LoggerFactory.getClientLogger();
 
-
     private final Class<T> api;
-    //private final String objName;
+    // private final String objName;
     private final Communicator communicator;
 
     private final ServantCacheManager servantCacheManager = ServantCacheManager.getInstance();
@@ -61,9 +60,9 @@ public final class ObjectProxy<T> implements ServantProxy, InvocationHandler {
     private final Random random = new Random(System.currentTimeMillis() / 1000);
 
     public ObjectProxy(Class<T> api, ServantProxyConfig servantProxyConfig, LoadBalance loadBalance,
-                       ProtocolInvoker<T> protocolInvoker, Communicator communicator) {
+            ProtocolInvoker<T> protocolInvoker, Communicator communicator) {
         this.api = api;
-//        this.objName = objName;
+        // this.objName = objName;
         this.communicator = communicator;
         this.servantProxyConfig = servantProxyConfig;
         this.loadBalancer = loadBalance;
@@ -102,7 +101,8 @@ public final class ObjectProxy<T> implements ServantProxy, InvocationHandler {
         } catch (Throwable e) {
             e.printStackTrace();
             if (logger.isDebugEnabled()) {
-                logger.debug(servantProxyConfig.getSimpleObjectName() + " error occurred on invoke|" + e.getLocalizedMessage(), e);
+                logger.debug(servantProxyConfig.getSimpleObjectName() + " error occurred on invoke|"
+                        + e.getLocalizedMessage(), e);
             }
             if (e instanceof NoInvokerException) {
                 throw new NoConnectionException(servantProxyConfig.getSimpleObjectName(), e.getLocalizedMessage(), e);
@@ -147,7 +147,8 @@ public final class ObjectProxy<T> implements ServantProxy, InvocationHandler {
     private void initialize() {
         loadBalancer.refresh(protocolInvoker.getInvokers());
 
-        if (StringUtils.isNotEmpty(this.servantProxyConfig.getLocator()) && !StringUtils.isEmpty(this.servantProxyConfig.getStat())) {
+        if (StringUtils.isNotEmpty(this.servantProxyConfig.getLocator())
+                && !StringUtils.isEmpty(this.servantProxyConfig.getStat())) {
             this.registryStatReporter();
         }
         if (!servantProxyConfig.isDirectConnection()) {
@@ -162,7 +163,8 @@ public final class ObjectProxy<T> implements ServantProxy, InvocationHandler {
         if (!StringUtils.isEmpty(communicator.getCommunicatorConfig().getStat())) {
             int interval = servantProxyConfig.getReportInterval();
             int initialDelay = interval + (random.nextInt(30) * 1000);
-            this.statReportFuture = ScheduledExecutorManager.getInstance().scheduleAtFixedRate(new ServantStatReporter(), initialDelay, interval, TimeUnit.MILLISECONDS);
+            this.statReportFuture = ScheduledExecutorManager.getInstance()
+                    .scheduleAtFixedRate(new ServantStatReporter(), initialDelay, interval, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -173,7 +175,8 @@ public final class ObjectProxy<T> implements ServantProxy, InvocationHandler {
         if (!servantProxyConfig.isDirectConnection()) {
             int interval = servantProxyConfig.getRefreshInterval();
             int initialDelay = interval + (random.nextInt(30) * 1000);
-            this.queryRefreshFuture = ScheduledExecutorManager.getInstance().scheduleAtFixedRate(new ServantNodeRefresher(), initialDelay, interval, TimeUnit.MILLISECONDS);
+            this.queryRefreshFuture = ScheduledExecutorManager.getInstance()
+                    .scheduleAtFixedRate(new ServantNodeRefresher(), initialDelay, interval, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -184,13 +187,15 @@ public final class ObjectProxy<T> implements ServantProxy, InvocationHandler {
             try {
                 String nodes;
                 if (RegisterManager.getInstance().getHandler() != null) {
-                    nodes = ParseTools.parse(RegisterManager.getInstance().getHandler().query(servantProxyConfig.getSimpleObjectName()),
+                    nodes = ParseTools.parse(
+                            RegisterManager.getInstance().getHandler().query(servantProxyConfig.getSimpleObjectName()),
                             servantProxyConfig.getSimpleObjectName());
                 } else {
                     nodes = communicator.getQueryHelper().getServerNodes(servantProxyConfig);
                 }
                 if (nodes != null && !nodes.equals(servantProxyConfig.getObjectName())) {
-                    servantCacheManager.save(communicator.getId(), servantProxyConfig.getSimpleObjectName(), nodes, communicator.getCommunicatorConfig().getDataPath());
+                    servantCacheManager.save(communicator.getId(), servantProxyConfig.getSimpleObjectName(), nodes,
+                            communicator.getCommunicatorConfig().getDataPath());
                     servantProxyConfig.setObjectName(nodes);
                     refresh();
                 }
@@ -198,7 +203,8 @@ public final class ObjectProxy<T> implements ServantProxy, InvocationHandler {
             } catch (Throwable e) {
                 logger.error(servantProxyConfig.getSimpleObjectName() + " error sync server", e);
             } finally {
-                logger.info("ServantNodeRefresher run({}), use: {}", servantProxyConfig.getSimpleObjectName(), (System.currentTimeMillis() - begin));
+                logger.info("ServantNodeRefresher run({}), use: {}", servantProxyConfig.getSimpleObjectName(),
+                        (System.currentTimeMillis() - begin));
             }
         }
     }
@@ -208,12 +214,17 @@ public final class ObjectProxy<T> implements ServantProxy, InvocationHandler {
         public void run() {
             long begin = System.currentTimeMillis();
             try {
-                communicator.getStatHelper().report(InvokeStatHelper.getInstance().getProxyStat(servantProxyConfig.getSimpleObjectName()), true);
+                communicator.getStatHelper().report(
+                        InvokeStatHelper.getInstance().getProxyStat(servantProxyConfig.getSimpleObjectName()), true);
             } catch (Exception e) {
                 logger.error("report stat worker error|" + servantProxyConfig.getSimpleObjectName(), e);
             } finally {
                 logger.info("ServantStatReproter run(), use: " + (System.currentTimeMillis() - begin));
             }
         }
+    }
+
+    public static void main(String[] args) {
+        System.out.println("hello world");
     }
 }

@@ -62,11 +62,11 @@ public final class StatHelper {
         long start = System.currentTimeMillis();
         int i = 0, errorCount = 0, successCount = 0;
         try {
-            HashMap<StatMicMsgHead, StatMicMsgBody> reportMap = new HashMap<StatMicMsgHead, StatMicMsgBody>();
+            HashMap<StatMicMsgHead, StatMicMsgBody> reportMap = new HashMap<>();
             for (Entry<ProxyStatHead, ProxyStatBody> statHead : proxyStat.getStats().entrySet()) {
                 ProxyStatHead head = statHead.getKey();
                 ProxyStatBody body = statHead.getValue();
-                HashMap<Integer, Integer> intervalCount = new HashMap<Integer, Integer>();
+                HashMap<Integer, Integer> intervalCount = new HashMap<>();
                 for (Entry<Integer, AtomicInteger> interval : body.intervalCount.entrySet()) {
                     intervalCount.put(interval.getKey(), interval.getValue().get());
                 }
@@ -74,7 +74,11 @@ public final class StatHelper {
                 body.clear();
                 StatMicMsgHead mHead = new StatMicMsgHead(head.getMasterName(), head.getSlaveName(), head.getInterfaceName(), head.getMasterIp(), head.getSlaveIp(), head.getSlavePort(), head.getReturnValue(), head.getSlaveSetName(), head.getSlaveSetArea(), head.getSlaveSetID(), head.getTafVersion());
                 reportMap.put(mHead, mbody);
-                logger.info("report call|" + statHead.getKey().masterName + "|" + statHead.getKey().slaveIp + ":" + statHead.getKey().slavePort + "|" + statHead.getKey().slaveName + "." + statHead.getKey().interfaceName + "_" + statHead.getKey().getReturnValue() + "(" + statHead.getKey().slaveSetName + "." + statHead.getKey().slaveSetArea + "." + statHead.getKey().slaveSetID + "):" + mbody.count + "_" + mbody.execCount + "_" + mbody.timeoutCount + "_" + mbody.totalRspTime + "_" + mbody.maxRspTime + "_" + mbody.minRspTime);
+                logger.info("report call|" +
+                        statHead.getKey().masterName + "|" + statHead.getKey().slaveIp + ":" +
+                        statHead.getKey().slavePort + "|" + statHead.getKey().slaveName + "."
+                        + statHead.getKey().interfaceName + "_" + statHead.getKey().getReturnValue() +
+                        "(" + statHead.getKey().slaveSetName + "." + statHead.getKey().slaveSetArea + "." + statHead.getKey().slaveSetID + "):" + mbody.count + "_" + mbody.execCount + "_" + mbody.timeoutCount + "_" + mbody.totalRspTime + "_" + mbody.maxRspTime + "_" + mbody.minRspTime);
                 i++;
                 if (i % BATCH_REPORTS == 0) {
                     try {

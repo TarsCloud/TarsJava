@@ -27,19 +27,14 @@ import java.util.Map;
 
 @SuppressWarnings("serial")
 public class ServantInvokeContext implements InvokeContext, Serializable {
-
     private Invoker<?> invoker;
-
     private String methodName;
     private Object[] arguments;
     private Class<?>[] parameterTypes;
-
     private final boolean isAsync;
     private final boolean isPromiseFuture;
     private final boolean isNormal;
-
     private Map<String, String> attachments;
-
 
     public ServantInvokeContext(Method method, Object[] arguments, Map<String, String> attachments) {
         this(method, arguments, attachments, null);

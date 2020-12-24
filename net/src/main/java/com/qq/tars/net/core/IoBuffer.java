@@ -16,56 +16,56 @@
 
 package com.qq.tars.net.core;
 
-import java.nio.ByteBuffer;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.buffer.Unpooled;
+import io.netty.buffer.UnpooledByteBufAllocator;
 
 public final class IoBuffer {
 
-    private ByteBuffer buf = null;
+    private ByteBuf buf = null;
 
-    private IoBuffer(ByteBuffer buf) {
+    private IoBuffer(ByteBuf buf) {
         this.buf = buf;
     }
 
-    public static IoBuffer wrap(ByteBuffer buf) {
+    public static IoBuffer wrap(ByteBuf buf) {
         return new IoBuffer(buf);
     }
 
-    public static IoBuffer wrap(byte[] buf) {
-        return new IoBuffer(ByteBuffer.wrap(buf));
-    }
 
     public static IoBuffer allocate(int capacity) {
-        return new IoBuffer(ByteBuffer.allocate(capacity));
+        return new IoBuffer(Unpooled.buffer(capacity));
     }
 
     public static IoBuffer allocateDirect(int capacity) {
-        return new IoBuffer(ByteBuffer.allocateDirect(capacity));
+        return new IoBuffer(Unpooled.buffer(capacity));
     }
 
     public byte get() {
-        return this.buf.get();
+        return this.buf.readByte();
     }
 
     public IoBuffer get(byte[] dst) {
-        this.buf.get(dst);
+        this.buf.writeBytes(dst);
         return this;
     }
 
     public IoBuffer get(byte[] dst, int offset, int length) {
-        this.buf.get(dst, offset, length);
+        this.buf.writeBytes(dst, offset, length);
         return this;
     }
 
     public short getShort() {
-        return this.buf.getShort();
+        return this.buf.readShort();
     }
 
     public int getInt() {
-        return this.buf.getInt();
+        return this.buf.readInt();
     }
 
     public IoBuffer put(byte value) {
-        return put(new byte[] { value });
+        return put(new byte[]{value});
     }
 
     public IoBuffer put(byte[] src) {
@@ -74,65 +74,48 @@ public final class IoBuffer {
 
     public IoBuffer put(byte[] src, int offset, int length) {
         autoExpand(src.length, offset, length);
-        this.buf.put(src, offset, length);
+        this.buf.writeBytes(src, offset, length);
         return this;
     }
 
     public IoBuffer put(char c) {
-        this.buf.putChar(c);
+        this.buf.writeChar(c);
         return this;
     }
 
     public IoBuffer putShort(short value) {
-        this.buf.putShort(value);
+        this.buf.writeShort(value);
         return this;
     }
 
     public IoBuffer put(int value) {
-        this.buf.putInt(value);
-        return this;
-    }
-
-    public final IoBuffer flip() {
-        this.buf.flip();
+        this.buf.writeInt(value);
         return this;
     }
 
     public final byte get(int index) {
-        return this.buf.get(index);
+        return this.buf.getByte(index);
     }
 
-    public final IoBuffer unflip() {
-        buf.position(buf.limit());
-        if (buf.limit() != buf.capacity()) buf.limit(buf.capacity());
-        return this;
-    }
-
-    public final IoBuffer rewind() {
-        this.buf.rewind();
-        return this;
-    }
-
-    public final int remaining() {
-        return this.buf.remaining();
-    }
 
     public final IoBuffer mark() {
-        this.buf.mark();
+        this.buf.markReaderIndex();
+        this.buf.markWriterIndex();
         return this;
     }
 
     public final IoBuffer reset() {
-        this.buf.reset();
+        this.buf.resetReaderIndex();
+        this.buf.resetWriterIndex();
         return this;
     }
 
     public final int position() {
-        return this.buf.position();
+        return this.buf.capacity();
     }
 
     public final IoBuffer position(int newPosition) {
-        this.buf.position(newPosition);
+        this.buf.capacity(newPosition);
         return this;
     }
 
@@ -141,18 +124,18 @@ public final class IoBuffer {
     }
 
     public final IoBuffer compact() {
-        this.buf.compact();
+        this.buf.capacity();
         return this;
     }
 
-    public final ByteBuffer buf() {
+    public final ByteBuf buf() {
         return this.buf;
     }
 
     private void autoExpand(int size, int offset, int length) {
         int newCapacity = this.buf.capacity();
-        int newSize = this.buf.position() + length;
-        ByteBuffer newBuffer = null;
+        int newSize = this.buf.capacity() + length;
+        ByteBuf newBuffer = null;
 
         if (size < length) throw new IndexOutOfBoundsException();
 
@@ -162,15 +145,23 @@ public final class IoBuffer {
 
         if (newCapacity != this.buf.capacity()) {
             if (this.buf.isDirect()) {
-                newBuffer = ByteBuffer.allocateDirect(newCapacity);
+                newBuffer = PooledByteBufAllocator.DEFAULT.buffer(newCapacity);
             } else {
-                newBuffer = ByteBuffer.allocate(newCapacity);
+                newBuffer = UnpooledByteBufAllocator.DEFAULT.buffer(newCapacity);
             }
 
-            newBuffer.put(this.buf.array());
-            newBuffer.position(this.buf.position());
+            newBuffer.writeBytes(this.buf.array());
+            newBuffer.writerIndex(this.buf.readerIndex());
 
             this.buf = newBuffer;
         }
+    }
+
+    public int remaining() {
+        return buf.readableBytes();
+    }
+
+    public static void main(String[] args) {
+        IoBuffer ioBuffer = IoBuffer.allocate(100);
     }
 }

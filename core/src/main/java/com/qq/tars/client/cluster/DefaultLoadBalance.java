@@ -47,7 +47,8 @@ public class DefaultLoadBalance {
 
     public <T> Invoker<T> select(Collection<Invoker<T>> invokers, InvokeContext context) throws NoInvokerException {
         if (logger.isDebugEnabled()) {
-            logger.debug("{} try to select active invoker, size= {} ", config.getSimpleObjectName(), (invokers == null || invokers.isEmpty() ? 0 : invokers.size()));
+            logger.debug("{} try to select active invoker, size= {} ", config.getSimpleObjectName(),
+                    (invokers == null || invokers.isEmpty() ? 0 : invokers.size()));
         }
         if (invokers == null || invokers.isEmpty()) {
             throw new NoInvokerException("no such active connection invoker");
@@ -56,7 +57,8 @@ public class DefaultLoadBalance {
         for (Invoker<T> invoker : invokers) {
             if (!invoker.isAvailable()) {
                 ServantInvokerAliveStat stat = ServantInvokerAliveChecker.get(invoker.getUrl());
-                if (stat.isAlive() || (stat.getLastRetryTime() + (config.getTryTimeInterval() * 1000)) < System.currentTimeMillis()) {
+                if (stat.isAlive() || (stat.getLastRetryTime() + (config.getTryTimeInterval() * 1000)) < System
+                        .currentTimeMillis()) {
                     list.add(invoker);
                 }
             } else {
@@ -64,7 +66,8 @@ public class DefaultLoadBalance {
             }
         }
         if (list.isEmpty()) {
-            throw new NoInvokerException(config.getSimpleObjectName() + " try to select active invoker, size=" + invokers.size() + ", no such active connection invoker");
+            throw new NoInvokerException(config.getSimpleObjectName() + " try to select active invoker, size="
+                    + invokers.size() + ", no such active connection invoker");
         }
         Invoker<T> invoker = null;
         long hash = Math.abs(StringUtils.convertLong(context.getAttachment(Constants.TARS_HASH), 0));
@@ -87,5 +90,9 @@ public class DefaultLoadBalance {
         public int compare(Invoker<?> o1, Invoker<?> o2) {
             return o1.getUrl().compareTo(o2.getUrl());
         }
+    }
+
+    public static void main(String[] args) {
+        System.out.println("this is a helloworld");
     }
 }

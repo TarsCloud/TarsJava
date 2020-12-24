@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.qq.tars.net.client.Callback;
 import com.qq.tars.net.core.Request;
-import com.qq.tars.net.core.nio.SelectorManager;
 
 public class Ticket<T> {
 
@@ -40,8 +39,6 @@ public class Ticket<T> {
     private int ticketNumber = -1;
     private static TicketListener ticketListener = null;
 
-    private SelectorManager selectorManager = null;
-
     Future<?> timeoutFuture;
 
     AtomicBoolean hasRun = new AtomicBoolean(false);
@@ -54,13 +51,6 @@ public class Ticket<T> {
         this.timeoutFuture = timeoutFuture;
     }
 
-    public SelectorManager getSelectorManager() {
-        return selectorManager;
-    }
-
-    public void setSelectorManager(SelectorManager selectorManager) {
-        this.selectorManager = selectorManager;
-    }
 
 
     public Ticket(Request request, long timeout) {
@@ -68,14 +58,6 @@ public class Ticket<T> {
         this.ticketNumber = request.getTicketNumber();
         this.timeout = timeout;
     }
-
-    public Ticket(Request request, long timeout,SelectorManager selectorManager) {
-        this.request = request;
-        this.ticketNumber = request.getTicketNumber();
-        this.timeout = timeout;
-        this.selectorManager = selectorManager;
-    }
-
     public Request request() {
         return this.request;
     }
@@ -98,7 +80,7 @@ public class Ticket<T> {
                 if(getTimeoutFuture()!= null && (getTimeoutFuture().isDone() || getTimeoutFuture().isCancelled())) {
                     System.out.println("task has run or canceled.");
                 } else {
-                    selectorManager.getThreadPool().execute(() -> callback.onExpired());
+                   // selectorManager.getThreadPool().execute(() -> callback.onExpired());
                 }
             }
             this.countDown();

@@ -18,9 +18,10 @@ package com.qq.tars.protocol.tars;
 
 import com.qq.tars.common.util.HexUtil;
 import com.qq.tars.protocol.tars.exc.TarsEncodeException;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -28,48 +29,64 @@ import java.util.Map;
 
 public class TarsOutputStream {
 
-    private ByteBuffer bs;
+    //private ByteBuffer bs;
+    private ByteBuf bs;
 
-    public TarsOutputStream(ByteBuffer bs) {
+    public TarsOutputStream(ByteBuf bs) {
         this.bs = bs;
     }
 
     public TarsOutputStream(int capacity) {
-        bs = ByteBuffer.allocate(capacity);
+        //bs = ByteBuffer.allocate(capacity);
+        bs = Unpooled.buffer(capacity);
     }
 
     public TarsOutputStream() {
         this(128);
     }
 
-    public ByteBuffer getByteBuffer() {
+    public ByteBuf getByteBuffer() {
         return bs;
     }
 
     public byte[] toByteArray() {
-        byte[] newBytes = new byte[bs.position()];
-        System.arraycopy(bs.array(), 0, newBytes, 0, bs.position());
+        //byte[] newBytes = new byte[bs.position()];
+        byte[] newBytes = new byte[bs.readableBytes()];
+        bs.getBytes(0, newBytes);
         return newBytes;
     }
 
+    //    public void reserve(int len) {
+//        if (bs.remaining() < len) {
+//            int n = (bs.capacity() + len) * 2;
+//            ByteBuffer bs2 = ByteBuffer.allocate(n);
+//            bs2.put(bs.array(), 0, bs.position());
+//            bs = bs2;
+//            bs2 = null;
+//        }
+//    }
     public void reserve(int len) {
-        if (bs.remaining() < len) {
+
+        if (bs.writerIndex() < len) {
             int n = (bs.capacity() + len) * 2;
-            ByteBuffer bs2 = ByteBuffer.allocate(n);
-            bs2.put(bs.array(), 0, bs.position());
+            ByteBuf bs2 = Unpooled.buffer(n);
+            bs2.writeBytes(bs.array(), 0, bs.writerIndex());
             bs = bs2;
-            bs2 = null;
+            //bs2 = null;
         }
     }
 
     public void writeHead(byte type, int tag) {
         if (tag < 15) {
             byte b = (byte) ((tag << 4) | type);
-            bs.put(b);
+            //bs.put(b);
+            bs.writeByte(b);
         } else if (tag < 256) {
             byte b = (byte) ((15 << 4) | type);
-            bs.put(b);
-            bs.put((byte) tag);
+            //bs.put(b);
+            bs.writeByte(b);
+            //bs.put((byte) tag);
+            bs.writeByte((byte) tag);
         } else {
             throw new TarsEncodeException("tag is too large: " + tag);
         }
@@ -86,7 +103,8 @@ public class TarsOutputStream {
             writeHead(TarsStructBase.ZERO_TAG, tag);
         } else {
             writeHead(TarsStructBase.BYTE, tag);
-            bs.put(b);
+            //bs.put(b);
+            bs.writeByte(b);
         }
     }
 
@@ -96,7 +114,8 @@ public class TarsOutputStream {
             write((byte) n, tag);
         } else {
             writeHead(TarsStructBase.SHORT, tag);
-            bs.putShort(n);
+            //bs.putShort(n);
+            bs.writeShort(n);
         }
     }
 
@@ -106,7 +125,8 @@ public class TarsOutputStream {
             write((short) n, tag);
         } else {
             writeHead(TarsStructBase.INT, tag);
-            bs.putInt(n);
+            //bs.putInt(n);
+            bs.writeInt(n);
         }
     }
 
@@ -116,20 +136,23 @@ public class TarsOutputStream {
             write((int) n, tag);
         } else {
             writeHead(TarsStructBase.LONG, tag);
-            bs.putLong(n);
+            //bs.putLong(n);
+            bs.writeLong(n);
         }
     }
 
     public void write(float n, int tag) {
         reserve(6);
         writeHead(TarsStructBase.FLOAT, tag);
-        bs.putFloat(n);
+        //bs.putFloat(n);
+        bs.writeFloat(n);
     }
 
     public void write(double n, int tag) {
         reserve(10);
         writeHead(TarsStructBase.DOUBLE, tag);
-        bs.putDouble(n);
+        //bs.putDouble(n);
+        bs.writeDouble(n);
     }
 
     public void writeStringByte(String s, int tag) {
@@ -137,12 +160,17 @@ public class TarsOutputStream {
         reserve(10 + by.length);
         if (by.length > 255) {
             writeHead(TarsStructBase.STRING4, tag);
-            bs.putInt(by.length);
-            bs.put(by);
+            //bs.putInt(by.length);
+            //bs.put(by);
+            bs.writeInt(by.length);
+            bs.writeBytes(by);
+
         } else {
             writeHead(TarsStructBase.STRING1, tag);
-            bs.put((byte) by.length);
-            bs.put(by);
+            //bs.put((byte) by.length);
+            //bs.put(by);
+            bs.writeByte(by.length);
+            bs.writeBytes(by);
         }
     }
 
@@ -151,12 +179,16 @@ public class TarsOutputStream {
         byte[] by = HexUtil.hexStr2Bytes(s);
         if (by.length > 255) {
             writeHead(TarsStructBase.STRING4, tag);
-            bs.putInt(by.length);
-            bs.put(by);
+            //bs.putInt(by.length);
+            //bs.put(by);
+            bs.writeInt(by.length);
+            bs.writeBytes(by);
         } else {
             writeHead(TarsStructBase.STRING1, tag);
-            bs.put((byte) by.length);
-            bs.put(by);
+            //bs.put((byte) by.length);
+            //bs.put(by);
+            bs.writeByte(by.length);
+            bs.writeBytes(by);
         }
     }
 
@@ -170,12 +202,17 @@ public class TarsOutputStream {
         reserve(10 + by.length);
         if (by.length > 255) {
             writeHead(TarsStructBase.STRING4, tag);
-            bs.putInt(by.length);
-            bs.put(by);
+            //bs.putInt(by.length);
+            //bs.put(by);
+            bs.writeInt(by.length);
+            bs.writeBytes(by);
+
         } else {
             writeHead(TarsStructBase.STRING1, tag);
-            bs.put((byte) by.length);
-            bs.put(by);
+            //bs.put((byte) by.length);
+            //bs.put(by);
+            bs.writeByte(by.length);
+            bs.writeBytes(by);
         }
     }
 
@@ -204,7 +241,8 @@ public class TarsOutputStream {
         writeHead(TarsStructBase.SIMPLE_LIST, tag);
         writeHead(TarsStructBase.BYTE, 0);
         write(l.length, 0);
-        bs.put(l);
+        //bs.put(l);
+        bs.writeBytes(l);
     }
 
     public void write(short[] l, int tag) {
@@ -273,6 +311,7 @@ public class TarsOutputStream {
         reserve(2);
         writeHead(TarsStructBase.STRUCT_BEGIN, tag);
         o.writeTo(this);
+        //o.writeTo(new com.qq.tars.protocol.tars.TarsOutputStream());
         reserve(2);
         writeHead(TarsStructBase.STRUCT_END, 0);
     }
@@ -348,6 +387,7 @@ public class TarsOutputStream {
             write((Collection<?>) o, tag);
         } else {
             TarsOutputStreamExt.write(o, tag, this);
+            //上面这里报错的原因要将这函数的原始关于TarOutput也要换掉才可以
         }
     }
 
@@ -362,7 +402,7 @@ public class TarsOutputStream {
         TarsOutputStream os = new TarsOutputStream();
         long n = 0x1234567890012345L;
         os.write(n, 0);
-        ByteBuffer bs = os.getByteBuffer();
+        ByteBuf bs = os.getByteBuffer();
         System.out.println(HexUtil.bytes2HexStr(bs.array()));
         System.out.println(Arrays.toString(os.toByteArray()));
     }

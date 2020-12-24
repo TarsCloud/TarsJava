@@ -40,10 +40,10 @@ import com.qq.tars.rpc.protocol.ServantRequest;
 import com.qq.tars.rpc.protocol.ServantResponse;
 import com.qq.tars.rpc.protocol.tars.support.AnalystManager;
 import com.qq.tars.rpc.protocol.tup.UniAttribute;
+import io.netty.buffer.ByteBuf;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -66,7 +66,7 @@ public class TarsCodec extends Codec {
         TarsOutputStream jos = new TarsOutputStream();
         jos.setServerEncoding(charsetName);
         try {
-            jos.getByteBuffer().putInt(0);
+            jos.getByteBuffer().writeInt(0);
             jos.write(response.getVersion(), 1);
             jos.write(response.getPacketType(), 2);
 
@@ -115,12 +115,7 @@ public class TarsCodec extends Codec {
                 response.setRet(TarsHelper.SERVERENCODEERR);
             }
         }
-        ByteBuffer buffer = jos.getByteBuffer();
-        int datalen = buffer.position();
-        buffer.position(0);
-        buffer.putInt(datalen);
-        buffer.position(datalen);
-        return IoBuffer.wrap(jos.toByteArray());
+        return IoBuffer.wrap(jos.getByteBuffer());
     }
 
     protected byte[] encodeResult(TarsServantResponse response, String charsetName) {
@@ -262,7 +257,7 @@ public class TarsCodec extends Codec {
         TarsOutputStream os = new TarsOutputStream();
         os.setServerEncoding(charsetName);
 
-        os.getByteBuffer().putInt(0);
+        os.getByteBuffer().writeInt(0);
         os.write(request.getVersion(), 1);
         os.write(request.getPacketType(), 2);
         os.write(request.getMessageType(), 3);
@@ -274,11 +269,10 @@ public class TarsCodec extends Codec {
         os.write(request.getContext(), 9);
         os.write(request.getStatus(), 10);
 
-        os.getByteBuffer().flip();
 
-        int length = os.getByteBuffer().remaining();
+        int length = os.getByteBuffer().capacity();
 
-        os.getByteBuffer().duplicate().putInt(0, length);
+        os.getByteBuffer().duplicate().setInt(0, length);
         if (length > TarsHelper.PACKAGE_MAX_LENGTH || length <= 0) {
             throw new ProtocolException("the length header of the package must be between 0~10M bytes. data length:" + Integer.toHexString(length));
         }
