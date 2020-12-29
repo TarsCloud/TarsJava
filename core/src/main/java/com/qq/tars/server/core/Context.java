@@ -16,8 +16,9 @@
 
 package com.qq.tars.server.core;
 
-import com.qq.tars.net.core.Request;
-import com.qq.tars.net.core.Response;
+
+import com.qq.tars.client.rpc.Request;
+import com.qq.tars.client.rpc.Response;
 
 import java.util.HashMap;
 import java.util.Map;

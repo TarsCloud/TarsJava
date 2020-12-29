@@ -3,11 +3,17 @@ package com.qq.tars.client.rpc;
 import com.qq.tars.client.ServantProxyConfig;
 import io.netty.channel.Channel;
 
-public class NettyTarsChannel {
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class NettyChannel {
+
+
+    private static final Map<Channel, NettyChannel> CHANNEP_MAP = new ConcurrentHashMap<>();
     private final Channel channel;
     private final ServantProxyConfig servantProxyConfig;
 
-    public NettyTarsChannel(Channel channel, ServantProxyConfig servantProxyConfig) {
+    public NettyChannel(Channel channel, ServantProxyConfig servantProxyConfig) {
         this.channel = channel;
         this.servantProxyConfig = servantProxyConfig;
 

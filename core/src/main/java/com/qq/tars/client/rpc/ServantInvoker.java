@@ -32,11 +32,11 @@ public abstract class ServantInvoker<T> extends AbstractInvoker<T> {
 
     protected final String objName;
     protected final ServantProxyConfig config;
-    protected final ServantClient[] clients;
+    protected final RPCClient[] clients;
     protected final AtomicInteger index = new AtomicInteger();
     protected final ReentrantLock destroyLock = new ReentrantLock();
 
-    public ServantInvoker(ServantProxyConfig config, Class<T> api, Url url, ServantClient[] clients) {
+    public ServantInvoker(ServantProxyConfig config, Class<T> api, Url url, RPCClient[] clients) {
         super(api, url);
         this.config = config;
         this.objName = config.getSimpleObjectName();
@@ -59,7 +59,7 @@ public abstract class ServantInvoker<T> extends AbstractInvoker<T> {
                 return;
             }
             super.destroy();
-            for (ServantClient client : clients) {
+            for (RPCClient client : clients) {
                 try {
                     logger.info("try to close client " + client);
                     client.close();

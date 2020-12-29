@@ -18,8 +18,8 @@
 package com.qq.tars.client.rpc.loadbalance;
 
 import com.qq.tars.client.ServantProxyConfig;
-import com.qq.tars.client.cluster.ServantInvokerAliveStat;
 import com.qq.tars.client.cluster.ServantInvokerAliveChecker;
+import com.qq.tars.client.cluster.ServantInvokerAliveStat;
 import com.qq.tars.client.rpc.InvokerComparator;
 import com.qq.tars.common.util.CollectionUtils;
 import com.qq.tars.rpc.common.InvokeContext;

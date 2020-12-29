@@ -1,10 +1,11 @@
 package com.qq.tars.common;
 
-import com.qq.tars.net.core.Request;
-import com.qq.tars.net.core.Response;
+import com.qq.tars.client.rpc.Request;
+import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public abstract class AbstractFilterChain<T> implements FilterChain {
 
@@ -23,12 +24,12 @@ public abstract class AbstractFilterChain<T> implements FilterChain {
     }
 
     @Override
-    public void doFilter(Request request, Response response) throws Throwable {
+    public CompletableFuture<TarsServantResponse> doFilter(Request request) throws Throwable {
         Filter filter = getFilter();
         if (filter != null) {
-            filter.doFilter(request, response, this);
+            return filter.doFilter(request, this);
         } else {
-            doRealInvoke(request, response);
+            return doRealInvoke(request);
         }
 
     }
@@ -37,6 +38,6 @@ public abstract class AbstractFilterChain<T> implements FilterChain {
         return iterator != null && iterator.hasNext() ? iterator.next() : null;
     }
 
-    protected abstract void doRealInvoke(Request request, Response response) throws Throwable;
+    protected abstract CompletableFuture<TarsServantResponse> doRealInvoke(Request request) throws Throwable;
 
 }

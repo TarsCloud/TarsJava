@@ -16,25 +16,18 @@
 
 package com.qq.tars.rpc.protocol;
 
-import com.qq.tars.common.util.Constants;
-import com.qq.tars.net.protocol.ProtocolDecoder;
-import com.qq.tars.net.protocol.ProtocolEncoder;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.Channel;
 
-public abstract class Codec implements ProtocolEncoder, ProtocolDecoder {
+import java.io.IOException;
+import java.nio.charset.Charset;
 
-    protected String charsetName = Constants.default_charset_name;
+public interface Codec {
+    void encode(Channel channel, ByteBuf channelBuffer, Object message) throws IOException;
 
-    public Codec(String charsetName) {
-        this.setCharsetName(charsetName);
-    }
+    Object decode(Channel channel, ByteBuf buffer) throws IOException;
 
-    public String getCharsetName() {
-        return charsetName;
-    }
+    String getProtocol();
 
-    public void setCharsetName(String charsetName) {
-        this.charsetName = charsetName;
-    }
-
-    public abstract String getProtocol();
+    Charset getCharset();
 }

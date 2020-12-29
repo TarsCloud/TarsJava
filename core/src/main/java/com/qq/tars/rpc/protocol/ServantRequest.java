@@ -16,16 +16,15 @@
 
 package com.qq.tars.rpc.protocol;
 
-import com.qq.tars.net.core.Request;
-import com.qq.tars.net.core.Session;
+
+import com.qq.tars.client.rpc.Request;
 
 public abstract class ServantRequest extends Request {
-
     protected String servantName;
     protected String functionName;
 
-    public ServantRequest(Session session) {
-        super(session);
+    public ServantRequest(int requestid) {
+        super(requestid);
     }
 
     public String getServantName() {

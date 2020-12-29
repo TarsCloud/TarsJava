@@ -119,21 +119,7 @@ public class Server {
     }
 
     private void startSessionManager() throws IOException {
-        SessionManager sessionManager = SessionManager.getSessionManager();
-        sessionManager.setTimeout(serverConfig.getSessionTimeOut());
-        sessionManager.setCheckInterval(serverConfig.getSessionCheckInterval());
 
-        int connCount = 0;
-        for (Entry<String, ServantAdapterConfig> adapterConfigEntry : ConfigurationManager.getInstance().getServerConfig().getServantAdapterConfMap().entrySet()) {
-            if (OmConstants.AdminServant.equals(adapterConfigEntry.getKey())) {
-                continue;
-            }
-            connCount += adapterConfigEntry.getValue().getMaxConns();
-        }
-        ConnectionSessionListener sessionListener = new ConnectionSessionListener(connCount);
-        sessionManager.addSessionListener(sessionListener);
-
-        sessionManager.start();
     }
 
     private void registerServerHook() {

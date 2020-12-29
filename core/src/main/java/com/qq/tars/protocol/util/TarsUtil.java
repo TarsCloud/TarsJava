@@ -17,11 +17,11 @@
 package com.qq.tars.protocol.util;
 
 import com.qq.tars.protocol.tars.TarsStructBase;
+import io.netty.buffer.ByteBuf;
 
 import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.List;
-import com.qq.tars.protocol.tars.TarsStructBase;
 import java.util.Objects;
 
 public final class TarsUtil {
@@ -104,7 +104,7 @@ public final class TarsUtil {
 
     public static <T extends Comparable<T>> int compareTo(List<T> l, List<T> r) {
         Iterator<T> li = l.iterator(), ri = r.iterator();
-        for (; li.hasNext() && ri.hasNext();) {
+        for (; li.hasNext() && ri.hasNext(); ) {
             int n = li.next().compareTo(ri.next());
             if (n != 0) return n;
         }
@@ -357,9 +357,9 @@ public final class TarsUtil {
         }
     }
 
-    public static byte[] getBufArray(ByteBuffer buffer) {
-        byte[] bytes = new byte[buffer.position()];
-        System.arraycopy(buffer.array(), 0, bytes, 0, bytes.length);
+    public static byte[] getBufArray(ByteBuf buffer) {
+        final byte[] bytes = new byte[buffer.readableBytes()];
+        buffer.readBytes(bytes, 0, buffer.readableBytes());
         return bytes;
     }
 
@@ -368,7 +368,7 @@ public final class TarsUtil {
     private static final byte[] lowDigits;
 
     static {
-        final byte[] digits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+        final byte[] digits = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
         int i;
         byte[] high = new byte[256];

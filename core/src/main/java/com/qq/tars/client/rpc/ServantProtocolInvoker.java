@@ -20,7 +20,6 @@ import com.qq.tars.client.ServantProxyConfig;
 import com.qq.tars.client.util.ParseTools;
 import com.qq.tars.common.support.ScheduledExecutorManager;
 import com.qq.tars.common.util.Constants;
-import com.qq.tars.net.protocol.ProtocolFactory;
 import com.qq.tars.rpc.common.Invoker;
 import com.qq.tars.rpc.common.ProtocolInvoker;
 import com.qq.tars.rpc.common.Url;
@@ -47,15 +46,16 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
     protected final Class<T> api;
     protected final ServantProxyConfig servantProxyConfig;
     protected final ThreadPoolExecutor threadPoolExecutor;
-    protected final ProtocolFactory protocolFactory;
     protected volatile ConcurrentHashSet<Invoker<T>> allInvoker = new ConcurrentHashSet<>();
+    private final NettyTransport nettyTransport;
 
-    public ServantProtocolInvoker(Class<T> api, ServantProxyConfig config, ProtocolFactory protocolFactory,
+    public ServantProtocolInvoker(Class<T> api, ServantProxyConfig config,
                                   ThreadPoolExecutor threadPoolExecutor) {
         this.api = api;
         this.servantProxyConfig = config;
         this.threadPoolExecutor = threadPoolExecutor;
-        this.protocolFactory = protocolFactory;
+        this.nettyTransport = new NettyTransport(config);
+
         this.allInvoker = this.initInvoker();
     }
 
@@ -81,7 +81,7 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
                 brokenInvokers.add(invoker);
             }
         }
-        List<Url> newUrls = new ArrayList<>();
+        List<Url> newUrls = new ArrayList<>(currentUrls.size());
         for (Url url : currentUrls) {
             if (!prevUrlInvokerMap.containsKey(url)) {
                 newUrls.add(url);
@@ -110,7 +110,7 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
             long syncTimeout = url.getParameter(Constants.TARS_CLIENT_SYNCTIMEOUT, Constants.default_sync_timeout);
             long asyncTimeout = url.getParameter(Constants.TARS_CLIENT_ASYNCTIMEOUT, Constants.default_async_timeout);
             boolean udpMode = url.getParameter(Constants.TARS_CLIENT_UDPMODE, false);
-            client = new NettyServantClient(servantProxyConfig);
+            client = nettyTransport.connect(url.getHost(), url.getPort());
         } catch (Throwable e) {
             throw new ClientException(servantProxyConfig.getSimpleObjectName(), "Fail to create client|" + url.toIdentityString() + "|" + e.getLocalizedMessage(), e);
         }

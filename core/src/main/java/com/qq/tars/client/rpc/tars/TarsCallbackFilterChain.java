@@ -15,44 +15,44 @@ import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 import java.util.List;
 
 public class TarsCallbackFilterChain extends AbstractFilterChain<Callback<TarsServantResponse>> {
-	
-	private int expireFlag;
 
-	public TarsCallbackFilterChain(List<Filter> filters, String servant,
-			FilterKind kind, Callback<TarsServantResponse> target, int expireFlag) {
-		super(filters, servant, kind, target);
-		this.expireFlag = expireFlag;
-	}
+    private int expireFlag;
 
-	@Override
-	protected void doRealInvoke(Request request, Response response)
-			throws Throwable {
-		if (request instanceof TarsServantRequest) {
-			TarsServantResponse tarsServantResponse = (TarsServantResponse)response;
-			if (expireFlag == 0) {
-				try {
-		            if (tarsServantResponse.getCause() != null) {
-		                throw new TarsException(tarsServantResponse.getCause());
-		            }
-		            if (tarsServantResponse.getRet() != TarsHelper.SERVERSUCCESS) {
-		                throw ServerException.makeException(tarsServantResponse.getRet(), tarsServantResponse.getRemark());
-		            }
-		            if (target != null) {
-		                this.target.onCompleted(tarsServantResponse);
-		            }
-		        } catch (Throwable ex) {
-		        	if (target != null) {
-		        		target.onException(ex);
-		        	}
-		            throw ex;
-		        }
-			} else if (expireFlag == 1) {
-	            if (target != null) {
-	                this.target.onExpired();
-	            }
-			}
-		}
-		
-	}
+    public TarsCallbackFilterChain(List<Filter> filters, String servant,
+                                   FilterKind kind, Callback<TarsServantResponse> target, int expireFlag) {
+        super(filters, servant, kind, target);
+        this.expireFlag = expireFlag;
+    }
+
+    @Override
+    protected void doRealInvoke(Request request, Response response)
+            throws Throwable {
+        if (request instanceof TarsServantRequest) {
+            TarsServantResponse tarsServantResponse = (TarsServantResponse) response;
+            if (expireFlag == 0) {
+                try {
+                    if (tarsServantResponse.getCause() != null) {
+                        throw new TarsException(tarsServantResponse.getCause());
+                    }
+                    if (tarsServantResponse.getRet() != TarsHelper.SERVERSUCCESS) {
+                        throw ServerException.makeException(tarsServantResponse.getRet(), tarsServantResponse.getRemark());
+                    }
+                    if (target != null) {
+                        this.target.onCompleted(tarsServantResponse);
+                    }
+                } catch (Throwable ex) {
+                    if (target != null) {
+                        target.onException(ex);
+                    }
+                    throw ex;
+                }
+            } else if (expireFlag == 1) {
+                if (target != null) {
+                    this.target.onExpired();
+                }
+            }
+        }
+
+    }
 
 }

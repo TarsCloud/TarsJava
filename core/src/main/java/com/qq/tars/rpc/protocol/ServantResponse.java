@@ -16,12 +16,13 @@
 
 package com.qq.tars.rpc.protocol;
 
-import com.qq.tars.net.core.Response;
-import com.qq.tars.net.core.Session;
+
+import com.qq.tars.client.rpc.Response;
 
 public abstract class ServantResponse extends Response {
 
-    public ServantResponse(Session session) {
-        super(session);
+    public ServantResponse(int requestId) {
+
+        super(requestId);
     }
 }

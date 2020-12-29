@@ -1,3 +1,5 @@
+package com.qq.tars.client.rpc;
+
 /**
  * Tencent is pleased to support the open source community by making Tars available.
  *
@@ -14,7 +16,6 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.qq.tars.net.core;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;

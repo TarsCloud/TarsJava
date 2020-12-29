@@ -1,3 +1,5 @@
+package com.qq.tars.client.rpc;
+
 /**
  * Tencent is pleased to support the open source community by making Tars available.
  *
@@ -14,13 +16,26 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.qq.tars.net.client;
 
-public interface Callback<T> {
+@SuppressWarnings("serial")
+public class ProtocolException extends Exception {
 
-    void onCompleted(T result);
 
-    void onException(Throwable ex);
+    private static final long serialVersionUID = 5220984844274406112L;
 
-    void onExpired();
+    public ProtocolException() {
+        super();
+    }
+
+    public ProtocolException(String message) {
+        super(message);
+    }
+
+    public ProtocolException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public ProtocolException(Throwable cause) {
+        super(cause);
+    }
 }

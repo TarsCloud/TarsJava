@@ -14,43 +14,30 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.qq.tars.net.core;
-
-import com.qq.tars.net.client.ticket.Ticket;
-import com.qq.tars.net.protocol.ProtocolException;
+package com.qq.tars.client.rpc;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class Request {
-
-    private int ticketNum = Ticket.DEFAULT_TICKET_NUMBER;
-
-    private static final AtomicInteger ticketGenerator = new AtomicInteger();
-
-    protected transient Session session = null;
-
+    private static final AtomicInteger ticketGenerator = new AtomicInteger(); // generate ticket id
     protected transient InvokeStatus status = null;
-
-    private transient HashMap<String, String> distributedContext = new HashMap<String, String>(8);
-
+    private transient HashMap<String, String> distributedContext = new HashMap<>(8);
     private transient long bornTime;
-
     private transient long processTime;
+
+    private int requestId;
 
     public enum InvokeStatus {
         SYNC_CALL, ASYNC_CALL, FUTURE_CALL
     }
 
-    public Request(Session session) {
-        this.bornTime = System.currentTimeMillis();
-        this.session = session;
-        this.ticketNum = ticketGenerator.incrementAndGet();
-        exportDistributedContext(distributedContext);
-    }
 
-    public void init() throws ProtocolException {
+    public Request(int requestId) {
+        this.bornTime = System.currentTimeMillis();
+        exportDistributedContext(distributedContext);
+        this.requestId = requestId;
     }
 
     private void exportDistributedContext(Map<String, String> map) {
@@ -65,16 +52,13 @@ public abstract class Request {
         else this.distributedContext.clear();
     }
 
-    public Session getIoSession() {
-        return this.session;
+
+    public int getRequestId() {
+        return requestId;
     }
 
-    public int getTicketNumber() {
-        return ticketNum;
-    }
-
-    public void setTicketNumber(int ticketNum) {
-        this.ticketNum = ticketNum;
+    public void setRequestId(int requestId) {
+        this.requestId = requestId;
     }
 
     public void setInvokeStatus(InvokeStatus status) {

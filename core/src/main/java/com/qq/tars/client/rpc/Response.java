@@ -14,27 +14,34 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.qq.tars.net.protocol;
+package com.qq.tars.client.rpc;
 
-@SuppressWarnings("serial")
-public class ProtocolException extends Exception {
+public abstract class Response {
+    protected transient boolean asyncMode = false;
+    private volatile boolean committed = false;
 
+    private int requestId;
 
-    private static final long serialVersionUID = 5220984844274406112L;
-
-    public ProtocolException() {
-        super();
+    public Response(int requestId) {
+        this.requestId = requestId;
     }
 
-    public ProtocolException(String message) {
-        super(message);
+    public boolean isAsyncMode() {
+        return asyncMode;
     }
 
-    public ProtocolException(String message, Throwable cause) {
-        super(message, cause);
+    public void asyncCallStart() {
+        this.asyncMode = true;
     }
 
-    public ProtocolException(Throwable cause) {
-        super(cause);
+    public void asyncCallEnd() {
+        if (!this.asyncMode) throw new IllegalStateException("The response is not async mode.");
+        ensureNotCommitted();
+    }
+
+
+    private synchronized void ensureNotCommitted() {
+        if (committed) throw new IllegalStateException("Not allowed after response has committed.");
+        this.committed = true;
     }
 }

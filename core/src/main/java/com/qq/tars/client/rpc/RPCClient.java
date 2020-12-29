@@ -1,10 +1,11 @@
 package com.qq.tars.client.rpc;
 
-import com.qq.tars.net.client.Callback;
 import com.qq.tars.rpc.protocol.ServantRequest;
-import com.qq.tars.rpc.protocol.ServantResponse;
+import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
+import io.netty.channel.Channel;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 
 public interface RPCClient {
@@ -12,6 +13,11 @@ public interface RPCClient {
      * @throws IOException
      */
     void reConnect() throws IOException;
+
+    void close() throws IOException;
+
+
+    Channel getChannel();
 
     /**
      * @throws IOException
@@ -22,20 +28,7 @@ public interface RPCClient {
      * @param request
      * @throws IOException
      */
-    <T extends ServantResponse> T invokeWithSync(ServantRequest request) throws IOException;
+    CompletableFuture<TarsServantResponse> send(ServantRequest request) throws IOException;
 
-    /**
-     * @param request
-     * @param callback
-     * @throws IOException
-     */
-    <T extends ServantResponse> void invokeWithAsync(ServantRequest request, Callback<T> callback) throws IOException;
-
-    /**
-     * @param request
-     * @param callback
-     * @throws IOException
-     */
-    <T extends ServantResponse> void invokeWithFuture(ServantRequest request, Callback<T> callback) throws IOException;
 
 }

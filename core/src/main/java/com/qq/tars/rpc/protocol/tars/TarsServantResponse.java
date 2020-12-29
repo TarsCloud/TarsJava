@@ -16,19 +16,13 @@
 
 package com.qq.tars.rpc.protocol.tars;
 
-import com.qq.tars.net.client.ticket.Ticket;
-import com.qq.tars.net.client.ticket.TicketManager;
-import com.qq.tars.net.core.Session;
-import com.qq.tars.net.protocol.ProtocolException;
 import com.qq.tars.protocol.tars.TarsInputStream;
 import com.qq.tars.rpc.protocol.ServantResponse;
 
 import java.util.Map;
 
 public class TarsServantResponse extends ServantResponse implements java.io.Serializable {
-
     private static final long serialVersionUID = 3163555867604946654L;
-
     private short version;
     private byte packetType;
     private int messageType;
@@ -47,25 +41,12 @@ public class TarsServantResponse extends ServantResponse implements java.io.Seri
     private TarsServantRequest request;
     private Throwable cause = null;
 
-    public TarsServantResponse(Session session) {
-        super(session);
+    public TarsServantResponse(int requestId) {
+        super(requestId);
     }
 
-    public void init() throws ProtocolException {
-        if (inputStream == null) {
-            return;
-        }
-        Ticket<TarsServantRequest> ticket = TicketManager.getTicket(getRequestId());
-        if (ticket == null) {
-            return;
-        }
-        this.setRequest((TarsServantRequest) ticket.request());
-        try {
-            ((TarsCodec) this.session.getProtocolFactory().getDecoder()).decodeResponseBody(this);
-//            TarsCodecHelper.decodeResponseBody(this);
-        } catch (Throwable e) {
-            this.setCause(e);
-        }
+    public TarsServantResponse() {
+        super(0);
     }
 
     public short getVersion() {
@@ -93,12 +74,11 @@ public class TarsServantResponse extends ServantResponse implements java.io.Seri
     }
 
     public int getRequestId() {
-        return getTicketNumber();
+        return requestId;
     }
 
     public void setRequestId(int requestId) {
         this.requestId = requestId;
-        this.setTicketNumber(requestId);
     }
 
     public int getRet() {

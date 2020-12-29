@@ -17,17 +17,13 @@
 package com.qq.tars.client.support;
 
 import com.qq.tars.client.CommunicatorConfig;
-import com.qq.tars.client.ServantProxyConfig;
 import com.qq.tars.client.rpc.ServantClient;
 import com.qq.tars.common.util.concurrent.TaskQueue;
 import com.qq.tars.common.util.concurrent.TaskThreadFactory;
 import com.qq.tars.common.util.concurrent.TaskThreadPoolExecutor;
-import com.qq.tars.net.core.nio.SelectorManager;
-import com.qq.tars.net.protocol.ProtocolFactory;
 import com.qq.tars.support.log.LoggerFactory;
 import org.slf4j.Logger;
 
-import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -38,7 +34,6 @@ public class ClientPoolManager {
 
 
     private final static ConcurrentHashMap<CommunicatorConfig, ThreadPoolExecutor> clientThreadPoolMap = new ConcurrentHashMap<CommunicatorConfig, ThreadPoolExecutor>();
-    private final static ConcurrentHashMap<ServantProxyConfig, SelectorManager> selectorsMap = new ConcurrentHashMap<ServantProxyConfig, SelectorManager>();
 
     public static ThreadPoolExecutor getClientThreadPoolExecutor(CommunicatorConfig communicatorConfig) {
         ThreadPoolExecutor clientPoolExecutor = clientThreadPoolMap.get(communicatorConfig);
@@ -67,23 +62,6 @@ public class ClientPoolManager {
         return executor;
     }
 
-    public static SelectorManager getSelectorManager(ProtocolFactory protocolFactory,
-                                                     ThreadPoolExecutor threadPoolExecutor, boolean keepAlive,
-                                                     boolean udpMode, ServantProxyConfig servantProxyConfig) throws IOException {
-        SelectorManager selector = selectorsMap.get(servantProxyConfig);
-        if (selector == null) {
-            synchronized (selectorsMap) {
-                selector = selectorsMap.get(servantProxyConfig);
-                if (selector == null) {
-                    int selectorPoolSize = convertInt(System.getProperty("com.qq.tars.net.client.selectorPoolSize"), 2);
-                    selector = new SelectorManager(selectorPoolSize, protocolFactory, threadPoolExecutor, null, keepAlive, "servant-proxy-" + servantProxyConfig.getCommunicatorId(), udpMode);
-                    selector.start();
-                    selectorsMap.put(servantProxyConfig, selector);
-                }
-            }
-        }
-        return selector;
-    }
 
     private static int convertInt(String value, int defaults) {
         if (value == null) {

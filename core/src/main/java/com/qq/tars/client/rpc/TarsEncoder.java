@@ -2,11 +2,6 @@ package com.qq.tars.client.rpc;
 
 import com.qq.tars.common.util.Constants;
 import com.qq.tars.common.util.StringUtils;
-import com.qq.tars.net.core.IoBuffer;
-import com.qq.tars.net.core.Request;
-import com.qq.tars.net.core.Response;
-import com.qq.tars.net.core.Session;
-import com.qq.tars.net.protocol.ProtocolException;
 import com.qq.tars.protocol.tars.TarsOutputStream;
 import com.qq.tars.protocol.tars.support.TarsMethodInfo;
 import com.qq.tars.protocol.tars.support.TarsMethodParameterInfo;
@@ -22,18 +17,24 @@ import io.netty.handler.codec.MessageToByteEncoder;
 import java.util.List;
 import java.util.Map;
 
-public class TarsEncoder extends MessageToByteEncoder {
+public class TarsEncoder extends MessageToByteEncoder<Object> {
 
     protected String charsetName = Constants.default_charset_name;
     public static int No = 0;
     public static String Name = "";
     public static String retStr = "";
 
-    @Override
-    protected void encode(ChannelHandlerContext channelHandlerContext, Object o, ByteBuf out) throws Exception {
+    public TarsEncoder(String charset) {
+        this.charsetName = charset;
     }
 
-    public IoBuffer encodeResponse(Response resp, Session session) throws ProtocolException {
+    @Override
+    protected void encode(ChannelHandlerContext channelHandlerContext, Object o, ByteBuf out) throws Exception {
+
+
+    }
+
+    public IoBuffer encodeResponse(Response resp) throws ProtocolException {
         TarsServantResponse response = (TarsServantResponse) resp;
         if (response.getPacketType() == TarsHelper.ONEWAY) {
             return null;
@@ -59,7 +60,7 @@ public class TarsEncoder extends MessageToByteEncoder {
                 }
             } else if (TarsHelper.VERSION2 == response.getVersion() || TarsHelper.VERSION3 == response.getVersion()) {
                 jos.write(response.getMessageType(), 3);
-                jos.write(response.getTicketNumber(), 4);
+                jos.write(response.getRequestId(), 4);
                 String servantName = response.getRequest().getServantName();
                 jos.write(servantName, 5);
                 jos.write(response.getRequest().getFunctionName(), 6);
@@ -98,10 +99,8 @@ public class TarsEncoder extends MessageToByteEncoder {
         if (TarsHelper.isPing(request.getFunctionName())) {
             return new byte[]{};
         }
-
         TarsOutputStream ajos = new TarsOutputStream();
         ajos.setServerEncoding(charsetName);
-
         int ret = response.getRet();
         Map<String, TarsMethodInfo> methodInfoMap = AnalystManager.getInstance().getMethodMapByName(request.getServantName());
         if (ret == TarsHelper.SERVERSUCCESS && methodInfoMap != null) {
@@ -114,7 +113,6 @@ public class TarsEncoder extends MessageToByteEncoder {
                     System.err.println("server encodec response result:" + response.getResult() + " with ex:" + e);
                 }
             }
-
             Object value = null;
             List<TarsMethodParameterInfo> parametersList = methodInfo.getParametersList();
             for (TarsMethodParameterInfo parameterInfo : parametersList) {
@@ -171,7 +169,7 @@ public class TarsEncoder extends MessageToByteEncoder {
         return unaOut.encode();
     }
 
-    public IoBuffer encodeRequest(Request req, Session session) throws ProtocolException {
+    public IoBuffer encodeRequest(Request req) throws ProtocolException {
         TarsServantRequest request = (TarsServantRequest) req;
         request.setCharsetName(charsetName);
         TarsOutputStream os = new TarsOutputStream();
@@ -182,22 +180,14 @@ public class TarsEncoder extends MessageToByteEncoder {
         os.write(request.getVersion(), 1);
         os.write(request.getPacketType(), 2);
         os.write(request.getMessageType(), 3);
-        os.write(request.getTicketNumber(), 4);
+        os.write(request.getRequestId(), 4);
         os.write(request.getServantName(), 5);
         os.write(request.getFunctionName(), 6);
         os.write(encodeRequestParams(request, charsetName), 7);
         os.write(request.getTimeout(), 8);
         os.write(request.getContext(), 9);
         os.write(request.getStatus(), 10);
-
-        //os.getByteBuffer().flip();
-        //这里我觉得不需要进行读写反转吧
-        //os.getByteBuffer().clear();
-
-        //int length = os.getByteBuffer().remaining();
         int length = os.getByteBuffer().writableBytes();
-
-        //os.getByteBuffer().duplicate().putInt(0, length);
         os.getByteBuffer().duplicate().writeInt(length);
 
         if (length > TarsHelper.PACKAGE_MAX_LENGTH || length <= 0) {

@@ -5,15 +5,12 @@ import com.qq.tars.common.support.Holder;
 import com.qq.tars.common.util.CommonUtils;
 import com.qq.tars.common.util.Constants;
 import com.qq.tars.common.util.StringUtils;
-import com.qq.tars.net.core.IoBuffer;
-import com.qq.tars.net.core.Request;
-import com.qq.tars.net.core.Response;
-import com.qq.tars.net.core.Session;
 import com.qq.tars.protocol.tars.TarsInputStream;
 import com.qq.tars.protocol.tars.support.TarsMethodInfo;
 import com.qq.tars.protocol.tars.support.TarsMethodParameterInfo;
 import com.qq.tars.protocol.util.TarsHelper;
 import com.qq.tars.protocol.util.TarsUtil;
+import com.qq.tars.rpc.protocol.Codec;
 import com.qq.tars.rpc.protocol.ServantRequest;
 import com.qq.tars.rpc.protocol.ServantResponse;
 import com.qq.tars.rpc.protocol.tars.TarsServantRequest;
@@ -21,20 +18,22 @@ import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 import com.qq.tars.rpc.protocol.tars.support.AnalystManager;
 import com.qq.tars.rpc.protocol.tup.UniAttribute;
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
-import java.net.ProtocolException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class TarsDecoder extends ByteToMessageDecoder {
-
-    public TarsDecoder() {
+public class TarsDecoder extends ByteToMessageDecoder implements Codec {
+    public TarsDecoder(String charsetName) {
+        this.charsetName = charsetName;
     }
 
     public String charsetName = Constants.default_charset_name;
@@ -50,12 +49,12 @@ public class TarsDecoder extends ByteToMessageDecoder {
             byteBuf.readerIndex(beginIndex);
             return;
         }
-        byte[] array = new byte[length];
-        byteBuf.readBytes(array);
-        list.add(new Object());
+        final TarsServantResponse tarsServantResponse = (TarsServantResponse) decodeResponse(IoBuffer.wrap(byteBuf));
+        decodeResponseBody(tarsServantResponse);
+        list.add(tarsServantResponse);
     }
 
-    public Request decodeRequest(IoBuffer buffer, Session session) throws ProtocolException {
+    public Request decodeRequest(IoBuffer buffer) throws ProtocolException {
         if (buffer.remaining() < 4) {
             return null;
         }
@@ -67,15 +66,14 @@ public class TarsDecoder extends ByteToMessageDecoder {
             return null;
         }
 
-        byte[] reads = new byte[length];
-        buffer.get(reads);
-        TarsInputStream jis = new TarsInputStream(reads);
-        TarsServantRequest request = new TarsServantRequest(session);
+        buffer.buf().resetReaderIndex();
+        TarsInputStream jis = new TarsInputStream(buffer.buf());
+        TarsServantRequest request = new TarsServantRequest();
         try {
             short version = jis.read(TarsHelper.STAMP_SHORT.shortValue(), 1, true);
             byte packetType = jis.read(TarsHelper.STAMP_BYTE.byteValue(), 2, true);
-            int messageType = jis.read(TarsHelper.STAMP_INT.intValue(), 3, true);
-            int requestId = jis.read(TarsHelper.STAMP_INT.intValue(), 4, true);
+            final int messageType = jis.read(TarsHelper.STAMP_INT.intValue(), 3, true);
+            final int requestId = jis.read(TarsHelper.STAMP_INT.intValue(), 4, true);
             String servantName = jis.readString(5, true);
             String methodName = jis.readString(6, true);
             request.setVersion(version);
@@ -93,6 +91,10 @@ public class TarsDecoder extends ByteToMessageDecoder {
         return request;
     }
 
+
+    /**
+     * @param req
+     **/
     public ServantRequest decodeRequestBody(ServantRequest req) {
         TarsServantRequest request = (TarsServantRequest) req;
         if (request.getRet() != TarsHelper.SERVERSUCCESS) {
@@ -154,9 +156,9 @@ public class TarsDecoder extends ByteToMessageDecoder {
                         if (TarsHelper.isHolder(parameterInfo.getAnnotations())) {
                             String holderName = TarsHelper.getHolderName(parameterInfo.getAnnotations());
                             if (!StringUtils.isEmpty(holderName)) {
-                                value = new Holder<Object>(unaIn.getByClass(holderName, parameterInfo.getStamp()));
+                                value = new Holder<>(unaIn.getByClass(holderName, parameterInfo.getStamp()));
                             } else {
-                                value = new Holder<Object>();
+                                value = new Holder<>();
                             }
                         } else {
                             value = unaIn.getByClass(parameterInfo.getName(), parameterInfo.getStamp());
@@ -201,27 +203,22 @@ public class TarsDecoder extends ByteToMessageDecoder {
         return parameters;
     }
 
-    public Response decodeResponse(IoBuffer buffer, Session session) throws com.qq.tars.net.protocol.ProtocolException {
+    public Response decodeResponse(IoBuffer buffer) throws ProtocolException {
         if (buffer.remaining() < TarsHelper.HEAD_SIZE) {
             return null;
         }
         int length = buffer.getInt() - TarsHelper.HEAD_SIZE;
         if (length > TarsHelper.PACKAGE_MAX_LENGTH || length <= 0) {
-            throw new com.qq.tars.net.protocol.ProtocolException("the length header of the package must be between 0~10M bytes. data length:" + Integer.toHexString(length));
+            throw new ProtocolException("the length header of the package must be between 0~10M bytes. data length:" + Integer.toHexString(length));
         }
         if (buffer.remaining() < length) {
             return null;
         }
-
-        byte[] bytes = new byte[length];
-        buffer.get(bytes);
-
-        TarsServantResponse response = new TarsServantResponse(session);
+        buffer.buf().resetReaderIndex();
+        TarsServantResponse response = new TarsServantResponse();
         response.setCharsetName(charsetName);
-
-        TarsInputStream is = new TarsInputStream(bytes);
+        TarsInputStream is = new TarsInputStream(buffer.buf());
         is.setServerEncoding(charsetName);
-
         response.setVersion(is.read((short) 0, 1, true));
         response.setPacketType(is.read((byte) 0, 2, true));
         response.setRequestId(is.read(0, 3, true));
@@ -233,7 +230,7 @@ public class TarsDecoder extends ByteToMessageDecoder {
         return response;
     }
 
-    public void decodeResponseBody(ServantResponse resp) throws com.qq.tars.net.protocol.ProtocolException {
+    public void decodeResponseBody(ServantResponse resp) throws ProtocolException {
         TarsServantResponse response = (TarsServantResponse) resp;
 
         TarsServantRequest request = response.getRequest();
@@ -253,7 +250,7 @@ public class TarsDecoder extends ByteToMessageDecoder {
         try {
             results = decodeResponseBody(data, response.getCharsetName(), methodInfo);
         } catch (Exception e) {
-            throw new com.qq.tars.net.protocol.ProtocolException(e);
+            throw new ProtocolException(e);
         }
 
         int i = 0;
@@ -269,7 +266,7 @@ public class TarsDecoder extends ByteToMessageDecoder {
             try {
                 TarsHelper.setHolderValue(request.getMethodParameters()[info.getOrder() - 1], results[i++]);
             } catch (Exception e) {
-                throw new com.qq.tars.net.protocol.ProtocolException(e);
+                throw new ProtocolException(e);
             }
         }
         response.setStatus((HashMap<String, String>) is.read(TarsHelper.STAMP_MAP, 7, false));
@@ -293,13 +290,13 @@ public class TarsDecoder extends ByteToMessageDecoder {
             try {
                 values.add(jis.read(info.getStamp(), info.getOrder(), true));
             } catch (Exception e) {
-                throw new com.qq.tars.net.protocol.ProtocolException(e);
+                throw new ProtocolException(e);
             }
         }
         return values.toArray();
     }
 
-    public Object[] decodeCallbackArgs(TarsServantResponse response) throws com.qq.tars.net.protocol.ProtocolException {
+    public Object[] decodeCallbackArgs(TarsServantResponse response) throws ProtocolException {
         byte[] data = response.getInputStream().read(new byte[]{}, 6, true);
 
         TarsServantRequest request = response.getRequest();
@@ -316,11 +313,11 @@ public class TarsDecoder extends ByteToMessageDecoder {
         try {
             return decodeCallbackArgs(data, response.getCharsetName(), methodInfo);
         } catch (Exception e) {
-            throw new com.qq.tars.net.protocol.ProtocolException(e);
+            throw new ProtocolException(e);
         }
     }
 
-    protected Object[] decodeCallbackArgs(byte[] data, String charset, TarsMethodInfo methodInfo) throws com.qq.tars.net.protocol.ProtocolException, NoSuchMethodException, Exception {
+    protected Object[] decodeCallbackArgs(byte[] data, String charset, TarsMethodInfo methodInfo) throws ProtocolException, NoSuchMethodException, Exception {
         TarsInputStream jis = new TarsInputStream(data);
         jis.setServerEncoding(charset);
 
@@ -352,8 +349,23 @@ public class TarsDecoder extends ByteToMessageDecoder {
         return classLoader;
     }
 
+    @Override
+    public void encode(Channel channel, ByteBuf channelBuffer, Object message) throws IOException {
+
+    }
+
+    @Override
+    public Object decode(Channel channel, ByteBuf buffer) throws IOException {
+        return null;
+    }
+
     public String getProtocol() {
         return Constants.TARS_PROTOCOL;
+    }
+
+    @Override
+    public Charset getCharset() {
+        return null;
     }
 
 

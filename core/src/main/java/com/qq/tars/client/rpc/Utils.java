@@ -14,7 +14,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.qq.tars.net.util;
+package com.qq.tars.client.rpc;
 
 import java.io.File;
 import java.io.FileInputStream;

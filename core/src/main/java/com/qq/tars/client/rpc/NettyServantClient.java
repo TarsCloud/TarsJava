@@ -1,104 +1,53 @@
 package com.qq.tars.client.rpc;
 
 import com.qq.tars.client.ServantProxyConfig;
-import com.qq.tars.net.client.Callback;
-import com.qq.tars.protocol.tars.TarsInputStream;
-import com.qq.tars.protocol.tars.TarsOutputStream;
 import com.qq.tars.rpc.protocol.ServantRequest;
-import com.qq.tars.rpc.protocol.ServantResponse;
-import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.PooledByteBufAllocator;
+import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.epoll.Epoll;
-import io.netty.channel.epoll.EpollEventLoopGroup;
-import io.netty.channel.epoll.EpollSocketChannel;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.timeout.IdleStateHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.concurrent.ConcurrentHashMap;
-
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import java.util.concurrent.CompletableFuture;
 
 public class NettyServantClient implements RPCClient {
-    private Bootstrap bootstrap;
-    private ConcurrentHashMap<Channel, Long> channelMap = new ConcurrentHashMap<>();
-    private ChannelHandler channelHandler;
+    private static final Logger logger = LoggerFactory.getLogger(NettyServantClient.class);
+    private final Channel channel;
     private final ServantProxyConfig servantProxyConfig;
 
-    public NettyServantClient(ServantProxyConfig servantProxyConfig) {
+    public NettyServantClient(Channel channel, ServantProxyConfig servantProxyConfig) {
+        this.channel = channel;
         this.servantProxyConfig = servantProxyConfig;
     }
 
-    protected void init() {
-        bootstrap = new Bootstrap();
-        EventLoopGroup myEventLoopGroup;
-        if (Epoll.isAvailable()) {
-            myEventLoopGroup = new EpollEventLoopGroup(12);
-            bootstrap.group(myEventLoopGroup).channel(EpollSocketChannel.class);
-        } else {
-            myEventLoopGroup = new NioEventLoopGroup(12);
-            bootstrap.group(myEventLoopGroup).channel(NioSocketChannel.class);
-        }
-        bootstrap.option(ChannelOption.SO_KEEPALIVE, true).option(ChannelOption.TCP_NODELAY, true)
-                .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, servantProxyConfig.getConnectTimeout());
-        bootstrap.handler(new ChannelInitializer<NioSocketChannel>() {
-            @Override
-            protected void initChannel(NioSocketChannel ch) throws Exception {
-                IdleStateHandler clientIdleHandler =
-                        new IdleStateHandler(0, servantProxyConfig.getConnectTimeout(), 0, MILLISECONDS);
-                ChannelPipeline p = ch.pipeline();
-                p.addLast("encoder", new TarsEncoder())
-                        .addLast("decoder", new TarsDecoder())
-                        .addLast("client-idle", clientIdleHandler);
-            }
-        });
-    }
 
-
-    @Override
     public void reConnect() throws IOException {
+        if (!channel.isActive()) {
+            channel.isOpen();
+        }
 
     }
 
-    @Override
+    public void close() throws IOException {
+        this.channel.close();
+    }
+
+    public Channel getChannel() {
+        return this.channel;
+    }
+
     public void ensureConnected() throws IOException {
+        if (!this.channel.isOpen() || !this.channel.isActive()) {
+            throw new IOException("[Tars] channel is closed!" + this.channel);
+        }
 
     }
 
-    @Override
-    public <T extends ServantResponse> T invokeWithSync(ServantRequest request) throws IOException {
-        return null;
-    }
-
-    @Override
-    public <T extends ServantResponse> void invokeWithAsync(ServantRequest request, Callback<T> callback) throws IOException {
+    public CompletableFuture<TarsServantResponse> send(ServantRequest request) throws IOException {
+        TicketFeature ticketFeature = TicketFeature.createFeature(this.channel, request, servantProxyConfig.getSyncTimeout());
+        this.channel.writeAndFlush(request);
+        return ticketFeature.thenCompose(obj -> CompletableFuture.completedFuture((TarsServantResponse) obj));
 
     }
 
-    @Override
-    public <T extends ServantResponse> void invokeWithFuture(ServantRequest request, Callback<T> callback) throws IOException {
-
-    }
-
-    public static void main(String[] args) {
-        StatInfo statInfo = new StatInfo();
-        statInfo.setMasterName("userinfo");
-        TarsOutputStream tarsOutputStream = new TarsOutputStream();
-        statInfo.writeTo(tarsOutputStream);
-
-        StatInfo statInfo1 = new StatInfo();
-        TarsInputStream tarsInputStream = new TarsInputStream(tarsOutputStream.getByteBuffer());
-        statInfo1.readFrom(tarsInputStream);
-
-        System.out.println(statInfo1.getMasterName());
-
-    }
 }

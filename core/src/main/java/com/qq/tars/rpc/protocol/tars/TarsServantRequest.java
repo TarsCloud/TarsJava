@@ -16,18 +16,17 @@
 
 package com.qq.tars.rpc.protocol.tars;
 
-import com.qq.tars.net.core.Session;
 import com.qq.tars.protocol.tars.TarsInputStream;
 import com.qq.tars.protocol.tars.support.TarsMethodInfo;
 import com.qq.tars.protocol.util.TarsHelper;
 import com.qq.tars.rpc.protocol.ServantRequest;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class TarsServantRequest extends ServantRequest implements java.io.Serializable {
-
+    private static final AtomicInteger INVOKE_REQUEST_ID = new AtomicInteger(0);
     private static final long serialVersionUID = 1L;
-
     private short version;
     private byte packetType;
     private int messageType;
@@ -48,18 +47,12 @@ public class TarsServantRequest extends ServantRequest implements java.io.Serial
 
     private int ret;
 
-    public TarsServantRequest(Session session) {
-        super(session);
+    public TarsServantRequest(int requestId) {
+        super(requestId);
     }
 
-    public TarsServantRequest(Session session, int ret) {
-        super(session);
-        this.ret = ret;
-    }
-
-    public void init() {
-        ((TarsCodec) this.session.getProtocolFactory().getDecoder()).decodeRequestBody(this);
-//        TarsCodecHelper.decodeRequestBody(this);
+    public TarsServantRequest() {
+        super(INVOKE_REQUEST_ID.incrementAndGet());
     }
 
     public TarsInputStream getInputStream() {
@@ -111,11 +104,13 @@ public class TarsServantRequest extends ServantRequest implements java.io.Serial
     }
 
     public int getRequestId() {
-        return getTicketNumber();
+
+
+        return this.getRequestId();
     }
 
     public void setRequestId(int requestId) {
-        this.setTicketNumber(requestId);
+        this.setRequestId(requestId);
     }
 
     public byte[] getData() {
@@ -193,4 +188,6 @@ public class TarsServantRequest extends ServantRequest implements java.io.Serial
     public void setApi(Class<?> api) {
         this.api = api;
     }
+
+
 }

@@ -1,9 +1,12 @@
 package com.qq.tars.common;
 
-import com.qq.tars.net.core.Request;
-import com.qq.tars.net.core.Response;
+
+import com.qq.tars.client.rpc.Request;
+import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
+
+import java.util.concurrent.CompletableFuture;
 
 public interface FilterChain {
-	
-	void doFilter(Request request, Response response) throws Throwable;
+
+    CompletableFuture<TarsServantResponse> doFilter(Request request) throws Throwable;
 }
