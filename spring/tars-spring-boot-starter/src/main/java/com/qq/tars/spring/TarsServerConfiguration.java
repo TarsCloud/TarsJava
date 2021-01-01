@@ -22,11 +22,13 @@ import com.qq.tars.server.core.Server;
 import com.qq.tars.spring.bean.CommunicatorBeanPostProcessor;
 import com.qq.tars.spring.bean.ServletContainerCustomizer;
 import com.qq.tars.spring.bean.TarsServerStartLifecycle;
+import com.qq.tars.spring.condition.ConditionalOnTars;
 import com.qq.tars.support.config.ConfigHelper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@ConditionalOnTars
 public class TarsServerConfiguration {
 
     private final Server server = Server.getInstance();
