@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Conditional;
 import java.lang.annotation.*;
 
 /**
- * 只有是非Tars环境（比如本地、CI/CD、测试用例）的时候才会生效
+ * Match only on non-tars environment. Such as local, CI/CD, test case, etc.
  * <pre class="code">
  * public class Main {
  *     public static void main(String[] args) {
@@ -35,8 +35,8 @@ import java.lang.annotation.*;
  *     }
  * }
  * </pre>
- * 将代码发布到tars平台上时，info日志中会输出{@code initializing tars bean, loaded bean: candidate:TarsBean}；
- * 如果在本地启动，info日志中会输出{@code initializing non-tars bean, loaded bean: candidate:NonTarsBean}。
+ * When running on tars platform, {@code initializing tars bean, loaded bean: candidate:TarsBean} will be shown in info log,
+ * while running on non-tars platform(local, CI/CD, test case, etc.), {@code initializing non-tars bean, loaded bean: candidate:NonTarsBean} will be shown in info log.
  *
  * @author kongyuanyuan
  * @see ConditionalOnTars
