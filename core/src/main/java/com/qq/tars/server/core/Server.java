@@ -44,7 +44,7 @@ public class Server {
     }
 
     /**
-     * 执行初始化动作
+     * init the server config
      */
     public void init() {
         if (!INITIALIZED.getAndSet(true)) {

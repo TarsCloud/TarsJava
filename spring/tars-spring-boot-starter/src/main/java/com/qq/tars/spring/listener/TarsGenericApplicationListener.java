@@ -28,41 +28,41 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * tars应用程序事件监听器
+ * tars generic application listener
  * <ol>
- * <li>负责在应用程序启动之前初始化Tars配置并拉取远端配置，确保springboot能够正常读取远端配置(包括日志系统)</li>
- * <li>在应用程序环境准备就绪后注入拉取的配置文件</li>
- * <li>在应用程序启动失败时停止所有线程并输出错误提示</li>
+ * <li>Init tars config and load remote config when application is starting, make sure Spring environment will load properties appropriately, including logging system.</li>
+ * <li>Inject the properties when the environment for application is prepared.</li>
+ * <li>Stop the whole process when the application start failed.</li>
  * </ol>
  *
  * @author kongyuanyuan
  */
 public class TarsGenericApplicationListener implements GenericApplicationListener {
     /**
-     * 要注入springboot环境的远程配置
+     * properties to be injected into the environment
      */
     private final Map<String, Properties> propertiesMap = new LinkedHashMap<>();
     /**
-     * 是否拥有tars环境的启动配置。
-     * System.getProperty("config")
+     * is {@code System.getProperty("config")} presented
      *
      * @see Server#init()
      */
     private final boolean hasConfigProperty;
     /**
-     * 配置文件路径
+     * config path for tars
      */
     private String configPath;
 
     public TarsGenericApplicationListener() {
         this.hasConfigProperty = StringUtils.hasText(System.getProperty("config"));
         if (hasConfigProperty) {
-            //tars环境，初始化服务配置
+            //init tars config
             Server server = Server.getInstance();
             server.init();
+            //set config path
             configPath = server.getServerConfig().getBasePath() + "/conf/";
         } else {
-            //非tars环境，输出提示
+            //running in non-tars environment, notice it
             System.out.println("[TARS] Running in non-tars environment. Be careful to use the communicator.");
         }
     }
@@ -70,75 +70,76 @@ public class TarsGenericApplicationListener implements GenericApplicationListene
     @Override
     public void onApplicationEvent(@NonNull ApplicationEvent applicationEvent) {
         if (!hasConfigProperty) {
-            //没有tars环境配置属性，说明是非tars环境，不处理
+            //non-tars environment, ignore all event
             return;
         }
         if (applicationEvent instanceof ApplicationStartingEvent) {
-            //应用程序启动前，拉取远端配置，让日志系统能在环境准备就绪时自动初始化
-            //同时注入默认配置，比如让spring来读取tars环境中的conf目录下的配置
+            //Init tars config and load remote config when application is starting,
+            // make sure Spring environment will load properties appropriately, including logging system.
+            //inject default properties, let spring do its job
             handleApplicationStartingEvent((ApplicationStartingEvent) applicationEvent);
         } else if (applicationEvent instanceof ApplicationEnvironmentPreparedEvent) {
-            //环境准备就绪，此时可以注入配置了
+            //the environment is prepared, inject properties
             handleApplicationEnvironmentPreparedEvent((ApplicationEnvironmentPreparedEvent) applicationEvent);
         } else if (applicationEvent instanceof ApplicationFailedEvent) {
-            //应用程序启动失败
+            //application start failed
             handleApplicationFailedEvent((ApplicationFailedEvent) applicationEvent);
         }
     }
 
     /**
-     * 处理应用程序启动前的事件
+     * handle application starting event.
      * <ol>
-     *     <li>根据{@link RemotePropertySource}拉取远端配置到本地</li>
-     *     <li>设置默认的配置</li>
+     *     <li>load remote config for {@link RemotePropertySource} and {@link RemoteConfigSource}</li>
+     *     <li>Inject default properties.</li>
      * </ol>
      *
      * @param applicationEvent ApplicationStartingEvent
      */
     private void handleApplicationStartingEvent(ApplicationStartingEvent applicationEvent) {
-        //删除旧的配置文件
+        //delete legacy config
         deleteLegacyConfig();
-        //加载要注入环境的远程配置
+        //load remote config file for injection
         loadRemotePropertiesConfig(applicationEvent.getSpringApplication().getMainApplicationClass());
-        //加载远程配置到本地，但不注入environment
+        //load remote config without injection
         loadRemoteConfig(applicationEvent.getSpringApplication().getMainApplicationClass());
-        //设置默认的配置
+        //set default config
         configDefaultProperties(applicationEvent);
     }
 
     /**
-     * 加载要注入环境的properties配置文件
+     * load remote config file for injection
      *
      * @param mainClass mainClas
      */
     private void loadRemotePropertiesConfig(Class<?> mainClass) {
         RemotePropertySource sources = mainClass.getAnnotation(RemotePropertySource.class);
         if (sources == null) {
-            //没有要加载的远程配置
+            //nothing to load
             return;
         }
         loadRemoteConfig(sources.value(), true);
     }
 
     /**
-     * 仅加载配置文件到本地但不会注入environment
+     * load remote config without injection
      *
      * @param mainClass mainClass
      */
     private void loadRemoteConfig(Class<?> mainClass) {
         RemoteConfigSource sources = mainClass.getAnnotation(RemoteConfigSource.class);
         if (sources == null) {
-            //没有要加载的远程配置
+            //nothing to do
             return;
         }
         loadRemoteConfig(sources.value(), false);
     }
 
     /**
-     * 加载要注入环境的properties配置文件
+     * load remote config file for injection
      *
-     * @param filenameList 要加载的文件列表
-     * @param inject       是否要解析并注入environment
+     * @param filenameList file name list
+     * @param inject       need to inject into the environment
      */
     private void loadRemoteConfig(final String[] filenameList, final boolean inject) {
         for (String name : filenameList) {
@@ -147,7 +148,7 @@ public class TarsGenericApplicationListener implements GenericApplicationListene
             Assert.state(ConfigHelper.getInstance().loadConfig(name), "[TARS] failed to load config: " + name + ", probably due to failed to execute UpdateConfigCallback");
             System.out.println("[TARS] load config: " + name);
             if (inject) {
-                //加载配置成功，注入properties
+                //load config successfully, inject into properties
                 File config = new File(configPath + name);
                 Assert.state(config.exists(), "[TARS] read config file failed: file does not exist, filename:" + config.getAbsolutePath());
                 Properties properties = new Properties();
@@ -163,33 +164,32 @@ public class TarsGenericApplicationListener implements GenericApplicationListene
     }
 
     /**
-     * 应用程序启动失败
+     * application start failed
      * <p>
-     * 强行停止程序，不要上报心跳了。
+     * halt the application, don't report heartbeat
      *
      * @param applicationEvent ApplicationFailedEvent
      */
     private void handleApplicationFailedEvent(ApplicationFailedEvent applicationEvent) {
-        //应用程序启动失败
         Throwable exception = applicationEvent.getException();
         System.out.println("[TARS] start application fail. exception:");
         exception.printStackTrace();
-        //退出程序，结束所有线程
+        //halt, stop all threads
         System.exit(-1);
     }
 
     /**
-     * 处理环境准备就绪的事件
+     * handle environment prepared event
      *
      * @param applicationEvent ApplicationEnvironmentPreparedEvent
      */
     private void handleApplicationEnvironmentPreparedEvent(ApplicationEnvironmentPreparedEvent applicationEvent) {
-        //注入加载的properties配置文件到environment
+        //inject properties into the environment
         injectPropertySource(applicationEvent);
     }
 
     /**
-     * 删除旧的配置文件
+     * delete legacy config
      */
     private void deleteLegacyConfig() {
         Path path = Paths.get(configPath);
@@ -209,17 +209,16 @@ public class TarsGenericApplicationListener implements GenericApplicationListene
     }
 
     /**
-     * 配置默认的properties
+     * set default properties
      *
      * @param applicationEvent ApplicationStartingEvent
      */
     private void configDefaultProperties(ApplicationStartingEvent applicationEvent) {
-        // 设置spring-boot启动参数
         Map<String, Object> defaultProperties = new LinkedHashMap<>();
-        //设置一下配置文件的路径，让spring去读取tars平台下发的配置文件，包括日志系统
+        //set the config file location, let spring load the remote config
         defaultProperties.put("spring.config.additional-location", configPath);
-        //特殊处理一下日志配置
-        //第一个找到的配置文件会被当作默认配置
+        //config the logging system
+        //the first logging config found will be used as default logging system config.
         for (String configName : getConventionLoggingConfig()) {
             Properties logbackConfig = propertiesMap.get(configName);
             if (logbackConfig != null) {
@@ -231,7 +230,7 @@ public class TarsGenericApplicationListener implements GenericApplicationListene
     }
 
     /**
-     * 把刚刚拉取的配置文件注入环境
+     * inject the properties into the environment
      *
      * @param applicationEvent ApplicationEnvironmentPreparedEvent
      */
@@ -242,9 +241,9 @@ public class TarsGenericApplicationListener implements GenericApplicationListene
     }
 
     /**
-     * 得到常用的日志配置文件名列表。会被自动注入到spring中，让spring来自动初始化日志系统。
+     * get some convention logging config.
      *
-     * @return 日志配置文件名列表
+     * @return logging config file name
      * @see org.springframework.boot.logging.LoggingSystem
      * @see AbstractLoggingSystem#initialize
      */

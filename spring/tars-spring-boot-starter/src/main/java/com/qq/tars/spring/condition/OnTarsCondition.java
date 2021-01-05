@@ -10,9 +10,11 @@ import org.springframework.core.type.MethodMetadata;
 import org.springframework.util.StringUtils;
 
 /**
- * 判断是不是Tars环境
+ * Tars-environment condition used with environment-aware classes.
  *
  * @author kongyuanyuan
+ * @see ConditionalOnTars
+ * @see ConditionalOnNonTars
  */
 public class OnTarsCondition extends SpringBootCondition {
     private final boolean hasConfigProperty;
@@ -26,7 +28,7 @@ public class OnTarsCondition extends SpringBootCondition {
     }
 
     /**
-     * 判断是不是Tars环境.
+     * Get the match result.
      *
      * @param context  the condition context
      * @param metadata the metadata of the {@link AnnotationMetadata class}
@@ -40,17 +42,16 @@ public class OnTarsCondition extends SpringBootCondition {
     }
 
     /**
-     * 根据是不是Tars环境以及是不是有config系统配置，返回条件判定结果与判定原因
+     * Match with condition.
      *
-     * @param metadata          要判断的注解meta信息
-     * @param isTars            是不是Tars环境
-     * @param hasConfigProperty 是不是有config系统配置
-     * @return 告诉spring判定结果
+     * @param metadata          metadata with annotation
+     * @param isTars            is in tars environment
+     * @param hasConfigProperty has config system property
+     * @return match result
      */
     private static ConditionOutcome buildConditionOutcome(AnnotatedTypeMetadata metadata, boolean isTars, boolean hasConfigProperty) {
         if (metadata.isAnnotated(ConditionalOnTars.class.getName())) {
             //match only when running in tars environment
-            // 当是Tars环境的时候才命中
             if (isTars) {
                 return ConditionOutcome.match("System has property 'config' and ConfigurationManager has been successfully loaded");
             }
@@ -63,7 +64,6 @@ public class OnTarsCondition extends SpringBootCondition {
             return ConditionOutcome.noMatch(message);
         } else {
             //match only when running in non-tars environment, such as local, ci/cd, test case, etc.
-            //当是非Tars环境的时候才命中
             if (!isTars) {
                 return ConditionOutcome.match("System does not have property 'config' and ConfigurationManager hasn't been loaded");
             }
