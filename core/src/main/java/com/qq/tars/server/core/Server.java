@@ -31,23 +31,34 @@ import com.qq.tars.support.om.OmServiceMngr;
 
 import java.io.IOException;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Server {
 
     private AppContext appContext = null;
     private ServerConfig serverConfig;
     private static final Server INSTANCE = new Server();
+    private static final AtomicBoolean INITIALIZED = new AtomicBoolean(false);
 
     private Server() {
-        System.out.println("[TARS] start server construction");
-        loadServerConfig();
-        initLogger();
-        initCommunicator();
-        startManagerService();
-
     }
 
-    public void initLogger() {
+    /**
+     * 执行初始化动作
+     */
+    public void init() {
+        if (!INITIALIZED.getAndSet(true)) {
+            System.out.println("[TARS] start server initializing");
+            loadServerConfig();
+            initLogger();
+            initCommunicator();
+            startManagerService();
+        } else {
+            throw new IllegalStateException("Server has already been initialized");
+        }
+    }
+
+    private void initLogger() {
         LoggerFactoryManager.getInstance().getHandler().start();
     }
 
