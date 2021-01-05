@@ -508,12 +508,17 @@ Using spring-boot-maven-plugin, execute `mvn package` in the root directory to p
 
 ### Function description
 
-Tars-java is compatible with the Spring Cloud system, users can integrate the Tars-java into Spring Cloud. | Directory |
-Features | | ------------------ | ---------------- | | net | Source code implementation of Java language net framework |
-| core | Source code implementation of Java language rpc framework | | tools | Source code implementation of framework
-tools, maven plug-ins, etc | | examples | Sample code for the Java language framework | | distributedContext | Source
-code implementation of Java language framework's distributed context | | protobuf | Source code implementation of pb
-protocol support | | spring | Source code implementation of spring framework support |
+Tars-java is compatible with the Spring Cloud system, users can integrate the Tars-java into Spring Cloud. 
+
+| Directory |Features | 
+| :----- | :----- | 
+| net | Source code implementation of Java language net framework |
+| core | Source code implementation of Java language rpc framework | 
+| tools | Source code implementation of framework tools, maven plug-ins, etc | 
+| examples | Sample code for the Java language framework | 
+| distributedContext | Source code implementation of Java language framework's distributed context | 
+| protobuf | Source code implementation of pb protocol support |
+| spring | Source code implementation of spring framework support |
 
 
 
