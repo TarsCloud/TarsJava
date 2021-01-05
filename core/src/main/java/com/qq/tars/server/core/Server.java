@@ -37,10 +37,11 @@ public class Server {
 
     private AppContext appContext = null;
     private ServerConfig serverConfig;
-    private static final Server INSTANCE = new Server();
     private static final AtomicBoolean INITIALIZED = new AtomicBoolean(false);
+    private static final Server INSTANCE = new Server();
 
     private Server() {
+        init();
     }
 
     /**
