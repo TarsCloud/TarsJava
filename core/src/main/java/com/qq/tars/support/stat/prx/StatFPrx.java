@@ -47,23 +47,8 @@ public interface StatFPrx {
      */
     public int reportMicMsg(java.util.Map<StatMicMsgHead, StatMicMsgBody> msg, boolean bFromClient, @TarsContext java.util.Map<String, String> ctx);
 
-    /**
-     * Report calling information between modules Mic = module interval call
-     * @param statmsg,     Report information
-     * @param bFromServer, Report source  bFromClient: true (Reporting initiated by the client) false (Reporting initiated by the server)
-     * @return int,                Return 0 means success
-     */
-    public void async_reportMicMsg(@TarsCallback StatFPrxCallback callback, java.util.Map<StatMicMsgHead, StatMicMsgBody> msg, boolean bFromClient);
 
     CompletableFuture<Integer> promise_reportMicMsg(java.util.Map<StatMicMsgHead, StatMicMsgBody> msg, boolean bFromClient);
-
-    /**
-     * Report calling information between modules Mic = module interval call
-     * @param statmsg,     Report information
-     * @param bFromServer, Report source  bFromClient: true (Reporting initiated by the client) false (Reporting initiated by the server)
-     * @return int,                Return 0 means success
-     */
-    public void async_reportMicMsg(@TarsCallback StatFPrxCallback callback, java.util.Map<StatMicMsgHead, StatMicMsgBody> msg, boolean bFromClient, @TarsContext java.util.Map<String, String> ctx);
 
     /**
      * 上报模块间调用采样信息 Mic = module interval call
@@ -79,17 +64,4 @@ public interface StatFPrx {
      */
     public int reportSampleMsg(java.util.List<StatSampleMsg> msg, @TarsContext java.util.Map<String, String> ctx);
 
-    /**
-     * 上报模块间调用采样信息 Mic = module interval call
-     * @param msg, Report information
-     * @return int,                Return 0 means success
-     */
-    public void async_reportSampleMsg(@TarsCallback StatFPrxCallback callback, java.util.List<StatSampleMsg> msg);
-
-    /**
-     * 上报模块间调用采样信息 Mic = module interval call
-     * @param msg, Report information
-     * @return int,                Return 0 means success
-     */
-    public void async_reportSampleMsg(@TarsCallback StatFPrxCallback callback, java.util.List<StatSampleMsg> msg, @TarsContext java.util.Map<String, String> ctx);
 }

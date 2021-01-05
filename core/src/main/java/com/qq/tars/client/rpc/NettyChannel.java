@@ -8,8 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class NettyChannel {
 
-
-    private static final Map<Channel, NettyChannel> CHANNEP_MAP = new ConcurrentHashMap<>();
+    private static final Map<Channel, NettyChannel> CHANNEL_MAP = new ConcurrentHashMap<>();
     private final Channel channel;
     private final ServantProxyConfig servantProxyConfig;
 

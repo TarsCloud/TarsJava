@@ -22,102 +22,30 @@ package com.qq.tars.support.notify.prx;
 
 import com.qq.tars.common.support.Holder;
 import com.qq.tars.protocol.annotation.Servant;
-import com.qq.tars.protocol.tars.annotation.TarsCallback;
 import com.qq.tars.protocol.tars.annotation.TarsContext;
 import com.qq.tars.protocol.tars.annotation.TarsHolder;
 
+import java.util.concurrent.CompletableFuture;
+
 @Servant
 public interface NotifyPrx {
-	/**
-	 * The information reported by the framework is stored in the database
-	 * @param sServerName, server name
-	 * @param sThreadId, server current thread id
-	 * @param sMessage, message
-	 **/
-	public void reportServer(String sServerName, String sThreadId, String sMessage);
-	/**
-	 * The information reported by the framework is stored in the database
-	 * @param sServerName, server name
-	 * @param sThreadId, server current thread id
-	 * @param sMessage, message
-	 **/
-	public void reportServer(String sServerName, String sThreadId, String sMessage, @TarsContext java.util.Map<String, String> ctx);
-	/**
-	 * The information reported by the framework is stored in the database
-	 * @param sServerName, server name
-	 * @param sThreadId, server current thread id
-	 * @param sMessage, message
-	 **/
-	public void async_reportServer(@TarsCallback NotifyPrxCallback callback, String sServerName, String sThreadId, String sMessage);
-	/**
-	 * The information reported by the framework is stored in the database
-	 * @param sServerName, server name
-	 * @param sThreadId, server current thread id
-	 * @param sMessage, message
-	 **/
-	public void async_reportServer(@TarsCallback NotifyPrxCallback callback, String sServerName, String sThreadId, String sMessage, @TarsContext java.util.Map<String, String> ctx);
-	/**
-	 * Business reported information, used for alarm
-	 * @param sServerName, server name
-	 * @param level, notify level
-	 * @param sMessage, message
-	 **/
-	public void notifyServer(String sServerName, int level, String sMessage);
-	/**
-	 * Business reported information, used for alarm
-	 * @param sServerName, server name
-	 * @param level, notify level
-	 * @param sMessage, message
-	 **/
-	public void notifyServer(String sServerName, int level, String sMessage, @TarsContext java.util.Map<String, String> ctx);
-	/**
-	 * Business reported information, used for alarm
-	 * @param sServerName, server name
-	 * @param level, notify level
-	 * @param sMessage, message
-	 **/
-	public void async_notifyServer(@TarsCallback NotifyPrxCallback callback, String sServerName, int level, String sMessage);
-	/**
-	 * Business reported information, used for alarm
-	 * @param sServerName, server name
-	 * @param level, notify level
-	 * @param sMessage, message
-	 **/
-	public void async_notifyServer(@TarsCallback NotifyPrxCallback callback, String sServerName, int level, String sMessage, @TarsContext java.util.Map<String, String> ctx);
-	/**
-	 * Get report information
-	 * @param sServerName, server name
-	 * @param out , notify info detail
-	 * @return int 0=success, others=failed
-	 **/
-	public int getNotifyInfo(NotifyKey stKey, @TarsHolder Holder<NotifyInfo> stInfo);
-	/**
-	 * Get report information
-	 * @param sServerName, server name
-	 * @param out , notify info detail
-	 * @return int 0=success, others=failed
-	 **/
-	public int getNotifyInfo(NotifyKey stKey, @TarsHolder Holder<NotifyInfo> stInfo, @TarsContext java.util.Map<String, String> ctx);
-	/**
-	 * Get report information
-	 * @param sServerName, server name
-	 * @param out , notify info detail
-	 * @return int 0=success, others=failed
-	 **/
-	public void async_getNotifyInfo(@TarsCallback NotifyPrxCallback callback, NotifyKey stKey);
-	/**
-	 * Get report information
-	 * @param sServerName, server name
-	 * @param out , notify info detail
-	 * @return int 0=success, others=failed
-	 **/
-	public void async_getNotifyInfo(@TarsCallback NotifyPrxCallback callback, NotifyKey stKey, @TarsContext java.util.Map<String, String> ctx);
 
-	public void reportNotifyInfo(ReportInfo info);
+    public void reportServer(String sServerName, String sThreadId, String sMessage);
+    CompletableFuture<Void> promise_reportServer(String sServerName, String sThreadId, String sMessage);
 
-	public void reportNotifyInfo(ReportInfo info, @TarsContext java.util.Map<String, String> ctx);
+    public void reportServer(String sServerName, String sThreadId, String sMessage, @TarsContext java.util.Map<String, String> ctx);
 
-	public void async_reportNotifyInfo(@TarsCallback NotifyPrxCallback callback, ReportInfo info);
+    public void notifyServer(String sServerName, int level, String sMessage);
 
-	public void async_reportNotifyInfo(@TarsCallback NotifyPrxCallback callback, ReportInfo info, @TarsContext java.util.Map<String, String> ctx);
+    CompletableFuture<Void> promise_notifyServer(String sServerName, int level, String sMessage);
+
+    public void notifyServer(String sServerName, int level, String sMessage, @TarsContext java.util.Map<String, String> ctx);
+
+    public int getNotifyInfo(NotifyKey stKey, @TarsHolder Holder<NotifyInfo> stInfo);
+
+    public int getNotifyInfo(NotifyKey stKey, @TarsHolder Holder<NotifyInfo> stInfo, @TarsContext java.util.Map<String, String> ctx);
+
+    public void reportNotifyInfo(ReportInfo info);
+
+    public void reportNotifyInfo(ReportInfo info, @TarsContext java.util.Map<String, String> ctx);
 }

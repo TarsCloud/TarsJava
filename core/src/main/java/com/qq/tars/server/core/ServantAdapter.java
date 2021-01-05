@@ -17,11 +17,10 @@
 package com.qq.tars.server.core;
 
 import com.qq.tars.common.support.Endpoint;
-import com.qq.tars.net.core.Processor;
 import com.qq.tars.protocol.annotation.ServantCodec;
 import com.qq.tars.rpc.exc.TarsException;
 import com.qq.tars.rpc.protocol.Codec;
-import com.qq.tars.rpc.protocol.tars.TarsCodec;
+import com.qq.tars.rpc.protocol.tars.TarsServerCodec;
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.server.config.ServantAdapterConfig;
 import com.qq.tars.server.config.ServerConfig;
@@ -48,7 +47,7 @@ public class ServantAdapter implements Adapter {
     public void bind() throws IOException {
         ServerConfig serverCfg = ConfigurationManager.getInstance().getServerConfig();
         boolean keepAlive = true;
-        Codec codec = new TarsCodec(serverCfg.getCharsetName());
+        Codec codec = new TarsServerCodec(serverCfg.getCharsetName());
         Processor processor = new TarsServantProcessor();
         Executor threadPool = ServantThreadPoolManager.get(servantAdapterConfig);
 
@@ -141,7 +140,7 @@ public class ServantAdapter implements Adapter {
         }
 
         if (codecClass == null) {
-            codecClass = TarsCodec.class;
+            codecClass = TarsServerCodec.class;
         }
 
         if (codecClass != null) {

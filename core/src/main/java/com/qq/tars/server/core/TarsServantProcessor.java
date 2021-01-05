@@ -17,6 +17,8 @@
 package com.qq.tars.server.core;
 
 import com.qq.tars.client.CommunicatorConfig;
+import com.qq.tars.client.rpc.Request;
+import com.qq.tars.client.rpc.Response;
 import com.qq.tars.common.Filter;
 import com.qq.tars.common.FilterChain;
 import com.qq.tars.common.FilterKind;
@@ -26,10 +28,6 @@ import com.qq.tars.common.util.DyeingKeyCache;
 import com.qq.tars.common.util.DyeingSwitch;
 import com.qq.tars.context.DistributedContext;
 import com.qq.tars.context.DistributedContextManager;
-import com.qq.tars.net.core.Processor;
-import com.qq.tars.net.core.Request;
-import com.qq.tars.net.core.Response;
-import com.qq.tars.net.core.Session;
 import com.qq.tars.protocol.tars.support.TarsMethodInfo;
 import com.qq.tars.protocol.util.TarsHelper;
 import com.qq.tars.rpc.exc.ServerDecodeException;
@@ -45,13 +43,14 @@ import com.qq.tars.support.log.LoggerFactory;
 import com.qq.tars.support.om.OmServiceMngr;
 import com.qq.tars.support.stat.InvokeStatHelper;
 import com.qq.tars.support.trace.TraceManager;
-import java.lang.reflect.InvocationTargetException;
+import io.netty.channel.Channel;
 import org.slf4j.Logger;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Random;
 
-public class TarsServantProcessor extends Processor {
+public class TarsServantProcessor implements Processor {
 
     private static final String FLOW_SEP_FLAG = "|";
     private static final Random rand = new Random(System.currentTimeMillis());
@@ -66,7 +65,6 @@ public class TarsServantProcessor extends Processor {
         int len = 25;
 
         sb.append(FLOW_SEP_FLAG);
-        sb.append(request.getIoSession().getRemoteIp()).append(FLOW_SEP_FLAG);
         sb.append(request.getFunctionName()).append(FLOW_SEP_FLAG);
 
         if (null != args) {
@@ -107,7 +105,7 @@ public class TarsServantProcessor extends Processor {
     }
 
     @Override
-    public Response process(Request req, Session session) {
+    public Response process(Request req, Channel clientChannel) {
 //        AppContainer container = null;
         TarsServantRequest request = null;
         TarsServantResponse response = null;
@@ -122,8 +120,8 @@ public class TarsServantProcessor extends Processor {
         try {
             oldClassLoader = Thread.currentThread().getContextClassLoader();
             request = (TarsServantRequest) req;
-            response = createResponse(request, session);
-            response.setTicketNumber(req.getTicketNumber());
+            response = createResponse(request, clientChannel);
+            response.setRequestId(request.getRequestId());
 
             if (TarsHelper.isPing(request.getFunctionName())) {
                 return response;
@@ -141,10 +139,10 @@ public class TarsServantProcessor extends Processor {
 
             Context<?, ?> context = ContextManager.registerContext(request, response);
             context.setAttribute(Context.INTERNAL_START_TIME, startTime);
-            context.setAttribute(Context.INTERNAL_CLIENT_IP, session.getRemoteIp());
+            context.setAttribute(Context.INTERNAL_CLIENT_IP, clientChannel.remoteAddress().toString());
             context.setAttribute(Context.INTERNAL_SERVICE_NAME, request.getServantName());
             context.setAttribute(Context.INTERNAL_METHOD_NAME, request.getFunctionName());
-            context.setAttribute(Context.INTERNAL_SESSION_DATA, session);
+            context.setAttribute(Context.INTERNAL_SESSION_DATA, clientChannel);
 
             DistributedContext distributedContext = DistributedContextManager.getDistributedContext();
             distributedContext.put(DyeingSwitch.REQ, request);
@@ -202,13 +200,13 @@ public class TarsServantProcessor extends Processor {
             }
             postInvokeSkeleton();
             OmServiceMngr.getInstance().reportWaitingTimeProperty(waitingTime);
-            reportServerStat(request, response, startTime);
+            reportServerStat(clientChannel, request, response, startTime);
         }
         return response;
     }
 
     @Override
-    public void overload(Request req, Session session) {
+    public void overload(Request req, Channel session) {
         TarsServantRequest request = (TarsServantRequest) req;
         TarsServantResponse response = createResponse(request, session);
 
@@ -219,7 +217,7 @@ public class TarsServantProcessor extends Processor {
         }
 
         try {
-            session.write(response);
+            session.writeAndFlush(response);
         } catch (Throwable ex) {
             // ignore the exception, keep the same without overload() and client will be timeout
             // is there a better op. ?
@@ -227,15 +225,15 @@ public class TarsServantProcessor extends Processor {
         }
     }
 
-    private void reportServerStat(TarsServantRequest request, TarsServantResponse response, long startTime) {
+    private void reportServerStat(Channel channel, TarsServantRequest request, TarsServantResponse response, long startTime) {
         if (request.getVersion() == TarsHelper.VERSION2 || request.getVersion() == TarsHelper.VERSION3) {
-            reportServerStat(Constants.TARS_TUP_CLIENT, request, response, startTime);
+            reportServerStat(channel, Constants.TARS_TUP_CLIENT, request, response, startTime);
         } else if (request.getMessageType() == TarsHelper.ONEWAY) {
-            reportServerStat(Constants.TARS_ONE_WAY_CLIENT, request, response, startTime);
+            reportServerStat(channel, Constants.TARS_ONE_WAY_CLIENT, request, response, startTime);
         }
     }
 
-    private void reportServerStat(String moduleName, TarsServantRequest request, TarsServantResponse response,
+    private void reportServerStat(Channel channel, String moduleName, TarsServantRequest request, TarsServantResponse response,
                                   long startTime) {
         ServerConfig serverConfig = ConfigurationManager.getInstance().getServerConfig();
         ServantAdapterConfig servantAdapterConfig = serverConfig.getServantAdapterConfMap().get(request.getServantName());
@@ -244,13 +242,13 @@ public class TarsServantProcessor extends Processor {
         }
         CommunicatorConfig communicatorConfig = serverConfig.getCommunicatorConfig();
         Endpoint serverEndpoint = servantAdapterConfig.getEndpoint();
-        String masterIp = request.getIoSession().getRemoteIp();
+        String masterIp = channel.remoteAddress().toString();
         int result = response.getRet() == TarsHelper.SERVERSUCCESS ? Constants.INVOKE_STATUS_SUCC : Constants.INVOKE_STATUS_EXEC;
         InvokeStatHelper.getInstance().addProxyStat(request.getServantName()).addInvokeTimeByServer(moduleName, serverConfig.getApplication(), serverConfig.getServerName(), communicatorConfig.getSetName(), communicatorConfig.getSetArea(), communicatorConfig.getSetID(), request.getFunctionName(), (masterIp == null ? "0.0.0.0" : masterIp), serverEndpoint.host(), serverEndpoint.port(), result, (System.currentTimeMillis() - startTime));
     }
 
-    private TarsServantResponse createResponse(TarsServantRequest request, Session session) {
-        TarsServantResponse response = new TarsServantResponse(session);
+    private TarsServantResponse createResponse(TarsServantRequest request, Channel channel) {
+        TarsServantResponse response = new TarsServantResponse(request.getRequestId());
         response.setRet(request.getRet());
         response.setVersion(request.getVersion());
         response.setPacketType(request.getPacketType());

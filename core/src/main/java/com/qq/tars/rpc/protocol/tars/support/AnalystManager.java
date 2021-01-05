@@ -27,12 +27,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class AnalystManager {
 
-    private ConcurrentHashMap<String, Map<Method, TarsMethodInfo>> cache = new ConcurrentHashMap<String, Map<Method, TarsMethodInfo>>();
-    private ConcurrentHashMap<String, Map<String, TarsMethodInfo>> context_cache = new ConcurrentHashMap<String, Map<String, TarsMethodInfo>>();
+    private Map<String, Map<Method, TarsMethodInfo>> cache =  new ConcurrentHashMap<>();
+    private Map<String, Map<String, TarsMethodInfo>> context_cache = new ConcurrentHashMap<String, Map<String, TarsMethodInfo>>();
 
     public static AnalystManager getInstance() {
         return instance;
     }
+
     private final static AnalystManager instance = new AnalystManager();
 
     public Map<Method, TarsMethodInfo> getMethodMap(Class<?> api) {

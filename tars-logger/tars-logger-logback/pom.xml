@@ -5,20 +5,20 @@
     <parent>
         <artifactId>tars-logger</artifactId>
         <groupId>com.tencent.tars</groupId>
-        <version>1.7.2</version>
+        <version>2.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>tars-logger-logback</artifactId>
     <dependencies>
         <dependency>
             <groupId>com.tencent.tars</groupId>
-            <artifactId>tars-client</artifactId>
-            <version>1.7.2</version>
+            <artifactId>tars-core</artifactId>
+            <version>2.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.tencent.tars</groupId>
             <artifactId>tars-core</artifactId>
-            <version>1.7.2</version>
+            <version>2.0.0</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>

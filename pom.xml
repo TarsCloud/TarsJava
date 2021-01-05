@@ -10,7 +10,7 @@
 
     <groupId>com.tencent.tars</groupId>
     <artifactId>tars-parent</artifactId>
-    <version>1.7.2</version>
+    <version>2.0.0</version>
     <packaging>pom</packaging>
     <name>Tars</name>
     <description>Super POM For Projects</description>
@@ -40,14 +40,11 @@
     </scm>
 
     <modules>
-        <module>net</module>
         <module>distributedContext</module>
         <module>core</module>
         <module>tools</module>
-        <module>protobuf</module>
         <module>spring</module>
         <module>core/server.pom.xml</module>
-        <module>core/client.pom.xml</module>
         <module>tars-plugins</module>
         <module>tars-logger</module>
     </modules>
@@ -73,7 +70,7 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>1.7.25</version>
+                <version>1.7.30</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -103,7 +103,7 @@ public class ServerConfig {
                 4096);
         tcpNoDelay = conf.getBool("/tars/application/server<tcpnodelay>", false);
 
-        servantAdapterConfMap = new LinkedHashMap<String, ServantAdapterConfig>();
+        servantAdapterConfMap = new LinkedHashMap<>();
         List<String> adapterNameList = conf.getSubTags("/tars/application/server");
         if (adapterNameList != null) {
             for (String adapterName : adapterNameList) {

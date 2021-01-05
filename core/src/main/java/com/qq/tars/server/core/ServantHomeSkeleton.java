@@ -16,7 +16,6 @@
 
 package com.qq.tars.server.core;
 
-import com.qq.tars.net.core.Processor;
 import com.qq.tars.rpc.protocol.Codec;
 
 import java.lang.reflect.Method;

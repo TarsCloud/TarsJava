@@ -2,6 +2,7 @@ package com.qq.tars.client.rpc.tars;
 
 import com.qq.tars.client.rpc.RPCClient;
 import com.qq.tars.client.rpc.Request;
+import com.qq.tars.client.rpc.Response;
 import com.qq.tars.common.AbstractFilterChain;
 import com.qq.tars.common.Filter;
 import com.qq.tars.common.FilterKind;
@@ -28,9 +29,18 @@ public class TarsClientFilterChain extends AbstractFilterChain<RPCClient> {
         if (request instanceof TarsServantRequest && target != null) {
             return target.send((ServantRequest) request);
         } else {
-            throw new RuntimeException("[tars] tarsClientFilterchian invoke error!");
+            throw new RuntimeException("[tars] tarsClient Filterchian invoke error!");
         }
 
     }
 
+    @Override
+    protected void doRealInvoke(Request request, Response response) throws Throwable {
+
+    }
+
+    @Override
+    public CompletableFuture<Response> doFilter(Request request) throws Throwable {
+        return null;
+    }
 }

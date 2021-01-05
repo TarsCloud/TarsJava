@@ -18,12 +18,12 @@ package com.qq.tars.rpc.protocol.tars;
 
 import com.qq.tars.common.util.BeanAccessor;
 import com.qq.tars.common.util.CommonUtils;
-import com.qq.tars.net.protocol.ProtocolException;
 import com.qq.tars.protocol.tars.TarsInputStream;
 import com.qq.tars.protocol.tars.TarsOutputStream;
 import com.qq.tars.protocol.tars.support.TarsMethodInfo;
 import com.qq.tars.protocol.tars.support.TarsMethodParameterInfo;
 import com.qq.tars.protocol.util.TarsHelper;
+import com.qq.tars.rpc.protocol.exception.ProtocolException;
 import com.qq.tars.rpc.protocol.tars.support.AnalystManager;
 
 import java.util.HashMap;

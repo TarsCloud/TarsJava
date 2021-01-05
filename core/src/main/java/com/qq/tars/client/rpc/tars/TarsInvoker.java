@@ -20,6 +20,7 @@ import com.qq.tars.client.ServantProxyConfig;
 import com.qq.tars.client.cluster.ServantInvokerAliveChecker;
 import com.qq.tars.client.rpc.RPCClient;
 import com.qq.tars.client.rpc.Request;
+import com.qq.tars.client.rpc.Response;
 import com.qq.tars.client.rpc.ServantInvokeContext;
 import com.qq.tars.client.rpc.ServantInvoker;
 import com.qq.tars.common.Filter;
@@ -129,8 +130,8 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
             request.setStatus(status);
         }
         FilterChain filterChain = new TarsClientFilterChain(filters, objName, FilterKind.CLIENT, client, Request.InvokeStatus.SYNC_CALL);
-        CompletableFuture<TarsServantResponse> responseFromTars = filterChain.doFilter(request);
-        return responseFromTars.get(request.getTimeout(), TimeUnit.MILLISECONDS);
+        CompletableFuture<Response> responseCompletableFuture = filterChain.doFilter(request);
+        return (TarsServantResponse) responseCompletableFuture.get(request.getTimeout(), TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -167,12 +168,13 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
         }
         //sync call all filter
         final FilterChain filterChain = new TarsClientFilterChain(filters, objName, FilterKind.CLIENT, client, Request.InvokeStatus.FUTURE_CALL);
-        CompletableFuture<TarsServantResponse> tarsResponse = filterChain.doFilter(request);
+        CompletableFuture<Response> tarsResponse = filterChain.doFilter(request);
         return tarsResponse.thenCompose(tarsresponseObj -> {
-            if (tarsresponseObj.getCause() != null) {
-                tarsResponse.completeExceptionally(tarsresponseObj.getCause());
+            TarsServantResponse tarsServantResponse = (TarsServantResponse) tarsresponseObj;
+            if (tarsServantResponse != null) {
+                tarsResponse.completeExceptionally(tarsServantResponse.getCause());
             }
-            return CompletableFuture.completedFuture((V) tarsresponseObj.getResult());
+            return CompletableFuture.completedFuture((V) tarsServantResponse.getResult());
         });
     }
 

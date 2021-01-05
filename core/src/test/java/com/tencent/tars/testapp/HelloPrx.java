@@ -34,8 +34,4 @@ public interface HelloPrx {
     CompletableFuture<String> promise_hello(int no, String name);
 
     public String hello(int no, String name, @TarsContext java.util.Map<String, String> ctx);
-
-    public void async_hello(@TarsCallback HelloPrxCallback callback, int no, String name);
-
-    public void async_hello(@TarsCallback HelloPrxCallback callback, int no, String name, @TarsContext java.util.Map<String, String> ctx);
 }

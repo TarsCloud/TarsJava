@@ -49,7 +49,7 @@ public class NotifyHelper {
             }
 
             NotifyPrx notifyPrx = communicator.stringToProxy(NotifyPrx.class, ConfigurationManager.getInstance().getServerConfig().getNotify());
-            notifyPrx.async_notifyServer(null, app + "." + server, level.value(), message);
+            notifyPrx.promise_notifyServer(app + "." + server, level.value(), message);
         } catch (Exception e) {
             omLogger.error("RemoteNotify|notify error", e);
         }
@@ -80,10 +80,9 @@ public class NotifyHelper {
             if (communicator == null) {
                 return;
             }
-
             NotifyPrx notifyPrx = communicator.stringToProxy(NotifyPrx.class, ConfigurationManager.getInstance().getServerConfig().getNotify());
             if (sync) notifyPrx.reportServer(app + "." + server, Thread.currentThread().getId() + "", result);
-            else notifyPrx.async_reportServer(null, app + "." + server, Thread.currentThread().getId() + "", result);
+            else notifyPrx.promise_reportServer(app + "." + server, Thread.currentThread().getId() + "", result);
         } catch (Exception e) {
             omLogger.error("RemoteNotify|report error", e);
         }

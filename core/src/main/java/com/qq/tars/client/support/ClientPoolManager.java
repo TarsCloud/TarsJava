@@ -17,7 +17,7 @@
 package com.qq.tars.client.support;
 
 import com.qq.tars.client.CommunicatorConfig;
-import com.qq.tars.client.rpc.ServantClient;
+import com.qq.tars.client.rpc.NettyServantClient;
 import com.qq.tars.common.util.concurrent.TaskQueue;
 import com.qq.tars.common.util.concurrent.TaskThreadFactory;
 import com.qq.tars.common.util.concurrent.TaskThreadPoolExecutor;
@@ -29,16 +29,13 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class ClientPoolManager {
-
     private static final Logger logger = LoggerFactory.getClientLogger();
-
-
     private final static ConcurrentHashMap<CommunicatorConfig, ThreadPoolExecutor> clientThreadPoolMap = new ConcurrentHashMap<CommunicatorConfig, ThreadPoolExecutor>();
 
     public static ThreadPoolExecutor getClientThreadPoolExecutor(CommunicatorConfig communicatorConfig) {
         ThreadPoolExecutor clientPoolExecutor = clientThreadPoolMap.get(communicatorConfig);
         if (clientPoolExecutor == null) {
-            synchronized (ServantClient.class) {
+            synchronized (NettyServantClient.class) {
                 clientPoolExecutor = clientThreadPoolMap.get(communicatorConfig);
                 if (clientPoolExecutor == null) {
                     clientThreadPoolMap.put(communicatorConfig, createThreadPool(communicatorConfig));

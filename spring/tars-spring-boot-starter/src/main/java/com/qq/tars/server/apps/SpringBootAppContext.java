@@ -17,7 +17,6 @@
 package com.qq.tars.server.apps;
 
 import com.qq.tars.common.util.StringUtils;
-import com.qq.tars.net.core.Processor;
 import com.qq.tars.protocol.annotation.Servant;
 import com.qq.tars.protocol.util.TarsHelper;
 import com.qq.tars.rpc.protocol.Codec;
@@ -25,6 +24,7 @@ import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.server.config.ServantAdapterConfig;
 import com.qq.tars.server.config.ServerConfig;
 import com.qq.tars.server.core.AppContextListener;
+import com.qq.tars.server.core.Processor;
 import com.qq.tars.server.core.ServantAdapter;
 import com.qq.tars.server.core.ServantHomeSkeleton;
 import com.qq.tars.spring.annotation.TarsListener;

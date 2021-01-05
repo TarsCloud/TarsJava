@@ -21,7 +21,6 @@ import com.qq.tars.client.CommunicatorConfig;
 import com.qq.tars.client.CommunicatorFactory;
 import com.qq.tars.support.log.prx.LogInfo;
 import com.qq.tars.support.log.prx.LogPrx;
-import com.qq.tars.support.log.prx.LogPrxCallback;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -106,31 +105,6 @@ public class TarsLoggerServerAppender<E> extends TarsLoggerServerAppenderConfig<
         return loginfo;
     }
 
-
-    private static LogPrxCallback getLogProxyCallback() {
-        return new LogPrxCallback() {
-            @Override
-            public void callback_logger() {
-
-            }
-
-            @Override
-            public void callback_loggerbyInfo() {
-
-            }
-
-            @Override
-            public void callback_exception(Throwable throwable) {
-
-            }
-
-            @Override
-            public void callback_expired() {
-
-            }
-        };
-    }
-
     @Override
     protected void append(E e) {
         final byte[] payload = encoder.encode(e);
@@ -139,7 +113,7 @@ public class TarsLoggerServerAppender<E> extends TarsLoggerServerAppenderConfig<
             final List<String> record = new ArrayList<>(1);
             record.add(new String(payload, StandardCharsets.UTF_8) + "\n");
             try {
-                logPrx.async_loggerbyInfo(getLogProxyCallback(), getLogInfo(), record);
+                logPrx.promise_loggerbyInfo(getLogInfo(), record);
             } catch (Exception e1) {
 
                 e1.printStackTrace();

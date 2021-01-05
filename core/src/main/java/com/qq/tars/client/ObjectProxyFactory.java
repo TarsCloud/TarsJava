@@ -29,8 +29,7 @@ import com.qq.tars.rpc.common.ProtocolInvoker;
 import com.qq.tars.rpc.exc.ClientException;
 import com.qq.tars.rpc.exc.CommunicatorConfigException;
 import com.qq.tars.rpc.protocol.Codec;
-import com.qq.tars.rpc.protocol.ServantProtocolFactory;
-import com.qq.tars.rpc.protocol.tars.TarsCodec;
+import com.qq.tars.rpc.protocol.tars.TarsClientCodec;
 import com.qq.tars.support.log.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -77,10 +76,10 @@ class ObjectProxyFactory {
         Codec codec = createCodec(api, servantProxyConfig);
         if (api.isAnnotationPresent(Servant.class)) {
             if (codec == null) {
-                codec = new TarsCodec(servantProxyConfig.getCharsetName());
+                codec = new TarsClientCodec(servantProxyConfig.getCharsetName());
             }
             servantProxyConfig.setProtocol(codec.getProtocol());
-            protocolInvoker = new TarsProtocolInvoker<T>(api, servantProxyConfig, new ServantProtocolFactory(codec), communicator.getThreadPoolExecutor());
+            protocolInvoker = new TarsProtocolInvoker<T>(api, servantProxyConfig);
         } else {
             throw new ClientException(servantProxyConfig.getSimpleObjectName(), "unknown protocol servant invoker", null);
         }

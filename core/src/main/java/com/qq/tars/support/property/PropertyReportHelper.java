@@ -18,7 +18,7 @@ package com.qq.tars.support.property;
 
 import com.qq.tars.client.Communicator;
 import com.qq.tars.client.CommunicatorConfig;
-import com.qq.tars.net.util.Utils;
+import com.qq.tars.client.rpc.Utils;
 import com.qq.tars.rpc.exc.TarsException;
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.support.log.LoggerFactory;
@@ -194,7 +194,7 @@ public class PropertyReportHelper {
                     sendData.put(data.head, data.body);
                     sendLen += data.len;
                 } else {
-                    propertyFPrx.async_reportPropMsg(null, sendData);
+                    propertyFPrx.promise_reportPropMsg(sendData);
                     sendData.clear();
                     sendData.put(data.head, data.body);
                     sendLen = data.len;
@@ -202,7 +202,7 @@ public class PropertyReportHelper {
             }
 
             if (sendData.size() != 0) {
-                propertyFPrx.async_reportPropMsg(null, sendData);
+                propertyFPrx.promise_reportPropMsg(sendData);
             }
         } catch (Throwable t) {
             omLogger.error("PropertyReporter|ReportThread error", t);

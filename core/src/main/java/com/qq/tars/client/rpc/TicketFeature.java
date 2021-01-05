@@ -2,12 +2,10 @@ package com.qq.tars.client.rpc;
 
 import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 import io.netty.channel.Channel;
-
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TicketFeature extends CompletableFuture<Object> {
     public static final int DEFAULT_TICKET_NUMBER = -1;
@@ -18,7 +16,6 @@ public class TicketFeature extends CompletableFuture<Object> {
     protected long timeout = 1000;
     private static final Map<Integer, TicketFeature> featureMap = new ConcurrentHashMap<>();
     Future<?> timeoutFuture;
-    AtomicBoolean hasRun = new AtomicBoolean(false);
 
     public Future<?> getTimeoutFuture() {
         return timeoutFuture;

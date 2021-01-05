@@ -16,19 +16,18 @@
 
 package com.qq.tars.server.core;
 
-import com.qq.tars.net.core.Processor;
-import com.qq.tars.net.core.Request;
-import com.qq.tars.net.core.Response;
-import com.qq.tars.net.core.Session;
+import com.qq.tars.client.rpc.Request;
+import com.qq.tars.client.rpc.Response;
 import com.qq.tars.rpc.exc.TarsException;
-import com.qq.tars.rpc.protocol.ext.ExtendedServantRequest;
-import com.qq.tars.rpc.protocol.ext.ExtendedServantResponse;
+import com.qq.tars.rpc.protocol.tars.TarsServantRequest;
+import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.support.om.OmServiceMngr;
+import io.netty.channel.Channel;
 
 import java.lang.reflect.Method;
 
-public abstract class ExtendedServantProcessor<RES extends ExtendedServantRequest, RESP extends ExtendedServantResponse> extends Processor {
+public abstract class ExtendedServantProcessor<RES extends TarsServantRequest, RESP extends TarsServantResponse> implements Processor {
 
     private final ServantAdapter servantAdapter;
 
@@ -37,7 +36,7 @@ public abstract class ExtendedServantProcessor<RES extends ExtendedServantReques
     }
 
     @Override
-    public Response process(Request req, Session session) {
+    public Response process(Request req, Channel session) {
         RES request = null;
         RESP response = null;
 
@@ -50,7 +49,7 @@ public abstract class ExtendedServantProcessor<RES extends ExtendedServantReques
             oldClassLoader = Thread.currentThread().getContextClassLoader();
             request = (RES) req;
             response = createResponse(request, session);
-            response.setTicketNumber(req.getTicketNumber());
+            response.setRequestId(req.getRequestId());
 
             String servantName = servantAdapter.getServantAdapterConfig().getServant();
             request.setServantName(servantAdapter.getServantAdapterConfig().getServant());
@@ -66,7 +65,7 @@ public abstract class ExtendedServantProcessor<RES extends ExtendedServantReques
             if (appContext == null) throw new RuntimeException("failed to find the application named:[ROOT]");
             Context<?, ?> context = ContextManager.registerContext(request, response);
             context.setAttribute(Context.INTERNAL_START_TIME, startTime);
-            context.setAttribute(Context.INTERNAL_CLIENT_IP, session.getRemoteIp());
+            context.setAttribute(Context.INTERNAL_CLIENT_IP, session.remoteAddress().toString());
             context.setAttribute(Context.INTERNAL_APP_NAME, appContext.name());
             context.setAttribute(Context.INTERNAL_SERVICE_NAME, request.getServantName());
             context.setAttribute(Context.INTERNAL_METHOD_NAME, request.getFunctionName());
@@ -85,7 +84,7 @@ public abstract class ExtendedServantProcessor<RES extends ExtendedServantReques
             } else {
                 cause.printStackTrace();
             }
-            response.setThrowable(cause);
+            response.setCause(cause);
         } finally {
             if (oldClassLoader != null) {
                 Thread.currentThread().setContextClassLoader(oldClassLoader);
@@ -96,5 +95,5 @@ public abstract class ExtendedServantProcessor<RES extends ExtendedServantReques
         return response;
     }
 
-    protected abstract RESP createResponse(RES request, Session session);
+    protected abstract RESP createResponse(RES request, Channel channel);
 }

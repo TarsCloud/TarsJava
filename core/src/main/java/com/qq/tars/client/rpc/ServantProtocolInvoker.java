@@ -37,7 +37,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -45,17 +44,13 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
     private static final Logger logger = LoggerFactory.getClientLogger();
     protected final Class<T> api;
     protected final ServantProxyConfig servantProxyConfig;
-    protected final ThreadPoolExecutor threadPoolExecutor;
     protected volatile ConcurrentHashSet<Invoker<T>> allInvoker = new ConcurrentHashSet<>();
     private final NettyTransport nettyTransport;
 
-    public ServantProtocolInvoker(Class<T> api, ServantProxyConfig config,
-                                  ThreadPoolExecutor threadPoolExecutor) {
+    public ServantProtocolInvoker(Class<T> api, ServantProxyConfig config) {
         this.api = api;
         this.servantProxyConfig = config;
-        this.threadPoolExecutor = threadPoolExecutor;
         this.nettyTransport = new NettyTransport(config);
-
         this.allInvoker = this.initInvoker();
     }
 

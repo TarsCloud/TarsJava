@@ -31,7 +31,7 @@ demo工程参考[demo工程](https://github.com/TarsCloud/TarsJava/tree/master/e
         <dependency>
             <groupId>com.tencent.tars</groupId>
             <artifactId>tars-spring-boot-starter</artifactId>
-            <version>1.7.2</version>
+            <version>2.0.0</version>
         </dependency>
     </dependencies>
 ```

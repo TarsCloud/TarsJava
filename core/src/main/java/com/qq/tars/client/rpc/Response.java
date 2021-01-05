@@ -30,6 +30,9 @@ public abstract class Response {
         return asyncMode;
     }
 
+
+    public abstract int getRequestId();
+
     public void asyncCallStart() {
         this.asyncMode = true;
     }
@@ -38,7 +41,6 @@ public abstract class Response {
         if (!this.asyncMode) throw new IllegalStateException("The response is not async mode.");
         ensureNotCommitted();
     }
-
 
     private synchronized void ensureNotCommitted() {
         if (committed) throw new IllegalStateException("Not allowed after response has committed.");

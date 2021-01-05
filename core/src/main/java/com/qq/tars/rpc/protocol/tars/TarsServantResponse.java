@@ -20,6 +20,7 @@ import com.qq.tars.protocol.tars.TarsInputStream;
 import com.qq.tars.rpc.protocol.ServantResponse;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 public class TarsServantResponse extends ServantResponse implements java.io.Serializable {
     private static final long serialVersionUID = 3163555867604946654L;
@@ -40,7 +41,6 @@ public class TarsServantResponse extends ServantResponse implements java.io.Seri
     private TarsInputStream inputStream;
     private TarsServantRequest request;
     private Throwable cause = null;
-
     public TarsServantResponse(int requestId) {
         super(requestId);
     }

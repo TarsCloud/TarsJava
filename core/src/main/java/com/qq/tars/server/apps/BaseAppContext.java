@@ -18,7 +18,6 @@ package com.qq.tars.server.apps;
 
 import com.qq.tars.common.Filter;
 import com.qq.tars.common.FilterKind;
-import com.qq.tars.rpc.protocol.ext.ExtendedServant;
 import com.qq.tars.rpc.protocol.tars.support.AnalystManager;
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.server.config.ServantAdapterConfig;
@@ -119,9 +118,6 @@ public abstract class BaseAppContext implements AppContext {
             ServantHomeSkeleton skeleton = skeletonMap.get(skeletonName);
             Class<?> api = skeleton.getApiClass();
             try {
-                if (api.isAssignableFrom(ExtendedServant.class)) {
-                    continue;
-                }
                 AnalystManager.getInstance().registry(name(), api, skeleton.name());
             } catch (Exception e) {
                 System.err.println("app[] init servant[" + api.getName() + "] failed");

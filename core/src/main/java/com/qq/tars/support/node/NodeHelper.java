@@ -56,7 +56,7 @@ public class NodeHelper {
                 return;
             }
             ServerFPrx nodePrx = communicator.stringToProxy(ServerFPrx.class, node);
-            nodePrx.async_keepAlive(null, si);
+            nodePrx.promise_keepAlive(si);
         } catch (Throwable t) {
             omLogger.error("NodeHelper|keepAlive|error", t);
         }
@@ -72,7 +72,7 @@ public class NodeHelper {
                 return;
             }
             ServerFPrx nodePrx = communicator.stringToProxy(ServerFPrx.class, node);
-            nodePrx.async_reportVersion(null, si.application, si.serverName, version);
+            nodePrx.promise_reportVersion(si.application, si.serverName, version);
         } catch (Throwable t) {
             omLogger.error("NodeHelper|reportVersion|error", t);
         }

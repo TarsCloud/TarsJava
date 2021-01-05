@@ -21,12 +21,8 @@ import com.qq.tars.client.CommunicatorConfig;
 import com.qq.tars.client.CommunicatorFactory;
 import com.qq.tars.common.logger.LoggerFactoryManager;
 import com.qq.tars.common.util.BeanAccessor;
-import com.qq.tars.net.core.SessionManager;
 import com.qq.tars.server.config.ConfigurationManager;
-import com.qq.tars.server.config.ServantAdapterConfig;
 import com.qq.tars.server.config.ServerConfig;
-import com.qq.tars.server.ha.ConnectionSessionListener;
-import com.qq.tars.support.om.OmConstants;
 import com.qq.tars.support.om.OmServiceMngr;
 
 import java.io.IOException;

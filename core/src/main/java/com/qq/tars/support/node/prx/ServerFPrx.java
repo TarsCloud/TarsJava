@@ -21,57 +21,36 @@
 package com.qq.tars.support.node.prx;
 
 import com.qq.tars.protocol.annotation.Servant;
-import com.qq.tars.protocol.tars.annotation.TarsCallback;
 import com.qq.tars.protocol.tars.annotation.TarsContext;
+
+import java.util.concurrent.CompletableFuture;
 
 @Servant
 public interface ServerFPrx {
-	/**
-	 * Report serverInfo to node regularly
-	 * @param serverInfo  Service status
-	 * @return  int 
-	 */
-	public int keepAlive(ServerInfo serverInfo);
-	/**
-	 * Report serverInfo to node regularly
-	 * @param serverInfo  Service status
-	 * @return  int 
-	 */
-	public int keepAlive(ServerInfo serverInfo, @TarsContext java.util.Map<String, String> ctx);
-	/**
-	 * Report serverInfo to node regularly
-	 * @param serverInfo  Service status
-	 * @return  int 
-	 */
-	public void async_keepAlive(@TarsCallback ServerFPrxCallback callback, ServerInfo serverInfo);
-	/**
-	 * Report serverInfo to node regularly
-	 * @param serverInfo  Service status
-	 * @return  int 
-	 */
-	public void async_keepAlive(@TarsCallback ServerFPrxCallback callback, ServerInfo serverInfo, @TarsContext java.util.Map<String, String> ctx);
-	/**
-	 * Report TARS version information to node
-	 * @param string  Version information
-	 * @return  int 
-	 */
-	public int reportVersion(String app, String serverName, String version);
-	/**
-	 * Report TARS version information to node
-	 * @param string  Version information
-	 * @return  int 
-	 */
-	public int reportVersion(String app, String serverName, String version, @TarsContext java.util.Map<String, String> ctx);
-	/**
-	 * Report TARS version information to node
-	 * @param string  Version information
-	 * @return  int 
-	 */
-	public void async_reportVersion(@TarsCallback ServerFPrxCallback callback, String app, String serverName, String version);
-	/**
-	 * Report TARS version information to node
-	 * @param string  Version information
-	 * @return  int 
-	 */
-	public void async_reportVersion(@TarsCallback ServerFPrxCallback callback, String app, String serverName, String version, @TarsContext java.util.Map<String, String> ctx);
+    /**
+     * Report serverInfo to node regularly
+     * @param serverInfo Service status
+     * @return int
+     */
+    public int keepAlive(ServerInfo serverInfo);
+
+    CompletableFuture<Integer> promise_keepAlive(ServerInfo serverInfo);
+
+    /**
+     * Report serverInfo to node regularly
+     * @param serverInfo Service status
+     * @return int
+     */
+    public int keepAlive(ServerInfo serverInfo, @TarsContext java.util.Map<String, String> ctx);
+
+    public int reportVersion(String app, String serverName, String version);
+
+    CompletableFuture<Integer> promise_reportVersion(String app, String serverName, String version);
+
+    /**
+     * Report TARS version information to node
+     * @param string Version information
+     * @return int
+     */
+    public int reportVersion(String app, String serverName, String version, @TarsContext java.util.Map<String, String> ctx);
 }

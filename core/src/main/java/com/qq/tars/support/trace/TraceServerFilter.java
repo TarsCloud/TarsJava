@@ -1,13 +1,13 @@
 package com.qq.tars.support.trace;
 
 import com.qq.tars.client.rpc.Request;
+import com.qq.tars.client.rpc.Response;
 import com.qq.tars.common.ClientVersion;
 import com.qq.tars.common.Filter;
 import com.qq.tars.common.FilterChain;
 import com.qq.tars.common.support.Endpoint;
 import com.qq.tars.common.util.StringUtils;
 import com.qq.tars.rpc.protocol.tars.TarsServantRequest;
-import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 import com.qq.tars.server.config.ConfigurationManager;
 import io.opentracing.Scope;
 import io.opentracing.Tracer;
@@ -28,7 +28,12 @@ public class TraceServerFilter implements Filter {
     }
 
     @Override
-    public CompletableFuture<TarsServantResponse> doFilter(Request request, FilterChain chain)
+    public void doFilter(Request request, Response response, FilterChain chain) throws Throwable {
+
+    }
+
+    @Override
+    public CompletableFuture<Response> doFilter(Request request, FilterChain chain)
             throws Throwable {
         if (!isTrace || !(request instanceof TarsServantRequest)) {
             return chain.doFilter(request);

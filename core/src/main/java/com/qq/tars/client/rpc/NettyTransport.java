@@ -61,4 +61,12 @@ public class NettyTransport {
         NettyServantClient nettyServantClient = new NettyServantClient(bootstrap.connect(ip, port).channel(), this.servantProxyConfig);
         return nettyServantClient;
     }
+
+    public static void main(String[] args) {
+        ServantProxyConfig servantProxyConfig = new ServantProxyConfig("");
+
+        NettyTransport nettyTransport = new NettyTransport(servantProxyConfig);
+        nettyTransport.connect("10.172.0.111", 18393);
+
+    }
 }

@@ -45,20 +45,7 @@ public interface QueryFPrx {
 	 * @return  Returns a list of all active endpoints for this object
 	 */
 	public java.util.List<EndpointF> findObjectById(String id, @TarsContext java.util.Map<String, String> ctx);
-	/** Get the object by id
-	 *
-	 * @param id Object name
-	 *
-	 * @return  Returns a list of all active endpoints for this object
-	 */
-	public void async_findObjectById(@TarsCallback QueryFPrxCallback callback, String id);
-	/** Get the object by id
-	 *
-	 * @param id Object name
-	 *
-	 * @return  Returns a list of all active endpoints for this object
-	 */
-	public void async_findObjectById(@TarsCallback QueryFPrxCallback callback, String id, @TarsContext java.util.Map<String, String> ctx);
+
 	/**Gets all objects by id, both active and inactive
 	 *
 	 * @param id         Object name
@@ -75,22 +62,7 @@ public interface QueryFPrx {
 	 * @return:  0-success  others-failure
 	 */
 	public int findObjectById4Any(String id, @TarsHolder Holder<java.util.List<EndpointF>> activeEp, @TarsHolder Holder<java.util.List<EndpointF>> inactiveEp, @TarsContext java.util.Map<String, String> ctx);
-	/**Gets all objects by id, both active and inactive
-	 *
-	 * @param id         Object name
-	 * @param activeEp   List of live endpoints
-	 * @param inactiveEp List of non-live endpoints
-	 * @return:  0-success  others-failure
-	 */
-	public void async_findObjectById4Any(@TarsCallback QueryFPrxCallback callback, String id);
-	/**Gets all objects by id, both active and inactive
-	 *
-	 * @param id         Object name
-	 * @param activeEp   List of live endpoints
-	 * @param inactiveEp List of non-live endpoints
-	 * @return:  0-success  others-failure
-	 */
-	public void async_findObjectById4Any(@TarsCallback QueryFPrxCallback callback, String id, @TarsContext java.util.Map<String, String> ctx);
+
 	/** Get all endpoint lists of objects according to id, the function is the same as findObjectByIdInSameGroup
 	 *
 	 * @param id         Object name
@@ -107,22 +79,7 @@ public interface QueryFPrx {
 	 * @return:  0-success  others-failure
 	 */
 	public int findObjectById4All(String id, @TarsHolder Holder<java.util.List<EndpointF>> activeEp, @TarsHolder Holder<java.util.List<EndpointF>> inactiveEp, @TarsContext java.util.Map<String, String> ctx);
-	/** Get all endpoint lists of objects according to id, the function is the same as findObjectByIdInSameGroup
-	 *
-	 * @param id         Object name
-	 * @param activeEp   List of live endpoints
-	 * @param inactiveEp List of non-live endpoints
-	 * @return:  0-success  others-failure
-	 */
-	public void async_findObjectById4All(@TarsCallback QueryFPrxCallback callback, String id);
-	/** Get all endpoint lists of objects according to id, the function is the same as findObjectByIdInSameGroup
-	 *
-	 * @param id         Object name
-	 * @param activeEp   List of live endpoints
-	 * @param inactiveEp List of non-live endpoints
-	 * @return:  0-success  others-failure
-	 */
-	public void async_findObjectById4All(@TarsCallback QueryFPrxCallback callback, String id, @TarsContext java.util.Map<String, String> ctx);
+
 	/** Get the same group endpoint list of objects according to id
 	 *
 	 * @param id         Object name
@@ -139,22 +96,7 @@ public interface QueryFPrx {
 	 * @return:  0-success  others-failure
 	 */
 	public int findObjectByIdInSameGroup(String id, @TarsHolder Holder<java.util.List<EndpointF>> activeEp, @TarsHolder Holder<java.util.List<EndpointF>> inactiveEp, @TarsContext java.util.Map<String, String> ctx);
-	/** Get the same group endpoint list of objects according to id
-	 *
-	 * @param id         Object name
-	 * @param activeEp   List of live endpoints
-	 * @param inactiveEp List of non-live endpoints
-	 * @return:  0-success  others-failure
-	 */
-	public void async_findObjectByIdInSameGroup(@TarsCallback QueryFPrxCallback callback, String id);
-	/** Get the same group endpoint list of objects according to id
-	 *
-	 * @param id         Object name
-	 * @param activeEp   List of live endpoints
-	 * @param inactiveEp List of non-live endpoints
-	 * @return:  0-success  others-failure
-	 */
-	public void async_findObjectByIdInSameGroup(@TarsCallback QueryFPrxCallback callback, String id, @TarsContext java.util.Map<String, String> ctx);
+
 	/** Get the endpoint list of the specified home location of the object according to id
 	 *
 	 * @param id         Object name
@@ -171,22 +113,7 @@ public interface QueryFPrx {
 	 * @return:  0-success  others-failure
 	 */
 	public int findObjectByIdInSameStation(String id, String sStation, @TarsHolder Holder<java.util.List<EndpointF>> activeEp, @TarsHolder Holder<java.util.List<EndpointF>> inactiveEp, @TarsContext java.util.Map<String, String> ctx);
-	/** Get the endpoint list of the specified home location of the object according to id
-	 *
-	 * @param id         Object name
-	 * @param activeEp   List of live endpoints
-	 * @param inactiveEp List of non-live endpoints
-	 * @return:  0-success  others-failure
-	 */
-	public void async_findObjectByIdInSameStation(@TarsCallback QueryFPrxCallback callback, String id, String sStation);
-	/** Get the endpoint list of the specified home location of the object according to id
-	 *
-	 * @param id         Object name
-	 * @param activeEp   List of live endpoints
-	 * @param inactiveEp List of non-live endpoints
-	 * @return:  0-success  others-failure
-	 */
-	public void async_findObjectByIdInSameStation(@TarsCallback QueryFPrxCallback callback, String id, String sStation, @TarsContext java.util.Map<String, String> ctx);
+
 	/** Get the same group endpoint list of objects according to id
 	 *
 	 * @param id         Object name
@@ -205,22 +132,5 @@ public interface QueryFPrx {
 	 * @return:  0-success  others-failure
 	 */
 	public int findObjectByIdInSameSet(String id, String setId, @TarsHolder Holder<java.util.List<EndpointF>> activeEp, @TarsHolder Holder<java.util.List<EndpointF>> inactiveEp, @TarsContext java.util.Map<String, String> ctx);
-	/** Get the same group endpoint list of objects according to id
-	 *
-	 * @param id         Object name
-	 * @param setId      The full name of set, the format is setname.setarea.setgroup
-	 * @param activeEp   List of live endpoints
-	 * @param inactiveEp List of non-live endpoints
-	 * @return:  0-success  others-failure
-	 */
-	public void async_findObjectByIdInSameSet(@TarsCallback QueryFPrxCallback callback, String id, String setId);
-	/** Get the same group endpoint list of objects according to id
-	 *
-	 * @param id         Object name
-	 * @param setId      The full name of set, the format is setname.setarea.setgroup
-	 * @param activeEp   List of live endpoints
-	 * @param inactiveEp List of non-live endpoints
-	 * @return:  0-success  others-failure
-	 */
-	public void async_findObjectByIdInSameSet(@TarsCallback QueryFPrxCallback callback, String id, String setId, @TarsContext java.util.Map<String, String> ctx);
+
 }

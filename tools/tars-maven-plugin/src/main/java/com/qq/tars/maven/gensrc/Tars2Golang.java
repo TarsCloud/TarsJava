@@ -53,8 +53,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@Mojo(name = "tars2java", threadSafe = true)
-public class Tars2JavaMojo extends AbstractMojo {
+@Mojo(name = "tars2golang", threadSafe = true)
+public class Tars2Golang extends AbstractMojo {
 
     @Parameter(required = true)
     private Tars2JavaConfig tars2JavaConfig;

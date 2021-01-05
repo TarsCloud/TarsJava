@@ -21,38 +21,28 @@
 package com.qq.tars.support.property.prx;
 
 import com.qq.tars.protocol.annotation.Servant;
-import com.qq.tars.protocol.tars.annotation.TarsCallback;
 import com.qq.tars.protocol.tars.annotation.TarsContext;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
- *
  * Reporting service interface
- *
  **/
 @Servant
 public interface PropertyFPrx {
-	/**
-	 * Report attribute statistics information   Prop = property
-	 * @param statmsg,             Report information
-	 * @return int,                Return 0 means success
-	 */
-	public int reportPropMsg(java.util.Map<StatPropMsgHead, StatPropMsgBody> statmsg);
-	/**
-	 * Report attribute statistics information   Prop = property
-	 * @param statmsg,             Report information
-	 * @return int,                Return 0 means success
-	 */
-	public int reportPropMsg(java.util.Map<StatPropMsgHead, StatPropMsgBody> statmsg, @TarsContext java.util.Map<String, String> ctx);
-	/**
-	 * Report attribute statistics information   Prop = property
-	 * @param statmsg,             Report information
-	 * @return int,                Return 0 means success
-	 */
-	public void async_reportPropMsg(@TarsCallback PropertyFPrxCallback callback, java.util.Map<StatPropMsgHead, StatPropMsgBody> statmsg);
-	/**
-	 * Report attribute statistics information   Prop = property
-	 * @param statmsg,             Report information
-	 * @return int,                Return 0 means success
-	 */
-	public void async_reportPropMsg(@TarsCallback PropertyFPrxCallback callback, java.util.Map<StatPropMsgHead, StatPropMsgBody> statmsg, @TarsContext java.util.Map<String, String> ctx);
+    /**
+     * Report attribute statistics information   Prop = property
+     * @param statmsg, Report information
+     * @return int,                Return 0 means success
+     */
+    int reportPropMsg(java.util.Map<StatPropMsgHead, StatPropMsgBody> statmsg);
+
+    CompletableFuture<Integer> promise_reportPropMsg(java.util.Map<StatPropMsgHead, StatPropMsgBody> statmsg);
+
+    /**
+     * Report attribute statistics information   Prop = property
+     * @param statmsg, Report information
+     * @return int,                Return 0 means success
+     */
+    int reportPropMsg(java.util.Map<StatPropMsgHead, StatPropMsgBody> statmsg, @TarsContext java.util.Map<String, String> ctx);
 }

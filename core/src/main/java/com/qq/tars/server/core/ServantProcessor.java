@@ -16,18 +16,18 @@
 
 package com.qq.tars.server.core;
 
-import com.qq.tars.net.core.Processor;
-import com.qq.tars.net.core.Request;
-import com.qq.tars.net.core.Response;
-import com.qq.tars.net.core.Session;
-import com.qq.tars.rpc.protocol.tars.TarsServantRequest;
 
-public class ServantProcessor extends Processor {
+import com.qq.tars.client.rpc.Request;
+import com.qq.tars.client.rpc.Response;
+import com.qq.tars.rpc.protocol.tars.TarsServantRequest;
+import io.netty.channel.Channel;
+
+public class ServantProcessor implements Processor {
 
     private TarsServantProcessor processor = new TarsServantProcessor();
 
     @Override
-    public Response process(Request request, Session session) {
+    public Response process(Request request, Channel session) {
         Response response = null;
 
         if (request instanceof TarsServantRequest) {
@@ -39,7 +39,7 @@ public class ServantProcessor extends Processor {
     }
 
     @Override
-    public void overload(Request request, Session session) {
+    public void overload(Request request, Channel session) {
 
     }
 

@@ -107,7 +107,7 @@ The following configuration needs to be added in pom.xml:
 <dependency>
     <groupId>com.tencent.tars</groupId>
     <artifactId>tars-spring-boot-starter</artifactId>
-    <version>1.7.2</version>
+    <version>2.0.0</version>
 </dependency>
 </dependencies>
 ```
@@ -119,7 +119,7 @@ The following configuration needs to be added in pom.xml:
 <plugin>
     <groupId>com.tencent.tars</groupId>
     <artifactId>tars-maven-plugin</artifactId>
-    <version>1.7.2</version>
+    <version>2.0.0</version>
     <configuration>
         <tars2JavaConfig>
             <!-- tars file location -->
@@ -287,7 +287,7 @@ The following configuration needs to be added in pom.xml:
 <dependency>
     <groupId>com.tencent.tars</groupId>
     <artifactId>tars-spring-boot-starter</artifactId>
-    <version>1.7.2</version>
+    <version>2.0.0</version>
 </dependency>
 </dependencies>
 ```
@@ -299,7 +299,7 @@ The following configuration needs to be added in pom.xml:
 <plugin>
     <groupId>com.tencent.tars</groupId>
     <artifactId>tars-maven-plugin</artifactId>
-    <version>1.7.2</version>
+    <version>2.0.0</version>
     <configuration>
         <tars2JavaConfig>
             <!-- tars file location -->
@@ -374,7 +374,7 @@ public interface HelloPrx {
 }
 ```
 
-The promise call is a new feature of Tars v1.7.2. For specific use, please refer to
+The promise call is a new feature of Tars v2.0.0. For specific use, please refer to
 the [Tars file reference](./docs-en/tars-reference.md).
 
 ##### Client interface file definition
@@ -402,7 +402,7 @@ dependency of pom.xml as follows. Note that `<servant> </ servant>` is set to tr
 <plugin>
     <groupId>com.tencent.tars</groupId>
     <artifactId>tars-maven-plugin</artifactId>
-    <version>1.7.2</version>
+    <version>2.0.0</version>
     <configuration>
         <tars2JavaConfig>
             <!-- tars file location -->

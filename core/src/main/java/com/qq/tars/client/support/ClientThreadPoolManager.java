@@ -17,7 +17,7 @@
 package com.qq.tars.client.support;
 
 import com.qq.tars.client.CommunicatorConfig;
-import com.qq.tars.client.rpc.ServantClient;
+import com.qq.tars.client.rpc.NettyServantClient;
 import com.qq.tars.common.util.concurrent.TaskQueue;
 import com.qq.tars.common.util.concurrent.TaskThreadFactory;
 import com.qq.tars.common.util.concurrent.TaskThreadPoolExecutor;
@@ -34,7 +34,7 @@ public class ClientThreadPoolManager {
         String contextIdentity = resolveCurrentContextIdentity();
         ThreadPoolExecutor clientPoolExecutor = clientThreadPoolMap.get(contextIdentity);
         if (clientPoolExecutor == null) {
-            synchronized (ServantClient.class) {
+            synchronized (NettyServantClient.class) {
                 clientPoolExecutor = clientThreadPoolMap.get(contextIdentity);
                 if (clientPoolExecutor == null) {
                     clientThreadPoolMap.put(contextIdentity, createThreadPool(communicatorConfig));
