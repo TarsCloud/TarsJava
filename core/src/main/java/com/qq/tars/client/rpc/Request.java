@@ -18,16 +18,14 @@ package com.qq.tars.client.rpc;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class Request {
-    private static final AtomicInteger ticketGenerator = new AtomicInteger(); // generate ticket id
     protected transient InvokeStatus status = null;
     private transient HashMap<String, String> distributedContext = new HashMap<>(8);
     private transient long bornTime;
     private transient long processTime;
 
-    private int requestId;
+    protected int requestId;
 
     public enum InvokeStatus {
         SYNC_CALL, ASYNC_CALL, FUTURE_CALL

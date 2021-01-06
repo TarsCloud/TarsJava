@@ -43,15 +43,19 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
         if (byteBuf.readableBytes() < 4) {
             return;
         }
-        int beginIndex = byteBuf.readerIndex();
-        int length = byteBuf.readInt();
+        int length = byteBuf.readInt() - 4;
+
         if (byteBuf.readableBytes() < length) {
-            byteBuf.readerIndex(beginIndex);
             return;
         }
-        final TarsServantResponse tarsServantResponse = (TarsServantResponse) decodeResponse(IoBuffer.wrap(byteBuf));
-        decodeResponseBody(tarsServantResponse);
-        list.add(tarsServantResponse);
+
+        try {
+            final TarsServantResponse tarsServantResponse = (TarsServantResponse) decodeResponse(byteBuf);
+            decodeResponseBody(tarsServantResponse);
+            list.add(tarsServantResponse);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public Request decodeRequest(IoBuffer buffer) throws ProtocolException {
@@ -203,37 +207,28 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
         return parameters;
     }
 
-    public Response decodeResponse(IoBuffer buffer) throws ProtocolException {
-        if (buffer.remaining() < TarsHelper.HEAD_SIZE) {
-            return null;
-        }
-        int length = buffer.getInt() - TarsHelper.HEAD_SIZE;
-        if (length > TarsHelper.PACKAGE_MAX_LENGTH || length <= 0) {
-            throw new ProtocolException("the length header of the package must be between 0~10M bytes. data length:" + Integer.toHexString(length));
-        }
-        if (buffer.remaining() < length) {
-            return null;
-        }
-        buffer.buf().resetReaderIndex();
+    public Response decodeResponse(ByteBuf buffer) throws ProtocolException {
         TarsServantResponse response = new TarsServantResponse();
         response.setCharsetName(charsetName);
-        TarsInputStream is = new TarsInputStream(buffer.buf());
+        TarsInputStream is = new TarsInputStream(buffer.duplicate());
         is.setServerEncoding(charsetName);
         response.setVersion(is.read((short) 0, 1, true));
         response.setPacketType(is.read((byte) 0, 2, true));
         response.setRequestId(is.read(0, 3, true));
         response.setMessageType(is.read(0, 4, true));
         response.setRet(is.read(0, 5, true));
-        if (response.getRet() == TarsHelper.SERVERSUCCESS) {
+        if (response.getRet() == 0) {
             response.setInputStream(is);
+            return response;
+        } else {
+            throw new RuntimeException("server  error1");
         }
-        return response;
     }
 
     public void decodeResponseBody(ServantResponse resp) throws ProtocolException {
         TarsServantResponse response = (TarsServantResponse) resp;
-
-        TarsServantRequest request = response.getRequest();
+        System.out.println("response id is " + response.getRequestId());
+        TarsServantRequest request = (TarsServantRequest) TicketFeature.getFeature(resp.getRequestId()).getRequest();
         if (request.isAsync()) {
             return;
         }

@@ -14,20 +14,24 @@ import io.netty.channel.kqueue.KQueue;
 import io.netty.channel.kqueue.KQueueEventLoopGroup;
 import io.netty.channel.kqueue.KQueueSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
-public class NettyTransport {
+public class NettyClientTransport {
     private Bootstrap bootstrap;
     private final ServantProxyConfig servantProxyConfig;
 
-    public NettyTransport(ServantProxyConfig servantProxyConfig) {
+    public NettyClientTransport(ServantProxyConfig servantProxyConfig, ChannelHandler channelHandler) {
         this.servantProxyConfig = servantProxyConfig;
+        this.channelHander = channelHandler;
     }
 
-    protected void init() {
+    private ChannelHandler channelHander;
+
+    public void init() {
         bootstrap = new Bootstrap();
         EventLoopGroup myEventLoopGroup;
         if (KQueue.isAvailable()) {
@@ -43,15 +47,17 @@ public class NettyTransport {
         bootstrap.option(ChannelOption.SO_KEEPALIVE, true).option(ChannelOption.TCP_NODELAY, true)
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, servantProxyConfig.getConnectTimeout());
-        bootstrap.handler(new ChannelInitializer<NioSocketChannel>() {
+
+        bootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override
-            protected void initChannel(NioSocketChannel ch) throws Exception {
+            protected void initChannel(SocketChannel ch) throws Exception {
                 IdleStateHandler clientIdleHandler =
                         new IdleStateHandler(0, servantProxyConfig.getConnectTimeout(), 0, MILLISECONDS);
                 ChannelPipeline p = ch.pipeline();
                 p.addLast("encoder", new TarsEncoder("UTF-8"))
                         .addLast("decoder", new TarsDecoder("UTF-8"))
-                        .addLast("client-idle", clientIdleHandler);
+                        .addLast("handler", new NettyClientHandler(channelHander, servantProxyConfig))
+                ;
             }
         });
     }
@@ -62,11 +68,5 @@ public class NettyTransport {
         return nettyServantClient;
     }
 
-    public static void main(String[] args) {
-        ServantProxyConfig servantProxyConfig = new ServantProxyConfig("");
 
-        NettyTransport nettyTransport = new NettyTransport(servantProxyConfig);
-        nettyTransport.connect("10.172.0.111", 18393);
-
-    }
 }

@@ -103,14 +103,9 @@ public class TarsServantRequest extends ServantRequest implements java.io.Serial
         this.functionName = functionName;
     }
 
-    public int getRequestId() {
-
-
-        return this.getRequestId();
-    }
 
     public void setRequestId(int requestId) {
-        this.setRequestId(requestId);
+        this.requestId = requestId;
     }
 
     public byte[] getData() {

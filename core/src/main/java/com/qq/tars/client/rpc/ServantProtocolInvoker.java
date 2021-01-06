@@ -45,12 +45,12 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
     protected final Class<T> api;
     protected final ServantProxyConfig servantProxyConfig;
     protected volatile ConcurrentHashSet<Invoker<T>> allInvoker = new ConcurrentHashSet<>();
-    private final NettyTransport nettyTransport;
+    private final NettyClientTransport nettyClientTransport;
 
     public ServantProtocolInvoker(Class<T> api, ServantProxyConfig config) {
         this.api = api;
         this.servantProxyConfig = config;
-        this.nettyTransport = new NettyTransport(config);
+        this.nettyClientTransport = new NettyClientTransport(config, null);
         this.allInvoker = this.initInvoker();
     }
 
@@ -105,7 +105,7 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
             long syncTimeout = url.getParameter(Constants.TARS_CLIENT_SYNCTIMEOUT, Constants.default_sync_timeout);
             long asyncTimeout = url.getParameter(Constants.TARS_CLIENT_ASYNCTIMEOUT, Constants.default_async_timeout);
             boolean udpMode = url.getParameter(Constants.TARS_CLIENT_UDPMODE, false);
-            client = nettyTransport.connect(url.getHost(), url.getPort());
+            client = nettyClientTransport.connect(url.getHost(), url.getPort());
         } catch (Throwable e) {
             throw new ClientException(servantProxyConfig.getSimpleObjectName(), "Fail to create client|" + url.toIdentityString() + "|" + e.getLocalizedMessage(), e);
         }

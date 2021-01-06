@@ -44,6 +44,7 @@ public class NettyServantClient implements RPCClient {
     }
 
     public CompletableFuture<TarsServantResponse> send(ServantRequest request) throws IOException {
+        System.out.println("request id is " + request.getRequestId());
         TicketFeature ticketFeature = TicketFeature.createFeature(this.channel, request, servantProxyConfig.getSyncTimeout());
         this.channel.writeAndFlush(request);
         return ticketFeature.thenCompose(obj -> CompletableFuture.completedFuture((TarsServantResponse) obj));

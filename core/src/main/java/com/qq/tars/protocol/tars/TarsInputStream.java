@@ -31,6 +31,7 @@ import java.lang.reflect.Constructor;
 import java.nio.BufferUnderflowException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -98,7 +99,7 @@ public final class TarsInputStream {
 
     private void skip(int len) {
         //bs.position(bs.position() + len);
-        bs.readBytes(bs.readerIndex() + len);
+        bs.readerIndex(bs.readerIndex() + len);
     }
 
     public boolean skipToTag(int tag) {
@@ -790,9 +791,7 @@ public final class TarsInputStream {
         }
         T[] tt = readArrayImpl(l.get(0), tag, isRequire);
         if (tt == null) return null;
-        ArrayList<T> ll = new ArrayList<T>();
-        for (int i = 0; i < tt.length; ++i)
-            ll.add(tt[i]);
+        ArrayList<T> ll = new ArrayList<T>(Arrays.asList(tt));
         return ll;
     }
 

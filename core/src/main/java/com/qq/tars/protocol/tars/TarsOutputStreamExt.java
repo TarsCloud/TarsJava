@@ -32,8 +32,6 @@ public class TarsOutputStreamExt {
         if (info == null) {
             throw new TarsEncodeException("the JavaBean[" + e.getClass().getSimpleName() + "] no annotation Struct");
         }
-
-        jos.reserve(2);
         jos.writeHead(TarsStructBase.STRUCT_BEGIN, tag);
         List<TarsStrutPropertyInfo> propertyList = info.getPropertyList();
         if (!CommonUtils.isEmptyCollection(propertyList)) {
@@ -54,8 +52,6 @@ public class TarsOutputStreamExt {
                 }
             }
         }
-
-        jos.reserve(2);
         jos.writeHead(TarsStructBase.STRUCT_END, 0);
     }
 }
