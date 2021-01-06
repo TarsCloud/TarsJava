@@ -96,6 +96,7 @@ public class TarsEncoder extends MessageToByteEncoder<Object> {
             } else if (value != null) {
                 os.write(value, parameterInfo.getOrder());
             }
+
         }
         return os.toByteArray();
     }

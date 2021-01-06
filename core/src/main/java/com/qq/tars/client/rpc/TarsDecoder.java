@@ -40,22 +40,22 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
 
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
-        if (byteBuf.readableBytes() < 4) {
-            return;
-        }
-        int length = byteBuf.readInt() - 4;
-
-        if (byteBuf.readableBytes() < length) {
-            return;
-        }
-
-        try {
-            final TarsServantResponse tarsServantResponse = (TarsServantResponse) decodeResponse(byteBuf);
-            decodeResponseBody(tarsServantResponse);
-            list.add(tarsServantResponse);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        do {
+            int saveReaderIndex = byteBuf.readerIndex();
+            Object msg = decodeResponse(byteBuf);
+            if (msg == null) {
+                byteBuf.readerIndex(saveReaderIndex);
+                break;
+            } else {
+                //is it possible to go here ?
+                if (saveReaderIndex == byteBuf.readerIndex()) {
+                    throw new IOException("Decode without read data.");
+                }
+                if (msg != null) {
+                    list.add(msg);
+                }
+            }
+        } while (byteBuf.isReadable());
     }
 
     public Request decodeRequest(IoBuffer buffer) throws ProtocolException {
@@ -207,10 +207,29 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
         return parameters;
     }
 
-    public Response decodeResponse(ByteBuf buffer) throws ProtocolException {
+    public Response decodeResponse(ByteBuf channelBuffer) throws ProtocolException {
+
+        if (channelBuffer.readableBytes() < 4) {
+            return null;
+        }
+        // 减去长度占用的4字节
+        int length = channelBuffer.readInt() - 4;
+
+        if (length > 10 * 1024 * 1024 || length <= 0) {
+            throw new RuntimeException("the length header of the package must be between 0~10M bytes. data length:"
+                    + Integer.toHexString(length));
+        }
+        // 数据包还没有收全
+        if (channelBuffer.readableBytes() < length) {
+            return null;
+        }
+
+        byte[] bytes = new byte[length];
+        channelBuffer.readBytes(bytes);
+
         TarsServantResponse response = new TarsServantResponse();
         response.setCharsetName(charsetName);
-        TarsInputStream is = new TarsInputStream(buffer.duplicate());
+        TarsInputStream is = new TarsInputStream(bytes);
         is.setServerEncoding(charsetName);
         response.setVersion(is.read((short) 0, 1, true));
         response.setPacketType(is.read((byte) 0, 2, true));
@@ -219,6 +238,8 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
         response.setRet(is.read(0, 5, true));
         if (response.getRet() == 0) {
             response.setInputStream(is);
+            decodeResponseBody(response);
+            System.out.println("result is "+response.getResult());
             return response;
         } else {
             throw new RuntimeException("server  error1");
@@ -227,7 +248,6 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
 
     public void decodeResponseBody(ServantResponse resp) throws ProtocolException {
         TarsServantResponse response = (TarsServantResponse) resp;
-        System.out.println("response id is " + response.getRequestId());
         TarsServantRequest request = (TarsServantRequest) TicketFeature.getFeature(resp.getRequestId()).getRequest();
         if (request.isAsync()) {
             return;
@@ -247,7 +267,6 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
         } catch (Exception e) {
             throw new ProtocolException(e);
         }
-
         int i = 0;
         if (returnInfo != null && Void.TYPE != returnInfo.getType()) {
             response.setResult(results[i++]);

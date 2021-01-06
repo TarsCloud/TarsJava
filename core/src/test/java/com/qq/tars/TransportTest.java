@@ -9,7 +9,6 @@ import com.qq.tars.client.rpc.Request;
 import com.qq.tars.common.support.Holder;
 import com.qq.tars.protocol.tars.TarsInputStream;
 import com.qq.tars.protocol.tars.TarsOutputStream;
-import com.qq.tars.protocol.tars.support.TarsMethodInfo;
 import com.qq.tars.protocol.util.TarsHelper;
 import com.qq.tars.rpc.protocol.tars.TarsServantRequest;
 import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
@@ -17,6 +16,7 @@ import com.qq.tars.rpc.protocol.tars.support.AnalystManager;
 import io.netty.channel.Channel;
 import org.junit.Test;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 
@@ -45,7 +45,7 @@ public class TransportTest {
 
             @Override
             public void received(Channel channel, Object message) {
-                System.out.println("receive message " + message);
+                System.out.println("receive message " + ((TarsServantResponse)message).getResult());
 
             }
 
@@ -59,15 +59,11 @@ public class TransportTest {
 
             }
         };
-        AnalystManager.getInstance().registry("", MonitorQueryPrx.class, "tars.tarsquerystat.QueryObj");
+        AnalystManager.getInstance().registry(MonitorQueryPrx.class, "tars.tarsquerystat.QueryObj");
         NettyClientTransport nettyClientTransport = new NettyClientTransport(servantProxyConfig, channelHandler);
         nettyClientTransport.init();
         NettyServantClient client = nettyClientTransport.connect("10.172.0.111", 18393);
 
-        TarsMethodInfo methodInfo = AnalystManager.getInstance().getMethodMapByName("tars.tarsquerystat.QueryObj").get("query");
-
-
-        System.out.println(AnalystManager.getInstance().getMethodMapByName("tars.tarsquerystat.QueryObj").get("query").getParametersList().size());
         MonitorQueryReq monitorQueryReq = new MonitorQueryReq();
         monitorQueryReq.dateType = DateType.MINIUES.value();
         monitorQueryReq.method = "query";
@@ -80,7 +76,14 @@ public class TransportTest {
         monitorQueryReq.endTime = 1609221622L;
 
         TarsServantRequest tarsServantRequest = new TarsServantRequest();
-        tarsServantRequest.setMethodInfo(AnalystManager.getInstance().getMethodMapByName("tars.tarsquerystat.QueryObj").get("query"));
+
+
+        Method method = MonitorQueryPrx.class.getMethod("query", MonitorQueryReq.class, Holder.class);
+        System.out.println(method);
+
+        tarsServantRequest.setMethodInfo(AnalystManager.getInstance().getMethodMap(MonitorQueryPrx.class).get(method));
+
+
         tarsServantRequest.setCharsetName("UTF-8");
         tarsServantRequest.setServantName("tars.tarsquerystat.QueryObj");
         tarsServantRequest.setInvokeStatus(Request.InvokeStatus.SYNC_CALL);
@@ -90,11 +93,12 @@ public class TransportTest {
         tarsServantRequest.setApi(MonitorQueryPrx.class);
         tarsServantRequest.setFunctionName("query");
         tarsServantRequest.setMessageType(TarsHelper.MESSAGETYPENULL);
-        tarsServantRequest.setVersion(TarsHelper.VERSION2);
+        tarsServantRequest.setVersion(TarsHelper.VERSION);
         tarsServantRequest.setContext(new HashMap<>());
         tarsServantRequest.setStatus(new HashMap<>());
         tarsServantRequest.setPacketType(TarsHelper.NORMAL);
 
+        System.out.println(new Object[]{monitorQueryReq, response});
 
         Thread.sleep(100);
         System.out.println("client connection is " + client.getChannel().isActive());
@@ -106,7 +110,8 @@ public class TransportTest {
         System.out.println("client connection is " + client.getChannel().isActive());
         System.out.println("client connection is " + client.getChannel().isOpen());
         System.out.println("client connection is " + client.getChannel().isWritable());
-        System.out.println(responseCompletableFuture.get());
+        System.out.println(responseCompletableFuture.get().getResult());
+        System.out.println(response);
 
 
     }

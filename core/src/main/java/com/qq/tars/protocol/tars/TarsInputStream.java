@@ -56,16 +56,17 @@ public final class TarsInputStream {
     }
 
     public TarsInputStream(ByteBuf bs) {
+        bs.resetReaderIndex();
         this.bs = bs;
     }
 
     public TarsInputStream(byte[] bs) {
-        this.bs = Unpooled.wrappedBuffer(bs);
+        this.bs = Unpooled.copiedBuffer(bs);
     }
 
     public TarsInputStream(byte[] bs, int pos) {
-        this.bs = Unpooled.wrappedBuffer(bs);
-        this.bs.readBytes(pos);
+        this.bs = Unpooled.copiedBuffer(bs);
+        this.bs.readerIndex(pos);
     }
 
     public void warp(byte[] bs) {
