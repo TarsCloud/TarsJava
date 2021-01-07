@@ -17,10 +17,17 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.concurrent.DefaultThreadFactory;
+
+import java.util.concurrent.ThreadFactory;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class NettyClientTransport {
+    private static final int DEFAULT_IO_THREADS = Math.min(Runtime.getRuntime().availableProcessors() + 1, 32);
+
+    private static final EventLoopGroup EVENT_LOOP_GROUP = getNioEventLoopGroup();
+
     private Bootstrap bootstrap;
     private final ServantProxyConfig servantProxyConfig;
 
@@ -31,18 +38,27 @@ public class NettyClientTransport {
 
     private ChannelHandler channelHander;
 
+    private static EventLoopGroup getNioEventLoopGroup() {
+        ThreadFactory threadFactory = new DefaultThreadFactory("netty-client-worker", true);
+        if (Epoll.isAvailable()) {
+            return new EpollEventLoopGroup(DEFAULT_IO_THREADS, threadFactory);
+        } else if (KQueue.isAvailable()) {
+            return new KQueueEventLoopGroup(DEFAULT_IO_THREADS, threadFactory);
+        } else {
+            return new NioEventLoopGroup(DEFAULT_IO_THREADS, threadFactory);
+        }
+    }
+
+
     public void init() {
         bootstrap = new Bootstrap();
-        EventLoopGroup myEventLoopGroup;
-        if (KQueue.isAvailable()) {
-            myEventLoopGroup = new KQueueEventLoopGroup(4);
-            bootstrap.group(myEventLoopGroup).channel(KQueueSocketChannel.class);
-        } else if (Epoll.isAvailable()) {
-            myEventLoopGroup = new EpollEventLoopGroup(4);
-            bootstrap.group(myEventLoopGroup).channel(EpollSocketChannel.class);
+        bootstrap.group(getNioEventLoopGroup());
+        if (Epoll.isAvailable()) {
+            bootstrap.channel(EpollSocketChannel.class);
+        } else if (KQueue.isAvailable()) {
+            bootstrap.channel(KQueueSocketChannel.class);
         } else {
-            myEventLoopGroup = new NioEventLoopGroup(4);
-            bootstrap.group(myEventLoopGroup).channel(NioSocketChannel.class);
+            bootstrap.channel(NioSocketChannel.class);
         }
         bootstrap.option(ChannelOption.SO_KEEPALIVE, true).option(ChannelOption.TCP_NODELAY, true)
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
@@ -54,8 +70,8 @@ public class NettyClientTransport {
                 IdleStateHandler clientIdleHandler =
                         new IdleStateHandler(0, servantProxyConfig.getConnectTimeout(), 0, MILLISECONDS);
                 ChannelPipeline p = ch.pipeline();
-                p.addLast("encoder", new TarsEncoder("UTF-8"))
-                        .addLast("decoder", new TarsDecoder("UTF-8"))
+                p.addLast("encoder", new TarsEncoder(servantProxyConfig.getCharsetName()))
+                        .addLast("decoder", new TarsDecoder(servantProxyConfig.getCharsetName()))
                         .addLast("idle", clientIdleHandler)
                         .addLast("handler", new NettyClientHandler(channelHander, servantProxyConfig))
                 ;
