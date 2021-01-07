@@ -58,20 +58,19 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
         } while (byteBuf.isReadable());
     }
 
-    public Request decodeRequest(IoBuffer buffer) throws ProtocolException {
-        if (buffer.remaining() < 4) {
+    public Request decodeRequest(ByteBuf buffer) throws ProtocolException {
+        if (buffer.readableBytes() < TarsHelper.HEAD_SIZE) {
             return null;
         }
-        int length = buffer.getInt() - TarsHelper.HEAD_SIZE;
+        int length = buffer.readInt() - TarsHelper.HEAD_SIZE;
         if (length > TarsHelper.PACKAGE_MAX_LENGTH || length <= 0) {
             throw new ProtocolException("the length header of the package must be between 0~10M bytes. data length:" + Integer.toHexString(length));
         }
-        if (buffer.remaining() < length) {
+        if (buffer. readableBytes() < length) {
             return null;
         }
 
-        buffer.buf().resetReaderIndex();
-        TarsInputStream jis = new TarsInputStream(buffer.buf());
+        TarsInputStream jis = new TarsInputStream(buffer);
         TarsServantRequest request = new TarsServantRequest();
         try {
             short version = jis.read(TarsHelper.STAMP_SHORT.shortValue(), 1, true);
@@ -239,7 +238,7 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
         if (response.getRet() == 0) {
             response.setInputStream(is);
             decodeResponseBody(response);
-            System.out.println("result is "+response.getResult());
+            System.out.println("result is " + response.getResult());
             return response;
         } else {
             throw new RuntimeException("server  error1");

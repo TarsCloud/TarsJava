@@ -56,6 +56,7 @@ public class NettyClientTransport {
                 ChannelPipeline p = ch.pipeline();
                 p.addLast("encoder", new TarsEncoder("UTF-8"))
                         .addLast("decoder", new TarsDecoder("UTF-8"))
+                        .addLast("idle", clientIdleHandler)
                         .addLast("handler", new NettyClientHandler(channelHander, servantProxyConfig))
                 ;
             }
