@@ -27,11 +27,11 @@ public class ServantProcessor implements Processor {
     private TarsServantProcessor processor = new TarsServantProcessor();
 
     @Override
-    public Response process(Request request, Channel session) {
+    public Response process(Request request, Channel channel) {
         Response response = null;
 
         if (request instanceof TarsServantRequest) {
-            response = processor.process(request, session);
+            response = processor.process(request, channel);
         } else {
             throw new IllegalArgumentException("unknown request type.");
         }

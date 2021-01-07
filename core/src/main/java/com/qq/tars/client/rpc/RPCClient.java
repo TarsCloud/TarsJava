@@ -7,13 +7,6 @@ import java.util.concurrent.CompletableFuture;
 
 
 public interface RPCClient {
-
-
-    /**
-     * @return return ioChannel
-     */
-    Channel getChannel();
-
     /**
      * send object
      * @param request tarsServantRequest Object
@@ -22,6 +15,10 @@ public interface RPCClient {
      */
     CompletableFuture<Response> send(Request request) throws IOException;
 
+    /**
+     * @return return ioChannel
+     */
+    Channel getChannel();
 
     /**
      * @throws IOException when close Exception

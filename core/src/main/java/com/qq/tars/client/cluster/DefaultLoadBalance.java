@@ -91,8 +91,4 @@ public class DefaultLoadBalance {
             return o1.getUrl().compareTo(o2.getUrl());
         }
     }
-
-    public static void main(String[] args) {
-        System.out.println("this is a helloworld");
-    }
 }

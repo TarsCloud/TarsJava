@@ -31,8 +31,8 @@ public class TarsEncoder extends MessageToByteEncoder<Object> {
         if (o instanceof Request) {
             try {
                 ByteBuf ioBuffer = encodeRequest((TarsServantRequest) o);
-                System.out.println("length is  " + ioBuffer.duplicate().getInt(0));
-                System.out.println("io buffer write size is " + ioBuffer.readableBytes());
+                if (logger.isDebugEnabled())
+                    logger.debug("length is  " + ioBuffer.duplicate().getInt(0));
                 int length = ioBuffer.getInt(0);
                 if (length > ioBuffer.readableBytes()) {
                     throw new IndexOutOfBoundsException();

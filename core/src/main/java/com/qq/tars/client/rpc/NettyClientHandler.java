@@ -72,7 +72,10 @@ public class NettyClientHandler extends ChannelDuplexHandler {
         try {
             NettyChannel nettyChannel = getOrAddChannel(ctx.channel(), servantProxyConfig);
             TarsServantResponse response = (TarsServantResponse) msg;
-            System.out.println("netty receivew message id is " + response.getRequestId());
+            if (logger.isDebugEnabled()) {
+                System.out.println();
+                logger.debug("[tars]netty receive message id is " + response.getRequestId());
+            }
             TicketFeature.getFeature(response.getRequestId()).complete(msg);
             channelHeader.received(nettyChannel.getChannel(), response);
         } finally {

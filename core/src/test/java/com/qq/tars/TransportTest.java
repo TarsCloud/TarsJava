@@ -173,8 +173,10 @@ public class TransportTest {
         request.endTime = 1606147199L;
         System.out.println(request);
         Holder<MonitorQueryRsp> holder = new Holder<>();
-        queryPrx.query(request, holder);
-        System.out.println(holder);
+        for (int i = 0; i < 10; i++) {
+            queryPrx.query(request, holder);
+            System.out.println(holder);
+        }
     }
 
 }

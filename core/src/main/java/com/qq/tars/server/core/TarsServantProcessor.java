@@ -120,7 +120,7 @@ public class TarsServantProcessor implements Processor {
         try {
             oldClassLoader = Thread.currentThread().getContextClassLoader();
             request = (TarsServantRequest) req;
-            response = createResponse(request, clientChannel);
+            response = (TarsServantResponse) createResponse(request, clientChannel);
             response.setRequestId(request.getRequestId());
 
             if (TarsHelper.isPing(request.getFunctionName())) {
@@ -208,19 +208,15 @@ public class TarsServantProcessor implements Processor {
     @Override
     public void overload(Request req, Channel session) {
         TarsServantRequest request = (TarsServantRequest) req;
-        TarsServantResponse response = createResponse(request, session);
-
+        TarsServantResponse response = (TarsServantResponse) createResponse(request, session);
         if (!TarsHelper.isPing(request.getFunctionName())) {
             if (response.getRet() == TarsHelper.SERVERSUCCESS) {
                 response.setRet(TarsHelper.SERVEROVERLOAD);
             }
         }
-
         try {
             session.writeAndFlush(response);
         } catch (Throwable ex) {
-            // ignore the exception, keep the same without overload() and client will be timeout
-            // is there a better op. ?
             ex.printStackTrace();
         }
     }
@@ -247,7 +243,7 @@ public class TarsServantProcessor implements Processor {
         InvokeStatHelper.getInstance().addProxyStat(request.getServantName()).addInvokeTimeByServer(moduleName, serverConfig.getApplication(), serverConfig.getServerName(), communicatorConfig.getSetName(), communicatorConfig.getSetArea(), communicatorConfig.getSetID(), request.getFunctionName(), (masterIp == null ? "0.0.0.0" : masterIp), serverEndpoint.host(), serverEndpoint.port(), result, (System.currentTimeMillis() - startTime));
     }
 
-    private TarsServantResponse createResponse(TarsServantRequest request, Channel channel) {
+    private Response createResponse(TarsServantRequest request, Channel channel) {
         TarsServantResponse response = new TarsServantResponse(request.getRequestId());
         response.setRet(request.getRet());
         response.setVersion(request.getVersion());

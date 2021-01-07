@@ -238,10 +238,9 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
         if (response.getRet() == 0) {
             response.setInputStream(is);
             decodeResponseBody(response);
-            System.out.println("result is " + response.getResult());
             return response;
         } else {
-            throw new RuntimeException("server  error1");
+            throw new RuntimeException("server error!");
         }
     }
 

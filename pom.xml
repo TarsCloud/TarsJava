@@ -47,6 +47,7 @@
         <module>core/server.pom.xml</module>
         <module>tars-plugins</module>
         <module>tars-logger</module>
+        <module>tars-netty</module>
     </modules>
 
     <properties>

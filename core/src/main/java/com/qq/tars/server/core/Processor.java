@@ -5,19 +5,16 @@ import com.qq.tars.client.rpc.Response;
 import io.netty.channel.Channel;
 
 public interface Processor {
-    /***
-     *
-     * @param req
+    /**
+     * @param request
      * @param clientChannel
      * @return
      */
-    Response process(Request req, Channel clientChannel);
+    Response process(Request request, Channel clientChannel);
 
-    /****
-     *
-     * @param req
-     * @param session
-     *
+    /**
+     * @param request
+     * @param clientChannel
      */
-    void overload(Request req, Channel session);
+    void overload(Request request, Channel clientChannel);
 }
