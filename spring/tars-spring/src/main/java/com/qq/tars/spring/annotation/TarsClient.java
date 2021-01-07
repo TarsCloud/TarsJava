@@ -25,7 +25,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ ElementType.FIELD })
+@Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface TarsClient {
@@ -37,17 +37,17 @@ public @interface TarsClient {
 
     String setDivision() default "";
 
-    int connections() default Constants.default_connections;
+    int connections() default Constants.DEFAULT_CONNECTION;
 
-    int connectTimeout() default Constants.default_connect_timeout;
+    int connectTimeout() default Constants.DEFAULT_CONNECTION_TIMEOUT;
 
-    int syncTimeout() default Constants.default_sync_timeout;
+    int syncTimeout() default Constants.DEFAULT_SYNC_TIME;
 
-    int asyncTimeout() default Constants.default_async_timeout;
+    int asyncTimeout() default Constants.DEFAULT_ASYNC_TIME;
 
     boolean enableSet() default false;
 
     boolean tcpNoDelay() default false;
 
-    String charsetName() default "UTF-8";
+    String charsetName() default Constants.DEFAULT_CHARSET_STRING;
 }

@@ -5,7 +5,7 @@ import com.google.gson.JsonElement;
 
 import java.lang.reflect.Type;
 
-public class JSON {
+public class JsonProvider {
     private static final Gson gson = new Gson();
 
 

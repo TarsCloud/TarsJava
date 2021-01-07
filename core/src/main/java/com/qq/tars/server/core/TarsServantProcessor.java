@@ -47,6 +47,7 @@ import io.netty.channel.Channel;
 import org.slf4j.Logger;
 
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Random;
 
@@ -251,7 +252,7 @@ public class TarsServantProcessor implements Processor {
         response.setMessageType(request.getMessageType());
         response.setStatus(request.getStatus());
         response.setRequest(request);
-        response.setCharsetName(request.getCharsetName());
+        response.setCharsetName(Charset.forName(request.getCharsetName()));
         response.setTimeout(request.getTimeout());
         response.setContext(request.getContext());
         return response;

@@ -17,6 +17,7 @@
 package com.qq.tars.common.util;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public interface Constants {
 
@@ -30,25 +31,25 @@ public interface Constants {
     int default_max_sample_count = 200;
     int default_sample_rate = 1000;
 
-    String default_modulename = "tars-client";
+    String DEFAULT_MODULE_NAME = "tars-client";
     String default_stat = "tars.tarsstat.StatObj";
 
-    int default_connections = 4;
-    int default_connect_timeout = 3000;
-    int default_sync_timeout = 3000;
-    int default_async_timeout = 3000;
+    int DEFAULT_CONNECTION = 4;
+    int DEFAULT_CONNECTION_TIMEOUT = 3000;
+    int DEFAULT_SYNC_TIME = 3000;
+    int DEFAULT_ASYNC_TIME = 3000;
 
     int default_refresh_interval = 60 * 1000;
     int default_report_interval = 60 * 1000;
 
     int default_background_queuesize = 20000;
 
-    String default_charset_name = "UTF-8";
-    Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
-    int default_queue_size = 20000;
-    int default_core_pool_size = Runtime.getRuntime().availableProcessors();
-    int default_max_pool_size = Runtime.getRuntime().availableProcessors() * 2;
-    int default_keep_alive_time = 120;
+    Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
+   String DEFAULT_CHARSET_STRING = "UTF-8";
+    int DEFAULT_QUEUE_SIZE = 20000;
+    int DEFAULT_CORE_POOL_SIZE = Runtime.getRuntime().availableProcessors();
+    int DEFAULT_MAX_POOL_SIZE = Runtime.getRuntime().availableProcessors() * 2;
+    int DEFAULT_KEEPALIVE_TIME = 120;
 
     int default_check_interval = 60 * 1000;
     int default_try_time_interval = 30;

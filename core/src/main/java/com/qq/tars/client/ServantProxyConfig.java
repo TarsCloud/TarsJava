@@ -20,6 +20,8 @@ import com.qq.tars.client.util.ParseTools;
 import com.qq.tars.common.ClientVersion;
 import com.qq.tars.common.util.Constants;
 import com.qq.tars.common.util.StringUtils;
+import com.qq.tars.protocol.util.TarsHelper;
+import org.assertj.core.util.Preconditions;
 
 public final class ServantProxyConfig {
 
@@ -34,17 +36,17 @@ public final class ServantProxyConfig {
     private volatile String simpleObjectName;
     private String masterName;
     private volatile String slaveName;
-    private String moduleName = Constants.default_modulename;
+    private String moduleName = Constants.DEFAULT_MODULE_NAME;
     private boolean enableSet = false;
     private volatile String setDivision = "";
     private volatile String slaveSetName;
     private volatile String slaveSetArea;
     private volatile String slaveSetID;
 
-    private int connections = Constants.default_connections;
-    private int connectTimeout = Constants.default_connect_timeout;
-    private int syncTimeout = Constants.default_sync_timeout;
-    private int asyncTimeout = Constants.default_async_timeout;
+    private int connections = Constants.DEFAULT_CONNECTION;
+    private int connectTimeout = Constants.DEFAULT_CONNECTION_TIMEOUT;
+    private int syncTimeout = Constants.DEFAULT_SYNC_TIME;
+    private int asyncTimeout = Constants.DEFAULT_ASYNC_TIME;
 
 
     private int refreshInterval = Constants.default_refresh_interval;
@@ -57,13 +59,52 @@ public final class ServantProxyConfig {
     private float frequenceFailRadio = 0.5f;
 
     private boolean tcpNoDelay = false;
-    private String charsetName = Constants.default_charset_name;
+    private String charsetName = Constants.DEFAULT_CHARSET.name();
 
     private boolean directConnection = false;
 
     private int minStaticWeightLimit = 10;
     private int maxStaticWeightLimit = 100;
     private int defaultConHashVirtualNodes = 100;
+
+
+    private int maxPackageSize = TarsHelper.PACKAGE_MAX_LENGTH;
+
+    public void setSimpleObjectName(String simpleObjectName) {
+        this.simpleObjectName = simpleObjectName;
+    }
+
+    public void setMasterName(String masterName) {
+        this.masterName = masterName;
+    }
+
+    public void setSlaveName(String slaveName) {
+        this.slaveName = slaveName;
+    }
+
+    public void setModuleName(String moduleName) {
+        this.moduleName = moduleName;
+    }
+
+    public void setSlaveSetName(String slaveSetName) {
+        this.slaveSetName = slaveSetName;
+    }
+
+    public void setSlaveSetArea(String slaveSetArea) {
+        this.slaveSetArea = slaveSetArea;
+    }
+
+    public void setSlaveSetID(String slaveSetID) {
+        this.slaveSetID = slaveSetID;
+    }
+
+    public int getMaxPackageSize() {
+        return maxPackageSize;
+    }
+
+    public void setMaxPackageSize(int maxPackageSize) {
+        this.maxPackageSize = maxPackageSize;
+    }
 
     public ServantProxyConfig(String objectName) {
         this(null, null, objectName);
@@ -74,6 +115,7 @@ public final class ServantProxyConfig {
     }
 
     private ServantProxyConfig(String communicatorId, String locator, String objectName, boolean directConnection) {
+        Preconditions.checkNotNullOrEmpty(objectName, "objectName");
         this.setCommunicatorId(communicatorId);
         this.setLocator(locator);
         this.setObjectName(objectName);
@@ -408,6 +450,7 @@ public final class ServantProxyConfig {
                 ", minStaticWeightLimit=" + minStaticWeightLimit +
                 ", maxStaticWeightLimit=" + maxStaticWeightLimit +
                 ", defaultConHashVirtualNodes=" + defaultConHashVirtualNodes +
+                ", maxPackageSize=" + maxPackageSize +
                 '}';
     }
 }

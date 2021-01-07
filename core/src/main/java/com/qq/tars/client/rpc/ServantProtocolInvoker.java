@@ -89,7 +89,7 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
     }
 
     protected RPCClient[] getClients(Url url) throws IOException {
-        int connections = url.getParameter(Constants.TARS_CLIENT_CONNECTIONS, Constants.default_connections);
+        int connections = url.getParameter(Constants.TARS_CLIENT_CONNECTIONS, Constants.DEFAULT_CONNECTION);
         RPCClient[] clients = new NettyServantClient[connections];
         for (int i = 0; i < clients.length; i++) {
             clients[i] = initClient(url);

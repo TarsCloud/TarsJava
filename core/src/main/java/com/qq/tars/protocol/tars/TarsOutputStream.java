@@ -16,18 +16,25 @@
 
 package com.qq.tars.protocol.tars;
 
+import com.qq.tars.common.util.Constants;
 import com.qq.tars.common.util.HexUtil;
 import com.qq.tars.protocol.tars.exc.TarsEncodeException;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
-import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 public class TarsOutputStream {
+    protected Charset sServerEncoding = Constants.DEFAULT_CHARSET;
+
+    public int setServerEncoding(Charset se) {
+        this.sServerEncoding = se;
+        return 0;
+    }
+
     private ByteBuf bs;
 
     public TarsOutputStream(ByteBuf bs) {
@@ -155,11 +162,7 @@ public class TarsOutputStream {
 
     public void write(String s, int tag) {
         byte[] by;
-        try {
-            by = s.getBytes(sServerEncoding);
-        } catch (UnsupportedEncodingException e) {
-            by = s.getBytes();
-        }
+        by = s.getBytes(sServerEncoding);
         if (by.length > 255) {
             writeHead(TarsStructBase.STRING4, tag);
             bs.writeInt(by.length);
@@ -333,19 +336,5 @@ public class TarsOutputStream {
         }
     }
 
-    protected String sServerEncoding = "UTF-8";
 
-    public int setServerEncoding(String se) {
-        sServerEncoding = se;
-        return 0;
-    }
-
-    public static void main(String[] args) {
-        TarsOutputStream os = new TarsOutputStream();
-        long n = 0x1234567890012345L;
-        os.write(n, 0);
-        ByteBuf bs = os.getByteBuffer().duplicate();
-        System.out.println(HexUtil.bytes2HexStr(bs.array()));
-        System.out.println(Arrays.toString(os.toByteArray()));
-    }
 }

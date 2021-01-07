@@ -1,3 +1,18 @@
+/**
+ * Tencent is pleased to support the open source community by making Tars available.
+ *
+ * Copyright (C) 2016 THL A29 Limited, a Tencent company. All rights reserved.
+ *
+ * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * https://opensource.org/licenses/BSD-3-Clause
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.qq.tars.client.rpc;
 
 import com.qq.tars.common.util.Constants;
@@ -12,18 +27,15 @@ import io.netty.handler.codec.MessageToByteEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.Charset;
 import java.util.List;
 
 public class TarsEncoder extends MessageToByteEncoder<Object> {
-
     private static final Logger logger = LoggerFactory.getLogger(TarsEncoder.class);
-    protected String charsetName = Constants.default_charset_name;
-    public static int No = 0;
-    public static String Name = "";
-    public static String retStr = "";
+    protected Charset charset = Constants.DEFAULT_CHARSET;
 
-    public TarsEncoder(String charset) {
-        this.charsetName = charset;
+    public TarsEncoder(Charset charset) {
+        this.charset = charset;
     }
 
     @Override
@@ -32,7 +44,7 @@ public class TarsEncoder extends MessageToByteEncoder<Object> {
             try {
                 ByteBuf ioBuffer = encodeRequest((TarsServantRequest) o);
                 if (logger.isDebugEnabled())
-                    logger.debug("length is  " + ioBuffer.duplicate().getInt(0));
+                    logger.debug("[tars] write data size is  " + ioBuffer.duplicate().getInt(0));
                 int length = ioBuffer.getInt(0);
                 if (length > ioBuffer.readableBytes()) {
                     throw new IndexOutOfBoundsException();
@@ -46,10 +58,10 @@ public class TarsEncoder extends MessageToByteEncoder<Object> {
 
 
     public ByteBuf encodeRequest(Request req) throws ProtocolException {
-        TarsServantRequest request = (TarsServantRequest) req;
-        request.setCharsetName(charsetName);
+        final TarsServantRequest request = (TarsServantRequest) req;
+        request.setCharsetName(this.charset.name());
         TarsOutputStream os = new TarsOutputStream();
-        os.setServerEncoding(charsetName);
+        os.setServerEncoding(this.charset);
         os.getByteBuffer().writeInt(0);
         os.write(request.getVersion(), 1);
         os.write(request.getPacketType(), 2);
@@ -57,7 +69,7 @@ public class TarsEncoder extends MessageToByteEncoder<Object> {
         os.write(request.getRequestId(), 4);
         os.write(request.getServantName(), 5);
         os.write(request.getFunctionName(), 6);
-        os.write(encodeRequestParams(request, charsetName), 7);
+        os.write(encodeRequestParams(request), 7);
         os.write(request.getTimeout(), 8);
         os.write(request.getContext(), 9);
         os.write(request.getStatus(), 10);
@@ -69,9 +81,9 @@ public class TarsEncoder extends MessageToByteEncoder<Object> {
         return os.getByteBuffer();
     }
 
-    protected byte[] encodeRequestParams(TarsServantRequest request, String charsetName) throws ProtocolException {
+    protected byte[] encodeRequestParams(TarsServantRequest request) throws ProtocolException {
         TarsOutputStream os = new TarsOutputStream();
-        os.setServerEncoding(charsetName);
+        os.setServerEncoding(this.charset);
 
         TarsMethodInfo methodInfo = request.getMethodInfo();
         List<TarsMethodParameterInfo> parameterInfoList = methodInfo.getParametersList();

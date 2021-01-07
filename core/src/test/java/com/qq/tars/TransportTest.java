@@ -29,7 +29,6 @@ import java.util.concurrent.CompletableFuture;
 public class TransportTest {
     @Test
     public void testForConnection() throws Exception {
-        ServantProxyConfig servantProxyConfig = new ServantProxyConfig("");
 
         ChannelHandler channelHandler = new ChannelHandler() {
             @Override
@@ -65,6 +64,7 @@ public class TransportTest {
 
             }
         };
+        ServantProxyConfig servantProxyConfig = new ServantProxyConfig("test");
 
         AnalystManager.getInstance().registry(MonitorQueryPrx.class, "tars.tarsquerystat.QueryObj");
         //Url(String protocol, String host, int port, String path, Map<String, String> parameters) {
@@ -120,7 +120,7 @@ public class TransportTest {
 
 
     @Test
-    public void testForENcoder() {
+    public void testForEncoder() {
         MonitorQueryReq monitorQueryReq = new MonitorQueryReq();
         monitorQueryReq.dateType = DateType.MINIUES.value();
         monitorQueryReq.method = "query";

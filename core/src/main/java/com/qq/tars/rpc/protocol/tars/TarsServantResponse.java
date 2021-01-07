@@ -20,6 +20,7 @@ import com.qq.tars.client.rpc.Request;
 import com.qq.tars.protocol.tars.TarsInputStream;
 import com.qq.tars.rpc.protocol.ServantResponse;
 
+import java.nio.charset.Charset;
 import java.util.Map;
 
 public class TarsServantResponse extends ServantResponse implements java.io.Serializable {
@@ -37,7 +38,7 @@ public class TarsServantResponse extends ServantResponse implements java.io.Seri
 
     private Object result;
 
-    private String charsetName;
+    private Charset charsetName;
     private TarsInputStream inputStream;
     private TarsServantRequest request;
     private Throwable cause = null;
@@ -131,11 +132,11 @@ public class TarsServantResponse extends ServantResponse implements java.io.Seri
         this.cause = cause;
     }
 
-    public String getCharsetName() {
+    public Charset getCharsetName() {
         return charsetName;
     }
 
-    public void setCharsetName(String charsetName) {
+    public void setCharsetName(Charset charsetName) {
         this.charsetName = charsetName;
     }
 
@@ -159,7 +160,7 @@ public class TarsServantResponse extends ServantResponse implements java.io.Seri
         return context;
     }
 
-    public void setContext(Map<String,  Object> context) {
+    public void setContext(Map<String, Object> context) {
         this.context = context;
     }
 }

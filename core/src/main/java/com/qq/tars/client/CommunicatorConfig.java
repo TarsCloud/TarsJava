@@ -41,7 +41,7 @@ public class CommunicatorConfig {
     private int sendThread = 1;
     private int recvThread = 1;
     private int asyncThread = 1;
-    private String moduleName = Constants.default_modulename;
+    private String moduleName = Constants.DEFAULT_MODULE_NAME;
 
     private boolean enableSet = false;
     private String setDivision = null;
@@ -49,13 +49,13 @@ public class CommunicatorConfig {
     private String setArea;
     private String setID;
 
-    private int connections = Constants.default_connections;
-    private int connectTimeout = Constants.default_connect_timeout;
-    private int corePoolSize = Constants.default_core_pool_size;
-    private int maxPoolSize = Constants.default_max_pool_size;
-    private int keepAliveTime = Constants.default_keep_alive_time;
-    private int queueSize = Constants.default_queue_size;
-    private String charsetName = Constants.default_charset_name;
+    private int connections = Constants.DEFAULT_CONNECTION;
+    private int connectTimeout = Constants.DEFAULT_CONNECTION_TIMEOUT;
+    private int corePoolSize = Constants.DEFAULT_CORE_POOL_SIZE;
+    private int maxPoolSize = Constants.DEFAULT_MAX_POOL_SIZE;
+    private int keepAliveTime = Constants.DEFAULT_KEEPALIVE_TIME;
+    private int queueSize = Constants.DEFAULT_QUEUE_SIZE;
+    private String charsetName = Constants.DEFAULT_CHARSET.name();
 
     private String logPath;
     private String logLevel = "INFO";
@@ -90,7 +90,7 @@ public class CommunicatorConfig {
         sendThread = conf.getInt("/tars/application/client<sendthread>", 1);
         recvThread = conf.getInt("/tars/application/client<recvthread>", 1);
         asyncThread = conf.getInt("/tars/application/client<asyncthread>", 1);
-        moduleName = conf.get("/tars/application/client<modulename>", Constants.default_modulename);
+        moduleName = conf.get("/tars/application/client<modulename>", Constants.DEFAULT_MODULE_NAME);
         String enableSetStr = conf.get("/tars/application<enableset>");
         setDivision = conf.get("/tars/application<setdivision>");
         if ("Y".equalsIgnoreCase(enableSetStr)) {
@@ -99,19 +99,16 @@ public class CommunicatorConfig {
             enableSet = false;
             setDivision = null;
         }
-
-
         if (enableSet && setDivision != null) {
             this.setSetDivision(setDivision);
         }
-
-        connections = conf.getInt("/tars/application/client<connections>", Constants.default_connections);
-        connectTimeout = conf.getInt("/tars/application/client<connect-timeout>", Constants.default_connect_timeout);
-        corePoolSize = conf.getInt("/tars/application/client<corepoolsize>", Constants.default_core_pool_size);
-        maxPoolSize = conf.getInt("/tars/application/client<maxpoolsize>", Constants.default_max_pool_size);
-        keepAliveTime = conf.getInt("/tars/application/client<keepalivetime>", Constants.default_keep_alive_time);
-        queueSize = conf.getInt("/tars/application/client<queuesize>", Constants.default_queue_size);
-        charsetName = conf.get("/tars/application/client<charsetname>", Constants.default_charset_name);
+        connections = conf.getInt("/tars/application/client<connections>", Constants.DEFAULT_CONNECTION);
+        connectTimeout = conf.getInt("/tars/application/client<connect-timeout>", Constants.DEFAULT_CONNECTION_TIMEOUT);
+        corePoolSize = conf.getInt("/tars/application/client<corepoolsize>", Constants.DEFAULT_CORE_POOL_SIZE);
+        maxPoolSize = conf.getInt("/tars/application/client<maxpoolsize>", Constants.DEFAULT_MAX_POOL_SIZE);
+        keepAliveTime = conf.getInt("/tars/application/client<keepalivetime>", Constants.DEFAULT_KEEPALIVE_TIME);
+        queueSize = conf.getInt("/tars/application/client<queuesize>", Constants.DEFAULT_QUEUE_SIZE);
+        charsetName = conf.get("/tars/application/client<charsetname>", Constants.DEFAULT_CHARSET.name());
         return this;
     }
 

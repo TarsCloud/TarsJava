@@ -16,6 +16,8 @@
 
 package com.qq.tars.protocol.tars;
 
+import java.nio.charset.Charset;
+
 @SuppressWarnings("serial")
 public abstract class TarsStructBase implements java.io.Serializable {
 
@@ -71,7 +73,7 @@ public abstract class TarsStructBase implements java.io.Serializable {
         return os.toByteArray();
     }
 
-    public byte[] toByteArray(String encoding) {
+    public byte[] toByteArray(Charset encoding) {
         TarsOutputStream os = new TarsOutputStream();
         os.setServerEncoding(encoding);
         writeTo(os);

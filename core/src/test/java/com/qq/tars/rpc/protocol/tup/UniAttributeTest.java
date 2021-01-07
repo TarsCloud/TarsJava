@@ -5,6 +5,8 @@ import com.qq.tars.support.log.prx.LogInfo;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * @description: add your desc
  * @author: walker
@@ -98,7 +100,7 @@ public class UniAttributeTest {
     private LogInfo decodeVersionV2Now(String hexBytes) {
         byte[] data = HexUtil.hexStr2Bytes(hexBytes);
         UniAttribute unaIn = new UniAttribute();
-        unaIn.setEncodeName("UTF-8");
+        unaIn.setEncodeName(StandardCharsets.UTF_8);
         unaIn.decodeVersion2(data);
         LogInfo logInfo = unaIn.getByClass("tReq", new LogInfo());
         return logInfo;
@@ -108,7 +110,7 @@ public class UniAttributeTest {
         byte[] data = HexUtil.hexStr2Bytes(hexBytes);
         UniAttribute unaIn = new UniAttribute();
         unaIn.setNewDataNull();
-        unaIn.setEncodeName("UTF-8");
+        unaIn.setEncodeName(StandardCharsets.UTF_8);
         unaIn.decodeVersion2(data);
         LogInfo logInfo = unaIn.getByClass("tReq", new LogInfo());
         return logInfo;

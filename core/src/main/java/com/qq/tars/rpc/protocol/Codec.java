@@ -23,11 +23,33 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 public interface Codec {
+    /***
+     *
+     * @param channel
+     * @param channelBuffer
+     * @param message
+     * @throws IOException
+     */
     void encode(Channel channel, ByteBuf channelBuffer, Object message) throws IOException;
 
+    /***
+     *
+     * @param channel
+     * @param buffer
+     * @return
+     * @throws IOException
+     */
     Object decode(Channel channel, ByteBuf buffer) throws IOException;
 
+    /***
+     *
+     * @return
+     */
     String getProtocol();
 
+    /***
+     *
+     * @return
+     */
     Charset getCharset();
 }

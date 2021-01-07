@@ -29,6 +29,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.nio.BufferUnderflowException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -387,11 +388,7 @@ public final class TarsInputStream {
                     if (len < 0) len += 256;
                     byte[] ss = new byte[len];
                     bs.readBytes(ss);
-                    try {
-                        s = new String(ss, sServerEncoding);
-                    } catch (UnsupportedEncodingException e) {
-                        s = new String(ss);
-                    }
+                    s = new String(ss, sServerEncoding);
                 }
                 break;
                 case TarsStructBase.STRING4: {
@@ -401,11 +398,7 @@ public final class TarsInputStream {
                     byte[] ss = new byte[len];
                     //bs.get(ss);
                     bs.readBytes(ss);
-                    try {
-                        s = new String(ss, sServerEncoding);
-                    } catch (UnsupportedEncodingException e) {
-                        s = new String(ss);
-                    }
+                    s = new String(ss, sServerEncoding);
                 }
                 break;
                 default:
@@ -429,11 +422,7 @@ public final class TarsInputStream {
                     byte[] ss = new byte[len];
                     //bs.get(ss);
                     bs.readBytes(ss);
-                    try {
-                        s = new String(ss, sServerEncoding);
-                    } catch (UnsupportedEncodingException e) {
-                        s = new String(ss);
-                    }
+                    s = new String(ss, sServerEncoding);
                 }
                 break;
                 case TarsStructBase.STRING4: {
@@ -443,11 +432,7 @@ public final class TarsInputStream {
                     byte[] ss = new byte[len];
                     //bs.get(ss);
                     bs.readBytes(ss);
-                    try {
-                        s = new String(ss, sServerEncoding);
-                    } catch (UnsupportedEncodingException e) {
-                        s = new String(ss);
-                    }
+                    s = new String(ss, sServerEncoding);
                 }
                 break;
                 default:
@@ -913,9 +898,9 @@ public final class TarsInputStream {
         }
     }
 
-    protected String sServerEncoding = StandardCharsets.UTF_8.toString();
+    protected Charset sServerEncoding = StandardCharsets.UTF_8;
 
-    public int setServerEncoding(String se) {
+    public int setServerEncoding(Charset se) {
         sServerEncoding = se;
         return 0;
     }

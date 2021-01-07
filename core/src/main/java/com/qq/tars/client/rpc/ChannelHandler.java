@@ -2,11 +2,9 @@ package com.qq.tars.client.rpc;
 
 import io.netty.channel.Channel;
 
-/**
- *
- */
 public interface ChannelHandler {
     void connected(Channel channel);
+
     /**
      * @param channel
      */

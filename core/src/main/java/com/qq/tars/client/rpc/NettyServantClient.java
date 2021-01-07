@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -84,8 +85,8 @@ public class NettyServantClient implements RPCClient {
                 IdleStateHandler clientIdleHandler =
                         new IdleStateHandler(0, servantProxyConfig.getConnectTimeout(), 0, MILLISECONDS);
                 ChannelPipeline p = ch.pipeline();
-                p.addLast("encoder", new TarsEncoder(servantProxyConfig.getCharsetName()))
-                        .addLast("decoder", new TarsDecoder(servantProxyConfig.getCharsetName()))
+                p.addLast("encoder", new TarsEncoder(Charset.forName(servantProxyConfig.getCharsetName())))
+                        .addLast("decoder", new TarsDecoder(Charset.forName(servantProxyConfig.getCharsetName())))
                         .addLast("idle", clientIdleHandler)
                         .addLast("handler", new NettyClientHandler(NettyServantClient.this.channelHandler, servantProxyConfig))
                 ;

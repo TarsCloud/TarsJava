@@ -22,6 +22,8 @@ import com.qq.tars.protocol.tars.TarsStructBase;
 import com.qq.tars.protocol.util.TarsUtil;
 
 import java.lang.reflect.Array;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,20 +35,20 @@ import java.util.Set;
 
 class OldUniAttribute {
 
-    protected HashMap<String, HashMap<String, byte[]>> _data = new HashMap<String, HashMap<String, byte[]>>();
+    protected  Map<String, HashMap<String, byte[]>> _data = new HashMap<String, HashMap<String, byte[]>>();
 
-    protected HashMap<String, Object> cachedClassName = new HashMap<String, Object>();
-    private HashMap<String, Object> cachedData = new HashMap<String, Object>();
+    protected Map<String, Object> cachedClassName = new HashMap<String, Object>();
+    private Map<String, Object> cachedData = new HashMap<String, Object>();
 
-    protected String encodeName = "UTF-8";
+    protected Charset encodeName = StandardCharsets.UTF_8;
 
     TarsInputStream _is = new TarsInputStream();
 
-    public String getEncodeName() {
+    public Charset getEncodeName() {
         return encodeName;
     }
 
-    public void setEncodeName(String encodeName) {
+    public void setEncodeName(Charset encodeName) {
         this.encodeName = encodeName;
     }
 
@@ -84,8 +86,8 @@ class OldUniAttribute {
         _out.setServerEncoding(encodeName);
         _out.write(t, 0);
         byte[] _sBuffer = TarsUtil.getBufArray(_out.getByteBuffer());
-        HashMap<String, byte[]> pair = new HashMap<String, byte[]>(1);
-        ArrayList<String> listType = new ArrayList<String>(1);
+        HashMap<String, byte[]> pair = new HashMap<>(1);
+        ArrayList<String> listType = new ArrayList<>(1);
         checkObjectType(listType, t);
         String className = BasicClassTypeUtil.transTypeList(listType);
         pair.put(className, _sBuffer);

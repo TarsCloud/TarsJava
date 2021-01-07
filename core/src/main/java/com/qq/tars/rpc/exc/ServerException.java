@@ -22,7 +22,7 @@ import static com.qq.tars.protocol.util.TarsHelper.*;
 public class ServerException extends TarsException {
 
     private static final long serialVersionUID = 5930969532642083140L;
-    private int ret;
+    private final int ret;
 
     public ServerException(int ret) {
         super("server error code " + ret);

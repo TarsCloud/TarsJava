@@ -18,8 +18,11 @@
 package com.qq.tars.client;
 
 import com.qq.tars.client.util.ParseTools;
+import com.qq.tars.protocol.tars.annotation.ThreadSafe;
+
 import java.util.concurrent.ConcurrentHashMap;
 
+@ThreadSafe
 public final class CommunicatorFactory {
 
     private final static CommunicatorFactory instance = new CommunicatorFactory();

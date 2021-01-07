@@ -1,3 +1,18 @@
+/**
+ * Tencent is pleased to support the open source community by making Tars available.
+ *
+ * Copyright (C) 2016 THL A29 Limited, a Tencent company. All rights reserved.
+ *
+ * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * https://opensource.org/licenses/BSD-3-Clause
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.qq.tars.client.rpc;
 
 import com.qq.tars.common.support.ClassLoaderManager;
@@ -23,20 +38,18 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 public class TarsDecoder extends ByteToMessageDecoder implements Codec {
-    public TarsDecoder(String charsetName) {
+    public TarsDecoder(Charset charsetName) {
         this.charsetName = charsetName;
     }
 
-    public String charsetName = Constants.default_charset_name;
+    public Charset charsetName = Constants.DEFAULT_CHARSET;
 
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
@@ -86,7 +99,7 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
             request.setServantName(servantName);
             request.setFunctionName(methodName);
             request.setInputStream(jis);
-            request.setCharsetName(charsetName);
+            request.setCharsetName(charsetName.name());
         } catch (Exception e) {
             System.err.println(e);
             request.setRet(TarsHelper.SERVERDECODEERR);
@@ -142,11 +155,11 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
                 Object[] parameters = new Object[parametersList.size()];
                 int i = 0;
                 if (TarsHelper.VERSION == request.getVersion()) {//request
-                    parameters = decodeRequestBody(data, request.getCharsetName(), methodInfo);
+                    parameters = decodeRequestBody(data, methodInfo);
                 } else if (TarsHelper.VERSION2 == request.getVersion() || TarsHelper.VERSION3 == request.getVersion()) {
                     //wup request
                     UniAttribute unaIn = new UniAttribute();
-                    unaIn.setEncodeName(request.getCharsetName());
+                    unaIn.setEncodeName(Charset.forName(request.getCharsetName()));
 
                     if (request.getVersion() == TarsHelper.VERSION2) {
                         unaIn.decodeVersion2(data);
@@ -187,17 +200,17 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
         return request;
     }
 
-    protected Object[] decodeRequestBody(byte[] data, String charset, TarsMethodInfo methodInfo) throws Exception {
+    protected Object[] decodeRequestBody(byte[] data, TarsMethodInfo methodInfo) throws Exception {
         TarsInputStream jis = new TarsInputStream(data);
         List<TarsMethodParameterInfo> parametersList = methodInfo.getParametersList();
         Object[] parameters = new Object[parametersList.size()];
         int i = 0;
 
-        jis.setServerEncoding(charset);//set decode charset name
+        jis.setServerEncoding(charsetName);//set decode charset name
         Object value = null;
         for (TarsMethodParameterInfo parameterInfo : parametersList) {
             if (TarsHelper.isHolder(parameterInfo.getAnnotations())) {
-                value = new Holder<Object>(jis.read(parameterInfo.getStamp(), parameterInfo.getOrder(), false));
+                value = new Holder<>(jis.read(parameterInfo.getStamp(), parameterInfo.getOrder(), false));
             } else {
                 value = jis.read(parameterInfo.getStamp(), parameterInfo.getOrder(), false);
             }
@@ -261,7 +274,7 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
 
         Object[] results;
         try {
-            results = decodeResponseBody(data, response.getCharsetName(), methodInfo);
+            results = decodeResponseBody(data, methodInfo);
         } catch (Exception e) {
             throw new ProtocolException(e);
         }
@@ -284,12 +297,11 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
         response.setStatus((HashMap<String, String>) is.read(TarsHelper.STAMP_MAP, 7, false));
     }
 
-    protected Object[] decodeResponseBody(byte[] data, String charset, TarsMethodInfo methodInfo) throws Exception {
+    protected Object[] decodeResponseBody(byte[] data, TarsMethodInfo methodInfo) throws Exception {
         TarsMethodParameterInfo returnInfo = methodInfo.getReturnInfo();
         List<Object> values = new ArrayList<Object>();
-
         TarsInputStream jis = new TarsInputStream(data);
-        jis.setServerEncoding(charset);
+        jis.setServerEncoding(charsetName);
 
         if (returnInfo != null && Void.TYPE != returnInfo.getType()) {
             values.add(jis.read(returnInfo.getStamp(), returnInfo.getOrder(), true));
@@ -306,51 +318,6 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
             }
         }
         return values.toArray();
-    }
-
-    public Object[] decodeCallbackArgs(TarsServantResponse response) throws ProtocolException {
-        byte[] data = response.getInputStream().read(new byte[]{}, 6, true);
-
-        TarsServantRequest request = (TarsServantRequest) response.getRequest();
-
-        TarsMethodInfo methodInfo = null;
-        Map<Method, TarsMethodInfo> map = AnalystManager.getInstance().getMethodMap(request.getApi());
-        for (Iterator<Map.Entry<Method, TarsMethodInfo>> it = map.entrySet().iterator(); it.hasNext(); ) {
-            Map.Entry<Method, TarsMethodInfo> entry = it.next();
-            if (entry.getKey().getName().equals(request.getFunctionName())) {
-                methodInfo = entry.getValue();
-            }
-        }
-
-        try {
-            return decodeCallbackArgs(data, response.getCharsetName(), methodInfo);
-        } catch (Exception e) {
-            throw new ProtocolException(e);
-        }
-    }
-
-    protected Object[] decodeCallbackArgs(byte[] data, String charset, TarsMethodInfo methodInfo) throws ProtocolException, NoSuchMethodException, Exception {
-        TarsInputStream jis = new TarsInputStream(data);
-        jis.setServerEncoding(charset);
-
-        List<Object> list = new ArrayList<Object>();
-        TarsMethodParameterInfo returnInfo = methodInfo.getReturnInfo();
-        if (returnInfo != null && Void.TYPE != returnInfo.getType()) {
-            list.add(jis.read(returnInfo.getStamp(), returnInfo.getOrder(), true));
-        }
-
-        List<TarsMethodParameterInfo> parameterInfoList = methodInfo.getParametersList();
-        for (TarsMethodParameterInfo info : parameterInfoList) {
-            if (TarsHelper.isContext(info.getAnnotations()) || TarsHelper.isCallback(info.getAnnotations())) {
-                continue;
-            }
-
-            if (TarsHelper.isHolder(info.getAnnotations())) {
-                list.add(jis.read(info.getStamp(), info.getOrder(), false));
-            }
-        }
-
-        return list.toArray();
     }
 
     protected ClassLoader resolveProtocolClassLoader() {

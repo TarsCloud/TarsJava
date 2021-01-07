@@ -16,6 +16,7 @@
 
 package com.qq.tars.common.util;
 
+import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.Map;
 
@@ -69,5 +70,9 @@ public class CommonUtils {
     public static int getPoolSize() {
         int processors = Runtime.getRuntime().availableProcessors();
         return processors > 8 ? 4 + (processors * 5 / 8) : processors + 1;
+    }
+
+    public static String getIPAndPort(InetSocketAddress remoteAddress) {
+        return String.format("%s:%s", remoteAddress.getHostString(), remoteAddress.getPort());
     }
 }
