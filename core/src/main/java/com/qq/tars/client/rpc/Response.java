@@ -18,15 +18,36 @@ package com.qq.tars.client.rpc;
 
 public interface Response {
 
+    /***
+     *
+     * @return
+     */
     boolean isAsyncMode();
 
+    /***
+     *
+     * @return
+     */
     int getRequestId();
 
+    /***
+     *
+     */
     void asyncCallStart();
 
+    /***
+     *
+     */
     void asyncCallEnd();
 
+    /***
+     *
+     * @return
+     */
     Request getRequest();
 
+    /***
+     *
+     */
     void ensureNotCommitted();
 }

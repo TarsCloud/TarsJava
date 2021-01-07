@@ -14,7 +14,6 @@ public interface Filter {
 
     CompletableFuture<Response> doFilter(Request request, FilterChain chain) throws Throwable;
 
-
     void destroy();
 
 }

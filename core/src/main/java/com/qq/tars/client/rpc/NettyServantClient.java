@@ -2,7 +2,6 @@ package com.qq.tars.client.rpc;
 
 import com.qq.tars.client.ServantProxyConfig;
 import com.qq.tars.rpc.common.Url;
-import com.qq.tars.rpc.protocol.ServantRequest;
 import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -174,7 +173,7 @@ public class NettyServantClient implements RPCClient {
     }
 
 
-    public CompletableFuture<TarsServantResponse> send(ServantRequest request) throws IOException {
+    public CompletableFuture<Response> send(Request request) throws IOException {
         TicketFeature ticketFeature = TicketFeature.createFeature(this.channel, request, servantProxyConfig.getSyncTimeout());
         this.channel.writeAndFlush(request);
         return ticketFeature.thenCompose(obj -> CompletableFuture.completedFuture((TarsServantResponse) obj));

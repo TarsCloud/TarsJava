@@ -33,7 +33,7 @@ public class TarsServantRequest extends ServantRequest implements java.io.Serial
     private String servantName;
     private String functionName;
     private byte[] data;
-    private int timeout; // iTimeout
+    private int timeout=3000; // iTimeout
     private Map<String, String> status;
     private Map<String, Object> context;
 

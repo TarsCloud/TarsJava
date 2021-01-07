@@ -30,7 +30,7 @@ public class TarsServerFilterChain extends AbstractFilterChain<ServantHomeSkelet
     }
 
     @Override
-    protected CompletableFuture<TarsServantResponse> doRealInvoke(Request request) throws Throwable {
+    protected CompletableFuture<Response> doRealInvoke(Request request) throws Throwable {
         return null;
     }
 

@@ -1,11 +1,15 @@
 package com.qq.tars;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
+import com.qq.tars.client.CommunicatorConfig;
+import com.qq.tars.client.CommunicatorFactory;
 import com.qq.tars.client.ServantProxyConfig;
 import com.qq.tars.client.rpc.ChannelHandler;
 import com.qq.tars.client.rpc.NettyClientTransporter;
 import com.qq.tars.client.rpc.NettyServantClient;
 import com.qq.tars.client.rpc.Request;
+import com.qq.tars.client.rpc.Response;
 import com.qq.tars.common.support.Holder;
 import com.qq.tars.protocol.tars.TarsInputStream;
 import com.qq.tars.protocol.tars.TarsOutputStream;
@@ -20,7 +24,6 @@ import io.netty.channel.Channel;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 
 public class TransportTest {
@@ -62,13 +65,14 @@ public class TransportTest {
 
             }
         };
+
         AnalystManager.getInstance().registry(MonitorQueryPrx.class, "tars.tarsquerystat.QueryObj");
         //Url(String protocol, String host, int port, String path, Map<String, String> parameters) {
         //tcp -h 10.172.0.111 -t 60000 -p 18393
         Url url = new Url("tcp", "10.172.0.111", 18393);
         long startTime = System.nanoTime();
         NettyServantClient client = NettyClientTransporter.connect(url, servantProxyConfig, channelHandler);
-        System.out.println("init channel time " + ((System.nanoTime() - startTime)/1000));
+        System.out.println("init channel time " + ((System.nanoTime() - startTime) / 1000));
         for (int i = 0; i < 2; i++) {
             MonitorQueryReq monitorQueryReq = new MonitorQueryReq();
             monitorQueryReq.dateType = DateType.MINIUES.value();
@@ -94,14 +98,14 @@ public class TransportTest {
             tarsServantRequest.setFunctionName("query");
             tarsServantRequest.setMessageType(TarsHelper.MESSAGETYPENULL);
             tarsServantRequest.setVersion(TarsHelper.VERSION);
-            tarsServantRequest.setContext(new HashMap<>());
-            tarsServantRequest.setStatus(new HashMap<>());
+            tarsServantRequest.setContext(Maps.newHashMap());
+            tarsServantRequest.setStatus(Maps.newHashMap());
             tarsServantRequest.setPacketType(TarsHelper.NORMAL);
             System.out.println("client connection is " + client.getChannel().isActive());
             System.out.println("client connection is " + client.getChannel().isOpen());
             System.out.println("client connection is " + client.getChannel().isWritable());
             long startTimeNano = System.currentTimeMillis();
-            CompletableFuture<TarsServantResponse> responseCompletableFuture = client.send(tarsServantRequest).whenComplete((x, y) -> {
+            CompletableFuture<Response> responseCompletableFuture = client.send(tarsServantRequest).whenComplete((x, y) -> {
                 System.out.print(System.currentTimeMillis() - startTimeNano + "::");
                 System.out.println(response);
             });
@@ -149,8 +153,28 @@ public class TransportTest {
         buffer.writeInt(2014);
         buffer.writeInt(2014);
         System.out.println(buffer.getInt(4 * 5));
+    }
 
 
+    @Test
+    public void testForQuery() {
+        CommunicatorConfig config = new CommunicatorConfig();
+        MonitorQueryPrx queryPrx = CommunicatorFactory.getInstance().getCommunicator(config).stringToProxy(MonitorQueryPrx.class,
+                "tars.tarsquerystat.QueryObj@tcp -h 10.172.0.111 -t 60000 -p 18393");
+        MonitorQueryReq request = new MonitorQueryReq();
+        request.dateType = DateType.MINIUES.value();
+        request.method = "query";
+        request.setDataid("tars_stat");
+        request.intervalTime = 1;
+        request.setConditions(ImmutableList.of(new Condition("slave_name", 5, "tars.tarsstat")));
+        request.indexs = ImmutableList.of("succ_count", "timeout_count", "exce_count", "total_time");
+        request.setGroupby(ImmutableList.of("f_tflag"));
+        request.startTime = 1606060800L;
+        request.endTime = 1606147199L;
+        System.out.println(request);
+        Holder<MonitorQueryRsp> holder = new Holder<>();
+        queryPrx.query(request, holder);
+        System.out.println(holder);
     }
 
 }

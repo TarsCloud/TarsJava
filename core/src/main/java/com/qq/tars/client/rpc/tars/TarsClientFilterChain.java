@@ -6,9 +6,7 @@ import com.qq.tars.client.rpc.Response;
 import com.qq.tars.common.AbstractFilterChain;
 import com.qq.tars.common.Filter;
 import com.qq.tars.common.FilterKind;
-import com.qq.tars.rpc.protocol.ServantRequest;
 import com.qq.tars.rpc.protocol.tars.TarsServantRequest;
-import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -24,10 +22,11 @@ public class TarsClientFilterChain extends AbstractFilterChain<RPCClient> {
 
     }
 
+
     @Override
-    protected CompletableFuture<TarsServantResponse> doRealInvoke(Request request) throws Throwable {
+    protected CompletableFuture<Response> doRealInvoke(Request request) throws Throwable {
         if (request instanceof TarsServantRequest && target != null) {
-            return target.send((ServantRequest) request);
+            return target.send(request);
         } else {
             throw new RuntimeException("[tars] tarsClient Filterchian invoke error!");
         }
@@ -36,11 +35,20 @@ public class TarsClientFilterChain extends AbstractFilterChain<RPCClient> {
 
     @Override
     protected void doRealInvoke(Request request, Response response) throws Throwable {
-
+        if (request instanceof TarsServantRequest && target != null) {
+            target.send(request);
+        } else {
+            throw new RuntimeException("[tars] tarsClient Filterchian invoke error!");
+        }
     }
 
-    @Override
+
     public CompletableFuture<Response> doFilter(Request request) throws Throwable {
-        return null;
+        if (request instanceof TarsServantRequest && target != null) {
+            return target.send(request);
+        } else {
+            throw new RuntimeException("[tars] tarsClient FilterChain invoke error!");
+        }
     }
+
 }

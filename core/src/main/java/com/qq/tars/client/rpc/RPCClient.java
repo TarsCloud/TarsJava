@@ -1,7 +1,5 @@
 package com.qq.tars.client.rpc;
 
-import com.qq.tars.rpc.protocol.ServantRequest;
-import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 import io.netty.channel.Channel;
 
 import java.io.IOException;
@@ -22,7 +20,7 @@ public interface RPCClient {
      * @return response Future
      * @throws IOException
      */
-    CompletableFuture<TarsServantResponse> send(ServantRequest request) throws IOException;
+    CompletableFuture<Response> send(Request request) throws IOException;
 
 
     /**
