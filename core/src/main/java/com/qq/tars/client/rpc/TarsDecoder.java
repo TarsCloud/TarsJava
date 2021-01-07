@@ -66,7 +66,7 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
         if (length > TarsHelper.PACKAGE_MAX_LENGTH || length <= 0) {
             throw new ProtocolException("the length header of the package must be between 0~10M bytes. data length:" + Integer.toHexString(length));
         }
-        if (buffer. readableBytes() < length) {
+        if (buffer.readableBytes() < length) {
             return null;
         }
 
@@ -115,7 +115,7 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
             String methodName = request.getFunctionName();
             byte[] data = jis.read(TarsHelper.STAMP_BYTE_ARRAY, 7, true);//数据
             int timeout = jis.read(TarsHelper.STAMP_INT.intValue(), 8, true);//超时时间
-            Map<String, String> context = (Map<String, String>) jis.read(TarsHelper.STAMP_MAP, 9, true);//Map<String, String> context
+            Map<String, Object> context = (Map<String, Object>) jis.read(TarsHelper.STAMP_MAP, 9, true);//Map<String, String> context
             Map<String, String> status = (Map<String, String>) jis.read(TarsHelper.STAMP_MAP, 10, true);
 
             request.setTimeout(timeout);
@@ -312,7 +312,7 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
     public Object[] decodeCallbackArgs(TarsServantResponse response) throws ProtocolException {
         byte[] data = response.getInputStream().read(new byte[]{}, 6, true);
 
-        TarsServantRequest request = response.getRequest();
+        TarsServantRequest request = (TarsServantRequest) response.getRequest();
 
         TarsMethodInfo methodInfo = null;
         Map<Method, TarsMethodInfo> map = AnalystManager.getInstance().getMethodMap(request.getApi());

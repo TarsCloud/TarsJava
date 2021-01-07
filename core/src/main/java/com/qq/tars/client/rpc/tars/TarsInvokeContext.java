@@ -27,7 +27,7 @@ import java.util.Map;
 public class TarsInvokeContext extends ServantInvokeContext {
 
     @SuppressWarnings("unchecked")
-    public TarsInvokeContext(Method method, Object[] arguments, Map<String, String> attachments) {
+    public TarsInvokeContext(Method method, Object[] arguments, Map<String, Object> attachments) {
         super(method, arguments, attachments);
 
         Annotation[][] as = method.getParameterAnnotations();

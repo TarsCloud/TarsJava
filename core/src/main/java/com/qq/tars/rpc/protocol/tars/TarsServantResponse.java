@@ -16,11 +16,11 @@
 
 package com.qq.tars.rpc.protocol.tars;
 
+import com.qq.tars.client.rpc.Request;
 import com.qq.tars.protocol.tars.TarsInputStream;
 import com.qq.tars.rpc.protocol.ServantResponse;
 
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 public class TarsServantResponse extends ServantResponse implements java.io.Serializable {
     private static final long serialVersionUID = 3163555867604946654L;
@@ -33,7 +33,7 @@ public class TarsServantResponse extends ServantResponse implements java.io.Seri
     private Map<String, String> status;
     private String remark = null;
     private int timeout;
-    private Map<String, String> context;
+    private Map<String, Object> context;
 
     private Object result;
 
@@ -41,6 +41,7 @@ public class TarsServantResponse extends ServantResponse implements java.io.Seri
     private TarsInputStream inputStream;
     private TarsServantRequest request;
     private Throwable cause = null;
+
     public TarsServantResponse(int requestId) {
         super(requestId);
     }
@@ -113,8 +114,9 @@ public class TarsServantResponse extends ServantResponse implements java.io.Seri
         this.inputStream = inputStream;
     }
 
-    public TarsServantRequest getRequest() {
-        return request;
+    @Override
+    public Request getRequest() {
+        return this.request;
     }
 
     public void setRequest(TarsServantRequest request) {
@@ -153,11 +155,11 @@ public class TarsServantResponse extends ServantResponse implements java.io.Seri
         this.timeout = timeout;
     }
 
-    public Map<String, String> getContext() {
+    public Map<String, Object> getContext() {
         return context;
     }
 
-    public void setContext(Map<String, String> context) {
+    public void setContext(Map<String,  Object> context) {
         this.context = context;
     }
 }

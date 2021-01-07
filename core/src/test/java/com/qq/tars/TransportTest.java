@@ -3,13 +3,14 @@ package com.qq.tars;
 import com.google.common.collect.ImmutableList;
 import com.qq.tars.client.ServantProxyConfig;
 import com.qq.tars.client.rpc.ChannelHandler;
-import com.qq.tars.client.rpc.NettyClientTransport;
+import com.qq.tars.client.rpc.NettyClientTransporter;
 import com.qq.tars.client.rpc.NettyServantClient;
 import com.qq.tars.client.rpc.Request;
 import com.qq.tars.common.support.Holder;
 import com.qq.tars.protocol.tars.TarsInputStream;
 import com.qq.tars.protocol.tars.TarsOutputStream;
 import com.qq.tars.protocol.util.TarsHelper;
+import com.qq.tars.rpc.common.Url;
 import com.qq.tars.rpc.protocol.tars.TarsServantRequest;
 import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 import com.qq.tars.rpc.protocol.tars.support.AnalystManager;
@@ -62,9 +63,12 @@ public class TransportTest {
             }
         };
         AnalystManager.getInstance().registry(MonitorQueryPrx.class, "tars.tarsquerystat.QueryObj");
-        NettyClientTransport nettyClientTransport = new NettyClientTransport(servantProxyConfig, channelHandler);
-        nettyClientTransport.init();
-        NettyServantClient client = nettyClientTransport.connect("10.172.0.111", 18393);
+        //Url(String protocol, String host, int port, String path, Map<String, String> parameters) {
+        //tcp -h 10.172.0.111 -t 60000 -p 18393
+        Url url = new Url("tcp", "10.172.0.111", 18393);
+        long startTime = System.nanoTime();
+        NettyServantClient client = NettyClientTransporter.connect(url, servantProxyConfig, channelHandler);
+        System.out.println("init channel time " + ((System.nanoTime() - startTime)/1000));
         for (int i = 0; i < 2; i++) {
             MonitorQueryReq monitorQueryReq = new MonitorQueryReq();
             monitorQueryReq.dateType = DateType.MINIUES.value();
@@ -93,13 +97,12 @@ public class TransportTest {
             tarsServantRequest.setContext(new HashMap<>());
             tarsServantRequest.setStatus(new HashMap<>());
             tarsServantRequest.setPacketType(TarsHelper.NORMAL);
-            System.out.println(new Object[]{monitorQueryReq, response});
             System.out.println("client connection is " + client.getChannel().isActive());
             System.out.println("client connection is " + client.getChannel().isOpen());
             System.out.println("client connection is " + client.getChannel().isWritable());
-            long startTime = System.currentTimeMillis();
+            long startTimeNano = System.currentTimeMillis();
             CompletableFuture<TarsServantResponse> responseCompletableFuture = client.send(tarsServantRequest).whenComplete((x, y) -> {
-                System.out.print(System.currentTimeMillis() - startTime + "::");
+                System.out.print(System.currentTimeMillis() - startTimeNano + "::");
                 System.out.println(response);
             });
         }

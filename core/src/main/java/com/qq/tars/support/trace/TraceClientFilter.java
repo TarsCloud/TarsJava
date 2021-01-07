@@ -1,5 +1,6 @@
 package com.qq.tars.support.trace;
 
+import com.google.common.collect.Maps;
 import com.qq.tars.client.rpc.Request;
 import com.qq.tars.client.rpc.Response;
 import com.qq.tars.common.ClientVersion;
@@ -18,7 +19,6 @@ import io.opentracing.propagation.Format;
 import io.opentracing.propagation.TextMapInjectAdapter;
 import io.opentracing.tag.Tags;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -54,15 +54,15 @@ public class TraceClientFilter implements Filter {
                     || tarsServantRequest.getInvokeStatus() == Request.InvokeStatus.FUTURE_CALL;
 
             String protocol = Constants.TARS_PROTOCOL;
-            Map<String, String> requestContext = tarsServantRequest.getContext();
+            Map<String, Object> requestContext = tarsServantRequest.getContext();
             if (requestContext != null && !requestContext.isEmpty()) {
-                protocol = requestContext.get(TraceManager.PROTOCOL);
+                protocol = requestContext.get(TraceManager.PROTOCOL).toString();
                 requestContext.remove(TraceManager.PROTOCOL);
             }
             try (Scope scope = tracer.buildSpan(tarsServantRequest.getFunctionName()).withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT).startActive(isSync)) {
                 Map<String, String> status = tarsServantRequest.getStatus();
                 if (status == null) {
-                    tarsServantRequest.setStatus(new HashMap<String, String>());
+                    tarsServantRequest.setStatus(Maps.newHashMap());
                     status = tarsServantRequest.getStatus();
                 }
                 tracer.inject(scope.span().context(), Format.Builtin.TEXT_MAP, new TextMapInjectAdapter(status));

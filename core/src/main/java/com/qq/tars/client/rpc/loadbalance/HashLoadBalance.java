@@ -53,7 +53,7 @@ public class HashLoadBalance<T> implements LoadBalance<T> {
     }
 
     public Invoker<T> select(InvokeContext invocation) throws NoInvokerException {
-        long hash = Math.abs(StringUtils.convertLong(invocation.getAttachment(Constants.TARS_HASH), 0));
+        long hash = Math.abs(StringUtils.convertLong(invocation.getAttachment(Constants.TARS_HASH).toString(), 0));
 
         List<Invoker<T>> staticWeightInvokers = staticWeightInvokersCache;
         if (staticWeightInvokers != null && !staticWeightInvokers.isEmpty()) {

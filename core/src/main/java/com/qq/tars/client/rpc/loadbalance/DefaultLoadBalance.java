@@ -46,8 +46,8 @@ public class DefaultLoadBalance<T> implements LoadBalance<T> {
 
     @Override
     public Invoker<T> select(InvokeContext invocation) throws NoInvokerException {
-        long hash = Math.abs(StringUtils.convertLong(invocation.getAttachment(Constants.TARS_HASH), 0));
-        long consistentHash = Math.abs(StringUtils.convertLong(invocation.getAttachment(Constants.TARS_CONSISTENT_HASH), 0));
+        long hash = Math.abs(StringUtils.convertLong(invocation.getAttachment(Constants.TARS_HASH).toString(), 0));
+        long consistentHash = Math.abs(StringUtils.convertLong(invocation.getAttachment(Constants.TARS_CONSISTENT_HASH).toString(), 0));
 
         if (consistentHash > 0) {
             if (consistentHashLoadBalance == null) {

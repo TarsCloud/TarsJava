@@ -16,70 +16,40 @@
 
 package com.qq.tars.client.rpc;
 
-import java.util.HashMap;
 import java.util.Map;
 
-public abstract class Request {
-    protected transient InvokeStatus status = null;
-    private transient HashMap<String, String> distributedContext = new HashMap<>(8);
-    private transient long bornTime;
-    private transient long processTime;
-
-    protected int requestId;
-
-    public enum InvokeStatus {
+public interface Request {
+    enum InvokeStatus {
         SYNC_CALL, ASYNC_CALL, FUTURE_CALL
     }
 
+    /***
+     *
+     * @return
+     */
+    int getRequestId();
 
-    public Request(int requestId) {
-        this.bornTime = System.currentTimeMillis();
-        exportDistributedContext(distributedContext);
-        this.requestId = requestId;
-    }
+    /***
+     *
+     * @return
+     */
+    String getServantName();
 
-    private void exportDistributedContext(Map<String, String> map) {
-    }
+    /***
+     *
+     * @return
+     */
+    String getFunctionName();
 
-    public HashMap<String, String> getDistributedContext() {
-        return distributedContext;
-    }
-
-    public void setDistributedContext(HashMap<String, String> map) {
-        if (map != null) this.distributedContext = map;
-        else this.distributedContext.clear();
-    }
+    /***
+     *
+     * @return
+     */
+    Map<String, String> getDistributedContext();
 
 
-    public int getRequestId() {
-        return requestId;
-    }
+    long getProcessTime();
 
-    public void setRequestId(int requestId) {
-        this.requestId = requestId;
-    }
+    long getBornTime();
 
-    public void setInvokeStatus(InvokeStatus status) {
-        this.status = status;
-    }
-
-    public InvokeStatus getInvokeStatus() {
-        return this.status;
-    }
-
-    public long getBornTime() {
-        return bornTime;
-    }
-
-    public void resetBornTime() {
-        this.bornTime = System.currentTimeMillis();
-    }
-
-    public long getProcessTime() {
-        return processTime;
-    }
-
-    public void setProcessTime(long processTime) {
-        this.processTime = processTime;
-    }
 }

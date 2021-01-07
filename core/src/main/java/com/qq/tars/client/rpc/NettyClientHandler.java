@@ -15,8 +15,6 @@ import java.util.Map;
 @io.netty.channel.ChannelHandler.Sharable
 public class NettyClientHandler extends ChannelDuplexHandler {
     private static final Logger logger = LoggerFactory.getLogger(NettyClientHandler.class);
-
-
     private static final Map<Channel, NettyChannel> CHANNEL_MAP = Maps.newConcurrentMap();
 
     public static NettyChannel getOrAddChannel(Channel ioChannel, ServantProxyConfig config) {
@@ -109,8 +107,6 @@ public class NettyClientHandler extends ChannelDuplexHandler {
         super.write(ctx, msg, promise);
         NettyChannel channel = getOrAddChannel(ctx.channel(), servantProxyConfig);
         channelHeader.send(channel.getChannel(), msg);
-
-
     }
 
     @Override

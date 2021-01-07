@@ -78,14 +78,12 @@ public class TarsStartLifecycle extends BaseAppContext implements SmartLifecycle
     public void start() {
         try {
             log.info("Start init TarsServer");
-
             initConfig();
             loadAppServants();
             initServants();
             appContextStarted();
             startServantAdapter();
             setAppContext();
-
             this.isRunning = true;
         } catch (IOException e) {
             e.printStackTrace();

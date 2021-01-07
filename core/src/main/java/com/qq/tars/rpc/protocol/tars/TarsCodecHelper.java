@@ -42,9 +42,9 @@ public class TarsCodecHelper {
 
         response.setStatus((HashMap<String, String>) is.read(TarsHelper.STAMP_MAP, 7, false));
         response.setRemark(is.readString(8, false));
-        response.setContext((HashMap<String, String>) is.read(TarsHelper.STAMP_MAP, 9, false));
+        response.setContext((HashMap<String, Object>) is.read(TarsHelper.STAMP_MAP, 9, false));
 
-        TarsServantRequest request = response.getRequest();
+        TarsServantRequest request = (TarsServantRequest) response.getRequest();
 
         Map<String, TarsMethodInfo> map = AnalystManager.getInstance().getMethodMapByName(request.getServantName());
         TarsMethodInfo methodInfo = map.get(request.getFunctionName());

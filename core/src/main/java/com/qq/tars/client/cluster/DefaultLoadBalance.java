@@ -70,7 +70,7 @@ public class DefaultLoadBalance {
                     + invokers.size() + ", no such active connection invoker");
         }
         Invoker<T> invoker = null;
-        long hash = Math.abs(StringUtils.convertLong(context.getAttachment(Constants.TARS_HASH), 0));
+        long hash = Math.abs(StringUtils.convertLong(context.getAttachment(Constants.TARS_HASH).toString(), 0));
         if (hash > 0) {
             list.sort(comparator);
             invoker = list.get((int) (hash % list.size()));

@@ -26,6 +26,7 @@ import com.qq.tars.rpc.common.Url;
 import com.qq.tars.rpc.common.util.concurrent.ConcurrentHashSet;
 import com.qq.tars.rpc.exc.ClientException;
 import com.qq.tars.support.log.LoggerFactory;
+import io.netty.channel.Channel;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -45,12 +46,11 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
     protected final Class<T> api;
     protected final ServantProxyConfig servantProxyConfig;
     protected volatile ConcurrentHashSet<Invoker<T>> allInvoker = new ConcurrentHashSet<>();
-    private final NettyClientTransport nettyClientTransport;
+
 
     public ServantProtocolInvoker(Class<T> api, ServantProxyConfig config) {
         this.api = api;
         this.servantProxyConfig = config;
-        this.nettyClientTransport = new NettyClientTransport(config, null);
         this.allInvoker = this.initInvoker();
     }
 
@@ -100,12 +100,7 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
     protected RPCClient initClient(Url url) {
         RPCClient client = null;
         try {
-            boolean tcpNoDelay = url.getParameter(Constants.TARS_CLIENT_TCPNODELAY, false);
-            long connectTimeout = url.getParameter(Constants.TARS_CLIENT_CONNECTTIMEOUT, Constants.default_connect_timeout);
-            long syncTimeout = url.getParameter(Constants.TARS_CLIENT_SYNCTIMEOUT, Constants.default_sync_timeout);
-            long asyncTimeout = url.getParameter(Constants.TARS_CLIENT_ASYNCTIMEOUT, Constants.default_async_timeout);
-            boolean udpMode = url.getParameter(Constants.TARS_CLIENT_UDPMODE, false);
-            client = nettyClientTransport.connect(url.getHost(), url.getPort());
+            client = NettyClientTransporter.connect(url, servantProxyConfig, new InnerDefaultHandler());
         } catch (Throwable e) {
             throw new ClientException(servantProxyConfig.getSimpleObjectName(), "Fail to create client|" + url.toIdentityString() + "|" + e.getLocalizedMessage(), e);
         }
@@ -162,4 +157,38 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
             }
         }
     }
+
+    private static class InnerDefaultHandler implements ChannelHandler {
+
+        @Override
+        public void connected(Channel channel) {
+
+        }
+
+        @Override
+        public void disconnected(Channel channel) {
+
+        }
+
+        @Override
+        public void send(Channel channel, Object message) {
+
+        }
+
+        @Override
+        public void received(Channel channel, Object message) {
+
+        }
+
+        @Override
+        public void caught(Channel channel, Throwable exception) {
+
+        }
+
+        @Override
+        public void destroy() {
+
+        }
+    }
+
 }

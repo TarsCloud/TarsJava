@@ -51,7 +51,7 @@ public class ConsistentHashLoadBalance<T> implements LoadBalance<T> {
 
     @Override
     public Invoker<T> select(InvokeContext invocation) throws NoInvokerException {
-        long consistentHash = Math.abs(StringUtils.convertLong(invocation.getAttachment(Constants.TARS_CONSISTENT_HASH), 0));
+        long consistentHash = Math.abs(StringUtils.convertLong(invocation.getAttachment(Constants.TARS_CONSISTENT_HASH).toString(), 0));
         //hash range is 0 ~ 2^32-1
         consistentHash = consistentHash & 0xFFFFFFFFL;
 

@@ -35,7 +35,7 @@ public class TarsServantRequest extends ServantRequest implements java.io.Serial
     private byte[] data;
     private int timeout; // iTimeout
     private Map<String, String> status;
-    private Map<String, String> context;
+    private Map<String, Object> context;
 
     private Class<?> api;
     private TarsMethodInfo methodInfo;
@@ -132,11 +132,11 @@ public class TarsServantRequest extends ServantRequest implements java.io.Serial
         this.status = status;
     }
 
-    public Map<String, String> getContext() {
+    public Map<String, Object> getContext() {
         return context;
     }
 
-    public void setContext(Map<String, String> context) {
+    public void setContext(Map<String, Object> context) {
         this.context = context;
     }
 

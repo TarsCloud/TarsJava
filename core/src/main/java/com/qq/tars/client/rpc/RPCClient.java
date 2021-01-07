@@ -9,26 +9,25 @@ import java.util.concurrent.CompletableFuture;
 
 
 public interface RPCClient {
+
+
     /**
-     * @throws IOException
+     * @return return ioChannel
      */
-    void reConnect() throws IOException;
-
-    void close() throws IOException;
-
-
     Channel getChannel();
 
     /**
-     * @throws IOException
-     */
-    void ensureConnected() throws IOException;
-
-    /**
-     * @param request
+     * send object
+     * @param request tarsServantRequest Object
+     * @return response Future
      * @throws IOException
      */
     CompletableFuture<TarsServantResponse> send(ServantRequest request) throws IOException;
 
+
+    /**
+     * @throws IOException when close Exception
+     */
+    void close() throws IOException;
 
 }

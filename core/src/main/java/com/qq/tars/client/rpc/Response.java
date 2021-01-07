@@ -16,34 +16,17 @@
 
 package com.qq.tars.client.rpc;
 
-public abstract class Response {
-    protected transient boolean asyncMode = false;
-    private volatile boolean committed = false;
+public interface Response {
 
-    private int requestId;
+    boolean isAsyncMode();
 
-    public Response(int requestId) {
-        this.requestId = requestId;
-    }
+    int getRequestId();
 
-    public boolean isAsyncMode() {
-        return asyncMode;
-    }
+    void asyncCallStart();
 
+    void asyncCallEnd();
 
-    public abstract int getRequestId();
+    Request getRequest();
 
-    public void asyncCallStart() {
-        this.asyncMode = true;
-    }
-
-    public void asyncCallEnd() {
-        if (!this.asyncMode) throw new IllegalStateException("The response is not async mode.");
-        ensureNotCommitted();
-    }
-
-    private synchronized void ensureNotCommitted() {
-        if (committed) throw new IllegalStateException("Not allowed after response has committed.");
-        this.committed = true;
-    }
+    void ensureNotCommitted();
 }

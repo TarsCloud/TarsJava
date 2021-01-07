@@ -105,7 +105,7 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
         return clients.length == 1 ? clients[0] : clients[(index.getAndIncrement() & Integer.MAX_VALUE) % clients.length];
     }
 
-    private TarsServantResponse invokeWithSync(Method method, Object args[], Map<String, String> context) throws Throwable {
+    private TarsServantResponse invokeWithSync(Method method, Object args[], Map<String, Object> context) throws Throwable {
         RPCClient client = getClient();
         TarsServantRequest request = new TarsServantRequest();
         request.setVersion(TarsHelper.VERSION);
@@ -140,7 +140,7 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
      * @param args
      * @param context
      */
-    private <V> CompletableFuture<V> invokeWithPromiseFuture(Method method, Object args[], Map<String, String> context) throws Throwable {
+    private <V> CompletableFuture<V> invokeWithPromiseFuture(Method method, Object args[], Map<String, Object> context) throws Throwable {
         final RPCClient client = getClient();
         final TarsServantRequest request = new TarsServantRequest();
         request.setVersion(TarsHelper.VERSION);
@@ -178,7 +178,7 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
         });
     }
 
-    private boolean isHashInvoke(Map<String, String> context) {
+    private boolean isHashInvoke(Map<String, Object> context) {
         return context != null && context.containsKey(Constants.TARS_HASH);
     }
 }

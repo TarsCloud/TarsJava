@@ -19,12 +19,24 @@ package com.qq.tars.rpc.protocol;
 
 import com.qq.tars.client.rpc.Request;
 
-public abstract class ServantRequest extends Request {
+import java.util.HashMap;
+import java.util.Map;
+
+public abstract class ServantRequest implements Request {
+    protected int requestId;
     protected String servantName;
     protected String functionName;
 
+    protected transient Request.InvokeStatus status = null;
+    private transient HashMap<String, String> distributedContext = new HashMap<>(8);
+    private transient long bornTime;
+    private transient long processTime;
+
     public ServantRequest(int requestid) {
-        super(requestid);
+        this.requestId = requestid;
+        this.bornTime = System.currentTimeMillis();
+        exportDistributedContext(distributedContext);
+
     }
 
     public String getServantName() {
@@ -42,4 +54,52 @@ public abstract class ServantRequest extends Request {
     public void setFunctionName(String functionName) {
         this.functionName = functionName;
     }
+
+
+    private void exportDistributedContext(Map<String, String> map) {
+    }
+
+    public HashMap<String, String> getDistributedContext() {
+        return distributedContext;
+    }
+
+    public void setDistributedContext(HashMap<String, String> map) {
+        if (map != null) this.distributedContext = map;
+        else this.distributedContext.clear();
+    }
+
+
+    public int getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(int requestId) {
+        this.requestId = requestId;
+    }
+
+    public void setInvokeStatus(Request.InvokeStatus status) {
+        this.status = status;
+    }
+
+    public Request.InvokeStatus getInvokeStatus() {
+        return this.status;
+    }
+
+    public long getBornTime() {
+        return bornTime;
+    }
+
+    public void resetBornTime() {
+        this.bornTime = System.currentTimeMillis();
+    }
+
+    public long getProcessTime() {
+        return processTime;
+    }
+
+    public void setProcessTime(long processTime) {
+        this.processTime = processTime;
+    }
+
+
 }

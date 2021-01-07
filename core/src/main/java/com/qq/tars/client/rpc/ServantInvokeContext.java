@@ -34,13 +34,13 @@ public class ServantInvokeContext implements InvokeContext, Serializable {
     private final boolean isAsync;
     private final boolean isPromiseFuture;
     private final boolean isNormal;
-    private Map<String, String> attachments;
+    private Map<String, Object> attachments;
 
-    public ServantInvokeContext(Method method, Object[] arguments, Map<String, String> attachments) {
+    public ServantInvokeContext(Method method, Object[] arguments, Map<String, Object> attachments) {
         this(method, arguments, attachments, null);
     }
 
-    public ServantInvokeContext(Method method, Object[] arguments, Map<String, String> attachments, Invoker<?> invoker) {
+    public ServantInvokeContext(Method method, Object[] arguments, Map<String, Object> attachments, Invoker<?> invoker) {
         this.setInvoker(invoker);
         this.setMethodName(method.getName());
         this.setParameterTypes(method.getParameterTypes());
@@ -83,7 +83,7 @@ public class ServantInvokeContext implements InvokeContext, Serializable {
         return arguments;
     }
 
-    public Map<String, String> getAttachments() {
+    public Map<String, Object> getAttachments() {
         return attachments;
     }
 
@@ -99,8 +99,8 @@ public class ServantInvokeContext implements InvokeContext, Serializable {
         this.arguments = arguments == null ? new Object[0] : arguments;
     }
 
-    public void setAttachments(Map<String, String> attachments) {
-        this.attachments = attachments == null ? new HashMap<String, String>() : attachments;
+    public void setAttachments(Map<String, Object> attachments) {
+        this.attachments = attachments == null ? new HashMap<>() : attachments;
     }
 
     public void setAttachment(String key, String value) {
@@ -126,12 +126,12 @@ public class ServantInvokeContext implements InvokeContext, Serializable {
         }
     }
 
-    public String getAttachment(String key) {
+    public Object getAttachment(String key) {
         return attachments.get(key);
     }
 
-    public String getAttachment(String key, String defaultValue) {
-        String value = attachments.get(key);
+    public Object getAttachment(String key, String defaultValue) {
+        Object value = attachments.get(key);
         if (value == null) {
             return defaultValue;
         }
