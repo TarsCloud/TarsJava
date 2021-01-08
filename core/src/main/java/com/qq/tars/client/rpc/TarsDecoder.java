@@ -26,7 +26,6 @@ import com.qq.tars.protocol.tars.support.TarsMethodParameterInfo;
 import com.qq.tars.protocol.util.TarsHelper;
 import com.qq.tars.protocol.util.TarsUtil;
 import com.qq.tars.rpc.protocol.Codec;
-import com.qq.tars.rpc.protocol.ServantRequest;
 import com.qq.tars.rpc.protocol.ServantResponse;
 import com.qq.tars.rpc.protocol.tars.TarsServantRequest;
 import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
@@ -45,8 +44,16 @@ import java.util.List;
 import java.util.Map;
 
 public class TarsDecoder extends ByteToMessageDecoder implements Codec {
+    private boolean isServer = false;
+
+    public TarsDecoder(Charset charsetName, boolean isServer) {
+        this.charsetName = charsetName;
+        this.isServer = isServer;
+    }
+
     public TarsDecoder(Charset charsetName) {
         this.charsetName = charsetName;
+        this.isServer = false;
     }
 
     public Charset charsetName = Constants.DEFAULT_CHARSET;
@@ -55,7 +62,14 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
         do {
             int saveReaderIndex = byteBuf.readerIndex();
-            Object msg = decodeResponse(byteBuf);
+
+            Object msg = null;
+            if (isServer) {
+                msg = decodeRequest(byteBuf);
+            } else {
+
+                msg = decodeResponse(byteBuf);
+            }
             if (msg == null) {
                 byteBuf.readerIndex(saveReaderIndex);
                 break;
@@ -82,7 +96,6 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
         if (buffer.readableBytes() < length) {
             return null;
         }
-
         TarsInputStream jis = new TarsInputStream(buffer);
         TarsServantRequest request = new TarsServantRequest();
         try {
@@ -100,6 +113,7 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
             request.setFunctionName(methodName);
             request.setInputStream(jis);
             request.setCharsetName(charsetName.name());
+            decodeRequestBody(request);
         } catch (Exception e) {
             System.err.println(e);
             request.setRet(TarsHelper.SERVERDECODEERR);
@@ -108,18 +122,18 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
     }
 
 
-    /**
+    /***
+     *
      * @param req
-     **/
-    public ServantRequest decodeRequestBody(ServantRequest req) {
+     */
+    public void decodeRequestBody(Request req) {
         TarsServantRequest request = (TarsServantRequest) req;
         if (request.getRet() != TarsHelper.SERVERSUCCESS) {
-            return request;
+            return;
         }
         if (TarsHelper.isPing(request.getFunctionName())) {
-            return request;
+            return;
         }
-
         TarsInputStream jis = request.getInputStream();
         ClassLoader oldClassLoader = null;
         try {
@@ -130,25 +144,20 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
             int timeout = jis.read(TarsHelper.STAMP_INT.intValue(), 8, true);//超时时间
             Map<String, Object> context = (Map<String, Object>) jis.read(TarsHelper.STAMP_MAP, 9, true);//Map<String, String> context
             Map<String, String> status = (Map<String, String>) jis.read(TarsHelper.STAMP_MAP, 10, true);
-
             request.setTimeout(timeout);
             request.setContext(context);
             request.setStatus(status);
-
             String servantName = request.getServantName();
             Map<String, TarsMethodInfo> methodInfoMap = AnalystManager.getInstance().getMethodMapByName(servantName);
-
             if (methodInfoMap == null || methodInfoMap.isEmpty()) {
                 request.setRet(TarsHelper.SERVERNOSERVANTERR);
                 throw new ProtocolException("no found methodInfo, the context[ROOT], serviceName[" + servantName + "], methodName[" + methodName + "]");
             }
-
             TarsMethodInfo methodInfo = methodInfoMap.get(methodName);
             if (methodInfo == null) {
                 request.setRet(TarsHelper.SERVERNOFUNCERR);
                 throw new ProtocolException("no found methodInfo, the context[ROOT], serviceName[" + servantName + "], methodName[" + methodName + "]");
             }
-
             request.setMethodInfo(methodInfo);
             List<TarsMethodParameterInfo> parametersList = methodInfo.getParametersList();
             if (!CommonUtils.isEmptyCollection(parametersList)) {
@@ -197,7 +206,6 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
                 Thread.currentThread().setContextClassLoader(oldClassLoader);
             }
         }
-        return request;
     }
 
     protected Object[] decodeRequestBody(byte[] data, TarsMethodInfo methodInfo) throws Exception {
@@ -224,14 +232,12 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
         if (channelBuffer.readableBytes() < 4) {
             return null;
         }
-        // 减去长度占用的4字节
         int length = channelBuffer.readInt() - 4;
 
         if (length > 10 * 1024 * 1024 || length <= 0) {
             throw new RuntimeException("the length header of the package must be between 0~10M bytes. data length:"
                     + Integer.toHexString(length));
         }
-        // 数据包还没有收全
         if (channelBuffer.readableBytes() < length) {
             return null;
         }
@@ -344,8 +350,7 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
 
     @Override
     public Charset getCharset() {
-        return null;
+        return this.charsetName;
     }
-
 
 }

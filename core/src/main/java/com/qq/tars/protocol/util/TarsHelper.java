@@ -16,6 +16,7 @@
 
 package com.qq.tars.protocol.util;
 
+import com.google.common.collect.ImmutableMap;
 import com.qq.tars.common.support.Holder;
 import com.qq.tars.common.util.BeanAccessor;
 import com.qq.tars.common.util.CommonUtils;
@@ -44,7 +45,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -117,25 +117,17 @@ public class TarsHelper {
     public static final long[] STAMP_LONG_ARRAY = new long[]{0};
     public static final float[] STAMP_FLOAT_ARRAY = new float[]{0};
     public static final double[] STAMP_DOUBLE_ARRAY = new double[]{0};
-    public static final Map<String, String> STAMP_MAP = new HashMap<String, String>();
-
-    static {
-        STAMP_MAP.put("", "");
-    }
+    public static final Map<String, String> STAMP_MAP = ImmutableMap.of("", "");
 
     private static Map<Class<?>, TarsStructInfo> tarsStructCache = new HashMap<Class<?>, TarsStructInfo>();
 
-    private static Comparator<Field> tarsStructFieldsListComparator = new Comparator<Field>() {
-
-        @Override
-        public int compare(Field one, Field other) {
-            TarsStructProperty oneProperty = one.getAnnotation(TarsStructProperty.class);
-            TarsStructProperty otherProperty = other.getAnnotation(TarsStructProperty.class);
-            if (oneProperty.order() == otherProperty.order()) {
-                throw new RuntimeException("Field[" + one.getName() + "] , Field[" + other.getName() + "] order is:" + oneProperty.order());
-            }
-            return oneProperty.order() - otherProperty.order();
+    private static Comparator<Field> tarsStructFieldsListComparator = (one, other) -> {
+        TarsStructProperty oneProperty = one.getAnnotation(TarsStructProperty.class);
+        TarsStructProperty otherProperty = other.getAnnotation(TarsStructProperty.class);
+        if (oneProperty.order() == otherProperty.order()) {
+            throw new RuntimeException("Field[" + one.getName() + "] , Field[" + other.getName() + "] order is:" + oneProperty.order());
         }
+        return oneProperty.order() - otherProperty.order();
     };
 
     private static Map<Class<?>, Object> stampCache = new HashMap<Class<?>, Object>();
@@ -330,19 +322,19 @@ public class TarsHelper {
         } else if (clazz == String.class) {
             return new String("");
         } else if (clazz == boolean[].class) {
-            return new boolean[] { true };
+            return new boolean[]{true};
         } else if (clazz == byte[].class) {
-            return new byte[] { 0 };
+            return new byte[]{0};
         } else if (clazz == short[].class) {
-            return new short[] { 0 };
+            return new short[]{0};
         } else if (clazz == int[].class) {
-            return new int[] { 0 };
+            return new int[]{0};
         } else if (clazz == long[].class) {
-            return new long[] { 0 };
+            return new long[]{0};
         } else if (clazz == float[].class) {
-            return new float[] { 0 };
+            return new float[]{0};
         } else if (clazz == double[].class) {
-            return  new double[] { 0 };
+            return new double[]{0};
         }
 
         Object stamp = null;

@@ -19,19 +19,25 @@ package com.qq.tars.server.config;
 import com.qq.tars.common.support.Endpoint;
 import com.qq.tars.common.util.Config;
 
-public class ServantAdapterConfig {
+import javax.annotation.concurrent.Immutable;
 
-    private Endpoint endpoint = null;
-    private int maxConns = 128;
-    private int queueCap = 1024;
-    private int queueTimeout = 10000;
-    private String servant = null;
-    private String protocol = "tars";
-    private int threads = 1;
-    private String handleGroup = null;
+@Immutable
+public final class ServantAdapterConfig {
 
-    public ServantAdapterConfig load(Config conf, String adapterName) {
-        String path = "/tars/application/server/" + adapterName;
+    private final Endpoint endpoint;
+    private final int maxConns;
+    private final int queueCap;
+    private final int queueTimeout;
+    private final String servant;
+    private final String protocol;
+    private final int threads;
+    private final String handleGroup;
+
+    private ServerConfig serverConfig;
+
+    public ServantAdapterConfig(Config conf, String adapterName, ServerConfig serverConfig) {
+        this.serverConfig = serverConfig;
+        final String path = "/tars/application/server/" + adapterName;
         endpoint = Endpoint.parseString(conf.get(path + "<endpoint>"));
         handleGroup = conf.get(path + "<handlegroup>", null);
         protocol = conf.get(path + "<protocol>", "tars");
@@ -40,78 +46,87 @@ public class ServantAdapterConfig {
         queueTimeout = conf.getInt(path + "<queuetimeout>", 10000);
         servant = conf.get(path + "<servant>");
         threads = conf.getInt(path + "<threads>", 1);
-        return this;
+    }
+
+
+    public static ServantAdapterConfig makeServantAdapterConfig(Endpoint endpoint, String servantName, ServerConfig serverConfig) {
+        return new ServantAdapterConfig(endpoint, servantName, serverConfig);
+    }
+
+    public static ServantAdapterConfig makeServantAdapterConfig(Config conf, String adapterName, ServerConfig serverConfig) {
+        return new ServantAdapterConfig(conf, adapterName, serverConfig);
+    }
+
+
+    public ServantAdapterConfig(Endpoint endpoint, String servantName, ServerConfig serverConfig) {
+        this.serverConfig = serverConfig;
+        this.endpoint = endpoint;
+        this.handleGroup = null;
+        this.protocol = "tars";
+        this.maxConns = 128;
+        this.queueCap = 1024;
+        this.queueTimeout = 10000;
+        this.servant = servantName;
+        this.threads = 2;
     }
 
     public Endpoint getEndpoint() {
         return endpoint;
     }
 
-    public ServantAdapterConfig setEndpoint(Endpoint endpoint) {
-        this.endpoint = endpoint;
-        return this;
-    }
 
     public int getMaxConns() {
         return maxConns;
-    }
-
-    public ServantAdapterConfig setMaxConns(int maxConns) {
-        this.maxConns = maxConns;
-        return this;
     }
 
     public int getQueueCap() {
         return queueCap;
     }
 
-    public ServantAdapterConfig setQueueCap(int queueCap) {
-        this.queueCap = queueCap;
-        return this;
-    }
-
     public int getQueueTimeout() {
         return queueTimeout;
     }
 
-    public ServantAdapterConfig setQueueTimeout(int queueTimeout) {
-        this.queueTimeout = queueTimeout;
-        return this;
-    }
 
     public String getServant() {
         return servant;
     }
 
-    public ServantAdapterConfig setServant(String servant) {
-        this.servant = servant;
-        return this;
-    }
 
     public int getThreads() {
         return threads;
     }
 
-    public ServantAdapterConfig setThreads(int threads) {
-        this.threads = threads;
-        return this;
-    }
 
     public String getProtocol() {
         return protocol;
-    }
-
-    public ServantAdapterConfig setProtocol(String protocol) {
-        this.protocol = protocol;
-        return this;
     }
 
     public String getHandleGroup() {
         return handleGroup;
     }
 
-    public ServantAdapterConfig setHandleGroup(String handleGroup) {
-        this.handleGroup = handleGroup;
-        return this;
+
+    public ServerConfig getServerConfig() {
+        return serverConfig;
+    }
+
+    public void setServerConfig(ServerConfig serverConfig) {
+        this.serverConfig = serverConfig;
+    }
+
+    @Override
+    public String toString() {
+        return "ServantAdapterConfig{" +
+                "endpoint=" + endpoint +
+                ", maxConns=" + maxConns +
+                ", queueCap=" + queueCap +
+                ", queueTimeout=" + queueTimeout +
+                ", servant='" + servant + '\'' +
+                ", protocol='" + protocol + '\'' +
+                ", threads=" + threads +
+                ", handleGroup='" + handleGroup + '\'' +
+                ", serverConfig=" + serverConfig +
+                '}';
     }
 }

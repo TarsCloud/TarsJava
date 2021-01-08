@@ -47,7 +47,7 @@ public class ServantAdapter implements Adapter {
     public void bind() throws IOException {
         ServerConfig serverCfg = ConfigurationManager.getInstance().getServerConfig();
         boolean keepAlive = true;
-        Codec codec = new TarsServerCodec(serverCfg.getCharsetName());
+        Codec codec = new TarsServerCodec(serverCfg.getCharsetName().name());
         Processor processor = new TarsServantProcessor();
         Executor threadPool = ServantThreadPoolManager.get(servantAdapterConfig);
 

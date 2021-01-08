@@ -22,7 +22,6 @@ import com.qq.tars.common.util.Constants;
 import com.qq.tars.server.config.ServantAdapterConfig;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -50,7 +49,7 @@ import java.util.concurrent.ThreadFactory;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
-public class NettyServer implements ChannelHandler {
+public class NettyServer {
     private static final Logger logger = LoggerFactory.getLogger(NettyServer.class);
     private Map<String, NettyServerChannel> remoteChannels;
     private ServerBootstrap bootstrap;
@@ -62,12 +61,16 @@ public class NettyServer implements ChannelHandler {
     private final ServantAdapterConfig servantAdapterConfig;
     private final ChannelHandler channelHandler;
 
+    private final InetSocketAddress serverInetSocketAddress;
+
     public NettyServer(ServantAdapterConfig servantAdapterConfig, ChannelHandler handler) {
         this.servantAdapterConfig = servantAdapterConfig;
         this.channelHandler = handler;
+        this.serverInetSocketAddress = new InetSocketAddress(this.servantAdapterConfig.getEndpoint().host(),
+                this.servantAdapterConfig.getEndpoint().port());
     }
 
-    protected void doOpen() throws Throwable {
+    public void bind() throws Throwable {
         bootstrap = new ServerBootstrap();
         final ThreadFactory threadFactoryBoss = new DefaultThreadFactory("NettyServerBoss", true);
         final ThreadFactory threadFactoryWorker = new DefaultThreadFactory("NettyServerWorker", true);
@@ -84,7 +87,7 @@ public class NettyServer implements ChannelHandler {
             workerGroup = new NioEventLoopGroup(Constants.DEFAULT_CORE_POOL_SIZE, threadFactoryWorker);
             bootstrap.channel(NioServerSocketChannel.class);
         }
-        final NettyServerHandler nettyServerHandler = new NettyServerHandler(servantAdapterConfig, this);
+        final NettyServerHandler nettyServerHandler = new NettyServerHandler(servantAdapterConfig, channelHandler);
         remoteChannels = nettyServerHandler.getChannels();
         bootstrap.group(bossGroup, workerGroup)
                 .option(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
@@ -94,18 +97,20 @@ public class NettyServer implements ChannelHandler {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline()
-                                .addLast("decoder", new TarsDecoder(StandardCharsets.UTF_8))
+                                .addLast("decoder", new TarsDecoder(StandardCharsets.UTF_8, Boolean.TRUE))
                                 .addLast("encoder", new TarsEncoder(StandardCharsets.UTF_8))
                                 .addLast("server-idle-handler", new IdleStateHandler(0, 0, 3000, MILLISECONDS))
                                 .addLast("handler", nettyServerHandler);
                     }
                 });
-        ChannelFuture channelFuture = bootstrap.bind(this.servantAdapterConfig.getEndpoint().host(),
-                this.servantAdapterConfig.getEndpoint().port());
+
+
+        ChannelFuture channelFuture = bootstrap.bind(serverInetSocketAddress);
         channelFuture.syncUninterruptibly();
         serverChannel = channelFuture.channel();
 
     }
+
 
     protected void shutdown() {
         try {
@@ -163,33 +168,5 @@ public class NettyServer implements ChannelHandler {
         return serverChannel.isActive();
     }
 
-    @Override
-    public void connected(Channel channel) {
 
-    }
-
-    @Override
-    public void disconnected(Channel channel) {
-
-    }
-
-    @Override
-    public void send(Channel channel, Object message) {
-
-    }
-
-    @Override
-    public void received(Channel channel, Object message) {
-
-    }
-
-    @Override
-    public void caught(Channel channel, Throwable exception) {
-
-    }
-
-    @Override
-    public void destroy() {
-
-    }
 }

@@ -16,22 +16,19 @@
 
 package com.qq.tars.common.support;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Objects;
 
-public class Endpoint {
-
+@Immutable
+public final class Endpoint {
     private final String type;
-    private final String host; 
-    private final int port; 
-
+    private final String host;
+    private final int port;
     private final int timeout;
-    private final int grid; 
-    private final int qos; 
-    private final String setDivision; 
-
-    private int hash; 
-
-    public static final Endpoint VOID_ENDPOINT = new Endpoint("tcp", "0.0.0.0", 0, 0, 0, 0, null);
+    private final int grid;
+    private final int qos;
+    private final String setDivision;
+    public static final Endpoint NULL_ENDPOINT = new Endpoint("tcp", "0.0.0.0", 0, 0, 0, 0, null);
 
     public Endpoint(String type, String host, int port, int timeout, int grid, int qos, String setDivision) {
         this.type = type;
@@ -73,15 +70,7 @@ public class Endpoint {
 
     @Override
     public int hashCode() {
-        int h = hash;
-        if (h == 0) {
-            h = 1;
-            h = 31 * h + type.hashCode();
-            h = 31 * h + host.hashCode();
-            h = 31 * h + port;
-            hash = h;
-        }
-        return h;
+        return Objects.hash(type, host, port, timeout, grid, qos, setDivision);
     }
 
     @Override

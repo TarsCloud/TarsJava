@@ -19,15 +19,16 @@ package com.qq.tars.server.config;
 import com.qq.tars.client.CommunicatorConfig;
 import com.qq.tars.common.support.Endpoint;
 import com.qq.tars.common.util.Config;
+import com.qq.tars.common.util.Constants;
 import com.qq.tars.support.om.OmConstants;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 public class ServerConfig {
-
     private String application;
     private String serverName;
     private Endpoint local;
@@ -45,31 +46,24 @@ public class ServerConfig {
     private String sampleType;
     private String sampleAddress;
     private String sampleEncoding;
-
     private int sessionTimeOut = 120000;
     private int sessionCheckInterval = 60000;
     private boolean tcpNoDelay = false;
     private int udpBufferSize = 4096;
-
     private int logMaxHistry = 15;
-
     public int getLogMaxHistry() {
         return logMaxHistry;
     }
-
     public void setLogMaxHistry(int logMaxHistry) {
         this.logMaxHistry = logMaxHistry;
     }
-
-    private String charsetName = StandardCharsets.UTF_8.name();
-
+    private Charset charsetName = StandardCharsets.UTF_8;
     private LinkedHashMap<String, ServantAdapterConfig> servantAdapterConfMap;
     private CommunicatorConfig communicatorConfig;
 
     public ServerConfig load(Config conf) {
         application = conf.get("/tars/application/server<app>", "UNKNOWN");
         serverName = conf.get("/tars/application/server<server>", null);
-
         String localStr = conf.get("/tars/application/server<local>");
         local = localStr == null || localStr.length() <= 0 ? null : Endpoint
                 .parseString(localStr);
@@ -78,7 +72,7 @@ public class ServerConfig {
         dataPath = conf.get("/tars/application/server<datapath>");
         logMaxHistry = conf.getInt("/tars/application/server<maxHistory>", 15);
 
-        charsetName = conf.get("/tars/application/server<charsetname>", "UTF-8");
+        charsetName = Charset.forName(conf.get("/tars/application/server<charsetname>", Constants.DEFAULT_CHARSET_STRING));
 
         config = conf.get("/tars/application/server<config>");
         notify = conf.get("/tars/application/server<notify>");
@@ -107,15 +101,14 @@ public class ServerConfig {
         List<String> adapterNameList = conf.getSubTags("/tars/application/server");
         if (adapterNameList != null) {
             for (String adapterName : adapterNameList) {
-                ServantAdapterConfig config = new ServantAdapterConfig();
-                config.load(conf, adapterName);
+                ServantAdapterConfig config = ServantAdapterConfig.makeServantAdapterConfig(conf, adapterName, this);
                 servantAdapterConfMap.put(config.getServant(), config);
             }
         }
-
-        ServantAdapterConfig adminServantAdapterConfig = new ServantAdapterConfig();
-        adminServantAdapterConfig.setEndpoint(local);
-        adminServantAdapterConfig.setServant(String.format("%s.%s.%s", application, serverName, OmConstants.AdminServant));
+        final ServantAdapterConfig adminServantAdapterConfig =
+                ServantAdapterConfig.makeServantAdapterConfig(local,
+                        String.format("%s.%s.%s", application, serverName, OmConstants.AdminServant),
+                        this);
         servantAdapterConfMap.put(OmConstants.AdminServant, adminServantAdapterConfig);
 
         if (application != null && serverName != null && logPath != null) {
@@ -303,11 +296,11 @@ public class ServerConfig {
         return this;
     }
 
-    public String getCharsetName() {
+    public Charset getCharsetName() {
         return charsetName;
     }
 
-    public ServerConfig setCharsetName(String charsetName) {
+    public ServerConfig setCharsetName(Charset charsetName) {
         this.charsetName = charsetName;
         return this;
     }
@@ -348,4 +341,35 @@ public class ServerConfig {
         this.sampleEncoding = sampleEncoding;
     }
 
+
+    @Override
+    public String toString() {
+        return "ServerConfig{" +
+                "application='" + application + '\'' +
+                ", serverName='" + serverName + '\'' +
+                ", local=" + local +
+                ", node='" + node + '\'' +
+                ", basePath='" + basePath + '\'' +
+                ", config='" + config + '\'' +
+                ", notify='" + notify + '\'' +
+                ", log='" + log + '\'' +
+                ", logPath='" + logPath + '\'' +
+                ", logLevel='" + logLevel + '\'' +
+                ", logRate=" + logRate +
+                ", dataPath='" + dataPath + '\'' +
+                ", localIP='" + localIP + '\'' +
+                ", sampleRate=" + sampleRate +
+                ", sampleType='" + sampleType + '\'' +
+                ", sampleAddress='" + sampleAddress + '\'' +
+                ", sampleEncoding='" + sampleEncoding + '\'' +
+                ", sessionTimeOut=" + sessionTimeOut +
+                ", sessionCheckInterval=" + sessionCheckInterval +
+                ", tcpNoDelay=" + tcpNoDelay +
+                ", udpBufferSize=" + udpBufferSize +
+                ", logMaxHistry=" + logMaxHistry +
+                ", charsetName='" + charsetName + '\'' +
+                ", servantAdapterConfMap=" + servantAdapterConfMap +
+                ", communicatorConfig=" + communicatorConfig +
+                '}';
+    }
 }
