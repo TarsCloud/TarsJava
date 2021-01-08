@@ -18,8 +18,9 @@
 package com.qq.tars.client;
 
 import com.qq.tars.client.util.ParseTools;
-import com.qq.tars.protocol.tars.annotation.ThreadSafe;
 
+import javax.annotation.concurrent.ThreadSafe;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @ThreadSafe
@@ -27,7 +28,7 @@ public final class CommunicatorFactory {
 
     private final static CommunicatorFactory instance = new CommunicatorFactory();
 
-    private volatile ConcurrentHashMap<Object, Communicator> CommunicatorMap = new ConcurrentHashMap<Object, Communicator>();
+    private final Map<Object, Communicator> communicatorMap = new ConcurrentHashMap<>();
 
     private volatile Communicator communicator = null;
 
@@ -46,7 +47,7 @@ public final class CommunicatorFactory {
     }
 
     public Communicator getCommunicator(String locator) {
-        Communicator communicator = CommunicatorMap.get(locator);
+        Communicator communicator = communicatorMap.get(locator);
         if (communicator != null) {
             return communicator;
         }
@@ -55,16 +56,16 @@ public final class CommunicatorFactory {
             config = new CommunicatorConfig();
             config.setLocator(locator);
         }
-        CommunicatorMap.putIfAbsent(locator, new Communicator(config));
-        return CommunicatorMap.get(locator);
+        communicatorMap.putIfAbsent(locator, new Communicator(config));
+        return communicatorMap.get(locator);
     }
 
     public Communicator getCommunicator(CommunicatorConfig config) {
-        Communicator communicator = CommunicatorMap.get(config);
+        Communicator communicator = communicatorMap.get(config);
         if (communicator != null) {
             return communicator;
         }
-        CommunicatorMap.putIfAbsent(config, new Communicator(config));
-        return CommunicatorMap.get(config);
+        communicatorMap.putIfAbsent(config, new Communicator(config));
+        return communicatorMap.get(config);
     }
 }

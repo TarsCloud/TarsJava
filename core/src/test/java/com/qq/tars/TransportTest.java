@@ -6,8 +6,8 @@ import com.qq.tars.client.CommunicatorConfig;
 import com.qq.tars.client.CommunicatorFactory;
 import com.qq.tars.client.ServantProxyConfig;
 import com.qq.tars.client.rpc.ChannelHandler;
-import com.qq.tars.client.rpc.NettyTransporter;
 import com.qq.tars.client.rpc.NettyServantClient;
+import com.qq.tars.client.rpc.NettyTransporter;
 import com.qq.tars.client.rpc.Request;
 import com.qq.tars.client.rpc.Response;
 import com.qq.tars.common.support.Holder;
@@ -160,7 +160,7 @@ public class TransportTest {
     public void testForQuery() {
         CommunicatorConfig config = new CommunicatorConfig();
         MonitorQueryPrx queryPrx = CommunicatorFactory.getInstance().getCommunicator(config).stringToProxy(MonitorQueryPrx.class,
-                "tars.tarsquerystat.QueryObj@tcp -h 10.172.0.111 -t 60000 -p 18393");
+                "tars.tarsquerystat.QueryObj@tcp -h 127.0.0.1 -t 60000 -p 18393");
         MonitorQueryReq request = new MonitorQueryReq();
         request.dateType = DateType.MINIUES.value();
         request.method = "query";
