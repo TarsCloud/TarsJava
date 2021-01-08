@@ -6,7 +6,7 @@ import com.qq.tars.client.CommunicatorConfig;
 import com.qq.tars.client.CommunicatorFactory;
 import com.qq.tars.client.ServantProxyConfig;
 import com.qq.tars.client.rpc.ChannelHandler;
-import com.qq.tars.client.rpc.NettyClientTransporter;
+import com.qq.tars.client.rpc.NettyTransporter;
 import com.qq.tars.client.rpc.NettyServantClient;
 import com.qq.tars.client.rpc.Request;
 import com.qq.tars.client.rpc.Response;
@@ -71,7 +71,7 @@ public class TransportTest {
         //tcp -h 10.172.0.111 -t 60000 -p 18393
         Url url = new Url("tcp", "10.172.0.111", 18393);
         long startTime = System.nanoTime();
-        NettyServantClient client = NettyClientTransporter.connect(url, servantProxyConfig, channelHandler);
+        NettyServantClient client = NettyTransporter.connect(url, servantProxyConfig, channelHandler);
         System.out.println("init channel time " + ((System.nanoTime() - startTime) / 1000));
         for (int i = 0; i < 2; i++) {
             MonitorQueryReq monitorQueryReq = new MonitorQueryReq();

@@ -16,91 +16,45 @@
 
 package com.qq.tars.server.core;
 
+import com.qq.tars.client.rpc.ChannelHandler;
+import com.qq.tars.client.rpc.NettyTransporter;
+import com.qq.tars.client.rpc.Request;
+import com.qq.tars.client.rpc.Response;
 import com.qq.tars.common.support.Endpoint;
-import com.qq.tars.protocol.annotation.ServantCodec;
 import com.qq.tars.rpc.exc.TarsException;
-import com.qq.tars.rpc.protocol.Codec;
-import com.qq.tars.rpc.protocol.tars.TarsServerCodec;
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.server.config.ServantAdapterConfig;
 import com.qq.tars.server.config.ServerConfig;
+import io.netty.channel.Channel;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
-import java.nio.channels.DatagramChannel;
-import java.nio.channels.ServerSocketChannel;
-import java.util.concurrent.Executor;
 
 public class ServantAdapter implements Adapter {
-
-
     private final ServantAdapterConfig servantAdapterConfig;
-
     private ServantHomeSkeleton skeleton;
-
     public ServantAdapter(ServantAdapterConfig servantAdapterConfig) {
         this.servantAdapterConfig = servantAdapterConfig;
     }
-
-    public void bind() throws IOException {
-        ServerConfig serverCfg = ConfigurationManager.getInstance().getServerConfig();
-        boolean keepAlive = true;
-        Codec codec = new TarsServerCodec(serverCfg.getCharsetName().name());
-        Processor processor = new TarsServantProcessor();
-        Executor threadPool = ServantThreadPoolManager.get(servantAdapterConfig);
-
-        Endpoint endpoint = this.servantAdapterConfig.getEndpoint();
-        if (endpoint.type().equals("tcp")) {
-
-            System.out.println("[SERVER] server starting at " + endpoint + "...");
-            ServerSocketChannel serverChannel = ServerSocketChannel.open();
-            serverChannel.socket().bind(new InetSocketAddress(endpoint.host(), endpoint.port()), 1024);
-            serverChannel.configureBlocking(false);
-
-
-            System.out.println("[SERVER] server started at " + endpoint + "...");
-
-        } else if (endpoint.type().equals("udp")) {
-
-            System.out.println("[SERVER] server starting at " + endpoint + "...");
-            DatagramChannel serverChannel = DatagramChannel.open();
-            DatagramSocket socket = serverChannel.socket();
-            socket.bind(new InetSocketAddress(endpoint.host(), endpoint.port()));
-            serverChannel.configureBlocking(false);
-
-            System.out.println("[SERVER] servant started at " + endpoint + "...");
-        }
-    }
-
     public void bind(AppService appService) throws IOException {
         this.skeleton = (ServantHomeSkeleton) appService;
         ServerConfig serverCfg = ConfigurationManager.getInstance().getServerConfig();
-
-        boolean keepAlive = true;
-        Codec codec = createCodec(serverCfg);
         Processor processor = createProcessor(serverCfg);
-        Executor threadPool = ServantThreadPoolManager.get(servantAdapterConfig);
-
         Endpoint endpoint = this.servantAdapterConfig.getEndpoint();
         if (endpoint.type().equals("tcp")) {
             System.out.println("[SERVER] server starting at " + endpoint + "...");
-            ServerSocketChannel serverChannel = ServerSocketChannel.open();
-            serverChannel.socket().bind(new InetSocketAddress(endpoint.host(), endpoint.port()), 1024);
-            serverChannel.configureBlocking(false);
-
+            NettyTransporter.bind(servantAdapterConfig, new InnerDefaultHandler(processor));
             System.out.println("[SERVER] server started at " + endpoint + "...");
-
         } else if (endpoint.type().equals("udp")) {
-            System.out.println("[SERVER] server starting at " + endpoint + "...");
-            DatagramChannel serverChannel = DatagramChannel.open();
-            DatagramSocket socket = serverChannel.socket();
-            socket.bind(new InetSocketAddress(endpoint.host(), endpoint.port()));
-            serverChannel.configureBlocking(false);
-            System.out.println("[SERVER] servant started at " + endpoint + "...");
+//            System.out.println("[SERVER] server starting at " + endpoint + "...");
+//            DatagramChannel serverChannel = DatagramChannel.open();
+//            DatagramSocket socket = serverChannel.socket();
+//            socket.bind(new InetSocketAddress(endpoint.host(), endpoint.port()));
+//            serverChannel.configureBlocking(false);
+//            System.out.println("[SERVER] servant started at " + endpoint + "...");
         }
     }
+
 
     public ServantAdapterConfig getServantAdapterConfig() {
         return servantAdapterConfig;
@@ -116,7 +70,6 @@ public class ServantAdapter implements Adapter {
         if (processorClass == null) {
             return new TarsServantProcessor();
         }
-
         if (processorClass != null) {
             Constructor<? extends Processor> constructor;
             try {
@@ -129,31 +82,49 @@ public class ServantAdapter implements Adapter {
         return processor;
     }
 
-    private Codec createCodec(ServerConfig serverCfg) throws TarsException {
-        Codec codec = null;
-        Class<? extends Codec> codecClass = skeleton.getCodecClass();
-        if (codecClass == null) {
-            ServantCodec servantCodec = skeleton.getApiClass().getAnnotation(ServantCodec.class);
-            if (servantCodec != null) {
-                codecClass = servantCodec.codec();
+
+    private static class InnerDefaultHandler implements ChannelHandler {
+
+        public final Processor processor;
+
+        public InnerDefaultHandler(Processor processor) {
+            this.processor = processor;
+        }
+
+        @Override
+        public void connected(Channel channel) {
+
+        }
+
+        @Override
+        public void disconnected(Channel channel) {
+
+        }
+
+        @Override
+        public void send(Channel channel, Object message) {
+
+        }
+
+        @Override
+        public void received(Channel channel, Object message) {
+            Response response = processor.process((Request) message, channel);
+            if (!response.isAsyncMode() && channel.isWritable()) {
+                channel.writeAndFlush(response);
             }
         }
 
-        if (codecClass == null) {
-            codecClass = TarsServerCodec.class;
+        @Override
+        public void caught(Channel channel, Throwable exception) {
+
         }
 
-        if (codecClass != null) {
-            Constructor<? extends Codec> constructor;
-            try {
-                constructor = codecClass.getConstructor(new Class[]{String.class});
-                codec = constructor.newInstance(serverCfg.getCharsetName());
-            } catch (Exception e) {
-                throw new TarsException("error occurred on create codec, codec=" + codecClass.getName());
-            }
+        @Override
+        public void destroy() {
+
         }
-        return codec;
     }
+
 
     public void stop() {
     }

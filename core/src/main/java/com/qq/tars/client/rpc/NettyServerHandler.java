@@ -39,17 +39,18 @@ public class NettyServerHandler extends ChannelDuplexHandler {
     private final ChannelHandler handler;
     private final ServantAdapterConfig servantAdapterConfig;
 
+    public Map<String, NettyServerChannel> getChannels() {
+        return channels;
+    }
+
 
     public NettyServerHandler(ServantAdapterConfig servantAdapterConfig, ChannelHandler channelHandler) {
         this.servantAdapterConfig = servantAdapterConfig;
         this.handler = channelHandler;
     }
 
-    public Map<String, NettyServerChannel> getChannels() {
-        return channels;
-    }
 
-    public static NettyServerChannel getOrAddChannel(Channel ioChannel, ServantAdapterConfig config, ChannelHandler handler) {
+    static NettyServerChannel getOrAddChannel(Channel ioChannel, ServantAdapterConfig config, ChannelHandler handler) {
         if (ioChannel == null) {
             return null;
         }

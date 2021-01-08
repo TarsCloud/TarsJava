@@ -100,7 +100,7 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
     protected RPCClient initClient(Url url) {
         RPCClient client = null;
         try {
-            client = NettyClientTransporter.connect(url, servantProxyConfig, new InnerDefaultHandler());
+            client = NettyTransporter.connect(url, servantProxyConfig, new InnerDefaultHandler());
         } catch (Throwable e) {
             throw new ClientException(servantProxyConfig.getSimpleObjectName(), "Fail to create client|" + url.toIdentityString() + "|" + e.getLocalizedMessage(), e);
         }

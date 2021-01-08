@@ -47,6 +47,7 @@ import io.netty.channel.Channel;
 import org.slf4j.Logger;
 
 import java.lang.reflect.InvocationTargetException;
+import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Random;
@@ -107,23 +108,19 @@ public class TarsServantProcessor implements Processor {
 
     @Override
     public Response process(Request req, Channel clientChannel) {
-//        AppContainer container = null;
         TarsServantRequest request = null;
         TarsServantResponse response = null;
         ServantHomeSkeleton skeleton = null;
-        Object value = null;
         AppContext appContext = null;
         ClassLoader oldClassLoader = null;
         int waitingTime = -1;
         long startTime = req.getProcessTime();
         String remark = "";
-
         try {
             oldClassLoader = Thread.currentThread().getContextClassLoader();
             request = (TarsServantRequest) req;
             response = (TarsServantResponse) createResponse(request, clientChannel);
             response.setRequestId(request.getRequestId());
-
             if (TarsHelper.isPing(request.getFunctionName())) {
                 return response;
             }
@@ -144,7 +141,6 @@ public class TarsServantProcessor implements Processor {
             context.setAttribute(Context.INTERNAL_SERVICE_NAME, request.getServantName());
             context.setAttribute(Context.INTERNAL_METHOD_NAME, request.getFunctionName());
             context.setAttribute(Context.INTERNAL_SESSION_DATA, clientChannel);
-
             DistributedContext distributedContext = DistributedContextManager.getDistributedContext();
             distributedContext.put(DyeingSwitch.REQ, request);
             distributedContext.put(DyeingSwitch.RES, response);
@@ -239,7 +235,7 @@ public class TarsServantProcessor implements Processor {
         }
         CommunicatorConfig communicatorConfig = serverConfig.getCommunicatorConfig();
         Endpoint serverEndpoint = servantAdapterConfig.getEndpoint();
-        String masterIp = channel.remoteAddress().toString();
+        String masterIp = ((InetSocketAddress) channel.remoteAddress()).getHostString();
         int result = response.getRet() == TarsHelper.SERVERSUCCESS ? Constants.INVOKE_STATUS_SUCC : Constants.INVOKE_STATUS_EXEC;
         InvokeStatHelper.getInstance().addProxyStat(request.getServantName()).addInvokeTimeByServer(moduleName, serverConfig.getApplication(), serverConfig.getServerName(), communicatorConfig.getSetName(), communicatorConfig.getSetArea(), communicatorConfig.getSetID(), request.getFunctionName(), (masterIp == null ? "0.0.0.0" : masterIp), serverEndpoint.host(), serverEndpoint.port(), result, (System.currentTimeMillis() - startTime));
     }

@@ -103,8 +103,6 @@ public class NettyServer {
                                 .addLast("handler", nettyServerHandler);
                     }
                 });
-
-
         ChannelFuture channelFuture = bootstrap.bind(serverInetSocketAddress);
         channelFuture.syncUninterruptibly();
         serverChannel = channelFuture.channel();
@@ -163,10 +161,5 @@ public class NettyServer {
     public boolean canHandleIdle() {
         return true;
     }
-
-    public boolean isBound() {
-        return serverChannel.isActive();
-    }
-
 
 }
