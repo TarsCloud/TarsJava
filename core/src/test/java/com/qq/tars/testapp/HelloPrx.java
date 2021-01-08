@@ -18,10 +18,9 @@
 // TARS version 1.0.1.
 // **********************************************************************
 
-package com.tencent.tars.testapp;
+package com.qq.tars.testapp;
 
 import com.qq.tars.protocol.annotation.Servant;
-import com.qq.tars.protocol.tars.annotation.TarsCallback;
 import com.qq.tars.protocol.tars.annotation.TarsContext;
 
 import java.util.concurrent.CompletableFuture;

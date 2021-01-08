@@ -33,9 +33,11 @@ import java.lang.reflect.Constructor;
 public class ServantAdapter implements Adapter {
     private final ServantAdapterConfig servantAdapterConfig;
     private ServantHomeSkeleton skeleton;
+
     public ServantAdapter(ServantAdapterConfig servantAdapterConfig) {
         this.servantAdapterConfig = servantAdapterConfig;
     }
+
     public void bind(AppService appService) throws IOException {
         this.skeleton = (ServantHomeSkeleton) appService;
         ServerConfig serverCfg = ConfigurationManager.getInstance().getServerConfig();
@@ -45,14 +47,13 @@ public class ServantAdapter implements Adapter {
             System.out.println("[SERVER] server starting at " + endpoint + "...");
             NettyTransporter.bind(servantAdapterConfig, new InnerDefaultHandler(processor));
             System.out.println("[SERVER] server started at " + endpoint + "...");
-        } else if (endpoint.type().equals("udp")) {
-//            System.out.println("[SERVER] server starting at " + endpoint + "...");
-//            DatagramChannel serverChannel = DatagramChannel.open();
-//            DatagramSocket socket = serverChannel.socket();
-//            socket.bind(new InetSocketAddress(endpoint.host(), endpoint.port()));
-//            serverChannel.configureBlocking(false);
-//            System.out.println("[SERVER] servant started at " + endpoint + "...");
-        }
+        }  //            System.out.println("[SERVER] server starting at " + endpoint + "...");
+        //            DatagramChannel serverChannel = DatagramChannel.open();
+        //            DatagramSocket socket = serverChannel.socket();
+        //            socket.bind(new InetSocketAddress(endpoint.host(), endpoint.port()));
+        //            serverChannel.configureBlocking(false);
+        //            System.out.println("[SERVER] servant started at " + endpoint + "...");
+
     }
 
 

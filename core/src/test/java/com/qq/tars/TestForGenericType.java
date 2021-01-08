@@ -1,4 +1,4 @@
-package com.tencent.tars;
+package com.qq.tars;
 
 import junit.framework.Assert;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package com.tencent.tars;
+package com.qq.tars;
 
 import com.qq.tars.protocol.tars.TarsOutputStream;
 import com.qq.tars.quickstart.server.testapp.TestRecursive;

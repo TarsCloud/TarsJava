@@ -24,7 +24,7 @@ import io.netty.channel.Channel;
 
 public class ServantProcessor implements Processor {
 
-    private TarsServantProcessor processor = new TarsServantProcessor();
+    private final TarsServantProcessor processor = new TarsServantProcessor();
 
     @Override
     public Response process(Request request, Channel channel) {
