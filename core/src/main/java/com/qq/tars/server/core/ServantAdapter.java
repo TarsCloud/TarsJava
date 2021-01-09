@@ -53,6 +53,16 @@ public class ServantAdapter implements Adapter {
 
     }
 
+    public void bind() throws Throwable {
+        Processor processor = createProcessor(this.servantAdapterConfig.getServerConfig());
+        Endpoint endpoint = this.servantAdapterConfig.getEndpoint();
+        if (endpoint.type().equals("tcp")) {
+            System.out.println("[SERVER] server starting at " + endpoint + "...");
+            NettyServer nettyServer = NettyTransporter.bind(servantAdapterConfig, new InnerDefaultHandler(processor));
+            nettyServer.bind();
+            System.out.println("[SERVER] server started at " + endpoint + "...");
+        }
+    }
 
     public ServantAdapterConfig getServantAdapterConfig() {
         return servantAdapterConfig;

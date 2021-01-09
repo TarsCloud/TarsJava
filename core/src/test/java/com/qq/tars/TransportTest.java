@@ -21,6 +21,7 @@ import com.qq.tars.rpc.protocol.tars.support.AnalystManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
@@ -28,6 +29,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class TransportTest {
     @Test
+    @Ignore
     public void testForConnection() throws Exception {
 
         ChannelHandler channelHandler = new ChannelHandler() {

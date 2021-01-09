@@ -15,11 +15,13 @@ import com.qq.tars.server.core.ServantAdapter;
 import com.qq.tars.server.core.ServantHomeSkeleton;
 import io.netty.channel.Channel;
 import org.assertj.core.util.Lists;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestForNettyServer {
 
     @Test
+    @Ignore
     public void testForServer() throws InterruptedException {
         ChannelHandler channelHandlerer = new ChannelHandler() {
             @Override

@@ -116,13 +116,12 @@ public class TarsStartLifecycle extends BaseAppContext implements SmartLifecycle
         ConfigurationManager.getInstance().setServerConfig(this.serverProperties);
         ConfigurationManager.getInstance().setCommunicatorConfig(this.clientProperties);
 
-        servantAdapterConfig = new ServantAdapterConfig();
-        servantAdapterConfig.setEndpoint(new Endpoint(serverProperties.isUdp() ? "udp" : "tcp", StringUtils.isEmpty(serverProperties.getLocalIP()) ? "0.0.0.0" : serverProperties.getLocalIP(), serverProperties.getPort(), 0, 0, 0, null));
-        servantAdapterConfig.setHandleGroup("default");
-        servantAdapterConfig.setMaxConns(serverProperties.getMaxConns());
-        servantAdapterConfig.setThreads(serverProperties.getThreads());
-        servantAdapterConfig.setQueueCap(serverProperties.getQueueCap());
-        servantAdapterConfig.setQueueTimeout(serverProperties.getQueueTimeout());
+
+        Endpoint endpoint = new Endpoint(serverProperties.isUdp() ? "udp" : "tcp",
+                StringUtils.isEmpty(serverProperties.getLocalIP()) ? "0.0.0.0" : serverProperties.getLocalIP(),
+                serverProperties.getPort(), 0, 0, 0, null);
+        servantAdapterConfig = ServantAdapterConfig.makeServantAdapterConfig(endpoint, "", serverProperties);
+
 
         TarsTraceZipkinConfiguration.getInstance().init();
     }
@@ -173,7 +172,7 @@ public class TarsStartLifecycle extends BaseAppContext implements SmartLifecycle
             }
         }
 
-        skeleton = new ServantHomeSkeleton(homeName, homeClassImpl, homeApiClazz, null, null, maxLoadLimit);
+        skeleton = new ServantHomeSkeleton(homeName, homeClassImpl, homeApiClazz, maxLoadLimit);
         skeleton.setAppContext(this);
 
         ConfigurationManager.getInstance().getServerConfig().getServantAdapterConfMap().put(homeName, servantAdapterConfig);
@@ -183,8 +182,11 @@ public class TarsStartLifecycle extends BaseAppContext implements SmartLifecycle
 
     private void startServantAdapter() throws IOException {
         ServantAdapter ServerAdapter = new ServantAdapter(servantAdapterConfig);
-
-        ServerAdapter.bind();
+        try {
+            ServerAdapter.bind();
+        } catch (Throwable throwable) {
+            throw new IOException(throwable);
+        }
         servantAdapterMap.put("", ServerAdapter);
     }
 }

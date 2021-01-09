@@ -49,6 +49,7 @@ public final class ServantAdapterConfig {
     }
 
 
+
     public static ServantAdapterConfig makeServantAdapterConfig(Endpoint endpoint, String servantName, ServerConfig serverConfig) {
         return new ServantAdapterConfig(endpoint, servantName, serverConfig);
     }
