@@ -20,6 +20,7 @@ import com.qq.tars.client.rpc.Request;
 import com.qq.tars.protocol.tars.TarsInputStream;
 import com.qq.tars.rpc.protocol.ServantResponse;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Map;
 
@@ -120,6 +121,7 @@ public class TarsServantResponse extends ServantResponse implements java.io.Seri
         return this.request;
     }
 
+
     public void setRequest(TarsServantRequest request) {
         this.request = request;
     }
@@ -163,4 +165,6 @@ public class TarsServantResponse extends ServantResponse implements java.io.Seri
     public void setContext(Map<String, Object> context) {
         this.context = context;
     }
+
+
 }

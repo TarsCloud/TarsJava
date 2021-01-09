@@ -20,7 +20,9 @@ import com.qq.tars.common.util.StringUtils;
 import com.qq.tars.protocol.annotation.Servant;
 import com.qq.tars.protocol.util.TarsHelper;
 import com.qq.tars.rpc.protocol.Codec;
-import com.qq.tars.server.config.*;
+import com.qq.tars.server.config.ConfigurationManager;
+import com.qq.tars.server.config.ServantAdapterConfig;
+import com.qq.tars.server.config.ServerConfig;
 import com.qq.tars.server.core.AppContextListener;
 import com.qq.tars.server.core.Processor;
 import com.qq.tars.server.core.ServantAdapter;
@@ -66,18 +68,18 @@ public class SpringAppContext extends BaseAppContext {
                 ServantHomeSkeleton skeleton = loadServant(entry.getValue());
                 skeletonMap.put(skeleton.name(), skeleton);
                 appServantStarted(skeleton);
-            } catch (Exception e) {
+            } catch (Throwable throwable) {
                 System.err.println("init a service failed");
-                e.printStackTrace();
+                throwable.printStackTrace();
             }
         }
     }
 
     private void loadAppFilters(ApplicationContext applicationContext) {
-    	
+
     }
 
-    private ServantHomeSkeleton loadServant(ServantConfig servantConfig) throws Exception {
+    private ServantHomeSkeleton loadServant(ServantConfig servantConfig) throws Throwable {
         String homeName = null, homeApiName = null;
         Class<?> homeApiClazz = null;
         Class<? extends Codec> codecClazz = null;
@@ -108,7 +110,7 @@ public class SpringAppContext extends BaseAppContext {
         ServantAdapterConfig servantAdapterConfig = serverCfg.getServantAdapterConfMap().get(homeName);
 
         ServantAdapter ServerAdapter = new ServantAdapter(servantAdapterConfig);
-        skeleton = new ServantHomeSkeleton(homeName, homeClassImpl, homeApiClazz, codecClazz, processorClazz, maxLoadLimit);
+        skeleton = new ServantHomeSkeleton(homeName, homeClassImpl, homeApiClazz, maxLoadLimit);
         skeleton.setAppContext(this);
         ServerAdapter.bind(skeleton);
         servantAdapterMap.put(homeName, ServerAdapter);

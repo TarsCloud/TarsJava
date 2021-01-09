@@ -56,6 +56,7 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
 
     public TarsInvoker(ServantProxyConfig config, Class<T> api, Url url, RPCClient[] clients) {
         super(config, api, url, clients);
+        System.out.println(AppContextManager.getInstance().getAppContext() == null);
         filters = AppContextManager.getInstance().getAppContext() == null ? null : AppContextManager.getInstance().getAppContext().getFilters(FilterKind.CLIENT);
     }
 

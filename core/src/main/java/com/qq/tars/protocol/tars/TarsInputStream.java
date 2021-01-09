@@ -16,9 +16,6 @@
 
 package com.qq.tars.protocol.tars;
 
-//import com.qq.tars.common.util.HexUtil;
-//import com.qq.tars.protocol.tars.TarsInputStreamExt;
-//import com.qq.tars.protocol.tars.TarsStructBase;
 
 import com.qq.tars.common.util.HexUtil;
 import com.qq.tars.protocol.tars.exc.TarsDecodeException;
@@ -906,8 +903,13 @@ public final class TarsInputStream {
     }
 
 
-    public byte[] getBs() {
-        return bs.array();
+    public ByteBuf getBs() {
+        return  this.bs;
+    }
+    public byte[] toByteArray() {
+        final byte[]  byteArrays =new byte[bs.readableBytes()];
+        bs.readBytes(byteArrays);
+        return byteArrays;
     }
 }
 

@@ -193,7 +193,7 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
             if (request.getRet() == TarsHelper.SERVERSUCCESS) {
                 request.setRet(TarsHelper.SERVERDECODEERR);
             }
-            System.err.println(TarsUtil.getHexdump(jis.getBs()));
+            System.err.println(TarsUtil.getHexdump(jis.toByteArray()));
         } finally {
             if (oldClassLoader != null) {
                 Thread.currentThread().setContextClassLoader(oldClassLoader);
