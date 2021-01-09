@@ -51,15 +51,19 @@ public class ServerConfig {
     private boolean tcpNoDelay = false;
     private int udpBufferSize = 4096;
     private int logMaxHistry = 15;
+
     public int getLogMaxHistry() {
         return logMaxHistry;
     }
+
     public void setLogMaxHistry(int logMaxHistry) {
         this.logMaxHistry = logMaxHistry;
     }
+
     private Charset charsetName = StandardCharsets.UTF_8;
     private LinkedHashMap<String, ServantAdapterConfig> servantAdapterConfMap;
     private CommunicatorConfig communicatorConfig;
+
 
     public ServerConfig load(Config conf) {
         application = conf.get("/tars/application/server<app>", "UNKNOWN");
@@ -121,6 +125,23 @@ public class ServerConfig {
         communicatorConfig.setLogLevel(logLevel);
         communicatorConfig.setDataPath(dataPath);
         return this;
+    }
+
+    public ServerConfig() {
+        application = "UNKNOWN";
+        serverName = "";
+        String localStr = "";
+        logMaxHistry = 15;
+
+        charsetName = Constants.DEFAULT_CHARSET;
+        logRate = 5;
+
+
+        sessionTimeOut = 120000;
+        sessionCheckInterval = 60000;
+        udpBufferSize = 4096;
+        tcpNoDelay =false;
+        servantAdapterConfMap = new LinkedHashMap<>();
     }
 
     public String getApplication() {

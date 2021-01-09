@@ -17,18 +17,15 @@
 package com.qq.tars.server.core;
 
 import com.qq.tars.client.rpc.ChannelHandler;
+import com.qq.tars.client.rpc.NettyServer;
 import com.qq.tars.client.rpc.NettyTransporter;
 import com.qq.tars.client.rpc.Request;
 import com.qq.tars.client.rpc.Response;
 import com.qq.tars.common.support.Endpoint;
 import com.qq.tars.rpc.exc.TarsException;
-import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.server.config.ServantAdapterConfig;
 import com.qq.tars.server.config.ServerConfig;
 import io.netty.channel.Channel;
-
-import java.io.IOException;
-import java.lang.reflect.Constructor;
 
 public class ServantAdapter implements Adapter {
     private final ServantAdapterConfig servantAdapterConfig;
@@ -38,14 +35,14 @@ public class ServantAdapter implements Adapter {
         this.servantAdapterConfig = servantAdapterConfig;
     }
 
-    public void bind(AppService appService) throws IOException {
+    public void bind(AppService appService) throws Throwable {
         this.skeleton = (ServantHomeSkeleton) appService;
-        ServerConfig serverCfg = ConfigurationManager.getInstance().getServerConfig();
-        Processor processor = createProcessor(serverCfg);
+        Processor processor = createProcessor(this.servantAdapterConfig.getServerConfig());
         Endpoint endpoint = this.servantAdapterConfig.getEndpoint();
         if (endpoint.type().equals("tcp")) {
             System.out.println("[SERVER] server starting at " + endpoint + "...");
-            NettyTransporter.bind(servantAdapterConfig, new InnerDefaultHandler(processor));
+            NettyServer nettyServer = NettyTransporter.bind(servantAdapterConfig, new InnerDefaultHandler(processor));
+            nettyServer.bind();
             System.out.println("[SERVER] server started at " + endpoint + "...");
         }  //            System.out.println("[SERVER] server starting at " + endpoint + "...");
         //            DatagramChannel serverChannel = DatagramChannel.open();
@@ -66,21 +63,7 @@ public class ServantAdapter implements Adapter {
     }
 
     private Processor createProcessor(ServerConfig serverCfg) throws TarsException {
-        Processor processor = null;
-        Class<? extends Processor> processorClass = skeleton.getProcessorClass();
-        if (processorClass == null) {
-            return new TarsServantProcessor();
-        }
-        if (processorClass != null) {
-            Constructor<? extends Processor> constructor;
-            try {
-                constructor = processorClass.getConstructor(new Class[]{ServantAdapter.class});
-                processor = constructor.newInstance(this);
-            } catch (Exception e) {
-                throw new TarsException("error occurred on create codec, codec=" + processorClass.getName());
-            }
-        }
-        return processor;
+        return new TarsServantProcessor();
     }
 
 

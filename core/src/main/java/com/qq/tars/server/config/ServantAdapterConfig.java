@@ -115,18 +115,5 @@ public final class ServantAdapterConfig {
         this.serverConfig = serverConfig;
     }
 
-    @Override
-    public String toString() {
-        return "ServantAdapterConfig{" +
-                "endpoint=" + endpoint +
-                ", maxConns=" + maxConns +
-                ", queueCap=" + queueCap +
-                ", queueTimeout=" + queueTimeout +
-                ", servant='" + servant + '\'' +
-                ", protocol='" + protocol + '\'' +
-                ", threads=" + threads +
-                ", handleGroup='" + handleGroup + '\'' +
-                ", serverConfig=" + serverConfig +
-                '}';
-    }
+
 }

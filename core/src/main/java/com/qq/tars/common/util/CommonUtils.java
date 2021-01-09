@@ -18,6 +18,7 @@ package com.qq.tars.common.util;
 
 import java.net.InetSocketAddress;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 @SuppressWarnings("unchecked")
@@ -74,5 +75,13 @@ public class CommonUtils {
 
     public static String getIPAndPort(InetSocketAddress remoteAddress) {
         return String.format("%s:%s", remoteAddress.getHostString(), remoteAddress.getPort());
+    }
+
+    public static Map<String, Object> convertMap(Map<String, String> strMap) {
+        Map<String, Object> hashmap = new HashMap<>();
+        for (Map.Entry<String, String> entry : strMap.entrySet()) {
+            hashmap.put(entry.getKey(), entry.getValue());
+        }
+        return hashmap;
     }
 }

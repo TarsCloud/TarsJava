@@ -39,12 +39,12 @@ import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.server.config.ServantAdapterConfig;
 import com.qq.tars.server.config.ServerConfig;
-import com.qq.tars.support.log.LoggerFactory;
 import com.qq.tars.support.om.OmServiceMngr;
 import com.qq.tars.support.stat.InvokeStatHelper;
 import com.qq.tars.support.trace.TraceManager;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetSocketAddress;
@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.Random;
 
 public class TarsServantProcessor implements Processor {
+    private static final Logger logger = LoggerFactory.getLogger(TarsServantProcessor.class);
 
     private static final String FLOW_SEP_FLAG = "|";
     private static final Random rand = new Random(System.currentTimeMillis());
@@ -114,7 +115,7 @@ public class TarsServantProcessor implements Processor {
         AppContext appContext = null;
         ClassLoader oldClassLoader = null;
         int waitingTime = -1;
-        long startTime = req.getProcessTime();
+        long startTime = req.getBornTime();
         String remark = "";
         try {
             oldClassLoader = Thread.currentThread().getContextClassLoader();
@@ -130,7 +131,11 @@ public class TarsServantProcessor implements Processor {
             }
 
             int maxWaitingTimeInQueue = ConfigurationManager.getInstance().getServerConfig().getServantAdapterConfMap().get(request.getServantName()).getQueueTimeout();
+
             waitingTime = (int) (startTime - req.getBornTime());
+
+            logger.debug("waittime:queu_time{},{},{},{}", waitingTime, maxWaitingTimeInQueue, startTime, req.getBornTime());
+
             if (waitingTime > maxWaitingTimeInQueue) {
                 throw new ServerQueueTimeoutException(TarsHelper.SERVERQUEUETIMEOUT, "queue timeout.");
             }

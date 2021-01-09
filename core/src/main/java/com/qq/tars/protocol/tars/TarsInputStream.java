@@ -25,7 +25,6 @@ import com.qq.tars.protocol.tars.exc.TarsDecodeException;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.nio.BufferUnderflowException;
@@ -80,7 +79,6 @@ public final class TarsInputStream {
     }
 
     public static int readHead(HeadData hd, ByteBuf bb) {
-        //byte b = bb.get();
         byte b = bb.readByte();
         hd.type = (byte) (b & 15);
         hd.tag = ((b & (15 << 4)) >> 4);
@@ -108,6 +106,9 @@ public final class TarsInputStream {
         try {
             HeadData hd = new HeadData();
             while (true) {
+                if(bs.readableBytes()==0){
+                    return false;
+                }
                 int len = peakHead(hd);
                 if (hd.type == TarsStructBase.STRUCT_END) {
                     return false;
@@ -116,8 +117,7 @@ public final class TarsInputStream {
                 skip(len);
                 skipField(hd.type);
             }
-        } catch (TarsDecodeException e) {
-        } catch (BufferUnderflowException e) {
+        } catch (TarsDecodeException | BufferUnderflowException | IndexOutOfBoundsException e) {
         }
         return false;
     }

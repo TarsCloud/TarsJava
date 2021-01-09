@@ -17,7 +17,7 @@
 package com.qq.tars.server.core;
 
 public interface Adapter {
-    void bind(AppService appService) throws Exception;
+    void bind(AppService appService) throws Throwable;
 
     void stop();
 }

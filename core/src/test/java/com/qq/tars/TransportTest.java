@@ -160,7 +160,7 @@ public class TransportTest {
     public void testForQuery() {
         CommunicatorConfig config = new CommunicatorConfig();
         MonitorQueryPrx queryPrx = CommunicatorFactory.getInstance().getCommunicator(config).stringToProxy(MonitorQueryPrx.class,
-                "tars.tarsquerystat.QueryObj@tcp -h 127.0.0.1 -t 60000 -p 18393");
+                "tars.tarsquerystat.QueryObj@tcp -h 127.0.0.1 -t 60000 -p 60000");
         MonitorQueryReq request = new MonitorQueryReq();
         request.dateType = DateType.MINIUES.value();
         request.method = "query";

@@ -15,11 +15,13 @@
  */
 package com.qq.tars.client.rpc;
 
+import com.google.gson.JsonObject;
 import com.qq.tars.common.support.ClassLoaderManager;
 import com.qq.tars.common.support.Holder;
+import com.qq.tars.common.util.CollectionUtils;
 import com.qq.tars.common.util.CommonUtils;
 import com.qq.tars.common.util.Constants;
-import com.qq.tars.common.util.StringUtils;
+import com.qq.tars.common.util.JsonProvider;
 import com.qq.tars.protocol.tars.TarsInputStream;
 import com.qq.tars.protocol.tars.support.TarsMethodInfo;
 import com.qq.tars.protocol.tars.support.TarsMethodParameterInfo;
@@ -35,6 +37,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -44,6 +48,7 @@ import java.util.List;
 import java.util.Map;
 
 public class TarsDecoder extends ByteToMessageDecoder implements Codec {
+    private static final Logger logger = LoggerFactory.getLogger(TarsDecoder.class);
     private boolean isServer = false;
 
     public TarsDecoder(Charset charsetName, boolean isServer) {
@@ -96,25 +101,37 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
         if (buffer.readableBytes() < length) {
             return null;
         }
-        TarsInputStream jis = new TarsInputStream(buffer);
+        byte[] byteArray = new byte[buffer.readableBytes()];
+        buffer.readBytes(byteArray);
+        TarsInputStream jis = new TarsInputStream(byteArray);
         TarsServantRequest request = new TarsServantRequest();
         try {
             short version = jis.read(TarsHelper.STAMP_SHORT.shortValue(), 1, true);
             byte packetType = jis.read(TarsHelper.STAMP_BYTE.byteValue(), 2, true);
-            final int messageType = jis.read(TarsHelper.STAMP_INT.intValue(), 3, true);
-            final int requestId = jis.read(TarsHelper.STAMP_INT.intValue(), 4, true);
+            int messageType = jis.read(TarsHelper.STAMP_INT.intValue(), 3, true);
+            int requestId = jis.read(TarsHelper.STAMP_INT.intValue(), 4, true);
             String servantName = jis.readString(5, true);
             String methodName = jis.readString(6, true);
+            byte[] data = jis.read(TarsHelper.STAMP_BYTE_ARRAY, 7, true);
+            int timeout = jis.read(TarsHelper.STAMP_INT.intValue(), 8, true);//超时时间
+            Map<String, Object> context = CommonUtils.convertMap((Map<String, String>) jis.read(TarsHelper.STAMP_MAP, 9, true));//Map<String, String> context
+            Map<String, String> status = (Map<String, String>) jis.read(TarsHelper.STAMP_MAP, 10, true);
             request.setVersion(version);
             request.setPacketType(packetType);
             request.setMessageType(messageType);
             request.setRequestId(requestId);
             request.setServantName(servantName);
             request.setFunctionName(methodName);
+            request.setData(data);
+            request.setTimeout(timeout);
+            request.setContext(context);
+            request.setStatus(status);
             request.setInputStream(jis);
             request.setCharsetName(charsetName.name());
+            logger.debug("[Decoder][server] decode request is {}", request);
             decodeRequestBody(request);
         } catch (Exception e) {
+            e.printStackTrace();
             System.err.println(e);
             request.setRet(TarsHelper.SERVERDECODEERR);
         }
@@ -134,21 +151,17 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
         if (TarsHelper.isPing(request.getFunctionName())) {
             return;
         }
+
         TarsInputStream jis = request.getInputStream();
         ClassLoader oldClassLoader = null;
         try {
             oldClassLoader = Thread.currentThread().getContextClassLoader();
             Thread.currentThread().setContextClassLoader(resolveProtocolClassLoader());
             String methodName = request.getFunctionName();
-            byte[] data = jis.read(TarsHelper.STAMP_BYTE_ARRAY, 7, true);//数据
-            int timeout = jis.read(TarsHelper.STAMP_INT.intValue(), 8, true);//超时时间
-            Map<String, Object> context = (Map<String, Object>) jis.read(TarsHelper.STAMP_MAP, 9, true);//Map<String, String> context
-            Map<String, String> status = (Map<String, String>) jis.read(TarsHelper.STAMP_MAP, 10, true);
-            request.setTimeout(timeout);
-            request.setContext(context);
-            request.setStatus(status);
+
             String servantName = request.getServantName();
             Map<String, TarsMethodInfo> methodInfoMap = AnalystManager.getInstance().getMethodMapByName(servantName);
+
             if (methodInfoMap == null || methodInfoMap.isEmpty()) {
                 request.setRet(TarsHelper.SERVERNOSERVANTERR);
                 throw new ProtocolException("no found methodInfo, the context[ROOT], serviceName[" + servantName + "], methodName[" + methodName + "]");
@@ -160,36 +173,15 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
             }
             request.setMethodInfo(methodInfo);
             List<TarsMethodParameterInfo> parametersList = methodInfo.getParametersList();
-            if (!CommonUtils.isEmptyCollection(parametersList)) {
+            if (CollectionUtils.isNotEmpty(parametersList)) {
                 Object[] parameters = new Object[parametersList.size()];
                 int i = 0;
                 if (TarsHelper.VERSION == request.getVersion()) {//request
-                    parameters = decodeRequestBody(data, methodInfo);
+                    parameters = decodeRequestBody(request.getData(), methodInfo);
                 } else if (TarsHelper.VERSION2 == request.getVersion() || TarsHelper.VERSION3 == request.getVersion()) {
-                    //wup request
-                    UniAttribute unaIn = new UniAttribute();
-                    unaIn.setEncodeName(Charset.forName(request.getCharsetName()));
-
-                    if (request.getVersion() == TarsHelper.VERSION2) {
-                        unaIn.decodeVersion2(data);
-                    } else if (request.getVersion() == TarsHelper.VERSION3) {
-                        unaIn.decodeVersion3(data);
-                    }
-
-                    Object value = null;
-                    for (TarsMethodParameterInfo parameterInfo : parametersList) {
-                        if (TarsHelper.isHolder(parameterInfo.getAnnotations())) {
-                            String holderName = TarsHelper.getHolderName(parameterInfo.getAnnotations());
-                            if (!StringUtils.isEmpty(holderName)) {
-                                value = new Holder<>(unaIn.getByClass(holderName, parameterInfo.getStamp()));
-                            } else {
-                                value = new Holder<>();
-                            }
-                        } else {
-                            value = unaIn.getByClass(parameterInfo.getName(), parameterInfo.getStamp());
-                        }
-                        parameters[i++] = value;
-                    }
+                    parameters = decodeRequestWupBody(request.getData(), request.getVersion(), request.getCharsetName(), methodInfo);
+                } else if (TarsHelper.VERSIONJSON == request.getVersion()) {
+                    parameters = decodeRequestJsonBody(request.getData(), request.getCharsetName(), methodInfo);
                 } else {
                     request.setRet(TarsHelper.SERVERDECODEERR);
                     System.err.println("un supported protocol, ver=" + request.getVersion());
@@ -197,6 +189,7 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
                 request.setMethodParameters(parameters);
             }
         } catch (Throwable ex) {
+            ex.printStackTrace();
             if (request.getRet() == TarsHelper.SERVERSUCCESS) {
                 request.setRet(TarsHelper.SERVERDECODEERR);
             }
@@ -206,6 +199,7 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
                 Thread.currentThread().setContextClassLoader(oldClassLoader);
             }
         }
+        return;
     }
 
     protected Object[] decodeRequestBody(byte[] data, TarsMethodInfo methodInfo) throws Exception {
@@ -213,7 +207,6 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
         List<TarsMethodParameterInfo> parametersList = methodInfo.getParametersList();
         Object[] parameters = new Object[parametersList.size()];
         int i = 0;
-
         jis.setServerEncoding(charsetName);//set decode charset name
         Object value = null;
         for (TarsMethodParameterInfo parameterInfo : parametersList) {
@@ -351,6 +344,83 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
     @Override
     public Charset getCharset() {
         return this.charsetName;
+    }
+
+    protected Object[] decodeRequestWupBody(byte[] data, int version, String charset,
+                                            TarsMethodInfo methodInfo) throws Exception {
+        //wup request
+        UniAttribute unaIn = new UniAttribute();
+        unaIn.setEncodeName(charsetName);
+
+        if (version == TarsHelper.VERSION2) {
+            unaIn.decodeVersion2(data);
+        } else if (version == TarsHelper.VERSION3) {
+            unaIn.decodeVersion3(data);
+        }
+
+        List<TarsMethodParameterInfo> parametersList = methodInfo.getParametersList();
+        Object[] parameters = new Object[parametersList.size()];
+
+        int i = 0;
+        Object value = null;
+        for (TarsMethodParameterInfo parameterInfo : parametersList) {
+            if (TarsHelper.isHolder(parameterInfo.getAnnotations())) {
+                String holderName = TarsHelper.getHolderName(parameterInfo.getAnnotations());
+                if (unaIn.containsKey(holderName)) {
+                    value = new Holder<>(unaIn.getByClass(holderName, parameterInfo.getStamp()));
+                } else {
+                    // new a response
+                    value = new Holder<>(TarsHelper.getNewParameterStamp(parameterInfo.getType()));
+                }
+            } else {
+                value = unaIn.getByClass(parameterInfo.getName(), parameterInfo.getStamp());
+            }
+            parameters[i++] = value;
+        }
+
+        return parameters;
+    }
+
+    protected Object[] decodeRequestJsonBody(byte[] data, String charset,
+                                             TarsMethodInfo methodInfo) throws Exception {
+        // 解析json串
+        JsonObject jsonObject = JsonProvider.fromJson(new String(data, charset), JsonObject.class);
+
+        // 按字段反序列化
+        int i = 0;
+        Object value = null;
+
+        List<TarsMethodParameterInfo> parametersList = methodInfo.getParametersList();
+        Object[] parameters = new Object[parametersList.size()];
+
+        for (TarsMethodParameterInfo parameterInfo : parametersList) {
+            if (TarsHelper.isHolder(parameterInfo.getAnnotations())) {
+                if (jsonObject.has(parameterInfo.getName())) {
+                    String reqStr = jsonObject.get(parameterInfo.getName()).toString();
+                    // System.out.println("holder has " + parameterInfo.getName() + ", str: " + reqStr);
+                    value = new Holder<>(JsonProvider.fromJson(reqStr, parameterInfo.getStamp().getClass()));
+                } else {
+                    // System.out.println("holder has no " + parameterInfo.getName());
+                    // new response, can not use cache
+                    value = new Holder<>(TarsHelper.getNewParameterStamp(parameterInfo.getType()));
+                }
+            } else {
+                if (jsonObject.has(parameterInfo.getName())) {
+                    String reqStr = jsonObject.get(parameterInfo.getName()).toString();
+                    // System.out.println("request has " + parameterInfo.getName() + ", str: " + reqStr);
+                    value = JsonProvider.fromJson(reqStr, parameterInfo.getType());
+                } else {
+                    System.out.println("request has no " + parameterInfo.getName() + ", exception.");
+                    throw new ProtocolException("no found parameter, the context[ROOT], "
+                            + "serviceName[" + methodInfo.getServiceName()
+                            + "], methodName[" + methodInfo.getMethodName()
+                            + "], parameter[" + parameterInfo.getName() + "]");
+                }
+            }
+            parameters[i++] = value;
+        }
+
+        return parameters;
     }
 
 }

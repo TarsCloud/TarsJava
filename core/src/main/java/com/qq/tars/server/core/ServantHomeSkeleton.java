@@ -16,8 +16,6 @@
 
 package com.qq.tars.server.core;
 
-import com.qq.tars.rpc.protocol.Codec;
-
 import java.lang.reflect.Method;
 
 public class ServantHomeSkeleton extends AppService {
@@ -25,16 +23,11 @@ public class ServantHomeSkeleton extends AppService {
     private String name = null;
     private Object servantImpl = null;
     private Class<?> apiClass = null;
-    private Class<? extends Codec> codecClazz = null;
-    private Class<? extends Processor> processorClazz = null;
 
-    public ServantHomeSkeleton(String name, Object servantImpl, Class<?> apiClass, Class<? extends Codec> codecClazz,
-                               Class<? extends Processor> processorClazz, int loadLimit) {
+    public ServantHomeSkeleton(String name, Object servantImpl, Class<?> apiClass, int loadLimit) {
         this.name = name;
         this.servantImpl = servantImpl;
         this.apiClass = apiClass;
-        this.codecClazz = codecClazz;
-        this.processorClazz = processorClazz;
     }
 
     public Object getServant() {
@@ -96,17 +89,11 @@ public class ServantHomeSkeleton extends AppService {
         return this.apiClass;
     }
 
-    public Class<? extends Processor> getProcessorClass() {
-        return processorClazz;
-    }
 
     public String name() {
         return this.name;
     }
 
-    public Class<? extends Codec> getCodecClass() {
-        return codecClazz;
-    }
 
     private AppContext appContext;
 

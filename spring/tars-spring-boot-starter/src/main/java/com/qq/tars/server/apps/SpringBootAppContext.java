@@ -73,7 +73,7 @@ public class SpringBootAppContext extends BaseAppContext {
                 ServantHomeSkeleton skeleton = loadServant(entry.getValue());
                 skeletonMap.put(skeleton.name(), skeleton);
                 appServantStarted(skeleton);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 System.err.println("init a Servant failed");
                 e.printStackTrace();
             }
@@ -81,7 +81,7 @@ public class SpringBootAppContext extends BaseAppContext {
 
     }
 
-    private ServantHomeSkeleton loadServant(Object bean) throws Exception {
+    private ServantHomeSkeleton loadServant(Object bean) throws Throwable {
         String homeName = null;
         Class<?> homeApiClazz = null;
         Class<? extends Codec> codecClazz = null;
@@ -125,7 +125,7 @@ public class SpringBootAppContext extends BaseAppContext {
         ServantAdapterConfig servantAdapterConfig = serverCfg.getServantAdapterConfMap().get(homeName);
 
         ServantAdapter ServerAdapter = new ServantAdapter(servantAdapterConfig);
-        skeleton = new ServantHomeSkeleton(homeName, homeClassImpl, homeApiClazz, codecClazz, processorClazz, maxLoadLimit);
+        skeleton = new ServantHomeSkeleton(homeName, homeClassImpl, homeApiClazz, maxLoadLimit);
         skeleton.setAppContext(this);
         ServerAdapter.bind(skeleton);
         servantAdapterMap.put(homeName, ServerAdapter);

@@ -29,7 +29,6 @@ import com.qq.tars.server.core.AppContextManager;
 import com.qq.tars.server.core.AppService;
 import com.qq.tars.server.core.ServantAdapter;
 import com.qq.tars.server.core.ServantHomeSkeleton;
-import com.qq.tars.support.admin.AdminFServant;
 import com.qq.tars.support.admin.impl.AdminFServantImpl;
 import com.qq.tars.support.om.OmConstants;
 import com.qq.tars.support.trace.TraceCallbackFilter;
@@ -47,8 +46,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class BaseAppContext implements AppContext {
     boolean ready = true;
 
-    ConcurrentHashMap<String, ServantHomeSkeleton> skeletonMap = new ConcurrentHashMap<>();
-    ConcurrentHashMap<String, Adapter> servantAdapterMap = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<String, ServantHomeSkeleton> skeletonMap = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<String, Adapter> servantAdapterMap = new ConcurrentHashMap<>();
 
     HashMap<String, String> contextParams = new HashMap<>();
 
@@ -57,7 +56,7 @@ public abstract class BaseAppContext implements AppContext {
     Map<FilterKind, List<Filter>> filters = new HashMap<>();
 
 
-    BaseAppContext() {
+    protected BaseAppContext() {
         this.filters.put(FilterKind.SERVER, new LinkedList<>());
         this.filters.put(FilterKind.CLIENT, new LinkedList<>());
         this.filters.put(FilterKind.CALLBACK, new LinkedList<>());
@@ -91,7 +90,8 @@ public abstract class BaseAppContext implements AppContext {
     void injectAdminServant() {
         try {
             String skeletonName = OmConstants.AdminServant;
-            ServantHomeSkeleton skeleton = new ServantHomeSkeleton(skeletonName, new AdminFServantImpl(), AdminFServant.class, null, null, -1);
+            ServantHomeSkeleton skeleton = new ServantHomeSkeleton(skeletonName,
+                    new AdminFServantImpl(), null,  -1);
             skeleton.setAppContext(this);
 
             ServerConfig serverCfg = ConfigurationManager.getInstance().getServerConfig();
@@ -101,7 +101,7 @@ public abstract class BaseAppContext implements AppContext {
             servantAdapterMap.put(skeletonName, servantAdapter);
 
             skeletonMap.put(skeletonName, skeleton);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             System.err.println("init om service failed:context=[]");
             e.printStackTrace();
         }

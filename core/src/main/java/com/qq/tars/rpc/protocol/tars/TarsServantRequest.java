@@ -16,11 +16,13 @@
 
 package com.qq.tars.rpc.protocol.tars;
 
+import com.qq.tars.common.util.HexUtil;
 import com.qq.tars.protocol.tars.TarsInputStream;
 import com.qq.tars.protocol.tars.support.TarsMethodInfo;
 import com.qq.tars.protocol.util.TarsHelper;
 import com.qq.tars.rpc.protocol.ServantRequest;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -33,7 +35,7 @@ public class TarsServantRequest extends ServantRequest implements java.io.Serial
     private String servantName;
     private String functionName;
     private byte[] data;
-    private int timeout=3000; // iTimeout
+    private int timeout = 3000; // iTimeout
     private Map<String, String> status;
     private Map<String, Object> context;
 
@@ -184,5 +186,24 @@ public class TarsServantRequest extends ServantRequest implements java.io.Serial
         this.api = api;
     }
 
-
+    @Override
+    public String toString() {
+        return "TarsServantRequest{" +
+                "version=" + version +
+                ", packetType=" + packetType +
+                ", messageType=" + messageType +
+                ", servantName='" + servantName + '\'' +
+                ", functionName='" + functionName + '\'' +
+                ", data=" + HexUtil.bytes2HexStr(data) +
+                ", timeout=" + timeout +
+                ", status=" + status +
+                ", context=" + context +
+                ", api=" + api +
+                ", methodInfo=" + methodInfo +
+                ", methodParameters=" + Arrays.toString(methodParameters) +
+                ", inputStream=" + inputStream +
+                ", charsetName='" + charsetName + '\'' +
+                ", ret=" + ret +
+                '}';
+    }
 }
