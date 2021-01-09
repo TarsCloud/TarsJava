@@ -44,7 +44,6 @@ public class NettyClientHandler extends ChannelDuplexHandler {
 
     }
 
-
     private final ServantProxyConfig servantProxyConfig;
     private final ChannelHandler channelHeader;
 
@@ -56,7 +55,6 @@ public class NettyClientHandler extends ChannelDuplexHandler {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         try {
-            System.out.println("connect");
             NettyChannel channel = getOrAddChannel(ctx.channel(), servantProxyConfig);
             channelHeader.connected(channel.getChannel());
         } finally {
@@ -77,7 +75,7 @@ public class NettyClientHandler extends ChannelDuplexHandler {
                 logger.debug("[tars]netty receive message id is " + response.getRequestId());
             }
             TicketFeature.getFeature(response.getRequestId()).complete(msg);
-            channelHeader.received(nettyChannel.getChannel(), response);
+            channelHeader.received(nettyChannel.getChannel(), msg);
         } finally {
             removeBrokenChannel(ctx.channel());
         }

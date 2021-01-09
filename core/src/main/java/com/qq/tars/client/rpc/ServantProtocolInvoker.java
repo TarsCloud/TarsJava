@@ -25,6 +25,7 @@ import com.qq.tars.rpc.common.ProtocolInvoker;
 import com.qq.tars.rpc.common.Url;
 import com.qq.tars.rpc.common.util.concurrent.ConcurrentHashSet;
 import com.qq.tars.rpc.exc.ClientException;
+import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 import com.qq.tars.support.log.LoggerFactory;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
@@ -177,7 +178,12 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
 
         @Override
         public void received(Channel channel, Object message) {
-
+            TarsServantResponse response = (TarsServantResponse) message;
+            if (logger.isDebugEnabled()) {
+                System.out.println();
+                logger.debug("[tars]netty receive message id is " + response.getRequestId());
+            }
+            TicketFeature.getFeature(response.getRequestId()).complete(response);
         }
 
         @Override
