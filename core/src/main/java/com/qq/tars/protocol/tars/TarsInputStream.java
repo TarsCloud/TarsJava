@@ -103,9 +103,6 @@ public final class TarsInputStream {
         try {
             HeadData hd = new HeadData();
             while (true) {
-                if(bs.readableBytes()==0){
-                    return false;
-                }
                 int len = peakHead(hd);
                 if (hd.type == TarsStructBase.STRUCT_END) {
                     return false;
@@ -904,10 +901,11 @@ public final class TarsInputStream {
 
 
     public ByteBuf getBs() {
-        return  this.bs;
+        return this.bs;
     }
+
     public byte[] toByteArray() {
-        final byte[]  byteArrays =new byte[bs.readableBytes()];
+        final byte[] byteArrays = new byte[bs.readableBytes()];
         bs.readBytes(byteArrays);
         return byteArrays;
     }
