@@ -29,9 +29,11 @@ import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 import com.qq.tars.rpc.protocol.tars.support.AnalystManager;
 import com.qq.tars.rpc.protocol.tup.UniAttribute;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
+import io.netty.util.ReferenceCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,9 +51,25 @@ public class TarsEncoder extends MessageToByteEncoder<Object> {
 
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, Object o, ByteBuf out) throws Exception {
-        if (o instanceof Request) {
-            try {
-                final ByteBuf ioBuffer = encodeRequest((TarsServantRequest) o);
+        ByteBuf ioBuffer = null;
+        try {
+            if (o instanceof Request) {
+                try {
+                    ioBuffer = encodeRequest(channelHandlerContext.alloc(), (TarsServantRequest) o);
+                    if (logger.isDebugEnabled())
+                        logger.debug("[tars] write data size is  " + ioBuffer.duplicate().getInt(0));
+
+                    int length = ioBuffer.getInt(0);
+                    if (length > ioBuffer.readableBytes()) {
+                        throw new IndexOutOfBoundsException();
+                    }
+                    out.ensureWritable(ioBuffer.readableBytes());
+                    out.writeBytes(ioBuffer);
+                } catch (Exception e) {
+                    logger.warn(e.getMessage(), e);
+                }
+            } else if (o instanceof Response) {
+                ioBuffer = encodeResponse(channelHandlerContext.alloc(), (Response) o);
                 if (logger.isDebugEnabled())
                     logger.debug("[tars] write data size is  " + ioBuffer.duplicate().getInt(0));
                 int length = ioBuffer.getInt(0);
@@ -59,50 +77,59 @@ public class TarsEncoder extends MessageToByteEncoder<Object> {
                     throw new IndexOutOfBoundsException();
                 }
                 out.writeBytes(ioBuffer);
-            } catch (Exception e) {
-                e.printStackTrace();
+            } else {
+                throw new ProtocolException("[tars] cannot support type");
             }
-        } else if (o instanceof Response) {
-            final ByteBuf ioBuffer = encodeResponse((Response) o);
-            if (logger.isDebugEnabled())
-                logger.debug("[tars] write data size is  " + ioBuffer.duplicate().getInt(0));
-            int length = ioBuffer.getInt(0);
-            if (length > ioBuffer.readableBytes()) {
-                throw new IndexOutOfBoundsException();
+        } finally {
+            if (ioBuffer != null) {
+                ReferenceCountUtil.release(ioBuffer);
             }
-            out.writeBytes(ioBuffer);
-        } else {
-            throw new ProtocolException("[tars] cannot support type");
         }
     }
 
 
-    public ByteBuf encodeRequest(Request req) throws ProtocolException {
+    public ByteBuf encodeRequest(ByteBufAllocator allocator, Request req) throws ProtocolException {
         final TarsServantRequest request = (TarsServantRequest) req;
-        request.setCharsetName(this.charset.name());
-        TarsOutputStream os = new TarsOutputStream();
-        os.setServerEncoding(this.charset);
-        os.getByteBuffer().writeInt(0);
-        os.write(request.getVersion(), 1);
-        os.write(request.getPacketType(), 2);
-        os.write(request.getMessageType(), 3);
-        os.write(request.getRequestId(), 4);
-        os.write(request.getServantName(), 5);
-        os.write(request.getFunctionName(), 6);
-        os.write(encodeRequestParams(request), 7);//
-        os.write(request.getTimeout(), 8);
-        os.write(request.getContext(), 9);
-        os.write(request.getStatus(), 10);
-        int length = os.getByteBuffer().readableBytes();
-        os.getByteBuffer().setInt(0, length);
-        if (length > TarsHelper.PACKAGE_MAX_LENGTH || length <= 0) {
-            throw new ProtocolException("the length header of the package must be between 0~10M bytes. data length:" + Integer.toHexString(length));
+        CompositeByteBuf compositeByteBuf = allocator.compositeBuffer();
+        ByteBuf headBuffer = allocator.buffer();
+        ByteBuf bodyBuffer = allocator.buffer();
+        ByteBuf endBuffer = allocator.buffer();
+        int length = 0;
+        try {
+            request.setCharsetName(this.charset.name());
+            TarsOutputStream os = new TarsOutputStream(headBuffer);
+            os.setServerEncoding(this.charset);
+            os.getByteBuffer().writeInt(0);
+            os.write(request.getVersion(), 1);
+            os.write(request.getPacketType(), 2);
+            os.write(request.getMessageType(), 3);
+            os.write(request.getRequestId(), 4);
+            os.write(request.getServantName(), 5);
+            os.write(request.getFunctionName(), 6);
+            encodeRequestParams(bodyBuffer, request);
+            os.writBodyeHead(bodyBuffer, 7);//
+            TarsOutputStream endStream = new TarsOutputStream(endBuffer);
+            endStream.write(request.getTimeout(), 8);
+            endStream.write(request.getContext(), 9);
+            endStream.write(request.getStatus(), 10);
+            length = os.getByteBuffer().readableBytes() + bodyBuffer.readableBytes() + endStream.getByteBuffer().readableBytes();
+            os.getByteBuffer().setInt(0, length);
+            compositeByteBuf.addComponents(true, headBuffer, bodyBuffer, endBuffer);
+
+        } catch (Exception e) {
+            //when encode exception
+            ReferenceCountUtil.release(headBuffer);
+            ReferenceCountUtil.release(bodyBuffer);
+            ReferenceCountUtil.release(endBuffer);
+            if (length > TarsHelper.PACKAGE_MAX_LENGTH || length <= 0) {
+                throw new ProtocolException("the length header of the package must be between 0~10M bytes. data length:" + Integer.toHexString(length));
+            }
         }
-        return os.getByteBuffer();
+        return compositeByteBuf;
     }
 
-    protected ByteBuf encodeRequestParams(TarsServantRequest request) throws ProtocolException {
-        TarsOutputStream os = new TarsOutputStream();
+    protected void encodeRequestParams(ByteBuf byteBuf, TarsServantRequest request) throws ProtocolException {
+        TarsOutputStream os = new TarsOutputStream(byteBuf);
         os.setServerEncoding(this.charset);
         TarsMethodInfo methodInfo = request.getMethodInfo();
         List<TarsMethodParameterInfo> parameterInfoList = methodInfo.getParametersList();
@@ -127,79 +154,92 @@ public class TarsEncoder extends MessageToByteEncoder<Object> {
             }
 
         }
-        return os.getByteBuffer();
     }
 
 
-    public ByteBuf encodeResponse(Response resp) throws ProtocolException {
+    public ByteBuf encodeResponse(ByteBufAllocator allocator, Response resp) throws ProtocolException {
         TarsServantResponse response = (TarsServantResponse) resp;
         if (response.getPacketType() == TarsHelper.ONEWAY) {
             return null;
         }
-        TarsOutputStream jos = new TarsOutputStream();
-        jos.setServerEncoding(charset);
+        CompositeByteBuf compositeByteBuf = allocator.compositeBuffer();
+        ByteBuf headBuffer = allocator.buffer();
+        ByteBuf bodyBuffer = allocator.buffer();
+        ByteBuf endBuffer = allocator.buffer();
         try {
-            jos.getByteBuffer().writeInt(0);
-            jos.write(response.getVersion(), 1);
-            jos.write(response.getPacketType(), 2);
+            TarsOutputStream jos = new TarsOutputStream(headBuffer);
+            jos.setServerEncoding(charset);
+            try {
+                jos.getByteBuffer().writeInt(0);
+                jos.write(response.getVersion(), 1);
+                jos.write(response.getPacketType(), 2);
 
-            if (response.getVersion() == TarsHelper.VERSION) {
-                jos.write(response.getRequestId(), 3);
-                jos.write(response.getMessageType(), 4);
-                jos.write(response.getRet(), 5);
-                jos.write(encodeResult(response), 6);
-                if (response.getStatus() != null) {
-                    jos.write(response.getStatus(), 7);
+                if (response.getVersion() == TarsHelper.VERSION) {
+                    jos.write(response.getRequestId(), 3);
+                    jos.write(response.getMessageType(), 4);
+                    jos.write(response.getRet(), 5);
+                    encodeResult(bodyBuffer, response);
+                    jos.writBodyeHead(bodyBuffer, 6);
+                    TarsOutputStream tarsOutputStream = new TarsOutputStream(endBuffer);
+                    if (response.getStatus() != null) {
+                        tarsOutputStream.write(response.getStatus(), 7);
+                    }
+                    if (response.getRet() != TarsHelper.SERVERSUCCESS) {
+                        tarsOutputStream.write(StringUtils.isEmpty(response.getRemark()) ? "" : response.getRemark(), 8);
+                    }
+                } else if (TarsHelper.VERSION2 == response.getVersion() || TarsHelper.VERSION3 == response.getVersion()) {
+                    jos.write(response.getMessageType(), 3);
+                    jos.write(response.getRequestId(), 4);
+                    String servantName = response.getRequest().getServantName();
+                    jos.write(servantName, 5);
+                    jos.write(response.getRequest().getFunctionName(), 6);
+                    jos.write(encodeWupResult(response), 7);
+                    jos.write(response.getTimeout(), 8);
+                    if (response.getContext() != null) {
+                        jos.write(response.getContext(), 9);
+                    }
+                    if (response.getStatus() != null) {
+                        jos.write(response.getStatus(), 10);
+                    }
+                } else if (response.getVersion() == TarsHelper.VERSIONJSON) {
+                    jos.write(response.getRequestId(), 3);
+                    jos.write(response.getMessageType(), 4);
+                    jos.write(response.getRet(), 5);
+                    jos.write(encodeJsonResult(response), 6);
+                    if (response.getStatus() != null) {
+                        jos.write(response.getStatus(), 7);
+                    }
+                    if (response.getRet() != TarsHelper.SERVERSUCCESS) {
+                        jos.write(StringUtils.isEmpty(response.getRemark()) ? "" : response.getRemark(), 8);
+                    }
+                } else {
+                    response.setRet(TarsHelper.SERVERENCODEERR);
+                    System.err.println("un supported protocol, ver=" + response.getVersion());
                 }
-                if (response.getRet() != TarsHelper.SERVERSUCCESS) {
-                    jos.write(StringUtils.isEmpty(response.getRemark()) ? "" : response.getRemark(), 8);
+            } catch (Exception ex) {
+                if (response.getRet() == TarsHelper.SERVERSUCCESS) {
+                    response.setRet(TarsHelper.SERVERENCODEERR);
                 }
-            } else if (TarsHelper.VERSION2 == response.getVersion() || TarsHelper.VERSION3 == response.getVersion()) {
-                jos.write(response.getMessageType(), 3);
-                jos.write(response.getRequestId(), 4);
-                String servantName = response.getRequest().getServantName();
-                jos.write(servantName, 5);
-                jos.write(response.getRequest().getFunctionName(), 6);
-                jos.write(encodeWupResult(response), 7);
-                jos.write(response.getTimeout(), 8);
-                if (response.getContext() != null) {
-                    jos.write(response.getContext(), 9);
-                }
-                if (response.getStatus() != null) {
-                    jos.write(response.getStatus(), 10);
-                }
-            } else if (response.getVersion() == TarsHelper.VERSIONJSON) {
-                jos.write(response.getRequestId(), 3);
-                jos.write(response.getMessageType(), 4);
-                jos.write(response.getRet(), 5);
-                jos.write(encodeJsonResult(response), 6);
-                if (response.getStatus() != null) {
-                    jos.write(response.getStatus(), 7);
-                }
-                if (response.getRet() != TarsHelper.SERVERSUCCESS) {
-                    jos.write(StringUtils.isEmpty(response.getRemark()) ? "" : response.getRemark(), 8);
-                }
-            } else {
-                response.setRet(TarsHelper.SERVERENCODEERR);
-                System.err.println("un supported protocol, ver=" + response.getVersion());
             }
-        } catch (Exception ex) {
-            if (response.getRet() == TarsHelper.SERVERSUCCESS) {
-                response.setRet(TarsHelper.SERVERENCODEERR);
-            }
+            final int dataLength = headBuffer.readableBytes() + bodyBuffer.readableBytes() + endBuffer.readableBytes();
+            headBuffer.setInt(0, dataLength);//write real data length
+            compositeByteBuf.addComponents(true, headBuffer, bodyBuffer, endBuffer);
+        } catch (Exception e) {
+            //when encode exception
+            ReferenceCountUtil.release(headBuffer);
+            ReferenceCountUtil.release(bodyBuffer);
+            ReferenceCountUtil.release(endBuffer);
+            System.err.println("un supported protocol, ver=" + response.getVersion());
         }
-        final ByteBuf buffer = jos.getByteBuffer();
-        final int dataLength = buffer.readableBytes();
-        jos.getByteBuffer().setInt(0, dataLength);//write real data length
-        return buffer;
+        return compositeByteBuf;
     }
 
-    protected ByteBuf encodeResult(TarsServantResponse response) {
+    protected void encodeResult(ByteBuf bytebuf, TarsServantResponse response) {
         TarsServantRequest request = (TarsServantRequest) response.getRequest();
         if (TarsHelper.isPing(request.getFunctionName())) {
-            return Unpooled.buffer();
+            return;
         }
-        TarsOutputStream ajos = new TarsOutputStream();
+        TarsOutputStream ajos = new TarsOutputStream(bytebuf);
         ajos.setServerEncoding(charset);
         int ret = response.getRet();
         Map<String, TarsMethodInfo> methodInfoMap = AnalystManager.getInstance().getMethodMapByName(request.getServantName());
@@ -229,7 +269,6 @@ public class TarsEncoder extends MessageToByteEncoder<Object> {
                 }
             }
         }
-        return ajos.getByteBuffer();
     }
 
     protected byte[] encodeWupResult(TarsServantResponse response) {
@@ -311,6 +350,7 @@ public class TarsEncoder extends MessageToByteEncoder<Object> {
         String result = object.toString();
         return result.getBytes(charset);
     }
+
 }
 
 

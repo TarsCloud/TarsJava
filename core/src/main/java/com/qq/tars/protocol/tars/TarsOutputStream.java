@@ -206,6 +206,11 @@ public class TarsOutputStream {
         write(l.readableBytes(), 0);
         bs.writeBytes(l);
     }
+    public void writBodyeHead(ByteBuf l, int tag) {
+        writeHead(TarsStructBase.SIMPLE_LIST, tag);
+        writeHead(TarsStructBase.BYTE, 0);
+        write(l.readableBytes(), 0);
+    }
 
 
     public void write(short[] l, int tag) {

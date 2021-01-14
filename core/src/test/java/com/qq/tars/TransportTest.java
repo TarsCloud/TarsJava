@@ -75,7 +75,7 @@ public class TransportTest {
         long startTime = System.nanoTime();
         NettyServantClient client = NettyTransporter.connect(url, servantProxyConfig, channelHandler);
         System.out.println("init channel time " + ((System.nanoTime() - startTime) / 1000));
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 100; i++) {
             MonitorQueryReq monitorQueryReq = new MonitorQueryReq();
             monitorQueryReq.dateType = DateType.MINIUES.value();
             monitorQueryReq.method = "query";
@@ -117,7 +117,7 @@ public class TransportTest {
         System.out.println("client connection is " + client.getChannel().isWritable());
 
 
-        Thread.sleep(50000);
+        Thread.sleep(10000);
     }
 
 
@@ -174,11 +174,13 @@ public class TransportTest {
         request.startTime = 1606060800L;
         request.endTime = 1606147199L;
         System.out.println(request);
-        Holder<MonitorQueryRsp> holder = new Holder<>();
-        queryPrx.query(request, holder);
-        System.out.println(holder);
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < 10000; i++) {
+            Holder<MonitorQueryRsp> holder = new Holder<>();
+            queryPrx.query(request, holder);
+        }
 
-
+        System.out.println(System.currentTimeMillis() - startTime);
     }
 
 }

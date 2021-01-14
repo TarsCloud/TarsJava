@@ -100,9 +100,7 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
         if (buffer.readableBytes() < length) {
             return null;
         }
-        byte[] byteArray = new byte[buffer.readableBytes()];
-        buffer.readBytes(byteArray);
-        TarsInputStream jis = new TarsInputStream(byteArray);
+        TarsInputStream jis = new TarsInputStream(buffer);
         TarsServantRequest request = new TarsServantRequest();
         try {
             short version = jis.read(TarsHelper.STAMP_SHORT.shortValue(), 1, true);
@@ -233,10 +231,8 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
         if (channelBuffer.readableBytes() < length) {
             return null;
         }
-
         byte[] bytes = new byte[length];
         channelBuffer.readBytes(bytes);
-
         TarsServantResponse response = new TarsServantResponse();
         response.setCharsetName(charsetName);
         TarsInputStream is = new TarsInputStream(bytes);
