@@ -19,7 +19,6 @@ import com.google.gson.JsonObject;
 import com.qq.tars.common.support.ClassLoaderManager;
 import com.qq.tars.common.support.Holder;
 import com.qq.tars.common.util.CollectionUtils;
-import com.qq.tars.common.util.CommonUtils;
 import com.qq.tars.common.util.Constants;
 import com.qq.tars.common.util.JsonProvider;
 import com.qq.tars.protocol.tars.TarsInputStream;
@@ -114,7 +113,7 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
             String methodName = jis.readString(6, true);
             byte[] data = jis.read(TarsHelper.STAMP_BYTE_ARRAY, 7, true);
             int timeout = jis.read(TarsHelper.STAMP_INT.intValue(), 8, true);//超时时间
-            Map<String, Object> context = CommonUtils.convertMap((Map<String, String>) jis.read(TarsHelper.STAMP_MAP, 9, true));//Map<String, String> context
+            Map<String, String> context = (Map<String, String>) jis.read(TarsHelper.STAMP_MAP, 9, true);//Map<String, String> context
             Map<String, String> status = (Map<String, String>) jis.read(TarsHelper.STAMP_MAP, 10, true);
             request.setVersion(version);
             request.setPacketType(packetType);

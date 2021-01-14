@@ -34,13 +34,13 @@ public class ServantInvokeContext implements InvokeContext, Serializable {
     private final boolean isAsync;
     private final boolean isPromiseFuture;
     private final boolean isNormal;
-    private Map<String, Object> attachments;
+    private Map<String, String> attachments;
 
-    public ServantInvokeContext(Method method, Object[] arguments, Map<String, Object> attachments) {
+    public ServantInvokeContext(Method method, Object[] arguments, Map<String, String> attachments) {
         this(method, arguments, attachments, null);
     }
 
-    public ServantInvokeContext(Method method, Object[] arguments, Map<String, Object> attachments, Invoker<?> invoker) {
+    public ServantInvokeContext(Method method, Object[] arguments, Map<String, String> attachments, Invoker<?> invoker) {
         this.setInvoker(invoker);
         this.setMethodName(method.getName());
         this.setParameterTypes(method.getParameterTypes());
@@ -83,7 +83,7 @@ public class ServantInvokeContext implements InvokeContext, Serializable {
         return arguments;
     }
 
-    public Map<String, Object> getAttachments() {
+    public Map<String, String> getAttachments() {
         return attachments;
     }
 
@@ -99,7 +99,7 @@ public class ServantInvokeContext implements InvokeContext, Serializable {
         this.arguments = arguments == null ? new Object[0] : arguments;
     }
 
-    public void setAttachments(Map<String, Object> attachments) {
+    public void setAttachments(Map<String, String> attachments) {
         this.attachments = attachments == null ? new HashMap<>() : attachments;
     }
 

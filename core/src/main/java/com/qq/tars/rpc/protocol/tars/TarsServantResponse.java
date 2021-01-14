@@ -35,7 +35,7 @@ public class TarsServantResponse extends ServantResponse implements java.io.Seri
     private Map<String, String> status;
     private String remark = null;
     private int timeout;
-    private Map<String, Object> context;
+    private Map<String, String> context;
 
     private Object result;
 
@@ -158,11 +158,11 @@ public class TarsServantResponse extends ServantResponse implements java.io.Seri
         this.timeout = timeout;
     }
 
-    public Map<String, Object> getContext() {
+    public Map<String, String> getContext() {
         return context;
     }
 
-    public void setContext(Map<String, Object> context) {
+    public void setContext(Map<String, String> context) {
         this.context = context;
     }
 

@@ -29,6 +29,7 @@ import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 import com.qq.tars.rpc.protocol.tars.support.AnalystManager;
 import com.qq.tars.rpc.protocol.tup.UniAttribute;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import org.slf4j.Logger;
@@ -50,7 +51,7 @@ public class TarsEncoder extends MessageToByteEncoder<Object> {
     protected void encode(ChannelHandlerContext channelHandlerContext, Object o, ByteBuf out) throws Exception {
         if (o instanceof Request) {
             try {
-                ByteBuf ioBuffer = encodeRequest((TarsServantRequest) o);
+                final ByteBuf ioBuffer = encodeRequest((TarsServantRequest) o);
                 if (logger.isDebugEnabled())
                     logger.debug("[tars] write data size is  " + ioBuffer.duplicate().getInt(0));
                 int length = ioBuffer.getInt(0);
@@ -100,7 +101,7 @@ public class TarsEncoder extends MessageToByteEncoder<Object> {
         return os.getByteBuffer();
     }
 
-    protected  byte[] encodeRequestParams(TarsServantRequest request) throws ProtocolException {
+    protected ByteBuf encodeRequestParams(TarsServantRequest request) throws ProtocolException {
         TarsOutputStream os = new TarsOutputStream();
         os.setServerEncoding(this.charset);
         TarsMethodInfo methodInfo = request.getMethodInfo();
@@ -126,7 +127,7 @@ public class TarsEncoder extends MessageToByteEncoder<Object> {
             }
 
         }
-        return os.toByteArray();
+        return os.getByteBuffer();
     }
 
 
@@ -193,10 +194,10 @@ public class TarsEncoder extends MessageToByteEncoder<Object> {
         return buffer;
     }
 
-    protected byte[] encodeResult(TarsServantResponse response) {
+    protected ByteBuf encodeResult(TarsServantResponse response) {
         TarsServantRequest request = (TarsServantRequest) response.getRequest();
         if (TarsHelper.isPing(request.getFunctionName())) {
-            return new byte[]{};
+            return Unpooled.buffer();
         }
         TarsOutputStream ajos = new TarsOutputStream();
         ajos.setServerEncoding(charset);
@@ -228,7 +229,7 @@ public class TarsEncoder extends MessageToByteEncoder<Object> {
                 }
             }
         }
-        return ajos.toByteArray();
+        return ajos.getByteBuffer();
     }
 
     protected byte[] encodeWupResult(TarsServantResponse response) {
@@ -299,7 +300,6 @@ public class TarsEncoder extends MessageToByteEncoder<Object> {
                     if (value != null) {
                         try {
                             JsonElement jsonElement = JsonProvider.toJsonTree(TarsHelper.getHolderValue(value));
-                            // System.out.println("requestId: " + request.getRequestId() + ", charset: " + request.getCharsetName() + ", holder: " + jsonElement.toString());
                             object.add(parameterInfo.getName(), jsonElement);
                         } catch (Exception e) {
                             System.err.println("server encode json holder :" + value + ", with ex:" + e);

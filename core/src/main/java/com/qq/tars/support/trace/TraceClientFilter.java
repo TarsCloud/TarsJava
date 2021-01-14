@@ -54,7 +54,7 @@ public class TraceClientFilter implements Filter {
                     || tarsServantRequest.getInvokeStatus() == Request.InvokeStatus.FUTURE_CALL;
 
             String protocol = Constants.TARS_PROTOCOL;
-            Map<String, Object> requestContext = tarsServantRequest.getContext();
+            Map<String, String> requestContext = tarsServantRequest.getContext();
             if (requestContext != null && !requestContext.isEmpty()) {
                 protocol = requestContext.get(TraceManager.PROTOCOL).toString();
                 requestContext.remove(TraceManager.PROTOCOL);

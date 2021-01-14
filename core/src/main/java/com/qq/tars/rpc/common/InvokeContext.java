@@ -34,5 +34,5 @@ public interface InvokeContext {
 
     Object getAttachment(String key, String defaultValue);
 
-    Map<String, Object> getAttachments();
+    Map<String, String> getAttachments();
 }
