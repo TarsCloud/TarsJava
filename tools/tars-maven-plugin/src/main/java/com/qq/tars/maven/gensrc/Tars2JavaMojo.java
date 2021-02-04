@@ -59,7 +59,17 @@ public class Tars2JavaMojo extends AbstractMojo {
     @Parameter(required = true)
     private Tars2JavaConfig tars2JavaConfig;
 
+    public Tars2JavaConfig getTars2JavaConfig() {
+        return tars2JavaConfig;
+    }
+
+    public void setTars2JavaConfig(Tars2JavaConfig tars2JavaConfig) {
+        this.tars2JavaConfig = tars2JavaConfig;
+    }
+
     private AtomicInteger var = new AtomicInteger(0);
+
+    private Map<String,AtomicInteger> structMemberVar = new HashMap<>();
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         // 1. check configurations
@@ -455,7 +465,7 @@ public class Tars2JavaMojo extends AbstractMojo {
                 String memberName = "cache_" + m.memberName();
                 out.println("\tstatic " + type(m.memberType(), true, nsMap) + " " + memberName + ";");
                 out.println("\tstatic { ");
-                genCacheVar(memberName, true, m.memberType(), nsMap, out);
+                genCacheVar(memberName, true, m.memberType(), nsMap, out, struct.structName());
                 out.println("\t}");
             }
         }
@@ -511,31 +521,33 @@ public class Tars2JavaMojo extends AbstractMojo {
     }
 
     private void genCacheVar(String memberName, boolean hasDeclare, TarsType type,
-                             Map<String, List<TarsNamespace>> nsMap, PrintWriter out) {
+                             Map<String, List<TarsNamespace>> nsMap, PrintWriter out,String structName) {
         if (type.isCustom() && !isEnum(type, nsMap)) {
             out.println("\t\t" + (hasDeclare ? memberName : (type(type, true, nsMap) + " " + memberName)) + " = new " + type(type, true, nsMap) + "();");
         } else if (type.isMap()) {
             TarsMapType mapType = type.asMap();
             out.println("\t\t" + (hasDeclare ? memberName : (type(type, true, nsMap) + " " + memberName)) + " = new java.util.HashMap<" + type(mapType.keyType(), true, nsMap) + ", " + type(mapType.valueType(), true, nsMap) + ">();");
 
+            AtomicInteger var = getAtomicInterByStructName(structName);
             String varkey = "var_" + var.incrementAndGet();
             String varval = "var_" + var.incrementAndGet();
 
-            genCacheVar(varkey, false, mapType.keyType(), nsMap, out);
-            genCacheVar(varval, false, mapType.valueType(), nsMap, out);
+            genCacheVar(varkey, false, mapType.keyType(), nsMap, out, structName);
+            genCacheVar(varval, false, mapType.valueType(), nsMap, out, structName);
 
             out.println("\t\t" + memberName + ".put(" + varkey + " ," + varval + ");");
 
         } else if (type.isVector()) {
             TarsVectorType v = type.asVector();
+            AtomicInteger var = getAtomicInterByStructName(structName);
             String varType = "var_" + var.incrementAndGet();
             if (v.isByteArray()) {
                 out.println("\t\t" + (hasDeclare ? memberName : (type(type, false, nsMap) + " " + memberName)) + " = new " + type(v.subType(), false, nsMap) + "[1];");
-                genCacheVar(varType, false, v.subType(), nsMap, out);
+                genCacheVar(varType, false, v.subType(), nsMap, out, structName);
                 out.println("\t\t" + memberName + "[0] = " + varType + ";");
             } else {
                 out.println("\t\t" + (hasDeclare ? memberName : (type(type, true, nsMap) + " " + memberName)) + " = new java.util.ArrayList<" + type(v.subType(), true, nsMap) + ">();");
-                genCacheVar(varType, false, v.subType(), nsMap, out);
+                genCacheVar(varType, false, v.subType(), nsMap, out, structName);
                 out.println("\t\t" + memberName + ".add(" + varType + ");");
             }
         } else if (type.isPrimitive()) {
@@ -543,6 +555,15 @@ public class Tars2JavaMojo extends AbstractMojo {
         } else if (isEnum(type, nsMap)) {
             out.println("\t\t" + (hasDeclare ? memberName : (type(type, false, nsMap) + " " + memberName)) + " = " + typeInit(type, nsMap, true) + ";");
         }
+    }
+
+    private AtomicInteger getAtomicInterByStructName(String structName) {
+        AtomicInteger atomicInteger = structMemberVar.get(structName);
+        if(atomicInteger == null) {
+            atomicInteger = new AtomicInteger(0);
+            structMemberVar.put(structName,atomicInteger);
+        }
+        return atomicInteger;
     }
 
     public void genPrx(String dirPath, String packageName, String namespace, TarsInterface _interface,
