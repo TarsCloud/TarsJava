@@ -1,4 +1,4 @@
-package com.qq.tars.client.rpc;
+package com.qq.tars.rpc.netty;
 
 import com.qq.tars.client.ServantProxyConfig;
 import io.netty.channel.Channel;

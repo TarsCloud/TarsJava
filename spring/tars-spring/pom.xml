@@ -36,6 +36,11 @@
 			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>com.tencent.tars</groupId>
+			<artifactId>tars-netty</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
 			<version>${spring-boot.version}</version>

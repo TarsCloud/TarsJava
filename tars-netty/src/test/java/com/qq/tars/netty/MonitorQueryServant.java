@@ -3,7 +3,7 @@
 // TARS version 1.7.2.
 // **********************************************************************
 
-package com.qq.tars;
+package com.qq.tars.netty;
 
 import com.qq.tars.common.support.Holder;
 import com.qq.tars.protocol.annotation.Servant;
@@ -13,5 +13,5 @@ import com.qq.tars.protocol.tars.annotation.TarsMethodParameter;
 @Servant
 public interface MonitorQueryServant {
 
-	 int query(@TarsMethodParameter(name="req") MonitorQueryReq req, @TarsHolder(name="rsp") Holder<MonitorQueryRsp> rsp);
+    int query(@TarsMethodParameter(name = "req") MonitorQueryReq req, @TarsHolder(name = "rsp") Holder<MonitorQueryRsp> rsp);
 }

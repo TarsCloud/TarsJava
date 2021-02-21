@@ -1,10 +1,10 @@
-package com.qq.tars;
+package com.qq.tars.netty;
 
 import com.google.common.collect.Maps;
 import com.qq.tars.client.rpc.ChannelHandler;
-import com.qq.tars.client.rpc.NettyServer;
 import com.qq.tars.common.support.Endpoint;
 import com.qq.tars.common.support.Holder;
+import com.qq.tars.rpc.netty.NettyTransporterServer;
 import com.qq.tars.rpc.protocol.tars.support.AnalystManager;
 import com.qq.tars.server.apps.BaseAppContext;
 import com.qq.tars.server.config.ConfigurationManager;
@@ -18,7 +18,7 @@ import org.assertj.core.util.Lists;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class TestForNettyServer {
+public class TestForNettyTransporterServer {
 
     @Test
     @Ignore
@@ -57,9 +57,9 @@ public class TestForNettyServer {
         };
         Endpoint endpoint = Endpoint.parseString("tcp -h 127.0.0.1 -t 60000 -p 60000");
         ServantAdapterConfig servantAdapterConfig = ServantAdapterConfig.makeServantAdapterConfig(endpoint, "servantConfig", null);
-        NettyServer nettyServer = new NettyServer(servantAdapterConfig, channelHandlerer);
+        NettyTransporterServer nettyTransporterServer = new NettyTransporterServer(servantAdapterConfig, channelHandlerer);
         try {
-            nettyServer.bind();
+            nettyTransporterServer.bind();
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }

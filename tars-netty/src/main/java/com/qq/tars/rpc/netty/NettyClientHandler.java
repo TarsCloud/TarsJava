@@ -1,10 +1,13 @@
-package com.qq.tars.client.rpc;
+package com.qq.tars.rpc.netty;
 
 import com.google.common.collect.Maps;
 import com.qq.tars.client.ServantProxyConfig;
+import com.qq.tars.client.rpc.ChannelHandler;
+import com.qq.tars.client.rpc.TicketFeature;
 import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import org.slf4j.Logger;
@@ -12,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
-@io.netty.channel.ChannelHandler.Sharable
+@Sharable
 public class NettyClientHandler extends ChannelDuplexHandler {
     private static final Logger logger = LoggerFactory.getLogger(NettyClientHandler.class);
     private static final Map<Channel, NettyChannel> CHANNEL_MAP = Maps.newConcurrentMap();

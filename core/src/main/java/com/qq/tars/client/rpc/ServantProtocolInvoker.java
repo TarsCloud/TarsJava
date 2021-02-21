@@ -25,20 +25,10 @@ import com.qq.tars.rpc.common.ProtocolInvoker;
 import com.qq.tars.rpc.common.Url;
 import com.qq.tars.rpc.common.util.concurrent.ConcurrentHashSet;
 import com.qq.tars.rpc.exc.ClientException;
-import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 import com.qq.tars.support.log.LoggerFactory;
-import io.netty.channel.Channel;
 import org.slf4j.Logger;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -89,9 +79,9 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
         ScheduledExecutorManager.getInstance().schedule(() -> destroy(brokenInvokers), Math.max(servantProxyConfig.getAsyncTimeout(), servantProxyConfig.getSyncTimeout()), TimeUnit.MILLISECONDS);
     }
 
-    protected RPCClient[] getClients(Url url) throws IOException {
+    protected RPCClient[] getClients(Url url) {
         int connections = url.getParameter(Constants.TARS_CLIENT_CONNECTIONS, Constants.DEFAULT_CONNECTION);
-        RPCClient[] clients = new NettyServantClient[connections];
+        RPCClient[] clients = new RPCClient[connections];
         for (int i = 0; i < clients.length; i++) {
             clients[i] = initClient(url);
         }
@@ -99,13 +89,11 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
     }
 
     protected RPCClient initClient(Url url) {
-        RPCClient client = null;
         try {
-            client = NettyTransporter.connect(url, servantProxyConfig, new InnerDefaultHandler());
+            return TransporterAbstractFactory.getInstance().getTransporterFactory().connect(url, servantProxyConfig);
         } catch (Throwable e) {
             throw new ClientException(servantProxyConfig.getSimpleObjectName(), "Fail to create client|" + url.toIdentityString() + "|" + e.getLocalizedMessage(), e);
         }
-        return client;
     }
 
     protected ConcurrentHashSet<Invoker<T>> initInvoker() {
@@ -158,43 +146,4 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
             }
         }
     }
-
-    private static class InnerDefaultHandler implements ChannelHandler {
-
-        @Override
-        public void connected(Channel channel) {
-
-        }
-
-        @Override
-        public void disconnected(Channel channel) {
-
-        }
-
-        @Override
-        public void send(Channel channel, Object message) {
-
-        }
-
-        @Override
-        public void received(Channel channel, Object message) {
-            TarsServantResponse response = (TarsServantResponse) message;
-            if (logger.isDebugEnabled()) {
-                System.out.println();
-                logger.debug("[tars]netty receive message id is " + response.getRequestId());
-            }
-            TicketFeature.getFeature(response.getRequestId()).complete(response);
-        }
-
-        @Override
-        public void caught(Channel channel, Throwable exception) {
-
-        }
-
-        @Override
-        public void destroy() {
-
-        }
-    }
-
 }

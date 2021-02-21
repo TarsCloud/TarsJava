@@ -15,8 +15,12 @@
  */
 
 
-package com.qq.tars.client.rpc;
+package com.qq.tars.rpc.netty;
 
+import com.qq.tars.client.rpc.ChannelHandler;
+import com.qq.tars.client.rpc.TarsDecoder;
+import com.qq.tars.client.rpc.TarsEncoder;
+import com.qq.tars.client.rpc.TransporterServer;
 import com.qq.tars.common.util.CommonUtils;
 import com.qq.tars.common.util.Constants;
 import com.qq.tars.server.config.ServantAdapterConfig;
@@ -49,8 +53,8 @@ import java.util.concurrent.ThreadFactory;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
-public class NettyServer {
-    private static final Logger logger = LoggerFactory.getLogger(NettyServer.class);
+public class NettyTransporterServer implements TransporterServer {
+    private static final Logger logger = LoggerFactory.getLogger(NettyTransporterServer.class);
     private Map<String, NettyServerChannel> remoteChannels;
     private ServerBootstrap bootstrap;
     private io.netty.channel.Channel serverChannel;
@@ -63,14 +67,14 @@ public class NettyServer {
 
     private final InetSocketAddress serverInetSocketAddress;
 
-    public NettyServer(ServantAdapterConfig servantAdapterConfig, ChannelHandler handler) {
+    public NettyTransporterServer(ServantAdapterConfig servantAdapterConfig, ChannelHandler handler) {
         this.servantAdapterConfig = servantAdapterConfig;
         this.channelHandler = handler;
         this.serverInetSocketAddress = new InetSocketAddress(this.servantAdapterConfig.getEndpoint().host(),
                 this.servantAdapterConfig.getEndpoint().port());
     }
 
-    public void bind() throws Throwable {
+    public void bind() {
         bootstrap = new ServerBootstrap();
         final ThreadFactory threadFactoryBoss = new DefaultThreadFactory("NettyServerBoss", true);
         final ThreadFactory threadFactoryWorker = new DefaultThreadFactory("NettyServerWorker", true);
