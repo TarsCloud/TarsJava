@@ -14,13 +14,15 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.qq.tars.client.rpc;
+package com.qq.tars.rpc.netty;
 
 import com.google.common.collect.Maps;
+import com.qq.tars.client.rpc.ChannelHandler;
 import com.qq.tars.common.util.CommonUtils;
 import com.qq.tars.server.config.ServantAdapterConfig;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import io.netty.handler.timeout.IdleStateEvent;
@@ -31,7 +33,7 @@ import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@io.netty.channel.ChannelHandler.Sharable
+@Sharable
 public class NettyServerHandler extends ChannelDuplexHandler {
     private static final Logger logger = LoggerFactory.getLogger(NettyServerHandler.class);
     private final Map<String, NettyServerChannel> channels = new ConcurrentHashMap<>();
@@ -83,8 +85,8 @@ public class NettyServerHandler extends ChannelDuplexHandler {
         NettyServerChannel channel = getOrAddChannel(ctx.channel(), servantAdapterConfig, handler);
         if (channel != null) {
             channels.put(CommonUtils.getIPAndPort((InetSocketAddress) ctx.channel().remoteAddress()), channel);
+            handler.connected(channel.getChannel());
         }
-        handler.connected(channel.getChannel());
     }
 
 

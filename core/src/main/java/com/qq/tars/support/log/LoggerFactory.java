@@ -23,6 +23,7 @@ import org.slf4j.event.Level;
 public class LoggerFactory {
     private static final String CLIENT_LOG_NAME = "TARS_CLIENT_LOGGER";
     private static final String OM_LOG_NAME = "OM_LOGGER";
+    private static final String TRANSPORTER_LOG_NAME = "TARS_TRANSPORTER_LOGGER";
 
 
     public static int resetLogBack() {
@@ -51,4 +52,7 @@ public class LoggerFactory {
         return org.slf4j.LoggerFactory.getLogger(CLIENT_LOG_NAME);
     }
 
+    public static Logger getTransporterLogger() {
+        return org.slf4j.LoggerFactory.getLogger(TRANSPORTER_LOG_NAME);
+    }
 }

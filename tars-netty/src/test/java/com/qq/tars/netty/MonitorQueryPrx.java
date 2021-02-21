@@ -3,15 +3,19 @@
 // TARS version 1.7.2.
 // **********************************************************************
 
-package com.qq.tars;
+package com.qq.tars.netty;
 
 import com.qq.tars.common.support.Holder;
 import com.qq.tars.protocol.annotation.Servant;
 import com.qq.tars.protocol.tars.annotation.TarsHolder;
 import com.qq.tars.protocol.tars.annotation.TarsMethodParameter;
 
-@Servant
-public interface MonitorQueryServant {
+import java.util.concurrent.CompletableFuture;
 
-	 int query(@TarsMethodParameter(name="req") MonitorQueryReq req, @TarsHolder(name="rsp") Holder<MonitorQueryRsp> rsp);
+@Servant
+public interface MonitorQueryPrx {
+    int query(@TarsMethodParameter(name = "req") MonitorQueryReq req, @TarsHolder(name = "rsp") Holder<MonitorQueryRsp> rsp);
+
+    CompletableFuture<Integer> promise_query(@TarsMethodParameter(name = "req") MonitorQueryReq req, @TarsHolder(name = "rsp") Holder<MonitorQueryRsp> rsp);
+
 }

@@ -73,6 +73,16 @@
                 <artifactId>slf4j-api</artifactId>
                 <version>1.7.30</version>
             </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-all</artifactId>
+                <version>4.1.56.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-tcnative</artifactId>
+                <version>2.0.20.Final</version> <!-- see table for correct version -->
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

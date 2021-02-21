@@ -1,16 +1,13 @@
-package com.qq.tars.client.rpc;
+package com.qq.tars.rpc.netty;
 
 import com.qq.tars.client.ServantProxyConfig;
+import com.qq.tars.client.rpc.ChannelHandler;
+import com.qq.tars.client.rpc.*;
 import com.qq.tars.rpc.common.Url;
 import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollSocketChannel;
@@ -162,6 +159,7 @@ public class NettyServantClient implements RPCClient {
         this.channel.close();
     }
 
+    @Override
     public Channel getChannel() {
         return this.channel;
     }
@@ -174,7 +172,7 @@ public class NettyServantClient implements RPCClient {
     }
 
 
-    public CompletableFuture<Response> send(Request request) throws IOException {
+    public CompletableFuture<Response> send(Request request) {
         TicketFeature ticketFeature = TicketFeature.createFeature(this.channel, request, servantProxyConfig.getSyncTimeout());
         this.channel.writeAndFlush(request);
         return ticketFeature.thenCompose(obj -> CompletableFuture.completedFuture((TarsServantResponse) obj));

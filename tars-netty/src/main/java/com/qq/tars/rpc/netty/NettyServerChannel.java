@@ -13,8 +13,9 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package com.qq.tars.client.rpc;
+package com.qq.tars.rpc.netty;
 
+import com.qq.tars.client.rpc.ChannelHandler;
 import com.qq.tars.server.config.ServantAdapterConfig;
 import io.netty.channel.Channel;
 
