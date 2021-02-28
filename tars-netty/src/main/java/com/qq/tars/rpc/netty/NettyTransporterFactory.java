@@ -49,7 +49,7 @@ public class NettyTransporterFactory implements TransporterFactory {
      * @param servantAdapterConfig the servant adapter config which is provided by the platform.
      * @param processor            the request processor.
      * @return transporter server instance
-     * @see com.qq.tars.server.core.TarsServantProcessor
+     * @see com.qq.tars.server.core.Processor
      */
     @Override
     public TransporterServer getTransporterServer(ServantAdapterConfig servantAdapterConfig, Processor processor) {

@@ -20,7 +20,6 @@ import com.qq.tars.client.rpc.Request;
 import com.qq.tars.protocol.tars.TarsInputStream;
 import com.qq.tars.rpc.protocol.ServantResponse;
 
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Map;
 
