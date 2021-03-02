@@ -6,36 +6,41 @@
         <artifactId>tars-parent</artifactId>
         <groupId>com.tencent.tars</groupId>
         <version>2.0.0</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>tars-netty</artifactId>
+    <artifactId>tars-common-api</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <gson.version>2.8.6</gson.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>com.tencent.tars</groupId>
-            <artifactId>tars-common-api</artifactId>
-            <version>${project.parent.version}</version>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>30.1-jre</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-tcnative</artifactId>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gson.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.tencent.tars</groupId>
-            <artifactId>tars-core</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>test</scope>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.9.0</version>
         </dependency>
     </dependencies>
-
 </project>

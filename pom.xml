@@ -48,6 +48,7 @@
         <module>tars-plugins</module>
         <module>tars-logger</module>
         <module>tars-netty</module>
+        <module>tars-common-api</module>
     </modules>
 
     <properties>

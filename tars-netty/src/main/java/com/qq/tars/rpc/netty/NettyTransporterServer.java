@@ -18,8 +18,6 @@
 package com.qq.tars.rpc.netty;
 
 import com.qq.tars.client.rpc.ChannelHandler;
-import com.qq.tars.client.rpc.TarsDecoder;
-import com.qq.tars.client.rpc.TarsEncoder;
 import com.qq.tars.client.rpc.TransporterServer;
 import com.qq.tars.common.util.CommonUtils;
 import com.qq.tars.common.util.Constants;
