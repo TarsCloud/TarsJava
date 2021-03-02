@@ -29,6 +29,8 @@ import com.qq.tars.server.core.ServantAdapter;
 import com.qq.tars.server.core.ServantHomeSkeleton;
 import com.qq.tars.spring.annotation.TarsListener;
 import com.qq.tars.spring.annotation.TarsServant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.Advised;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -36,6 +38,9 @@ import org.springframework.core.annotation.AnnotationUtils;
 import java.util.Map;
 
 public class SpringBootAppContext extends BaseAppContext {
+
+    private static final Logger logger = LoggerFactory.getLogger(SpringBootAppContext.class);
+
     private ApplicationContext applicationContext;
 
     public SpringBootAppContext(ApplicationContext applicationContext) {
@@ -71,11 +76,13 @@ public class SpringBootAppContext extends BaseAppContext {
         for (Map.Entry<String, Object> entry : servantMap.entrySet()) {
             try {
                 ServantHomeSkeleton skeleton = loadServant(entry.getValue());
+                if(skeleton == null) {
+                    continue;
+                }
                 skeletonMap.put(skeleton.name(), skeleton);
                 appServantStarted(skeleton);
             } catch (Throwable e) {
-                System.err.println("init a Servant failed");
-                e.printStackTrace();
+                logger.error("init a Servant failed exMsg:{}", e.getMessage(), e);
             }
         }
 
@@ -123,12 +130,16 @@ public class SpringBootAppContext extends BaseAppContext {
         }
 
         ServantAdapterConfig servantAdapterConfig = serverCfg.getServantAdapterConfMap().get(homeName);
+        if(servantAdapterConfig == null) {
+            logger.warn("servant:{} 's servantAdapterConfig is null, not start this servant. If u need this servant, please config in tarsAdmin.",homeName);
+            return null;
+        }
 
-        ServantAdapter ServerAdapter = new ServantAdapter(servantAdapterConfig);
+        ServantAdapter servantAdapter = new ServantAdapter(servantAdapterConfig);
         skeleton = new ServantHomeSkeleton(homeName, homeClassImpl, homeApiClazz, maxLoadLimit);
         skeleton.setAppContext(this);
-        ServerAdapter.bind(skeleton);
-        servantAdapterMap.put(homeName, ServerAdapter);
+        servantAdapter.bind(skeleton);
+        servantAdapterMap.put(homeName, servantAdapter);
         return skeleton;
     }
 }
