@@ -14,6 +14,7 @@
         <module>tars-spring</module>
         <module>tars-spring-cloud-starter</module>
         <module>tars-spring-boot-starter</module>
+        <module>tars-http-extension</module>
     </modules>
 
 </project>
