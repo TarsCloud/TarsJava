@@ -92,7 +92,7 @@ public class TarsServantProcessor implements Processor {
         logger.info(sb.toString());
     }
 
-    private static boolean isFlowLogEnable() {
+    public static boolean isFlowLogEnable() {
         return ConfigurationManager.getInstance().getServerConfig().getLogRate() - rand.nextInt(100) > 0;
     }
 
