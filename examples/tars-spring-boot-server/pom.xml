@@ -37,6 +37,25 @@
 
     <build>
         <plugins>
+
+            <plugin>
+                <groupId>com.tencent.tars</groupId>
+                <artifactId>tars-maven-plugin</artifactId>
+                <version>1.7.2</version>
+                <configuration>
+                    <tars2JavaConfig>
+                        <tarsFiles>
+                            <tarsFile>${basedir}/src/main/resources/hello.tars</tarsFile>
+                        </tarsFiles>
+                        <tarsFileCharset>UTF-8</tarsFileCharset>
+                        <servant>true</servant>
+                        <srcPath>${basedir}/src/main/java</srcPath>
+                        <charset>UTF-8</charset>
+                        <tup>true</tup>
+                        <packagePrefixName>com.qq.tars.quickstart.server.</packagePrefixName>
+                    </tars2JavaConfig>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
