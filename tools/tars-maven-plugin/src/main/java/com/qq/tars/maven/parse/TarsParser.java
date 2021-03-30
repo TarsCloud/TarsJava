@@ -181,6 +181,9 @@ public class TarsParser extends Parser {
 				int LA2_0 = input.LA(1);
 				if ( (LA2_0==TARS_NAMESPACE) ) {
 					alt2=1;
+				}else if (LA2_0 == SEMI) {
+					input.consume();
+					continue;
 				}
 
 				switch (alt2) {
