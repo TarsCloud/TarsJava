@@ -5,21 +5,17 @@
 
 package com.tencent.tars.client.testapp;
 
-import com.qq.tars.protocol.annotation.*;
-import com.qq.tars.protocol.tars.annotation.*;
-import com.qq.tars.common.support.Holder;
+import com.qq.tars.protocol.annotation.Servant;
+import com.qq.tars.protocol.tars.annotation.TarsContext;
+
 import java.util.concurrent.CompletableFuture;
 
 @Servant
 public interface HelloPrx {
 
-	 String hello(int no, String name);
+    String hello(int no, String name);
 
-	CompletableFuture<String>  promise_hello(int no, String name);
+    CompletableFuture<String> promise_hello(int no, String name);
 
-	 String hello(int no, String name, @TarsContext java.util.Map<String, String> ctx);
-
-	 void async_hello(@TarsCallback HelloPrxCallback callback, int no, String name);
-
-	 void async_hello(@TarsCallback HelloPrxCallback callback, int no, String name, @TarsContext java.util.Map<String, String> ctx);
+    String hello(int no, String name, @TarsContext java.util.Map<String, String> ctx);
 }

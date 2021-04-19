@@ -4,45 +4,28 @@ import com.qq.tars.spring.annotation.TarsClient;
 import com.qq.tars.spring.annotation.TarsServant;
 import com.tencent.tars.client.testapp.ClientServant;
 import com.tencent.tars.client.testapp.HelloPrx;
-import com.tencent.tars.client.testapp.HelloPrxCallback;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CompletableFuture;
 
 
 @TarsServant("ClientObj")
 public class ClientServantImpl implements ClientServant {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClientServantImpl.class);
     @TarsClient("TestServer.HelloServer.HelloObj")
     HelloPrx helloPrx;
 
-    String res = "";
-
     @Override
     public String rpcHello(int no, String name) {
-        //同步调用
-        String syncres = helloPrx.hello(1000, name);
-        res += "sync_res: " + syncres + " ";
-        //异步调用
-        helloPrx.async_hello(new HelloPrxCallback() {
-
-            @Override
-            public void callback_expired() {
-            }
-
-            @Override
-            public void callback_exception(Throwable ex) {
-            }
-
-            @Override
-            public void callback_hello(String ret) {
-                res += "async_res: " + ret + " ";
-
-            }
-        }, 1000, name);
+        String syncResult = helloPrx.hello(1000, name);
+        LOGGER.info("sync Result {}", syncResult);
         //promise调用
         helloPrx.promise_hello(1000, name).thenCompose(x -> {
-            res += "promise_res: " + x;
+            String res = "promise_result: " + x;
+            LOGGER.info("promise result :{}", res);
             return CompletableFuture.completedFuture(0);
         });
-        return res;
+        return syncResult;
     }
 }
