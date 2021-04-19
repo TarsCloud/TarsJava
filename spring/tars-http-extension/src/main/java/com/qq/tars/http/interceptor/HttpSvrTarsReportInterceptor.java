@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.LinkedHashMap;
@@ -36,6 +37,7 @@ public class HttpSvrTarsReportInterceptor implements HandlerInterceptor {
 
     public static final String METHOD_START_TIME = "methodStartTime";
     public static final String ARGU = "argu";   //argu占位符
+    private static final String DEFAULT_HOST = "0.0.0.0";//
 
     String servantName = StringUtils.EMPTY;
     ServantAdapterConfig servantAdapterConfig = null;
@@ -48,23 +50,23 @@ public class HttpSvrTarsReportInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, @Nullable ModelAndView modelAndView)  {
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, @Nullable ModelAndView modelAndView) {
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, @Nullable Exception ex) {
         try {
-            if(!(handler instanceof HandlerMethod)) {  //可能会有一些跨域的预请求，不做处理.PreFlightHandler
+            if (!(handler instanceof HandlerMethod)) {  //可能会有一些跨域的预请求，不做处理.PreFlightHandler
                 return;
             }
-            String funcName = getFuncName(request,handler);
+            String funcName = getFuncName(request, handler);
             long cost = getCost(request);
             int result = getResult(ex);
             String masterIp = request.getRemoteAddr();   //主调方的ip(nginx)
             String remark = "";  //暂定为空，实际上应该表示框架异常的错误码.
             printFlowLog(masterIp, funcName, cost, result, remark);
 
-            if(StringUtils.isBlank(funcName)) {
+            if (StringUtils.isBlank(funcName)) {
                 return;
             }
 
@@ -81,7 +83,8 @@ public class HttpSvrTarsReportInterceptor implements HandlerInterceptor {
             String masterName = Constants.TARS_NOT_CLIENT;
             CommunicatorConfig communicatorConfig = serverConfig.getCommunicatorConfig();
             Endpoint serverEndpoint = servantAdapterConfig.getEndpoint();
-            InvokeStatHelper.getInstance().addProxyStat(servantName).addInvokeTimeByServer(masterName, serverConfig.getApplication(), serverConfig.getServerName(), communicatorConfig.getSetName(), communicatorConfig.getSetArea(), communicatorConfig.getSetID(), funcName, (masterIp == null ? "0.0.0.0" : masterIp), serverEndpoint.host(), serverEndpoint.port(), result, cost);
+            InvokeStatHelper.getInstance().addProxyStat(servantName).addInvokeTimeByServer(masterName, serverConfig.getApplication(), serverConfig.getServerName(), communicatorConfig.getSetName(),
+                    communicatorConfig.getSetArea(), communicatorConfig.getSetID(), funcName, DEFAULT_HOST, serverEndpoint.host(), serverEndpoint.port(), result, cost);
         } catch (Throwable e) {
             log.error("httpSvr stat report exMsg:{}", e.getMessage(), e);
         }
@@ -122,7 +125,7 @@ public class HttpSvrTarsReportInterceptor implements HandlerInterceptor {
 
             RequestMapping requestMapping = method.getMethodAnnotation(RequestMapping.class);
             String[] values = requestMapping.value();
-            if(requestMapping != null && requestMapping.value() !=null && requestMapping.value().length > 0) {
+            if (requestMapping != null && requestMapping.value() != null && requestMapping.value().length > 0) {
                 methodUri = values[0];
             } else {  //一些不存在的接口，会默认转到/error
                 log.info("requestMethod not found.requestUri:{}", request.getRequestURI());
@@ -136,9 +139,9 @@ public class HttpSvrTarsReportInterceptor implements HandlerInterceptor {
     }
 
     public void findReportConstant(ServerConfig serverConfig) {
-        LinkedHashMap<String, ServantAdapterConfig> servantAdapterConfigLinkedHashMap =  serverConfig.getServantAdapterConfMap();
-        for(Map.Entry<String, ServantAdapterConfig> entry : servantAdapterConfigLinkedHashMap.entrySet()) {  //取servant的ObjName作为上报的servant.
-            if(!entry.getKey().equalsIgnoreCase(OmConstants.AdminServant)) {
+        LinkedHashMap<String, ServantAdapterConfig> servantAdapterConfigLinkedHashMap = serverConfig.getServantAdapterConfMap();
+        for (Map.Entry<String, ServantAdapterConfig> entry : servantAdapterConfigLinkedHashMap.entrySet()) {  //取servant的ObjName作为上报的servant.
+            if (!entry.getKey().equalsIgnoreCase(OmConstants.AdminServant)) {
                 servantName = entry.getKey();
                 servantAdapterConfig = entry.getValue();
                 log.info("report servantName:{}", servantName);
@@ -148,9 +151,9 @@ public class HttpSvrTarsReportInterceptor implements HandlerInterceptor {
     }
 
     //|主调方ip|接口名|请求参数|状态码|耗时|remark
-    public static void printFlowLog(String masterIp, String funcName, long cost, int result,  String remark) {
+    public static void printFlowLog(String masterIp, String funcName, long cost, int result, String remark) {
         if (result == TarsHelper.SERVERSUCCESS && (!TarsServantProcessor.isFlowLogEnable())) return;
         log.info("|{}|{}|{}|{}|{}|{}|",
-                masterIp,funcName, ARGU, result,cost,remark);
+                masterIp, funcName, ARGU, result, cost, remark);
     }
 }
