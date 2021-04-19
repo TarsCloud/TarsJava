@@ -84,6 +84,7 @@ public class TarsStartLifecycle extends BaseAppContext implements SmartLifecycle
             appContextStarted();
             startServantAdapter();
             setAppContext();
+            loadDefaultFilter();
             this.isRunning = true;
         } catch (IOException e) {
             e.printStackTrace();
