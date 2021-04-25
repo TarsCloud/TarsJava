@@ -51,7 +51,7 @@ public class ConnectionSessionListener implements SessionListener {
     @Override
     public synchronized void onSessionDestroyed(SessionEvent se) {
         if ((se.getSession() == null || se.getSession().getStatus() == SessionStatus.CLOSED) && connStat.get() > 0) {
-            System.out.println("onSessionDestroyed: " + connStat.decrementAndGet());
+            LoggerFactory.getOmLogger().debug("onSessionDestroyed: " + connStat.decrementAndGet());
         }
     }
 }
