@@ -33,6 +33,11 @@
             <artifactId>tars-spring-boot-starter</artifactId>
             <version>2.0.0</version>
         </dependency>
+             <dependency>
+            <groupId>com.tencent.tars</groupId>
+            <artifactId>tars-logger-logback</artifactId>
+            <version>2.0.0</version>
+        </dependency>
     </dependencies>
 
     <build>

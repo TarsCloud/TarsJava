@@ -5,9 +5,8 @@
 
 package com.tencent.tars.client.testapp;
 
-import com.qq.tars.rpc.protocol.tars.support.TarsAbstractCallback;
 
-public abstract class HelloPrxCallback extends TarsAbstractCallback {
+public abstract class HelloPrxCallback {
 
 	public abstract void callback_hello(String ret);
 
