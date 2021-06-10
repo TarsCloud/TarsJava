@@ -30,6 +30,7 @@ import com.qq.tars.server.core.AppService;
 import com.qq.tars.server.core.ServantAdapter;
 import com.qq.tars.server.core.ServantHomeSkeleton;
 import com.qq.tars.support.admin.impl.AdminFServantImpl;
+import com.qq.tars.support.admin.AdminFServant;
 import com.qq.tars.support.om.OmConstants;
 import com.qq.tars.support.trace.TraceCallbackFilter;
 import com.qq.tars.support.trace.TraceClientFilter;
@@ -91,7 +92,7 @@ public abstract class BaseAppContext implements AppContext {
         try {
             String skeletonName = OmConstants.AdminServant;
             ServantHomeSkeleton skeleton = new ServantHomeSkeleton(skeletonName,
-                    new AdminFServantImpl(), null,  -1);
+                    new AdminFServantImpl(),  AdminFServant.class,  -1);
             skeleton.setAppContext(this);
 
             ServerConfig serverCfg = ConfigurationManager.getInstance().getServerConfig();
