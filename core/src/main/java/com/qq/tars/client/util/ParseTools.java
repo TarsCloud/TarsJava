@@ -97,6 +97,9 @@ public class ParseTools {
                 value.append(" ").append("-v").append(" ").append(endpointF.weightType);
                 value.append(" ").append("-w").append(" ").append(endpointF.weight);
             }
+            if (endpointF.subset != null && endpointF.subset.length() > 0) {
+                value.append(" ").append("-b").append(" ").append(endpointF.subset);
+            }
         }
         return value.toString();
     }

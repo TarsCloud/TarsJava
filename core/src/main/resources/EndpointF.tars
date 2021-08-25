@@ -33,6 +33,7 @@ module tars
         9  optional int    bakFlag;
         11 optional int    weight;
         12 optional int    weightType;
+        13 optional string subset;
     };
     key[EndpointF, host, port, timeout, istcp, grid, qos, weight, weightType];
 };

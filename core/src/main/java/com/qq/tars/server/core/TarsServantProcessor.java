@@ -17,6 +17,7 @@
 package com.qq.tars.server.core;
 
 import com.qq.tars.client.CommunicatorConfig;
+import com.qq.tars.client.subset.KeyRoute;
 import com.qq.tars.common.Filter;
 import com.qq.tars.common.FilterChain;
 import com.qq.tars.common.FilterKind;
@@ -151,6 +152,9 @@ public class TarsServantProcessor extends Processor {
             distributedContext.put(DyeingSwitch.REQ, request);
             distributedContext.put(DyeingSwitch.RES, response);
             distributedContext.put(TraceManager.INTERNAL_SERVANT_NAME, request.getServantName());
+
+            //透传染色key
+            KeyRoute.setRouteKeyToRequest(distributedContext,request);
 
             appContext = AppContextManager.getInstance().getAppContext();
             if (appContext == null) {

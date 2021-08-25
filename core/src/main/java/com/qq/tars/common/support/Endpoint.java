@@ -27,11 +27,12 @@ public class Endpoint {
     private final int timeout;
     private final int grid; 
     private final int qos; 
-    private final String setDivision; 
+    private final String setDivision;
+    private String subset;
 
     private int hash; 
 
-    public static final Endpoint VOID_ENDPOINT = new Endpoint("tcp", "0.0.0.0", 0, 0, 0, 0, null);
+    public static final Endpoint VOID_ENDPOINT = new Endpoint("tcp", "0.0.0.0", 0, 0, 0, 0, null, null);
 
     public Endpoint(String type, String host, int port, int timeout, int grid, int qos, String setDivision) {
         this.type = type;
@@ -41,6 +42,17 @@ public class Endpoint {
         this.grid = grid;
         this.qos = qos;
         this.setDivision = setDivision;
+    }
+
+    public Endpoint(String type, String host, int port, int timeout, int grid, int qos, String setDivision, String subset) {
+        this.type = type;
+        this.host = host;
+        this.port = port;
+        this.timeout = timeout;
+        this.grid = grid;
+        this.qos = qos;
+        this.setDivision = setDivision;
+        this.subset = subset;
     }
 
     public String type() {
@@ -69,6 +81,10 @@ public class Endpoint {
 
     public String setDivision() {
         return setDivision;
+    }
+
+    public String subset(){
+        return subset;
     }
 
     @Override
@@ -113,6 +129,9 @@ public class Endpoint {
         if (setDivision != null && !setDivision.trim().isEmpty()) {
             sb.append(" -s ").append(setDivision);
         }
+        if (subset != null && !subset.trim().isEmpty()) {
+            sb.append(" -b ").append(subset);
+        }
         return sb.toString();
     }
 
@@ -124,6 +143,7 @@ public class Endpoint {
         int grid = 0;
         int qos = 0;
         String setDivision = null;
+        String subset = null;
 
         String[] fields = node.split("\\s+");
         if ("tcp".equalsIgnoreCase(fields[0])) {
@@ -154,6 +174,9 @@ public class Endpoint {
             } else if ("-s".equals(fields[i]) && i + 1 < fields.length) {
                 setDivision = fields[i + 1];
                 i += 2;
+            } else if ("-b".equals(fields[i]) && i + 1 < fields.length) {
+                subset = fields[i + 1];
+                i += 2;
             } else {
                 i++;
             }
@@ -176,6 +199,6 @@ public class Endpoint {
         if (grid < 0) {
             return null;
         }
-        return new Endpoint(type, host, port, timeout, grid, qos, setDivision);
+        return new Endpoint(type, host, port, timeout, grid, qos, setDivision, subset);
     }
 }

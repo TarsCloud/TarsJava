@@ -21,6 +21,7 @@ import com.qq.tars.client.cluster.ServantInvokerAliveChecker;
 import com.qq.tars.client.rpc.ServantClient;
 import com.qq.tars.client.rpc.ServantInvokeContext;
 import com.qq.tars.client.rpc.ServantInvoker;
+import com.qq.tars.client.subset.KeyRoute;
 import com.qq.tars.common.Filter;
 import com.qq.tars.common.FilterChain;
 import com.qq.tars.common.FilterKind;
@@ -143,6 +144,10 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
             request.setStatus(status);
 
         }
+
+        //透传染色key
+        KeyRoute.setRouteKeyToRequest(distributedContext,request);
+
         FilterChain filterChain = new TarsClientFilterChain(filters, objName, FilterKind.CLIENT, client, InvokeStatus.SYNC_CALL, null);
         filterChain.doFilter(request, response);
         return response;
@@ -192,6 +197,9 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
             request.setStatus(status);
 
         }
+        //透传染色key
+        KeyRoute.setRouteKeyToRequest(distributedContext,request);
+
         TarsCallbackWrapper tarsCallbackWrapper = callback == null ?
                 null : new TarsCallbackWrapper(config, request.getFunctionName(), getUrl().getHost(), getUrl().getPort(), request.getBornTime(), request, callback, this);
         FilterChain filterChain = new TarsClientFilterChain(filters, objName, FilterKind.CLIENT, client, InvokeStatus.ASYNC_CALL, tarsCallbackWrapper);
@@ -242,6 +250,10 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
             status.put(DyeingSwitch.STATUS_DYED_FILENAME, fileName == null ? "" : fileName);
             request.setStatus(status);
         }
+
+        //透传染色key
+        KeyRoute.setRouteKeyToRequest(distributedContext,request);
+
         final Callback callback = new TarsPromiseFutureCallback<>(
                 config,
                 request.getFunctionName(),

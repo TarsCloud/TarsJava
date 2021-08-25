@@ -18,20 +18,23 @@ package com.qq.tars.support.query;
 
 import com.qq.tars.client.Communicator;
 import com.qq.tars.client.ServantProxyConfig;
+import com.qq.tars.client.subset.KeyRoute;
+import com.qq.tars.client.subset.Subset;
 import com.qq.tars.client.util.ParseTools;
 import com.qq.tars.common.support.Holder;
 import com.qq.tars.common.util.Constants;
+import com.qq.tars.context.DistributedContextManager;
 import com.qq.tars.protocol.util.TarsHelper;
 import com.qq.tars.support.query.prx.EndpointF;
 import com.qq.tars.support.query.prx.QueryFPrx;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public final class QueryHelper {
 
     private final Communicator communicator;
+
+    private Subset subset;
 
     public QueryHelper(Communicator communicator) {
         this.communicator = communicator;
@@ -47,6 +50,7 @@ public final class QueryHelper {
 
     public String getServerNodes(ServantProxyConfig config) {
         QueryFPrx queryProxy = getPrx();
+        String routeKey = getRouteKeyByContext();
         String name = config.getSimpleObjectName();
         Holder<List<EndpointF>> activeEp = new Holder<List<EndpointF>>(new ArrayList<EndpointF>());
         Holder<List<EndpointF>> inactiveEp = new Holder<List<EndpointF>>(new ArrayList<EndpointF>());
@@ -61,9 +65,13 @@ public final class QueryHelper {
             return null;
         }
         Collections.sort(activeEp.getValue());
+
+        //根据Subset规则过滤节点
+        Holder<List<EndpointF>> activeEpFilter = subset.subsetEndpointFilter(name, routeKey, activeEp);
+
         StringBuilder value = new StringBuilder();
-        if (activeEp.value != null && !activeEp.value.isEmpty()) {
-            for (EndpointF endpointF : activeEp.value) {
+        if (activeEpFilter.value != null && !activeEpFilter.value.isEmpty()) {
+            for (EndpointF endpointF : activeEpFilter.value) {
                 if (value.length() > 0) {
                     value.append(":");
                 }
@@ -76,5 +84,10 @@ public final class QueryHelper {
         value.insert(0, Constants.TARS_AT);
         value.insert(0, name);
         return value.toString();
+    }
+
+    public String getRouteKeyByContext(){
+        KeyRoute routeKey = new KeyRoute();
+        return KeyRoute.getRouteKey(DistributedContextManager.getDistributedContext());
     }
 }

@@ -24,6 +24,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 public class StringUtils {
     private StringUtils() {
@@ -348,5 +349,61 @@ public class StringUtils {
             }
         }
         return s;
+    }
+
+
+    public static Boolean matches(String regex, String input){
+        //非空校验
+        if(regex==null || "".equals(regex) || input == null){
+            return false;
+        }
+        char[] chars = regex.toCharArray();
+        boolean flage = true;
+        if( chars[0] == '*'){
+            //如果regex是*开头，如：*d123等。从d往后匹配；
+            if( regex.length() < 2){
+                return true;
+            }
+            int i;
+            flage = false;
+            for (i = 0; i < input.length(); i++) {
+                if( input.charAt(i) == regex.charAt(1)){
+                    flage = true;
+                    for (int j = 1; j < regex.length(); j++) {
+
+                        if( i > input.length() -1 && regex.charAt(j) != '*' ){
+                            return false;
+                        }
+
+                        if( regex.charAt(j) == '*' || input.charAt(i) == regex.charAt(j)  ){
+                            i++;
+                        } else {
+                            flage = false;
+                        }
+
+
+                    }
+                }
+            }
+        }else {
+            if( chars[chars.length-1] == '*'){
+                //如果regex是*结尾，如uid12*。从第一个字符开始匹配
+                for (int i = 0; i < Math.min(regex.length(), input.length()); i++) {
+                    if(regex.charAt(i) == input.charAt(i) || regex.charAt(i) == '*'){
+                        if( i == Math.min(regex.length(), input.length()) -1 && regex.length() > input.length()+1 ){
+                            flage = false;
+                        }
+
+                    } else {
+                        flage = false;
+                    }
+                }
+            } else {
+                //如果没有*，如uid123。
+                flage = regex.equals(input);
+            }
+        }
+
+        return flage;
     }
 }
