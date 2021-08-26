@@ -4,6 +4,9 @@ package com.qq.tars.client.subset;
 import com.qq.tars.common.util.DyeingSwitch;
 import com.qq.tars.context.DistributedContext;
 import com.qq.tars.rpc.protocol.tars.TarsServantRequest;
+import com.qq.tars.support.log.LoggerFactory;
+import org.slf4j.Logger;
+
 import java.util.HashMap;
 
 
@@ -15,13 +18,20 @@ public class KeyRoute {
 
     public static final String TARS_ROUTE_KEY = "TARS_ROUTE_KEY";
 
+    private static final Logger logger = LoggerFactory.getClientLogger();
+
 
     //根据分布式上下文信息获取KeyRoute
     public static String getRouteKey(DistributedContext distributedContext){
+        if( distributedContext == null ){
+            logger.info("无分布式上下文信息distributedContext");
+        }
         String routeValue = "";
         if(distributedContext != null){
             TarsServantRequest tarsServantRequest = distributedContext.get(DyeingSwitch.REQ);
-            routeValue = tarsServantRequest.getStatus().get(TARS_ROUTE_KEY);
+            if( tarsServantRequest != null){
+                routeValue = tarsServantRequest.getStatus().get(TARS_ROUTE_KEY);
+            }
         }
         return routeValue;
     }
@@ -32,12 +42,13 @@ public class KeyRoute {
         if(distributedContext != null && routeKey != null ){
             TarsServantRequest tarsServantRequest = distributedContext.get(DyeingSwitch.REQ);
             tarsServantRequest.getStatus().put(TARS_ROUTE_KEY, routeKey);
-
         }
-
     }
 
     public static void setRouteKeyToRequest(DistributedContext distributedContext, TarsServantRequest request){
+        if( distributedContext == null ){
+            logger.info("无分布式上下文信息distributedContext");
+        }
         String routeValue = KeyRoute.getRouteKey(distributedContext);
         if( routeValue != null && !"".equals(routeValue)){
             if(request.getStatus() != null){
@@ -47,7 +58,6 @@ public class KeyRoute {
                 status.put(KeyRoute.TARS_ROUTE_KEY ,routeValue);
                 request.setStatus(status);
             }
-
         }
     }
 

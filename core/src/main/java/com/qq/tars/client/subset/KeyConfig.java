@@ -26,8 +26,13 @@ public class KeyConfig {
         }
         for ( KeyRoute rule: rules) {
             //根据根据分布式上下文信息获取 “请求的染色的key”
-            String routeKeyReq = KeyRoute.getRouteKey(distributedContext);
-
+            String routeKeyReq;
+            if( distributedContext != null){
+                routeKeyReq = KeyRoute.getRouteKey(distributedContext);
+            } else {
+                logger.info("无分布式上下文信息distributedContext");
+                return null;
+            }
             //精确匹配
             if( "match".equals(rule.getAction())  ){
                 if( routeKeyReq.equals(rule.getValue()) ){
@@ -45,8 +50,13 @@ public class KeyConfig {
                 }
 
             }
+            //默认匹配
+            if( "default".equals(rule.getAction()) ){
+                //默认路由无需考虑染色key
+                return rule.getRoute();
+            }
         }
-        return defaultRoute;
+        return null;
     }
 
     public KeyConfig() {

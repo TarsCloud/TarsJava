@@ -322,6 +322,66 @@ public class TestSubset {
     }
 
 
+    /**
+     * 测试默认路由
+     * 没有测试registry获取subsetConf功能
+     */
+    @Test
+    public void testDefault() {
+
+        //1. 给过滤器设置过滤规则
+        //1.1 创建SubsetManager管理器
+        SubsetManager subsetManager = new SubsetManager();
+
+
+        //1.1 设置参数路由规则，这里的KeyRoute的value为 “规则的染色key”
+        KeyConfig keyConf = new KeyConfig();
+        List<KeyRoute> krs = new LinkedList<>();
+        krs.add(new KeyRoute("default","","v1"));
+        keyConf.setRules(krs);
+
+        //1.2 设置subsetConf，并加入缓存
+        SubsetConf subsetConf = new SubsetConf();
+        subsetConf.setEnanle(true);
+        subsetConf.setRuleType("key");
+        subsetConf.setKeyConf(keyConf);
+        subsetConf.setLastUpdate( Instant.now() );
+
+        Map<String, SubsetConf> cache = new HashMap<>();
+        cache.put(objectName,subsetConf);
+        subsetManager.setCache(cache);
+
+        //1.3 给过滤器设置过滤规则和管理者
+        subsetFilter.setSubsetConf(subsetConf);
+        subsetFilter.setSubsetManager(subsetManager);
+
+        //2. 模拟存活节点
+        endpointFList.add(new EndpointF("host1",1,2,3,4,5,6,"setId1",7,8,9,10,"v1"));
+        endpointFList.add(new EndpointF("host2",1,2,3,4,5,6,"setId2",7,8,9,10,"v1"));
+        endpointFList.add(new EndpointF("host3",1,2,3,4,5,6,"setId3",7,8,9,10,"v2"));
+        endpointFList.add(new EndpointF("host4",1,2,3,4,5,6,"setId4",7,8,9,10,"v2"));
+        endpointFList.add(new EndpointF("host5",1,2,3,4,5,6,"setId5",7,8,9,10,"v2"));
+        endpointFList.add(new EndpointF("host5",1,2,3,4,5,6,"setId5",7,8,9,10,"v3"));
+        activeEp.setValue(endpointFList);
+
+
+        //3. 输出过滤前信息
+        System.out.println("过滤前节点信息如下：");
+        for( EndpointF endpoint : endpointFList){
+            System.out.println(endpoint.toString());
+        }
+
+        //4. 对存活节点按subset规则过滤
+        Holder<List<EndpointF>> filterActiveEp = subsetFilter.subsetEndpointFilter(objectName, routeKey, activeEp);
+
+        //5. 输出过滤结果
+
+        System.out.println("过滤后节点信息如下：");
+        for( EndpointF endpoint : filterActiveEp.getValue() ){
+            System.out.println(endpoint.toString());
+        }
+    }
+
 
     /**
      *  registry测试
@@ -385,7 +445,4 @@ public class TestSubset {
             System.out.println(endpoint.toString());
         }
     }
-
-
-
 }
