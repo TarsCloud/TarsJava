@@ -2,7 +2,9 @@ package com.qq.tars.client.subset;
 
 
 import com.qq.tars.common.support.Holder;
+import com.qq.tars.support.log.LoggerFactory;
 import com.qq.tars.support.query.prx.EndpointF;
+import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +21,7 @@ public class Subset {
 
     private SubsetManager subsetManager;
 
+    private static final Logger logger = LoggerFactory.getClientLogger();
 
     //获取到规则后的subset，与节点的subset比较，过滤不匹配节点
     public Holder<List<EndpointF>> subsetEndpointFilter(String servantName, String routeKey, Holder<List<EndpointF>> eps){
@@ -37,12 +40,15 @@ public class Subset {
             return eps;
         }
         //和每一个eps的subset比较，淘汰不符合要求的
-
         Holder<List<EndpointF>> epsFilter = new Holder<>(new ArrayList<EndpointF>());
         for (EndpointF ep : eps.value) {
             if( subset.equals(ep.getSubset())){
                 epsFilter.getValue().add(ep);
             }
+        }
+        if( epsFilter == null || epsFilter.getValue() == null || epsFilter.getValue().size() == 0){
+            logger.info("没有找到subset为："+subset+"的节点");
+            return eps;
         }
         return epsFilter;
     }

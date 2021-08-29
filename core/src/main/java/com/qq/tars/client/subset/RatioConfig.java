@@ -13,7 +13,7 @@ public class RatioConfig {
     //进行路由规则的具体实现，返回subset字段
     public String findSubet(String routeKey){
         //routeKey为空时随机
-        if( "".equals(routeKey) ){
+        if( "".equals(routeKey) || routeKey == null ){
             //赋值routeKey为获取的随机值
             Random random = new Random();
             int r = random.nextInt( rules.size() );
