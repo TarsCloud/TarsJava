@@ -3,11 +3,11 @@ package com.qq.tars.client.subset;
 
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 public class RatioConfig {
 
     private Map<String, Integer> rules;
+    ConsistentHash consistentHash;
 
 
     //进行路由规则的具体实现，返回subset字段
@@ -26,27 +26,8 @@ public class RatioConfig {
                 i++;
             }
         }
-
-        //routeKey不为空时实现按比例算法
-        int totalWeight = 0;
-        int supWeight = 0;
-        String subset = null;
-        //获得总权重
-        for (Integer value : rules.values()) {
-            totalWeight+=value;
-        }
-        //获取随机数
-        Random random = new Random();
-        int r = random.nextInt(totalWeight);
-        //根据随机数找到subset
-        for (Map.Entry<String, Integer> entry : rules.entrySet()){
-            supWeight+=entry.getValue();
-            if( r < supWeight){
-                subset = entry.getKey();
-                return subset;
-            }
-        }
-        return null;
+        //routeKey不为空时实现按比例算法(一致hash)
+        return consistentHash.getSubsetByVirtual();
     }
 
     public Map<String, Integer> getRules() {
@@ -54,6 +35,10 @@ public class RatioConfig {
     }
 
     public void setRules(Map<String, Integer> rules) {
+        //根据规则创建一致hash的虚拟节点
+        ConsistentHash consistentHash = new ConsistentHash();
+        consistentHash.setVirtualSubset(rules);
+        this.consistentHash = consistentHash;
         this.rules = rules;
     }
 }
