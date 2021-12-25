@@ -117,7 +117,7 @@ public class LoadBalanceHelper {
 
         @Override
         public int compare(Pair<Integer, Invoker<T>> o1, Pair<Integer, Invoker<T>> o2) {
-            if (o1.first == o2.first) return o1.second.hashCode() - o2.second.hashCode();
+            if (o1.first.equals(o2.first)) return o1.second.hashCode() - o2.second.hashCode();
             else return o1.first.compareTo(o2.first);
         }
     }
