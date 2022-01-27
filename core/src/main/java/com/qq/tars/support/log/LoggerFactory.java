@@ -21,6 +21,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
+import java.util.Objects;
 
 public class LoggerFactory {
     private static final LoggerContext logContext;
@@ -38,7 +39,9 @@ public class LoggerFactory {
         configurator.setContext(logContext);
         logContext.reset();
         try {
-            configurator.doConfigure("logback.xml");
+
+            configurator.doConfigure(
+                    Objects.requireNonNull(LoggerFactory.class.getClassLoader().getResource("logback.xml")));
             return 0;
         } catch (JoranException e) {
             e.printStackTrace();
