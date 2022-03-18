@@ -10,7 +10,7 @@
 
     <groupId>com.tencent.tars</groupId>
     <artifactId>tars-parent</artifactId>
-    <version>1.7.2</version>
+    <version>${revision}</version>
     <packaging>pom</packaging>
     <name>Tars</name>
     <description>Super POM For Projects</description>
@@ -50,6 +50,7 @@
     </modules>
 
     <properties>
+        <revision>1.7.2</revision>
         <java_source_version>1.8</java_source_version>
         <java_target_version>1.8</java_target_version>
         <file_encoding>UTF-8</file_encoding>
@@ -63,6 +64,7 @@
         <maven_deploy_plugin_version>2.8.2</maven_deploy_plugin_version>
         <maven_release_plugin_version>2.5.3</maven_release_plugin_version>
         <maven_junit_version>4.8.2</maven_junit_version>
+        <maven_flatten_version>1.2.5</maven_flatten_version>
     </properties>
 
     <build>
@@ -76,6 +78,32 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${maven_javadoc_plugin_version}</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>${maven_flatten_version}</version>
+                <configuration>
+                    <updatePomFile>true</updatePomFile>
+                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
 
