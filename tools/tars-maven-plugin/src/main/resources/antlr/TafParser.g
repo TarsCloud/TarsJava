@@ -85,11 +85,11 @@ param
 
 
 const_initializer returns [String result]
- : (TARS_INTEGER_LITERAL | 
-   TARS_FLOATING_POINT_LITERAL | 
-   TARS_STRING_LITERAL | 
-   TARS_FALSE | 
-   TARS_TRUE);
+ : TARS_INTEGER_LITERAL |
+   TARS_FLOATING_POINT_LITERAL |
+   TARS_STRING_LITERAL |
+   TARS_FALSE |
+   TARS_TRUE;
 
 
 type
