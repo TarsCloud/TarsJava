@@ -1,109 +1,139 @@
-grammar Taf;
+parser grammar TarsParser;
 
-tokens
-{
-COLON;COMMA;COMMENT;DOT;
-EQ;ESC_SEQ;GT;HEX_DIGIT;LBRACE;LBRACKET;LPAREN;LT;
-OCTAL_ESC; QUOTE; RBRACE; RBRACKET; RPAREN; SEMI; TAF_BOOL;
-TAF_BYTE; TAF_CONST; TAF_DOUBLE; TAF_ENUM; TAF_FALSE;TAF_FLOAT;
-TAF_FLOATING_POINT_LITERAL; TAF_IDENTIFIER;TAF_INCLUDE;TAF_INT;
-TAF_INTEGER_LITERAL;TAF_INTERFACE;TAF_KEY;TAF_LONG;TAF_MAP;
-TAF_NAMESPACE;TAF_OPTIONAL;TAF_OUT;TAF_REQUIRE;TAF_ROUTE_KEY;
-TAF_SHORT;TAF_STRING;TAF_STRING_LITERAL;TAF_STRUCT;TAF_TRUE;
-TAF_UNSIGNED;TAF_VECTOR;TAF_VOID;UNICODE_ESC;WS;TAF_OPERATION;
-TAF_PARAM;TAF_REF;TAF_ROOT;TAF_STRUCT_MEMBER;
+options { 
+tokenVocab=TarsLexer;
+output = AST;
 }
 
+tokens
+{COLON;COMMA;COMMENT;DOT;
+EQ;ESC_SEQ;GT;HEX_DIGIT;LBRACE;LBRACKET;LPAREN;LT;
+OCTAL_ESC; QUOTE; RBRACE; RBRACKET; RPAREN; SEMI; TARS_BOOL;
+TARS_BYTE; TARS_CONST; TARS_DOUBLE; TARS_ENUM; TARS_FALSE;TARS_FLOAT;
+TARS_FLOATING_POINT_LITERAL; TARS_IDENTIFIER;TARS_INCLUDE;TARS_INT;
+TARS_INTEGER_LITERAL;TARS_INTERFACE;TARS_KEY;TARS_LONG;TARS_MAP;
+TARS_NAMESPACE;TARS_OPTIONAL;TARS_OUT;TARS_REQUIRE;TARS_ROUTE_KEY;
+TARS_SHORT;TARS_STRING;TARS_STRING_LITERAL;TARS_STRUCT;TARS_TRUE;
+TARS_UNSIGNED;TARS_VECTOR;TARS_VOID;UNICODE_ESC;WS;TARS_OPERATION;
+TARS_PARAM;TARS_REF;TARS_ROOT;TARS_STRUCT_MEMBER;}
+
+@header {package com.qq.tars.maven.parse;}
+
+start
+ : include_def* namespace_def +
+  -> ^( TARS_ROOT          (include_def )* ( namespace_def )+ ) ;
 
 
+include_def 
+ : TARS_INCLUDE TARS_STRING_LITERAL 
+  -> ^( TARS_INCLUDE[$TARS_STRING_LITERAL.text] ) ;
 
 
-
-start :
- ( include_def )* ( namespace_def )+ ;
-
-
-
-include_def :
- Taf_INCLUDE Taf_STRING_LITERAL ;
+namespace_def
+ : TARS_NAMESPACE TARS_IDENTIFIER LBRACE (definition SEMI)+ RBRACE
+  -> ^( TARS_NAMESPACE[$TARS_IDENTIFIER.text] ( definition )+ ) ;
 
 
+definition
+ : const_def | 
+     enum_def | 
+   struct_def | 
+   key_def | 
+   interface_def 
+;
 
-namespace_def :
- Taf_NAMESPACE Taf_IDENTIFIER LBRACE ( definition SEMI )+ RBRACE;
-
-
-
-definition :
- ( const_def |
-   enum_def |
-   struct_def |
-   key_def |
-   interface_def
-);
-
-const_def :
- Taf_CONST type_primitive Taf_IDENTIFIER EQ v= const_initializer ;
-
-
-
-enum_def :
- ( Taf_ENUM Taf_IDENTIFIER LBRACE Taf_IDENTIFIER ( COMMA Taf_IDENTIFIER )* ( COMMA )? RBRACE );
+const_def
+ : TARS_CONST type_primitive TARS_IDENTIFIER EQ v= const_initializer
+  -> ^( TARS_CONST[$TARS_IDENTIFIER.text, $v.text] type_primitive ) ;
+ 
+ 
+enum_def 
+ :  TARS_ENUM n=TARS_IDENTIFIER LBRACE m+=TARS_IDENTIFIER (COMMA m+=TARS_IDENTIFIER)* COMMA? RBRACE 
+  -> ^( TARS_ENUM[$n.text] ( $m)+ ) | 
+   TARS_ENUM n=TARS_IDENTIFIER LBRACE m+=TARS_IDENTIFIER EQ v+=TARS_INTEGER_LITERAL (COMMA m+=TARS_IDENTIFIER EQ v+=TARS_INTEGER_LITERAL)* COMMA? RBRACE 
+  -> ^( TARS_ENUM[$n.text] ( $m)+ ( $v)+ );
 
 
+struct_def
+ : TARS_STRUCT TARS_IDENTIFIER LBRACE (struct_member SEMI)+ RBRACE
+  -> ^( TARS_STRUCT[$TARS_IDENTIFIER.text] ( struct_member )+ ) ;
 
 
-
-struct_def :
- Taf_STRUCT Taf_IDENTIFIER LBRACE ( struct_member SEMI )+ RBRACE ;
-
-
-
-struct_member :
- Taf_INTEGER_LITERAL (r= Taf_REQUIRE |r= Taf_OPTIONAL ) type Taf_IDENTIFIER ( EQ v= const_initializer )? ;
+struct_member
+ : TARS_INTEGER_LITERAL (r= TARS_REQUIRE |r=TARS_OPTIONAL) type TARS_IDENTIFIER (EQ v= const_initializer )? 
+  -> ^( TARS_STRUCT_MEMBER[$TARS_INTEGER_LITERAL.text, $r, $TARS_IDENTIFIER.text, $v.result] type ) ;
 
 
-
-key_def :
- Taf_KEY LBRACKET n= Taf_IDENTIFIER ( COMMA k+= Taf_IDENTIFIER )+ RBRACKET ;
-
-
-
-interface_def :
- Taf_INTERFACE Taf_IDENTIFIER LBRACE ( operation SEMI )+ RBRACE ;
+key_def
+ :  TARS_KEY LBRACKET n=TARS_IDENTIFIER (COMMA k+= TARS_IDENTIFIER )+ RBRACKET 
+  -> ^( TARS_KEY[$n.text] ( $k)+ ) ;
 
 
-
-operation :
- type Taf_IDENTIFIER LPAREN ( param ( COMMA param )* )? RPAREN ;
-
-
-
-param :
- ( Taf_ROUTE_KEY )? ( Taf_OUT )? type Taf_IDENTIFIER ;
+interface_def
+ : TARS_INTERFACE TARS_IDENTIFIER LBRACE (operation SEMI)+ RBRACE
+  -> ^( TARS_INTERFACE[$TARS_IDENTIFIER.text] ( operation )+ ) ;
 
 
+operation
+ : type TARS_IDENTIFIER LPAREN (param (COMMA param )* )? RPAREN
+  -> ^( TARS_OPERATION[$TARS_IDENTIFIER.text] type               ( param )* );
 
 
+param
+ : TARS_ROUTE_KEY? TARS_OUT? type TARS_IDENTIFIER
+  -> ^( TARS_PARAM[$TARS_IDENTIFIER.text, $TARS_OUT, $TARS_ROUTE_KEY] type ) ;
 
 
+const_initializer returns [String result]
+ : (TARS_INTEGER_LITERAL | 
+   TARS_FLOATING_POINT_LITERAL | 
+   TARS_STRING_LITERAL | 
+   TARS_FALSE | 
+   TARS_TRUE);
 
 
+type
+ : type_primitive |
+   type_vector | 
+   type_map | 
+   type_custom;
+ 
+
+type_primitive
+ : TARS_VOID 
+  -> ^( TARS_VOID ) | 
+   TARS_BOOL 
+  -> ^( TARS_BOOL ) | 
+   TARS_BYTE 
+  -> ^( TARS_BYTE ) | 
+   TARS_SHORT 
+  -> ^( TARS_SHORT ) | 
+   TARS_INT 
+  -> ^( TARS_INT ) | 
+   TARS_LONG 
+  -> ^( TARS_LONG ) |
+   TARS_FLOAT 
+  -> ^( TARS_FLOAT ) | 
+   TARS_DOUBLE
+  -> ^( TARS_DOUBLE ) | 
+   TARS_STRING 
+  -> ^( TARS_STRING ) | 
+   TARS_UNSIGNED TARS_INT 
+  -> ^( TARS_LONG );
 
 
-
-type :
- ( type_primitive |
- type_vector |
- type_map |
- type_custom
- );
-
-type_primitive :
- ( TAF_VOID);
-
-type_vector : Taf_VECTOR LT type GT ;
-type_map : Taf_MAP LT type COMMA type GT ;
-type_custom : ( Taf_IDENTIFIER ) ;
-const_initializer : ( Taf_INTEGER_LITERAL | Taf_FLOATING_POINT_LITERAL | Taf_STRING_LITERAL | Taf_FALSE | Taf_TRUE );
-
+type_vector
+ : TARS_VECTOR LT type GT 
+  -> ^( TARS_VECTOR type ) ;
+  
+  
+type_map
+ : TARS_MAP LT type COMMA type GT 
+  -> ^( TARS_MAP type type ) ;
+  
+  
+type_custom 
+ : TARS_IDENTIFIER 
+  -> ^( TARS_MAP[$TARS_IDENTIFIER.text] ) |
+   ns= TARS_IDENTIFIER COLON COLON id= TARS_IDENTIFIER 
+  -> ^( TARS_REF[$ns.text,$id.text] ) ;

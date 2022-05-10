@@ -5,179 +5,179 @@ package com.qq.tars.maven.parse;
 }
 
 TARS_VOID
-:( 'void' );
+ : 'void';
 
 TARS_STRUCT
-:( 'struct' );
+ : 'struct';
 
 TARS_UNSIGNED
-:( 'unsigned' );
+ : 'unsigned';
 
 TARS_BOOL
-:( 'bool' );
+ : 'bool';
 
 TARS_BYTE
-:( 'byte' );
+ : 'byte';
 
 TARS_SHORT
-:( 'short' );
+ : 'short';
 
 TARS_INT
-:( 'int' );
+ : 'int';
 
 TARS_DOUBLE
-:( 'double' );
+ : 'double';
 
 TARS_FLOAT
-:( 'float' );
+ : 'float';
 
 TARS_LONG
-:( 'long' );
+ : 'long' ;
 
 TARS_STRING
-:( 'string' );
+ : 'string' ;
 
 TARS_VECTOR
-:( 'vector' );
+ : 'vector' ;
 
 TARS_MAP
-:( 'map' );
+ : 'map' ;
 
 TARS_KEY
-:( 'key' );
+ : 'key' ;
 
 TARS_ROUTE_KEY
-:( 'routekey' );
+ : 'routekey' ;
 
 TARS_INCLUDE
-:( '#include' );
+ : '#include' ;
 
 TARS_NAMESPACE
-:( 'module' );
+ : 'module' ;
 
 TARS_INTERFACE
-:( 'interface' );
+ : 'interface' ;
 
 TARS_OUT
-:( 'out' );
+ : 'out' ;
 
 TARS_REQUIRE
-:( 'require' );
+ : 'require' ;
 
 TARS_OPTIONAL
-:( 'optional' );
+ : 'optional' ;
 
 TARS_FALSE
-:( 'false' );
+ : 'false' ;
 
 TARS_TRUE
-:( 'true' );
+ : 'true' ;
 
 TARS_ENUM
-:( 'enum' );
+ : 'enum' ;
 
 TARS_CONST
-:( 'const' );
+ : 'const' ;
 
 
 
 TARS_IDENTIFIER
-:   ( ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')* );
+    : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')* ;
 
 
 TARS_INTEGER_LITERAL
-:   ( ('0X'|'0x')('0'..'9'|'a'..'f'|'A'..'F')+|
+    : ('0X'|'0x')('0'..'9'|'a'..'f'|'A'..'F')+|
       ('O'|'o')('0'..'7')+|
-      ('+'|'-')?('0'..'9')+ );
+      ('+'|'-')?('0'..'9')+;
 
 
 TARS_FLOATING_POINT_LITERAL
-:   (   ('+'|'-')? ('0'..'9')+ '.' ('0'..'9')+);
+    :   ('+'|'-')? ('0'..'9')+ '.' ('0'..'9')+;
 
 
 TARS_STRING_LITERAL
-:   ( '"' ( ESC_SEQ | ~ ( '\\' | '"' ) )* '"' );
+    : '"' ( ESC_SEQ | ~ ( '\\' | '"' ) )* '"' ;
 
 
 LPAREN
-:   (   '(' );
+    :   '(' ;
 
 
 RPAREN
-:   (   ')' );
+    :   ')' ;
 
 
 LBRACE
-:   (   '{' );
+    :   '{' ;
 
 
 RBRACE
-:   (   '}' );
+    :   '}' ;
 
 
 LBRACKET
-:   (   '[' );
+    :   '[' ;
 
 
 RBRACKET
-:   (   ']' );
+    :   ']' ;
 
 
 SEMI
-:( ';' );
+ : ';' ;
 
 
 COMMA
-:( ',' );
+ : ',' ;
 
 
 QUOTE
-:( '"' );
+ : '"' ;
 
 
 DOT
-:( '.' );
+ : '.' ;
 
 
 COLON
-:( ':' );
+    :   ':' ;
 
 
 EQ
-:( '=' );
+ : '=' ;
 
 
 GT
-:( '>' );
+ : '>' ;
 
 
 LT
-:( '<' );
-
-
-
+ : '<' ;
 
 
 COMMENT
-:   (   '//' ~('\n'|'\r')* '\r'? '\n' |
+	@init{
+		boolean isDoc = false;
+	}
+    :   '//' ~('\n'|'\r')* '\r'? '\n' {skip();}|
         '/*'
-
-
-
-
-
-        ( options {greedy=false; }:. )* '*/' {$channel=HIDDEN;});
-
-
-
-
-
-
-
+            {
+                if((char)input.LA(1) == '*'){
+                    isDoc = true;
+                }
+            }
+        ( options {greedy=false; }:. )* '*/'
+            {
+                if(isDoc==true){
+                    _channel=HIDDEN;
+                } else{
+                    skip();
+                }
+            };
 
 
 WS
-:   (   ' ' | '\t' | '\r' | '\n' ) {skip();} ;
+    :   (' ' | '\t' | '\r' | '\n')  {skip();} ;
 
 
 
@@ -185,7 +185,7 @@ WS
 
 
 fragment HEX_DIGIT
-:         ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' ) ;
+          : ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' ) ;
 
 
 fragment ESC_SEQ
