@@ -11,3 +11,4 @@ target/
 *.dat
 examples/**/testapp/
 **/.DS_Store
+.flattened-pom.xml
