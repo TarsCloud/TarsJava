@@ -47,6 +47,7 @@ public class SpringBootAppContext extends BaseAppContext {
     protected void loadServants() {
         loadAppContextListeners();
         loadAppServants();
+        loadDefaultFilter();
     }
 
     private void loadAppContextListeners() {
