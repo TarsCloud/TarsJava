@@ -44,7 +44,7 @@ public class Tars2JavaConfig {
     public boolean servant;
 
     @Parameter
-    public boolean tup;
+    public boolean tup =Boolean.TRUE;
 
     public String getSrcPath() {
         return srcPath;

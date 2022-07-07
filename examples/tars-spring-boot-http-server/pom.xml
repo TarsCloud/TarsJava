@@ -94,6 +94,7 @@
                             <servant>true</servant>
                             <!-- 生成源代码编码 -->
                             <charset>UTF-8</charset>
+                            <tup>true</tup>
                             <!-- 生成的源代码目录 -->
                             <srcPath>${basedir}/src/main/java</srcPath>
                             <!-- 生成源代码包前缀 -->
