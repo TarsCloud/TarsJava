@@ -25,7 +25,7 @@ import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.spring.annotation.TarsClient;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
@@ -51,7 +51,7 @@ public class CommunicatorBeanPostProcessor implements BeanPostProcessor {
 
     private void processFields(Object bean, Field[] declaredFields) {
         for (Field field : declaredFields) {
-            TarsClient annotation = AnnotationUtils.getAnnotation(field, TarsClient.class);
+            TarsClient annotation = AnnotatedElementUtils.findMergedAnnotation(field, TarsClient.class);
             if (annotation == null) {
                 continue;
             }
