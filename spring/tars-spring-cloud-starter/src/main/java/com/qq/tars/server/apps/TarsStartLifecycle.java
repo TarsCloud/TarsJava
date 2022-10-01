@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.SmartLifecycle;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -152,7 +153,7 @@ public class TarsStartLifecycle extends BaseAppContext implements SmartLifecycle
 
         ServerConfig serverCfg = ConfigurationManager.getInstance().getServerConfig();
 
-        homeName = bean.getClass().getAnnotation(TarsServant.class).name();
+        homeName = AnnotatedElementUtils.findMergedAnnotation(bean.getClass(), TarsServant.class).name();
         if (StringUtils.isEmpty(homeName)) {
             throw new RuntimeException("servant name is null.");
         }

@@ -31,7 +31,7 @@ import com.qq.tars.spring.annotation.TarsListener;
 import com.qq.tars.spring.annotation.TarsServant;
 import org.springframework.aop.framework.Advised;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 
 import java.util.Map;
 
@@ -93,7 +93,7 @@ public class SpringBootAppContext extends BaseAppContext {
 
         ServerConfig serverCfg = ConfigurationManager.getInstance().getServerConfig();
 
-        homeName = AnnotationUtils.getAnnotation(bean.getClass(), TarsServant.class).name();
+        homeName = AnnotatedElementUtils.findMergedAnnotation(bean.getClass(), TarsServant.class).name();
         if (StringUtils.isEmpty(homeName)) {
             throw new RuntimeException("servant name is null.");
         }
