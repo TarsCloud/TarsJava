@@ -34,7 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
@@ -75,7 +75,7 @@ public class TarsClientBeanPostProcessor implements BeanPostProcessor, Initializ
 
     private void processFields(Object bean, Field[] declaredFields) {
         for (Field field : declaredFields) {
-            TarsClient annotation = AnnotationUtils.getAnnotation(field, TarsClient.class);
+            TarsClient annotation = AnnotatedElementUtils.findMergedAnnotation(field, TarsClient.class);
             if (annotation == null) {
                 continue;
             }
