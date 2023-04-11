@@ -3,7 +3,7 @@
 // TARS version 1.7.3.
 // **********************************************************************
 
-package com.qq.tars.quickstart.server.testapp;
+package com.qq.tars.springcloud.test.server;
 
 import com.qq.tars.protocol.annotation.*;
 import com.qq.tars.protocol.tars.annotation.*;
