@@ -19,10 +19,11 @@ package com.qq.tars.client;
 import com.qq.tars.common.util.Config;
 import com.qq.tars.common.util.Constants;
 import com.qq.tars.common.util.StringUtils;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class CommunicatorConfig {
 
@@ -57,6 +58,8 @@ public class CommunicatorConfig {
     private int queueSize = Constants.default_queue_size;
     private String charsetName = Constants.default_charset_name;
 
+    private   boolean  useVirtualThread = false;
+
     private String logPath;
     private String logLevel = "INFO";
     private String dataPath;
@@ -90,6 +93,7 @@ public class CommunicatorConfig {
         sendThread = conf.getInt("/tars/application/client<sendthread>", 1);
         recvThread = conf.getInt("/tars/application/client<recvthread>", 1);
         asyncThread = conf.getInt("/tars/application/client<asyncthread>", 1);
+        useVirtualThread= conf.getBool("/tars/application/client<usevirtualthread>", false);
         moduleName = conf.get("/tars/application/client<modulename>", Constants.default_modulename);
         String enableSetStr = conf.get("/tars/application<enableset>");
         setDivision = conf.get("/tars/application<setdivision>");
@@ -356,6 +360,10 @@ public class CommunicatorConfig {
 
     public String getDataPath() {
         return dataPath;
+    }
+
+    public boolean isUseVirtualThread() {
+        return useVirtualThread;
     }
 
     public CommunicatorConfig setDataPath(String dataPath) {

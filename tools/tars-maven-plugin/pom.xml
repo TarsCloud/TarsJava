@@ -14,7 +14,7 @@
 
     <properties>
         <maven_version>2.2.1</maven_version>
-        <maven_plugin_version>3.4</maven_plugin_version>
+        <maven_plugin_version>3.9.0</maven_plugin_version>
     </properties>
 
     <dependencies>
@@ -199,7 +199,7 @@
                                             maven-plugin-plugin
                                         </artifactId>
                                         <versionRange>
-                                            [3.4,)
+                                            [3.9,)
                                         </versionRange>
                                         <goals>
                                             <goal>descriptor</goal>

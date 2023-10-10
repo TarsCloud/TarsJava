@@ -17,6 +17,7 @@
 package com.qq.tars.server.core;
 
 import com.qq.tars.common.support.Endpoint;
+import com.qq.tars.common.util.Constants;
 import com.qq.tars.net.core.Processor;
 import com.qq.tars.net.core.nio.SelectorManager;
 import com.qq.tars.net.util.Utils;
@@ -28,7 +29,6 @@ import com.qq.tars.rpc.protocol.tars.TarsCodec;
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.server.config.ServantAdapterConfig;
 import com.qq.tars.server.config.ServerConfig;
-
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.DatagramSocket;
@@ -56,7 +56,8 @@ public class ServantAdapter implements Adapter {
         boolean keepAlive = true;
         Codec codec = new TarsCodec(serverCfg.getCharsetName());
         Processor processor = new TarsServantProcessor();
-        Executor threadPool = ServantThreadPoolManager.get(servantAdapterConfig);
+
+        Executor threadPool = serverCfg.isIsVirtualThread()? Constants.VIRTUAL_THREAD_POOL: ServantThreadPoolManager.get(servantAdapterConfig);
 
         Endpoint endpoint = this.servantAdapterConfig.getEndpoint();
         if (endpoint.type().equals("tcp")) {

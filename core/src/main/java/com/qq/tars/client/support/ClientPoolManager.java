@@ -25,23 +25,22 @@ import com.qq.tars.common.util.concurrent.TaskThreadPoolExecutor;
 import com.qq.tars.net.core.nio.SelectorManager;
 import com.qq.tars.net.protocol.ProtocolFactory;
 import com.qq.tars.support.log.LoggerFactory;
-import org.slf4j.Logger;
-
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
 
 public class ClientPoolManager {
-
+    public static final Executor  VIRTUAL_THREAD_POOL = Executors.newVirtualThreadPerTaskExecutor();
     private static final Logger logger = LoggerFactory.getClientLogger();
+    private final static ConcurrentHashMap<CommunicatorConfig, Executor> clientThreadPoolMap = new ConcurrentHashMap<>();
+    private final static ConcurrentHashMap<ServantProxyConfig, SelectorManager> selectorsMap = new ConcurrentHashMap<>();
 
-
-    private final static ConcurrentHashMap<CommunicatorConfig, ThreadPoolExecutor> clientThreadPoolMap = new ConcurrentHashMap<CommunicatorConfig, ThreadPoolExecutor>();
-    private final static ConcurrentHashMap<ServantProxyConfig, SelectorManager> selectorsMap = new ConcurrentHashMap<ServantProxyConfig, SelectorManager>();
-
-    public static ThreadPoolExecutor getClientThreadPoolExecutor(CommunicatorConfig communicatorConfig) {
-        ThreadPoolExecutor clientPoolExecutor = clientThreadPoolMap.get(communicatorConfig);
+    public static Executor getClientThreadPoolExecutor(CommunicatorConfig communicatorConfig) {
+        Executor clientPoolExecutor = clientThreadPoolMap.get(communicatorConfig);
         if (clientPoolExecutor == null) {
             synchronized (ServantClient.class) {
                 clientPoolExecutor = clientThreadPoolMap.get(communicatorConfig);
@@ -54,21 +53,28 @@ public class ClientPoolManager {
         return clientPoolExecutor;
     }
 
-    private static ThreadPoolExecutor createThreadPool(CommunicatorConfig communicatorConfig) {
-        int corePoolSize = communicatorConfig.getCorePoolSize();
-        int maxPoolSize = communicatorConfig.getMaxPoolSize();
-        int keepAliveTime = communicatorConfig.getKeepAliveTime();
-        int queueSize = communicatorConfig.getQueueSize();
-        TaskQueue taskqueue = new TaskQueue(queueSize);
-        String namePrefix = "tars-client-executor-";
-        logger.info("create client thread pool, communicator config is {}", communicatorConfig.toString());
-        TaskThreadPoolExecutor executor = new TaskThreadPoolExecutor(corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS, taskqueue, new TaskThreadFactory(namePrefix));
-        taskqueue.setParent(executor);
-        return executor;
+    private static Executor createThreadPool(CommunicatorConfig communicatorConfig) {
+        // if use virtualthreadpool, return virtualthread pool
+        if( communicatorConfig.isUseVirtualThread()){
+            logger.info("create client thread pool, use virtualThreadPool  communicator config is {}", communicatorConfig.toString());
+            return VIRTUAL_THREAD_POOL;
+        } else {
+            int corePoolSize = communicatorConfig.getCorePoolSize();
+            int maxPoolSize = communicatorConfig.getMaxPoolSize();
+            int keepAliveTime = communicatorConfig.getKeepAliveTime();
+            int queueSize = communicatorConfig.getQueueSize();
+            TaskQueue taskqueue = new TaskQueue(queueSize);
+            String namePrefix = "tars-client-executor-";
+            logger.info("create client thread pool, communicator config is {}", communicatorConfig.toString());
+            TaskThreadPoolExecutor executor = new TaskThreadPoolExecutor(corePoolSize, maxPoolSize, keepAliveTime,
+                    TimeUnit.SECONDS, taskqueue, new TaskThreadFactory(namePrefix));
+            taskqueue.setParent(executor);
+            return executor;
+        }
     }
 
     public static SelectorManager getSelectorManager(ProtocolFactory protocolFactory,
-                                                     ThreadPoolExecutor threadPoolExecutor, boolean keepAlive,
+                                                     Executor threadPoolExecutor, boolean keepAlive,
                                                      boolean udpMode, ServantProxyConfig servantProxyConfig) throws IOException {
         SelectorManager selector = selectorsMap.get(servantProxyConfig);
         if (selector == null) {

@@ -1,8 +1,8 @@
 package com.tencent.tars;
 
+import java.lang.reflect.ParameterizedType;
 import junit.framework.Assert;
 import org.junit.Test;
-import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -25,7 +25,7 @@ public class TestForGenericType {
         Type type = method.getGenericReturnType();
         Type type2 = method.getReturnType();
         Assert.assertEquals(type2, CompletableFuture.class);
-        ParameterizedTypeImpl parameterizedType = (ParameterizedTypeImpl) method.getGenericReturnType();
+        ParameterizedType parameterizedType = (ParameterizedType) method.getGenericReturnType();
         Assert.assertEquals(parameterizedType.getActualTypeArguments()[0].getTypeName(), "java.util.List<java.lang.Integer>");
         System.out.println(parameterizedType.getActualTypeArguments()[0].getTypeName());
         System.out.println("get inner type is " + parameterizedType.getActualTypeArguments()[0]);

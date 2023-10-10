@@ -20,7 +20,6 @@ import com.qq.tars.client.CommunicatorConfig;
 import com.qq.tars.common.support.Endpoint;
 import com.qq.tars.common.util.Config;
 import com.qq.tars.support.om.OmConstants;
-
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -49,6 +48,7 @@ public class ServerConfig {
     private int sessionCheckInterval = 60000;
     private boolean tcpNoDelay = false;
     private int udpBufferSize = 4096;
+    private boolean isVirtualThread = false;
 
     private String charsetName = "UTF-8";
 
@@ -88,8 +88,8 @@ public class ServerConfig {
                 "/tars/application/server<sessiontimeout>", 120000);
         sessionCheckInterval = conf.getInt(
                 "/tars/application/server<sessioncheckinterval>", 60000);
-        udpBufferSize = conf.getInt("/tars/application/server<udpbuffersize>",
-                4096);
+        udpBufferSize = conf.getInt("/tars/application/server<udpbuffersize>",4096);
+        isVirtualThread = conf.getBool("/tars/application/server<usevirtualthread>",false);
         tcpNoDelay = conf.getBool("/tars/application/server<tcpnodelay>", false);
 
         servantAdapterConfMap = new LinkedHashMap<String, ServantAdapterConfig>();
@@ -337,4 +337,7 @@ public class ServerConfig {
         this.sampleEncoding = sampleEncoding;
     }
 
+    public boolean isIsVirtualThread() {
+        return isVirtualThread;
+    }
 }

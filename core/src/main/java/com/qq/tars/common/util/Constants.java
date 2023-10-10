@@ -17,9 +17,12 @@
 package com.qq.tars.common.util;
 
 import java.nio.charset.Charset;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public interface Constants {
 
+    ExecutorService VIRTUAL_THREAD_POOL = Executors.newVirtualThreadPerTaskExecutor();
     String SERVER_NODE_CACHE_FILENAME = "tarsnodes.dat";
 
     int INVOKE_STATUS_SUCC = 0;

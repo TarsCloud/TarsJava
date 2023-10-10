@@ -29,27 +29,27 @@ import com.qq.tars.rpc.common.Url;
 import com.qq.tars.rpc.common.util.concurrent.ConcurrentHashSet;
 import com.qq.tars.rpc.exc.ClientException;
 import com.qq.tars.support.log.LoggerFactory;
-import org.slf4j.Logger;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
 
 public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
     private static final Logger logger = LoggerFactory.getClientLogger();
     protected final Class<T> api;
     protected final ServantProxyConfig servantProxyConfig;
-    protected final ThreadPoolExecutor threadPoolExecutor;
+    protected final Executor threadPoolExecutor;
     protected final ProtocolFactory protocolFactory;
     protected volatile SelectorManager selectorManager = null;
     protected volatile ConcurrentHashSet<Invoker<T>> allInvoker = new ConcurrentHashSet<>();
 
     public ServantProtocolInvoker(Class<T> api, ServantProxyConfig config, ProtocolFactory protocolFactory,
-                                  ThreadPoolExecutor threadPoolExecutor) {
+                                  Executor threadPoolExecutor) {
         this.api = api;
         this.servantProxyConfig = config;
         this.threadPoolExecutor = threadPoolExecutor;

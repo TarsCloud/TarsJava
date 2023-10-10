@@ -23,14 +23,13 @@ import com.qq.tars.rpc.common.InvokeContext;
 import com.qq.tars.rpc.common.Invoker;
 import com.qq.tars.rpc.common.Url;
 import com.qq.tars.rpc.protocol.tars.support.AnalystManager;
-
 import java.lang.reflect.Method;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.Executor;
 
 public class TarsProtocolInvoker<T> extends ServantProtocolInvoker<T> {
 
     public TarsProtocolInvoker(Class<T> api, ServantProxyConfig config, ProtocolFactory protocolFactory,
-                               ThreadPoolExecutor threadPoolExecutor) {
+                                Executor threadPoolExecutor) {
         super(api, config, protocolFactory, threadPoolExecutor);
         AnalystManager.getInstance().registry(api, servantProxyConfig.getSimpleObjectName());
     }

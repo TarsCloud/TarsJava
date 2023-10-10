@@ -27,12 +27,12 @@ import com.qq.tars.rpc.exc.CommunicatorConfigException;
 import com.qq.tars.support.query.QueryHelper;
 import com.qq.tars.support.query.prx.EndpointF;
 import com.qq.tars.support.stat.StatHelper;
-
 import java.lang.reflect.Proxy;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -40,7 +40,7 @@ public final class Communicator {
 
     private volatile String id;
     private volatile CommunicatorConfig communicatorConfig;
-    private volatile ThreadPoolExecutor threadPoolExecutor;
+    private volatile Executor threadPoolExecutor;
     private final ServantProxyFactory servantProxyFactory = new ServantProxyFactory(this);
     private final ObjectProxyFactory objectProxyFactory = new ObjectProxyFactory(this);
 
@@ -88,7 +88,7 @@ public final class Communicator {
     }
 
     public void shutdown() {
-        this.threadPoolExecutor.shutdownNow();
+        ((ExecutorService)this.threadPoolExecutor).shutdownNow();
         ScheduledExecutorManager.getInstance().shutdownNow();
         TicketManager.shutdown();
         TimeoutManager.shutdown();
@@ -140,7 +140,7 @@ public final class Communicator {
         return communicatorConfig;
     }
 
-    protected ThreadPoolExecutor getThreadPoolExecutor() {
+    protected Executor getThreadPoolExecutor() {
         return threadPoolExecutor;
     }
 

@@ -16,7 +16,6 @@
 
 package com.qq.tars.register.eureka;
 
-import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -53,7 +52,6 @@ public class TarsEurekaInstance extends EurekaInstanceConfigBean {
         super(inetUtils);
     }
 
-    @PostConstruct
     public void init() {
         getMetadataMap().put("isTcp", String.valueOf(isTcp));
         getMetadataMap().put("timeOut", String.valueOf(timeOut));

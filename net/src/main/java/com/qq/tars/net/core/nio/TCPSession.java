@@ -125,6 +125,7 @@ public class TCPSession extends Session {
                 if (request != null) {
                     try {
                         request.resetBornTime();
+
                         selectorManager.getThreadPool().execute(new WorkThread(request, selectorManager));
                     } catch (RejectedExecutionException e) {
                         selectorManager.getProcessor().overload(request, request.getIoSession());
