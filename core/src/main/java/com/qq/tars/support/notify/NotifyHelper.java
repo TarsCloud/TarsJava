@@ -21,6 +21,7 @@ import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.support.log.LoggerFactory;
 import com.qq.tars.support.notify.prx.NOTIFYLEVEL;
 import com.qq.tars.support.notify.prx.NotifyPrx;
+import com.qq.tars.support.notify.prx.ReportInfo;
 import org.slf4j.Logger;
 
 public class NotifyHelper {
@@ -80,10 +81,16 @@ public class NotifyHelper {
             if (communicator == null) {
                 return;
             }
-
             NotifyPrx notifyPrx = communicator.stringToProxy(NotifyPrx.class, ConfigurationManager.getInstance().getServerConfig().getNotify());
-            if (sync) notifyPrx.reportServer(app + "." + server, Thread.currentThread().getId() + "", result);
-            else notifyPrx.async_reportServer(null, app + "." + server, Thread.currentThread().getId() + "", result);
+            final ReportInfo reportInfo  = new ReportInfo();
+            reportInfo.setSThreadId(String.valueOf(Thread.currentThread().getId()));
+            reportInfo.setSServer(app + "." + server );
+            reportInfo.setSMessage( result);
+            if(sync){
+                notifyPrx.reportNotifyInfo(reportInfo);
+            }else{
+                notifyPrx.async_reportNotifyInfo( null, reportInfo);
+            }
         } catch (Exception e) {
             omLogger.error("RemoteNotify|report error", e);
         }
