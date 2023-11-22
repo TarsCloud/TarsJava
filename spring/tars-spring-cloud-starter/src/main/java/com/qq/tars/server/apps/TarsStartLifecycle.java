@@ -83,6 +83,7 @@ public class TarsStartLifecycle extends BaseAppContext implements SmartLifecycle
             initConfig();
             loadAppServants();
             initServants();
+            injectAdminServant();
             appContextStarted();
             startServantAdapter();
             setAppContext();
