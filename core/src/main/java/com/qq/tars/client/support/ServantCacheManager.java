@@ -20,8 +20,6 @@ import com.qq.tars.common.util.Constants;
 import com.qq.tars.common.util.Loader;
 import com.qq.tars.common.util.StringUtils;
 import com.qq.tars.support.log.LoggerFactory;
-import org.slf4j.Logger;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -38,6 +36,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
+import org.slf4j.Logger;
 
 public final class ServantCacheManager {
     private static final Logger LOGGER = LoggerFactory.getClientLogger();
@@ -91,7 +90,12 @@ public final class ServantCacheManager {
         }
         File f = new File(path, Constants.SERVER_NODE_CACHE_FILENAME);
         if (!f.exists()) {
-            f.createNewFile();
+            try {
+                f.createNewFile();
+            }catch(IOException e){
+               LOGGER.error("Create TarsClient cachefile error,please check path is correct, path is :{}{}", path , Constants.SERVER_NODE_CACHE_FILENAME );
+               throw new IOException(e);
+            }
         }
         return f;
     }

@@ -36,7 +36,6 @@ import com.qq.tars.support.om.OmConstants;
 import com.qq.tars.support.trace.TraceCallbackFilter;
 import com.qq.tars.support.trace.TraceClientFilter;
 import com.qq.tars.support.trace.TraceServerFilter;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -67,6 +66,7 @@ public abstract class BaseAppContext implements AppContext {
     @Override
     public void init() {
         try {
+
             loadServants();
             //inject om admin servant
             injectAdminServant();
@@ -79,7 +79,6 @@ public abstract class BaseAppContext implements AppContext {
             System.out.println("[SERVER] failed to start the application.");
         }
     }
-
     protected abstract void loadServants() throws Exception;
 
     @Override

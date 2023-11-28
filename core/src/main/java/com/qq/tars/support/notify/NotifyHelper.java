@@ -48,9 +48,7 @@ public class NotifyHelper {
             if (communicator == null) {
                 return;
             }
-
-            NotifyPrx notifyPrx = communicator.stringToProxy(NotifyPrx.class, ConfigurationManager.getInstance().getServerConfig().getNotify());
-            notifyPrx.async_notifyServer(null, app + "." + server, level.value(), message);
+             report(  message, level,false);
         } catch (Exception e) {
             omLogger.error("RemoteNotify|notify error", e);
         }
@@ -69,23 +67,24 @@ public class NotifyHelper {
     }
 
     public void syncReport(String result) {
-        report(result, true);
+        report(result,NOTIFYLEVEL.NOTIFYNORMAL, true);
     }
 
     public void asyncReport(String result) {
-        report(result, false);
+        report(result, NOTIFYLEVEL.NOTIFYNORMAL,false);
     }
 
-    private void report(String result, boolean sync) {
+    private void report(String result,final NOTIFYLEVEL notifylevel,  final Boolean sync) {
         try {
             if (communicator == null) {
                 return;
             }
-            NotifyPrx notifyPrx = communicator.stringToProxy(NotifyPrx.class, ConfigurationManager.getInstance().getServerConfig().getNotify());
+            final NotifyPrx notifyPrx = communicator.stringToProxy(NotifyPrx.class, ConfigurationManager.getInstance().getServerConfig().getNotify());
             final ReportInfo reportInfo  = new ReportInfo();
             reportInfo.setSThreadId(String.valueOf(Thread.currentThread().getId()));
             reportInfo.setSServer(app + "." + server );
             reportInfo.setSMessage( result);
+            reportInfo.setELevel(notifylevel.value());
             if(sync){
                 notifyPrx.reportNotifyInfo(reportInfo);
             }else{
