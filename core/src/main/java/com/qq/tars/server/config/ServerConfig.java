@@ -20,8 +20,8 @@ import com.qq.tars.client.CommunicatorConfig;
 import com.qq.tars.common.support.Endpoint;
 import com.qq.tars.common.util.Config;
 import com.qq.tars.support.om.OmConstants;
-
 import java.io.File;
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -55,6 +55,14 @@ public class ServerConfig {
     private LinkedHashMap<String, ServantAdapterConfig> servantAdapterConfMap;
     private CommunicatorConfig communicatorConfig;
 
+
+    public void loadSystemConfig(){
+        try {
+            this.load(Config.parseFile(System.getProperty("config")));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public ServerConfig load(Config conf) {
         application = conf.get("/tars/application/server<app>", "UNKNOWN");
         serverName = conf.get("/tars/application/server<server>", null);

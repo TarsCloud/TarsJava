@@ -45,7 +45,7 @@ public class OmServiceMngr {
         return Instance;
     }
 
-    public void initAndStartOmService() {
+    public synchronized void initAndStartOmService() {
         Communicator communicator = CommunicatorFactory.getInstance().getCommunicator();
         String app = ConfigurationManager.getInstance().getServerConfig().getApplication();
         String serverName = ConfigurationManager.getInstance().getServerConfig().getServerName();

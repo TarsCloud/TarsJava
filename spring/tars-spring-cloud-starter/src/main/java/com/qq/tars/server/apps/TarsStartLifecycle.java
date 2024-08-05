@@ -16,10 +16,10 @@
 
 package com.qq.tars.server.apps;
 
-import com.qq.tars.common.support.Endpoint;
 import com.qq.tars.common.util.StringUtils;
 import com.qq.tars.protocol.annotation.Servant;
 import com.qq.tars.protocol.util.TarsHelper;
+import com.qq.tars.server.config.ConfigurationException;
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.server.config.ServantAdapterConfig;
 import com.qq.tars.server.config.ServerConfig;
@@ -28,7 +28,11 @@ import com.qq.tars.server.core.ServantHomeSkeleton;
 import com.qq.tars.spring.annotation.TarsServant;
 import com.qq.tars.spring.config.TarsClientProperties;
 import com.qq.tars.spring.config.TarsServerProperties;
+import com.qq.tars.support.om.OmServiceMngr;
 import com.qq.tars.support.trace.TarsTraceZipkinConfiguration;
+import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
@@ -37,10 +41,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.core.annotation.AnnotatedElementUtils;
-
-import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class TarsStartLifecycle extends BaseAppContext implements SmartLifecycle, ApplicationContextAware {
 
@@ -82,11 +82,12 @@ public class TarsStartLifecycle extends BaseAppContext implements SmartLifecycle
 
             initConfig();
             loadAppServants();
+            injectAdminServant();
             initServants();
             appContextStarted();
             startServantAdapter();
             setAppContext();
-
+            OmServiceMngr.getInstance().initAndStartOmService();
             this.isRunning = true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -118,14 +119,13 @@ public class TarsStartLifecycle extends BaseAppContext implements SmartLifecycle
         serverProperties.setServantAdapterConfMap(new LinkedHashMap<String, ServantAdapterConfig>());
         ConfigurationManager.getInstance().setServerConfig(this.serverProperties);
         ConfigurationManager.getInstance().setCommunicatorConfig(this.clientProperties);
+        try {
+            ConfigurationManager.getInstance().init();
+        } catch (ConfigurationException e) {
+            log.error("spring cloud init server config error!" ,e);
+            throw new RuntimeException(e);
+        }
 
-        servantAdapterConfig = new ServantAdapterConfig();
-        servantAdapterConfig.setEndpoint(new Endpoint(serverProperties.isUdp() ? "udp" : "tcp", StringUtils.isEmpty(serverProperties.getLocalIP()) ? "0.0.0.0" : serverProperties.getLocalIP(), serverProperties.getPort(), 0, 0, 0, null));
-        servantAdapterConfig.setHandleGroup("default");
-        servantAdapterConfig.setMaxConns(serverProperties.getMaxConns());
-        servantAdapterConfig.setThreads(serverProperties.getThreads());
-        servantAdapterConfig.setQueueCap(serverProperties.getQueueCap());
-        servantAdapterConfig.setQueueTimeout(serverProperties.getQueueTimeout());
 
         TarsTraceZipkinConfiguration.getInstance().init();
     }
@@ -177,7 +177,7 @@ public class TarsStartLifecycle extends BaseAppContext implements SmartLifecycle
 
         skeleton = new ServantHomeSkeleton(homeName, homeClassImpl, homeApiClazz, null, null, maxLoadLimit);
         skeleton.setAppContext(this);
-
+        servantAdapterConfig   = ConfigurationManager.getInstance().getServerConfig().getServantAdapterConfMap().get(homeName);
         ConfigurationManager.getInstance().getServerConfig().getServantAdapterConfMap().put(homeName, servantAdapterConfig);
 
         return skeleton;
