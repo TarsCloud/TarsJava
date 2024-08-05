@@ -12,10 +12,12 @@ import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 import com.qq.tars.server.config.ConfigurationManager;
 import io.opentracing.Scope;
 import io.opentracing.Tracer;
+import io.opentracing.log.Fields;
 import io.opentracing.propagation.Format;
 import io.opentracing.propagation.TextMapExtractAdapter;
 import io.opentracing.tag.Tags;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class TraceServerFilter implements Filter {
@@ -55,12 +57,21 @@ public class TraceServerFilter implements Filter {
 						}
 						scope.span().setTag("tars.server.version", ClientVersion.getVersion());
 					}
-					chain.doFilter(request, response);
-					TarsServantResponse tarsServantResponse = (TarsServantResponse)response;
-					if (response != null && tarsServantResponse.getCause() != null && tarsServantResponse.getCause().getMessage() != null) {
-						scope.span().log(tarsServantResponse.getCause().getMessage());
+					try{
+						chain.doFilter(request, response);
+						TarsServantResponse tarsServantResponse = (TarsServantResponse)response;
+						if (response != null && tarsServantResponse.getCause() != null && tarsServantResponse.getCause().getMessage() != null) {
+							scope.span().log(tarsServantResponse.getCause().getMessage());
+						}
+					} catch (Throwable throwable) {
+						Tags.ERROR.set(scope.span(), true);
+						Map<String, Object> logs = new HashMap<>();
+						logs.put(Fields.EVENT, "error");
+						logs.put(Fields.ERROR_OBJECT, throwable);
+						logs.put(Fields.STACK, throwable.getStackTrace());
+						scope.span().log(logs);
+						throw throwable;
 					}
-					
 				}
 			}
 		}
