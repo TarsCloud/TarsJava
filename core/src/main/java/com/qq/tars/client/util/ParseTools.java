@@ -23,6 +23,7 @@ import com.qq.tars.rpc.common.Url;
 import com.qq.tars.rpc.exc.ClientException;
 import com.qq.tars.support.query.prx.EndpointF;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -125,6 +126,10 @@ public class ParseTools {
             switch (items[i]) {
                 case "-h":
                     host = items[i + 1];
+                    try {
+                        InetAddress address = InetAddress.getByName(host);
+                        host = address.getHostAddress();
+                    } catch (Exception ignore) {}
                     break;
                 case "-p":
                     port = Integer.parseInt(items[i + 1]);
