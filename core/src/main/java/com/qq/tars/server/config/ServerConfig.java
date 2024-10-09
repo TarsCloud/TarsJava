@@ -47,7 +47,7 @@ public class ServerConfig {
 
     private int sessionTimeOut = 120000;
     private int sessionCheckInterval = 60000;
-    private boolean tcpNoDelay = false;
+    private boolean tcpNoDelay = true;
     private int udpBufferSize = 4096;
 
     private String charsetName = "UTF-8";

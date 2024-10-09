@@ -56,7 +56,7 @@ public final class ServantProxyConfig {
     private int frequenceFailInvoke = 50;
     private float frequenceFailRadio = 0.5f;
 
-    private boolean tcpNoDelay = false;
+    private boolean tcpNoDelay = true;
     private String charsetName = Constants.default_charset_name;
 
     private boolean directConnection = false;

@@ -54,7 +54,7 @@ public class ServantClient {
     private boolean udpMode = false;
     private int tc = INVALID_TRAFFIC_CLASS_VALUE;
     private int bufferSize = 1024 * 4;
-    private boolean tcpNoDelay = false;
+    private boolean tcpNoDelay = true;
     private static final int INVALID_TRAFFIC_CLASS_VALUE = -1;
 
     public ServantClient(String ip, int port, SelectorManager selectorManager, boolean udpMode) {
