@@ -589,15 +589,20 @@ public class TarsCodec extends Codec {
             response.setResult(results[i++]);
         }
 
+        response.setContext((HashMap<String, String>) is.read(TarsHelper.STAMP_MAP, 9, false));
         List<TarsMethodParameterInfo> list = methodInfo.getParametersList();
         for (TarsMethodParameterInfo info : list) {
-            if (!TarsHelper.isHolder(info.getAnnotations())) {
-                continue;
-            }
-            try {
-                TarsHelper.setHolderValue(request.getMethodParameters()[info.getOrder() - 1], results[i++]);
-            } catch (Exception e) {
-                throw new ProtocolException(e);
+            if (TarsHelper.isHolder(info.getAnnotations())) {
+                try {
+                    TarsHelper.setHolderValue(request.getMethodParameters()[info.getOrder() - 1], results[i++]);
+                } catch (Exception e) {
+                    throw new ProtocolException(e);
+                }
+            } else if (TarsHelper.isContext(info.getAnnotations()) && response.getContext() != null) {
+                Map<String, String> context = (HashMap<String, String>) request.getMethodParameters()[info.getOrder() - 1];
+                if (context != null) {
+                    context.putAll(response.getContext());
+                }
             }
         }
         response.setStatus((HashMap<String, String>) is.read(TarsHelper.STAMP_MAP, 7, false));

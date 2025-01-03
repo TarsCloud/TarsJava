@@ -47,6 +47,7 @@ public class TarsClientFilterChain extends AbstractFilterChain<ServantClient> {
                         BeanAccessor.setBeanValue(tarsServantResponse, "result", result.getResult());
                         BeanAccessor.setBeanValue(tarsServantResponse, "ret", result.getRet());
                         BeanAccessor.setBeanValue(tarsServantResponse, "remark", result.getRemark());
+                        BeanAccessor.setBeanValue(tarsServantResponse, "context", result.getContext());
                     } catch (Exception e) {
                         BeanAccessor.setBeanValue(tarsServantResponse, "cause", e);
                         throw e;
