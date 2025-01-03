@@ -12,7 +12,7 @@ Tars支持使用Spring配置servant，使用此功能需要依赖tars-spring.jar
 <dependency>
       <groupId>com.tencent.tars</groupId>
       <artifactId>tars-spring</artifactId>
-      <version> 1.7.3</version>
+      <version> 1.7.4</version>
 </dependency>
 ```
 

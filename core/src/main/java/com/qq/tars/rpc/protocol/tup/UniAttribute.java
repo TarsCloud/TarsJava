@@ -27,7 +27,7 @@ import java.util.Set;
 
 public class UniAttribute extends OldUniAttribute {
 
-    protected HashMap<String, byte[]> _newData = new HashMap<String, byte[]>();
+    protected HashMap<String, byte[]> _newData = new HashMap<>();
 
     private HashMap<String, Object> cachedData = new HashMap<String, Object>();
 

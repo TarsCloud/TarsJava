@@ -50,6 +50,14 @@ public class TarsTraceZipkinConfiguration {
 						traces.put(servant, tracer);
 					}
 				}
+				//add Application.Server tracer
+				{
+					String localServiceName = serverConfig.getApplication() + "." + serverConfig.getServerName();
+					Tracing tracing = Tracing.newBuilder().localServiceName(localServiceName)
+							.spanReporter(reporter).sampler(brave.sampler.Sampler.create(serverConfig.getSampleRate())).build();
+					Tracer tracer = BraveTracer.create(tracing);
+					traces.put(localServiceName, tracer);
+				}
 				TraceManager.getInstance().putTracers(traces);
 			} catch (Exception e) {
 				e.printStackTrace();

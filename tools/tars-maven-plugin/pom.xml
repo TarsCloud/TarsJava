@@ -13,7 +13,7 @@
     <packaging>maven-plugin</packaging>
 
     <properties>
-        <maven_version>2.2.1</maven_version>
+        <maven_version>3.8.1</maven_version>
         <maven_plugin_version>3.4</maven_plugin_version>
     </properties>
 
@@ -26,12 +26,12 @@
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-project</artifactId>
-            <version>${maven_version}</version>
+            <version>2.2.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-artifact</artifactId>
-            <version>${maven_version}</version>
+            <version>2.2.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
@@ -56,27 +56,27 @@
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-parameter-documenter</artifactId>
-            <version>${maven_version}</version>
+            <version>2.2.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-repository-metadata</artifactId>
-            <version>${maven_version}</version>
+            <version>2.2.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-error-diagnostics</artifactId>
-            <version>${maven_version}</version>
+            <version>2.2.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-descriptor</artifactId>
-            <version>${maven_version}</version>
+            <version>2.2.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-monitor</artifactId>
-            <version>${maven_version}</version>
+            <version>2.2.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
@@ -120,7 +120,7 @@
         <dependency>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-utils</artifactId>
-            <version>3.0.20</version>
+            <version>3.0.24</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.plexus</groupId>
@@ -151,7 +151,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
-            <version>1.21</version>
+            <version>1.26.0</version>
         </dependency>
     </dependencies>
 
@@ -160,7 +160,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-plugin-plugin</artifactId>
-                <version>${maven_plugin_version}</version>
+                <version>3.15.0</version>
                 <configuration>
                     <goalPrefix>tars</goalPrefix>
                     <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
@@ -198,9 +198,6 @@
                                         <artifactId>
                                             maven-plugin-plugin
                                         </artifactId>
-                                        <versionRange>
-                                            [3.4,)
-                                        </versionRange>
                                         <goals>
                                             <goal>descriptor</goal>
                                         </goals>

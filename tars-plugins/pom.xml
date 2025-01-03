@@ -28,12 +28,12 @@
         <dependency>
             <groupId>com.tencent.tars</groupId>
             <artifactId>tars-client</artifactId>
-            <version>${revision}</version>
+            <version>1.7.3</version>
         </dependency>
         <dependency>
             <groupId>com.tencent.tars</groupId>
             <artifactId>tars-server</artifactId>
-            <version>${revision}</version>
+            <version>1.7.3</version>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>

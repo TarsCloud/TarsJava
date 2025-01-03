@@ -7,6 +7,7 @@
     <name>test</name>
     <packaging>war</packaging>
     <properties>
+        <revision>1.7.3</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
