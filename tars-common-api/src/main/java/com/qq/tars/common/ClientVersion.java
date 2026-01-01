@@ -16,9 +16,6 @@
 
 package com.qq.tars.common;
 
-import jdk.nashorn.internal.ir.annotations.Immutable;
-
-@Immutable
 public final class ClientVersion {
 
 //    public static final String major = "1";
