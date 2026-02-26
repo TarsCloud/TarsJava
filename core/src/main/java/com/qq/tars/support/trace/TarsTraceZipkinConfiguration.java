@@ -8,8 +8,8 @@ import com.qq.tars.support.om.OmConstants;
 import com.qq.tars.support.trace.exc.NotSupportedSuchSampleEncodingException;
 import com.qq.tars.support.trace.exc.NotSupportedSuchSampleTypeException;
 import io.opentracing.Tracer;
-import zipkin2.codec.Encoding;
 import zipkin2.reporter.AsyncReporter;
+import zipkin2.reporter.Encoding;
 import zipkin2.reporter.Reporter;
 import zipkin2.reporter.Sender;
 import zipkin2.reporter.urlconnection.URLConnectionSender;
@@ -63,13 +63,10 @@ public class TarsTraceZipkinConfiguration {
 			String url = baseurl + (baseurl.endsWith("/") ? "" : "/") + "api/v2/spans";
 			Encoding codec = createCodec();
 			sender = URLConnectionSender.newBuilder().encoding(codec).endpoint(url).build();
-		} else if ("kafka08".equals(serverConfig.getSampleType())) {
+		} else if ("kafka08".equals(serverConfig.getSampleType()) || "kafka".equals(serverConfig.getSampleType())
+				|| "kafka11".equals(serverConfig.getSampleType())) {
 			Encoding codec = createCodec();
-			sender = zipkin2.reporter.kafka08.KafkaSender.newBuilder().encoding(codec)
-					.bootstrapServers(serverConfig.getSampleAddress()).build();
-		} else if ("kafka".equals(serverConfig.getSampleType())) {
-			Encoding codec = createCodec();
-			sender = zipkin2.reporter.kafka11.KafkaSender.newBuilder().encoding(codec)
+			sender = zipkin2.reporter.kafka.KafkaSender.newBuilder().encoding(codec)
 					.bootstrapServers(serverConfig.getSampleAddress()).build();
 		} else {
 			throw new NotSupportedSuchSampleTypeException("unsupported sample type");

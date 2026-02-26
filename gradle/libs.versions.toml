@@ -3,64 +3,66 @@
 tars = "2.0.0"
 
 # Java
-java = "17"
+java = "21"
 
 # Core dependencies
 netty = "4.2.10.Final"
 netty-tcnative = "2.0.75.Final"
-guava = "30.1-jre"
-gson = "2.8.6"
-slf4j = "1.7.30"
+guava = "33.5.0-jre"
+gson = "2.13.2"
+slf4j = "2.0.17"
 
 # Logging
-logback = "1.2.3"
-log4j2 = "2.11.1"
+logback = "1.5.32"
+log4j2 = "2.25.3"
 
 # Spring
-spring = "4.2.9.RELEASE"
-spring-boot-1x = "1.5.8.RELEASE"
-spring-boot-2x = "2.0.3.RELEASE"
+spring = "7.0.5"
+spring-boot-1x = "4.0.3"
+spring-boot-2x = "4.0.3"
 
 # Spring Cloud
-eureka-client = "1.4.9"
-spring-cloud-netflix-eureka = "1.3.1.RELEASE"
-spring-cloud-commons = "1.2.2.RELEASE"
+eureka-client = "2.0.5"
+spring-cloud-netflix-eureka = "5.0.1"
+spring-cloud-commons = "5.0.1"
 
 # Tracing
-brave = "5.1.0"
-brave-opentracing = "0.31.1"
-zipkin-reporter = "2.7.4"
+brave = "6.3.0"
+brave-opentracing = "1.0.1"
+zipkin-reporter-kafka = "3.5.1"
+zipkin-reporter-urlconnection = "3.5.1"
 
 # Apache Commons
 commons-lang = "2.6"
-commons-io = "2.7"
-commons-codec = "1.6"
-commons-cli = "1.2"
-commons-compress = "1.19"
+commons-io = "2.21.0"
+commons-codec = "1.21.0"
+commons-cli = "1.11.0"
+commons-compress = "1.28.0"
 
 # Testing
-junit = "4.13.1"
+junit = "4.13.2"
 hamcrest = "1.3"
-assertj = "3.9.0"
+assertj = "3.27.7"
 
 # Servlet
-servlet-api = "3.1.0"
+servlet-api = "6.1.0"
 
 # HTTP
-httpcore = "4.3.2"
+httpcore = "4.4.16"
 
 # Jakarta
-jakarta-annotation = "2.1.1"
+jakarta-annotation = "3.0.0"
 
 # ANTLR (for tars-gradle-plugin)
-antlr = "3.5"
+antlr = "3.5.3"
 
 # Plexus
-plexus-utils = "3.0.20"
-plexus-interpolation = "1.21"
+plexus-utils = "4.0.2"
+plexus-interpolation = "1.29"
 
 # Misc
 sysout-over-slf4j = "1.0.2"
+jsr305 = "3.0.2"
 
 [libraries]
 # Netty
@@ -91,9 +93,8 @@ spring-cloud-netflix-eureka-client = { module = "org.springframework.cloud:sprin
 spring-cloud-commons = { module = "org.springframework.cloud:spring-cloud-commons", version.ref = "spring-cloud-commons" }
 
 # Tracing
-zipkin-sender-kafka11 = { module = "io.zipkin.reporter2:zipkin-sender-kafka11", version.ref = "zipkin-reporter" }
-zipkin-sender-kafka08 = { module = "io.zipkin.reporter2:zipkin-sender-kafka08", version.ref = "zipkin-reporter" }
-zipkin-sender-urlconnection = { module = "io.zipkin.reporter2:zipkin-sender-urlconnection", version.ref = "zipkin-reporter" }
+zipkin-sender-kafka = { module = "io.zipkin.reporter2:zipkin-sender-kafka", version.ref = "zipkin-reporter-kafka" }
+zipkin-sender-urlconnection = { module = "io.zipkin.reporter2:zipkin-sender-urlconnection", version.ref = "zipkin-reporter-urlconnection" }
 brave-opentracing = { module = "io.opentracing.brave:brave-opentracing", version.ref = "brave-opentracing" }
 
 # Apache Commons
@@ -104,7 +105,7 @@ commons-cli = { module = "commons-cli:commons-cli", version.ref = "commons-cli" 
 commons-compress = { module = "org.apache.commons:commons-compress", version.ref = "commons-compress" }
 
 # Servlet
-servlet-api = { module = "javax.servlet:javax.servlet-api", version.ref = "servlet-api" }
+servlet-api = { module = "jakarta.servlet:jakarta.servlet-api", version.ref = "servlet-api" }
 
 # HTTP
 httpcore = { module = "org.apache.httpcomponents:httpcore", version.ref = "httpcore" }
@@ -126,9 +127,10 @@ plexus-interpolation = { module = "org.codehaus.plexus:plexus-interpolation", ve
 
 # Misc
 sysout-over-slf4j = { module = "uk.org.lidalia:sysout-over-slf4j", version.ref = "sysout-over-slf4j" }
+jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "jsr305" }
 
 [bundles]
-tracing = ["zipkin-sender-kafka11", "zipkin-sender-kafka08", "zipkin-sender-urlconnection", "brave-opentracing"]
+tracing = ["zipkin-sender-kafka", "zipkin-sender-urlconnection", "brave-opentracing"]
 commons = ["commons-lang", "commons-io", "commons-codec", "commons-cli", "commons-compress"]
 
 [plugins]

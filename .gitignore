@@ -3,6 +3,8 @@
 *.iml
 *.iws
 target/
+.gradle/
+**/build/
 *.jar
 !.mvn/wrapper/*
 .settings/
