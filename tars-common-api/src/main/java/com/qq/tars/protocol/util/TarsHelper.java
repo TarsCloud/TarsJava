@@ -34,7 +34,6 @@ import com.qq.tars.protocol.tars.support.TarsMethodInfo;
 import com.qq.tars.protocol.tars.support.TarsMethodParameterInfo;
 import com.qq.tars.protocol.tars.support.TarsStructInfo;
 import com.qq.tars.protocol.tars.support.TarsStrutPropertyInfo;
-import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
@@ -110,13 +109,13 @@ public class TarsHelper {
     public static final Double STAMP_DOUBLE = (double) 0;
     public static final String STAMP_STRING = "";
 
-    public static final boolean[] STAMP_BOOLEAN_ARRAY = new boolean[]{true};
-    public static final byte[] STAMP_BYTE_ARRAY = new byte[]{0};
-    public static final short[] STAMP_SHORT_ARRAY = new short[]{0};
-    public static final int[] STAMP_INT_ARRAY = new int[]{0};
-    public static final long[] STAMP_LONG_ARRAY = new long[]{0};
-    public static final float[] STAMP_FLOAT_ARRAY = new float[]{0};
-    public static final double[] STAMP_DOUBLE_ARRAY = new double[]{0};
+    public static final boolean[] STAMP_BOOLEAN_ARRAY = new boolean[] { true };
+    public static final byte[] STAMP_BYTE_ARRAY = new byte[] { 0 };
+    public static final short[] STAMP_SHORT_ARRAY = new short[] { 0 };
+    public static final int[] STAMP_INT_ARRAY = new int[] { 0 };
+    public static final long[] STAMP_LONG_ARRAY = new long[] { 0 };
+    public static final float[] STAMP_FLOAT_ARRAY = new float[] { 0 };
+    public static final double[] STAMP_DOUBLE_ARRAY = new double[] { 0 };
     public static final Map<String, String> STAMP_MAP = ImmutableMap.of("", "");
 
     private static Map<Class<?>, TarsStructInfo> tarsStructCache = new HashMap<Class<?>, TarsStructInfo>();
@@ -125,7 +124,8 @@ public class TarsHelper {
         TarsStructProperty oneProperty = one.getAnnotation(TarsStructProperty.class);
         TarsStructProperty otherProperty = other.getAnnotation(TarsStructProperty.class);
         if (oneProperty.order() == otherProperty.order()) {
-            throw new RuntimeException("Field[" + one.getName() + "] , Field[" + other.getName() + "] order is:" + oneProperty.order());
+            throw new RuntimeException(
+                    "Field[" + one.getName() + "] , Field[" + other.getName() + "] order is:" + oneProperty.order());
         }
         return oneProperty.order() - otherProperty.order();
     };
@@ -201,7 +201,8 @@ public class TarsHelper {
                 return getJavaBaseOrArrayOrJavaBeanStamp((Class<?>) type);
             } else {
                 return clazz;
-//                throw new RuntimeException("the class: " + clazz + " not a exact class, please check it.");
+                // throw new RuntimeException("the class: " + clazz + " not a exact class,
+                // please check it.");
             }
         } else if (type instanceof ParameterizedType) {
             ParameterizedType parameterizedType = (ParameterizedType) type;
@@ -230,7 +231,8 @@ public class TarsHelper {
                 if (Holder.class == clazz) {
                     return getParameterStamp(types[0]);
                 } else {
-                    throw new RuntimeException("getStamp for Holder Not Implement Yet, parameterizedType=" + parameterizedType);
+                    throw new RuntimeException(
+                            "getStamp for Holder Not Implement Yet, parameterizedType=" + parameterizedType);
                 }
             }
         } else if (type instanceof GenericArrayType) {
@@ -279,7 +281,8 @@ public class TarsHelper {
                 if (Holder.class == clazz) {
                     return getNewParameterStamp(types[0]);
                 } else {
-                    throw new RuntimeException("getStamp for Holder Not Implement Yet, parameterizedType=" + parameterizedType);
+                    throw new RuntimeException(
+                            "getStamp for Holder Not Implement Yet, parameterizedType=" + parameterizedType);
                 }
             }
         } else if (type instanceof GenericArrayType) {
@@ -322,19 +325,19 @@ public class TarsHelper {
         } else if (clazz == String.class) {
             return new String("");
         } else if (clazz == boolean[].class) {
-            return new boolean[]{true};
+            return new boolean[] { true };
         } else if (clazz == byte[].class) {
-            return new byte[]{0};
+            return new byte[] { 0 };
         } else if (clazz == short[].class) {
-            return new short[]{0};
+            return new short[] { 0 };
         } else if (clazz == int[].class) {
-            return new int[]{0};
+            return new int[] { 0 };
         } else if (clazz == long[].class) {
-            return new long[]{0};
+            return new long[] { 0 };
         } else if (clazz == float[].class) {
-            return new float[]{0};
+            return new float[] { 0 };
         } else if (clazz == double[].class) {
-            return new double[]{0};
+            return new double[] { 0 };
         }
 
         Object stamp = null;
@@ -364,16 +367,20 @@ public class TarsHelper {
                         List<Field> fieldList = new ArrayList<Field>(fields.length);
 
                         for (Field field : fields) {
-                            if (field.isAnnotationPresent(TarsStructProperty.class)) fieldList.add(field);
+                            if (field.isAnnotationPresent(TarsStructProperty.class))
+                                fieldList.add(field);
                         }
 
                         try {
                             fieldList.sort(tarsStructFieldsListComparator);
                         } catch (Exception e) {
-                            throw new RuntimeException("class[" + clazz + "] , Annotation StructProperty order error: " + e.getMessage(), e);
+                            throw new RuntimeException(
+                                    "class[" + clazz + "] , Annotation StructProperty order error: " + e.getMessage(),
+                                    e);
                         }
 
-                        List<TarsStrutPropertyInfo> propertyList = new ArrayList<TarsStrutPropertyInfo>(fieldList.size());
+                        List<TarsStrutPropertyInfo> propertyList = new ArrayList<TarsStrutPropertyInfo>(
+                                fieldList.size());
                         int order = 0;
                         Object bean = CommonUtils.newInstance(clazz);
                         for (Field field : fieldList) {
@@ -383,7 +390,8 @@ public class TarsHelper {
                             try {
                                 stamp = getParameterStamp(type);
                             } catch (Exception e) {
-                                throw new RuntimeException("class[" + clazz + "] , Field[" + field.getName() + "] create stamp failed:" + e.getMessage(), e);
+                                throw new RuntimeException("class[" + clazz + "] , Field[" + field.getName()
+                                        + "] create stamp failed:" + e.getMessage(), e);
                             }
                             propertyInfo.setStamp(stamp);
                             propertyInfo.setName(field.getName());
@@ -394,7 +402,8 @@ public class TarsHelper {
                             propertyInfo.setRequire(propertyAnnotation.isRequire());
                             propertyInfo.setComment(propertyAnnotation.comment());
 
-                            propertyInfo.setDefaultValue(getPropertyDefaultValue(BeanAccessor.getBeanValue(bean, field.getName())));
+                            propertyInfo.setDefaultValue(
+                                    getPropertyDefaultValue(BeanAccessor.getBeanValue(bean, field.getName())));
 
                             propertyList.add(propertyInfo);
                         }
@@ -445,7 +454,8 @@ public class TarsHelper {
         if (tarsMethod != null && !CommonUtils.isEmpty(tarsMethod.comment())) {
             methodInfo.setComment(tarsMethod.comment());
         }
-        List<TarsMethodParameterInfo> parametersList = new ArrayList<TarsMethodParameterInfo>(genericParameterTypes.length);
+        List<TarsMethodParameterInfo> parametersList = new ArrayList<TarsMethodParameterInfo>(
+                genericParameterTypes.length);
         methodInfo.setParametersList(parametersList);
         int order = 0;
         Annotation[][] allParameterAnnotations = method.getParameterAnnotations();
@@ -477,9 +487,14 @@ public class TarsHelper {
         Type returnOriginType = method.getReturnType();
 
         if (returnOriginType == CompletableFuture.class) {
-            ParameterizedTypeImpl parameterizedType = (ParameterizedTypeImpl) method.getGenericReturnType();
+            ParameterizedType parameterizedType = (ParameterizedType) method.getGenericReturnType();
             TarsMethodParameterInfo returnInfo = new TarsMethodParameterInfo();
-            returnInfo.setStamp(TarsHelper.getParameterStamp(parameterizedType.getActualTypeArguments()[0]));//CompletableFuture use  gengeric  inner type class
+            returnInfo.setStamp(TarsHelper.getParameterStamp(parameterizedType.getActualTypeArguments()[0]));// CompletableFuture
+                                                                                                             // use
+                                                                                                             // gengeric
+                                                                                                             // inner
+                                                                                                             // type
+                                                                                                             // class
             returnInfo.setName("result");
             returnInfo.setOrder(0);
             returnInfo.setType(returnType);
@@ -579,9 +594,9 @@ public class TarsHelper {
 
     public static boolean isStruct(Class<?> clazz) {
         boolean isStruct = clazz.isAnnotationPresent(TarsStruct.class);
-//        if (isStruct) {
-//            getStructInfo(clazz);
-//        }
+        // if (isStruct) {
+        // getStructInfo(clazz);
+        // }
         return isStruct;
     }
 
@@ -685,6 +700,5 @@ public class TarsHelper {
     public static Object getHolderValue(Object holder) throws Exception {
         return BeanAccessor.getBeanValue(holder, "value");
     }
-
 
 }

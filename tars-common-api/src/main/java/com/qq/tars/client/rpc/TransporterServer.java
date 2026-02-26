@@ -10,4 +10,9 @@ public interface TransporterServer {
      * 执行绑定动作。
      */
     void bind();
+
+    /**
+     * 停止服务器。
+     */
+    void stop();
 }

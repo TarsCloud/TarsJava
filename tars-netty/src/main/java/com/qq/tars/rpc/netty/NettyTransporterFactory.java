@@ -2,6 +2,7 @@ package com.qq.tars.rpc.netty;
 
 import com.qq.tars.client.ServantProxyConfig;
 import com.qq.tars.client.rpc.*;
+import com.qq.tars.common.util.VirtualThreadSupport;
 import com.qq.tars.rpc.common.Url;
 import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 import com.qq.tars.server.config.ServantAdapterConfig;
@@ -119,9 +120,15 @@ public class NettyTransporterFactory implements TransporterFactory {
 
         @Override
         public void received(Channel channel, Object message) {
-            Response response = processor.process((Request) message, channel);
-            if (!response.isAsyncMode() && channel.isWritable()) {
-                channel.writeAndFlush(response);
+            Runnable processTask = () -> {
+                Response response = processor.process((Request) message, channel);
+                if (!response.isAsyncMode() && channel.isWritable()) {
+                    channel.writeAndFlush(response);
+                }
+            };
+            boolean executedByVirtualThread = VirtualThreadSupport.executeServerTask(processTask);
+            if (!executedByVirtualThread) {
+                processTask.run();
             }
         }
 

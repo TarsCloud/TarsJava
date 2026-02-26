@@ -16,14 +16,11 @@
 
 package com.qq.tars.common;
 
-import jdk.nashorn.internal.ir.annotations.Immutable;
-
-@Immutable
 public final class ClientVersion {
 
-//    public static final String major = "1";
-//    public static final String minor = "6";
-//    public static final String build = "1";
+    // public static final String major = "1";
+    // public static final String minor = "6";
+    // public static final String build = "1";
 
     public static final String CLIENT_VERSION = "2.0.0";
 

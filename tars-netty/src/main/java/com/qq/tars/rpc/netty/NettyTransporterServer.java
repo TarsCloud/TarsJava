@@ -14,13 +14,13 @@
  * specific language governing permissions and limitations under the License.
  */
 
-
 package com.qq.tars.rpc.netty;
 
 import com.qq.tars.client.rpc.ChannelHandler;
 import com.qq.tars.client.rpc.TransporterServer;
 import com.qq.tars.common.util.CommonUtils;
 import com.qq.tars.common.util.Constants;
+import com.qq.tars.common.util.VirtualThreadSupport;
 import com.qq.tars.server.config.ServantAdapterConfig;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -76,18 +76,32 @@ public class NettyTransporterServer implements TransporterServer {
         bootstrap = new ServerBootstrap();
         final ThreadFactory threadFactoryBoss = new DefaultThreadFactory("NettyServerBoss", true);
         final ThreadFactory threadFactoryWorker = new DefaultThreadFactory("NettyServerWorker", true);
-        if (Epoll.isAvailable()) {
-            bossGroup = new EpollEventLoopGroup(2, threadFactoryBoss);
-            workerGroup = new EpollEventLoopGroup(Constants.DEFAULT_CORE_POOL_SIZE, threadFactoryWorker);
-            bootstrap.channel(EpollServerSocketChannel.class);
-        } else if (KQueue.isAvailable()) {
-            bossGroup = new KQueueEventLoopGroup(2, threadFactoryBoss);
-            workerGroup = new KQueueEventLoopGroup(Constants.DEFAULT_CORE_POOL_SIZE, threadFactoryWorker);
-            bootstrap.channel(KQueueServerSocketChannel.class);
-        } else {
-            bossGroup = new NioEventLoopGroup(2, threadFactoryBoss);
-            workerGroup = new NioEventLoopGroup(Constants.DEFAULT_CORE_POOL_SIZE, threadFactoryWorker);
-            bootstrap.channel(NioServerSocketChannel.class);
+        NettyNativeTransportSelector.Transport transport = NettyNativeTransportSelector.current();
+        if (logger.isInfoEnabled()) {
+            logger.info("[tars] server transport={}", transport);
+            if (transport == NettyNativeTransportSelector.Transport.NIO) {
+                logger.info("[tars] fallback to NIO, {}", NettyNativeTransportSelector.unavailableCause());
+            }
+            if (VirtualThreadSupport.isServerVirtualThreadEnabled()) {
+                logger.info("[tars] server virtual thread mode enabled");
+            }
+        }
+        switch (transport) {
+            case EPOLL:
+                bossGroup = new EpollEventLoopGroup(2, threadFactoryBoss);
+                workerGroup = new EpollEventLoopGroup(Constants.DEFAULT_CORE_POOL_SIZE, threadFactoryWorker);
+                bootstrap.channelFactory(() -> new EpollServerSocketChannel());
+                break;
+            case KQUEUE:
+                bossGroup = new KQueueEventLoopGroup(2, threadFactoryBoss);
+                workerGroup = new KQueueEventLoopGroup(Constants.DEFAULT_CORE_POOL_SIZE, threadFactoryWorker);
+                bootstrap.channelFactory(() -> new KQueueServerSocketChannel());
+                break;
+            default:
+                bossGroup = new NioEventLoopGroup(2, threadFactoryBoss);
+                workerGroup = new NioEventLoopGroup(Constants.DEFAULT_CORE_POOL_SIZE, threadFactoryWorker);
+                bootstrap.channelFactory(() -> new NioServerSocketChannel());
+                break;
         }
         final NettyServerHandler nettyServerHandler = new NettyServerHandler(servantAdapterConfig, channelHandler);
         remoteChannels = nettyServerHandler.getChannels();
@@ -110,7 +124,6 @@ public class NettyTransporterServer implements TransporterServer {
         serverChannel = channelFuture.channel();
 
     }
-
 
     protected void shutdown() {
         try {
@@ -142,6 +155,11 @@ public class NettyTransporterServer implements TransporterServer {
         } catch (Throwable e) {
             logger.warn(e.getMessage(), e);
         }
+    }
+
+    @Override
+    public void stop() {
+        shutdown();
     }
 
     public Collection<NettyServerChannel> getChannels() {

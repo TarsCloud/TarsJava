@@ -16,15 +16,14 @@
 
 package com.qq.tars.register.eureka;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.commons.util.InetUtils;
 import org.springframework.cloud.netflix.eureka.EurekaInstanceConfigBean;
 
 @ConfigurationProperties(prefix = TarsEurekaInstance.PREFIX)
-public class TarsEurekaInstance extends EurekaInstanceConfigBean {
+public class TarsEurekaInstance extends EurekaInstanceConfigBean implements InitializingBean {
 
     public static final String PREFIX = "eureka.instance";
 
@@ -53,13 +52,14 @@ public class TarsEurekaInstance extends EurekaInstanceConfigBean {
         super(inetUtils);
     }
 
-    @PostConstruct
-    public void init() {
+    @Override
+    public void afterPropertiesSet() {
         getMetadataMap().put("isTcp", String.valueOf(isTcp));
         getMetadataMap().put("timeOut", String.valueOf(timeOut));
         getMetadataMap().put("weight", String.valueOf(weight));
         getMetadataMap().put("weightType", String.valueOf(weightType));
-        getMetadataMap().put("instanceId", getIpAddress() + ":" + (isNonSecurePortEnabled() ? tarsPort : getSecurePort()));
+        getMetadataMap().put("instanceId",
+                getIpAddress() + ":" + (isNonSecurePortEnabled() ? tarsPort : getSecurePort()));
     }
 
     public String getAppname() {

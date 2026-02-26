@@ -37,7 +37,8 @@ public class NettyServantClient implements RPCClient {
     private final Url url;
     private volatile AtomicBoolean isClosed = new AtomicBoolean(false);
     private static final int DEFAULT_IO_THREADS = Math.min(Runtime.getRuntime().availableProcessors() + 8, 32);
-    private static final EventLoopGroup EVENT_LOOP_GROUP = getNioEventLoopGroup();
+    private static final NettyNativeTransportSelector.Transport TRANSPORT = NettyNativeTransportSelector.current();
+    private static final EventLoopGroup EVENT_LOOP_GROUP = createEventLoopGroup(TRANSPORT);
     private Bootstrap bootstrap;
     private final ChannelHandler channelHandler;
 
@@ -50,26 +51,37 @@ public class NettyServantClient implements RPCClient {
     }
 
 
-    private static EventLoopGroup getNioEventLoopGroup() {
+    private static EventLoopGroup createEventLoopGroup(NettyNativeTransportSelector.Transport transport) {
         ThreadFactory threadFactory = new DefaultThreadFactory("netty-client-worker", true);
-        if (Epoll.isAvailable()) {
-            return new EpollEventLoopGroup(DEFAULT_IO_THREADS, threadFactory);
-        } else if (KQueue.isAvailable()) {
-            return new KQueueEventLoopGroup(DEFAULT_IO_THREADS, threadFactory);
-        } else {
-            return new NioEventLoopGroup(DEFAULT_IO_THREADS, threadFactory);
+        switch (transport) {
+            case EPOLL:
+                return new EpollEventLoopGroup(DEFAULT_IO_THREADS, threadFactory);
+            case KQUEUE:
+                return new KQueueEventLoopGroup(DEFAULT_IO_THREADS, threadFactory);
+            default:
+                return new NioEventLoopGroup(DEFAULT_IO_THREADS, threadFactory);
         }
     }
 
     public void init() {
         bootstrap = new Bootstrap();
         bootstrap.group(EVENT_LOOP_GROUP);
-        if (Epoll.isAvailable()) {
-            bootstrap.channel(EpollSocketChannel.class);
-        } else if (KQueue.isAvailable()) {
-            bootstrap.channel(KQueueSocketChannel.class);
-        } else {
-            bootstrap.channel(NioSocketChannel.class);
+        if (logger.isInfoEnabled()) {
+            logger.info("[tars] client transport={}", TRANSPORT);
+            if (TRANSPORT == NettyNativeTransportSelector.Transport.NIO) {
+                logger.info("[tars] fallback to NIO, {}", NettyNativeTransportSelector.unavailableCause());
+            }
+        }
+        switch (TRANSPORT) {
+            case EPOLL:
+                bootstrap.channelFactory(() -> new EpollSocketChannel());
+                break;
+            case KQUEUE:
+                bootstrap.channelFactory(() -> new KQueueSocketChannel());
+                break;
+            default:
+                bootstrap.channelFactory(() -> new NioSocketChannel());
+                break;
         }
         bootstrap.option(ChannelOption.SO_KEEPALIVE, true)
                 .option(ChannelOption.TCP_NODELAY, NettyServantClient.this.servantProxyConfig.isTcpNoDelay())

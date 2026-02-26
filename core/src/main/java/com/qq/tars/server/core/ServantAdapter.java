@@ -16,7 +16,7 @@
 
 package com.qq.tars.server.core;
 
-import com.qq.tars.client.rpc.TransporterAbstractFactory;
+import com.qq.tars.client.rpc.TransporterServer;
 import com.qq.tars.common.support.Endpoint;
 import com.qq.tars.rpc.exc.TarsException;
 import com.qq.tars.server.config.ServantAdapterConfig;
@@ -25,6 +25,7 @@ import com.qq.tars.server.config.ServerConfig;
 public class ServantAdapter implements Adapter {
     private final ServantAdapterConfig servantAdapterConfig;
     private ServantHomeSkeleton skeleton;
+    private TransporterServer transporterServer;
 
     public ServantAdapter(ServantAdapterConfig servantAdapterConfig) {
         this.servantAdapterConfig = servantAdapterConfig;
@@ -41,15 +42,11 @@ public class ServantAdapter implements Adapter {
         Endpoint endpoint = this.servantAdapterConfig.getEndpoint();
         if (endpoint.type().equals("tcp")) {
             System.out.println("[SERVER] server starting at " + endpoint + "...");
-            TransporterAbstractFactory.getInstance().getTransporterFactory().getTransporterServer(servantAdapterConfig, processor).bind();
+            transporterServer = new com.qq.tars.rpc.netty.NettyTransporterFactory()
+                    .getTransporterServer(servantAdapterConfig, processor);
+            transporterServer.bind();
             System.out.println("[SERVER] server started at " + endpoint + "...");
         }
-        //            System.out.println("[SERVER] server starting at " + endpoint + "...");
-        //            DatagramChannel serverChannel = DatagramChannel.open();
-        //            DatagramSocket socket = serverChannel.socket();
-        //            socket.bind(new InetSocketAddress(endpoint.host(), endpoint.port()));
-        //            serverChannel.configureBlocking(false);
-        //            System.out.println("[SERVER] servant started at " + endpoint + "...");
     }
 
     public ServantAdapterConfig getServantAdapterConfig() {
@@ -65,5 +62,8 @@ public class ServantAdapter implements Adapter {
     }
 
     public void stop() {
+        if (transporterServer != null) {
+            transporterServer.stop();
+        }
     }
 }
