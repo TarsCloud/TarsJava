@@ -14,6 +14,7 @@ import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.server.config.ServerConfig;
 import io.opentracing.Scope;
+import io.opentracing.Span;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
 import io.opentracing.propagation.TextMapInjectAdapter;
@@ -59,35 +60,40 @@ public class TraceClientFilter implements Filter {
                 protocol = requestContext.get(TraceManager.PROTOCOL).toString();
                 requestContext.remove(TraceManager.PROTOCOL);
             }
-            try (Scope scope = tracer.buildSpan(tarsServantRequest.getFunctionName()).withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT).startActive(isSync)) {
+            Span span = tracer.buildSpan(tarsServantRequest.getFunctionName())
+                    .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
+                    .start();
+            try (Scope scope = tracer.activateSpan(span)) {
                 Map<String, String> status = tarsServantRequest.getStatus();
                 if (status == null) {
                     tarsServantRequest.setStatus(Maps.newHashMap());
                     status = tarsServantRequest.getStatus();
                 }
-                tracer.inject(scope.span().context(), Format.Builtin.TEXT_MAP, new TextMapInjectAdapter(status));
-                scope.span().setTag("client.ipv4", config.getLocalIP());
-                scope.span().setTag("client.port", config.getServantAdapterConfMap().get(servantName).getEndpoint().port());
-                scope.span().setTag("tars.interface", getObjName(servantName));
-                scope.span().setTag("tars.method", tarsServantRequest.getFunctionName());
-                scope.span().setTag("tars.protocol", protocol);
-                scope.span().setTag("tars.client.version", ClientVersion.getVersion());
+                tracer.inject(span.context(), Format.Builtin.TEXT_MAP_INJECT, new TextMapInjectAdapter(status));
+                span.setTag("client.ipv4", config.getLocalIP());
+                span.setTag("client.port", config.getServantAdapterConfMap().get(servantName).getEndpoint().port());
+                span.setTag("tars.interface", getObjName(servantName));
+                span.setTag("tars.method", tarsServantRequest.getFunctionName());
+                span.setTag("tars.protocol", protocol);
+                span.setTag("tars.client.version", ClientVersion.getVersion());
 
 
                 TarsServantResponse tarsServantResponse = (TarsServantResponse) response;
                 try {
                     chain.doFilter(request, response);
                     if (isSync) {
-                        scope.span().setTag("tars.retcode", Integer.toString(tarsServantResponse.getRet()));
+                        span.setTag("tars.retcode", Integer.toString(tarsServantResponse.getRet()));
                     } else {
-                        TraceManager.getInstance().putSpan(request.getRequestId(), tracer, scope.span());
+                        TraceManager.getInstance().putSpan(request.getRequestId(), tracer, span);
                     }
                 } catch (Exception e) {
-                    scope.span().log(e.getMessage());
+                    span.log(e.getMessage());
                     throw e;
+                } finally {
+                    if (isSync) {
+                        span.finish();
+                    }
                 }
-
-
             }
         }
     }

@@ -1,0 +1,2 @@
+com.qq.tars.support.trace.spi.SkywalkingTraceInitializer
+com.qq.tars.support.trace.spi.ZipkinTraceInitializer

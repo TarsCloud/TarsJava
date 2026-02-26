@@ -28,7 +28,7 @@ import com.qq.tars.server.core.ServantHomeSkeleton;
 import com.qq.tars.spring.annotation.TarsServant;
 import com.qq.tars.spring.config.TarsClientProperties;
 import com.qq.tars.spring.config.TarsServerProperties;
-import com.qq.tars.support.trace.TarsTraceZipkinConfiguration;
+import com.qq.tars.support.trace.spi.TraceInitializerManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
@@ -124,7 +124,7 @@ public class TarsStartLifecycle extends BaseAppContext implements SmartLifecycle
         servantAdapterConfig = ServantAdapterConfig.makeServantAdapterConfig(endpoint, "", serverProperties);
 
 
-        TarsTraceZipkinConfiguration.getInstance().init();
+        TraceInitializerManager.getInstance().init();
     }
 
     private void loadAppServants() {

@@ -32,7 +32,7 @@ import com.qq.tars.support.property.JvmPropertyPolicy.MemoryHeapUsedAvg;
 import com.qq.tars.support.property.JvmPropertyPolicy.ThreadNumAvg;
 import com.qq.tars.support.property.PropertyReportHelper;
 import com.qq.tars.support.property.PropertyReportHelper.Policy;
-import com.qq.tars.support.trace.TarsTraceZipkinConfiguration;
+import com.qq.tars.support.trace.spi.TraceInitializerManager;
 
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
@@ -72,7 +72,7 @@ public class OmServiceMngr {
         }
 
         ServerStatHelper.getInstance().init(communicator);
-        TarsTraceZipkinConfiguration.getInstance().init();
+        TraceInitializerManager.getInstance().init();
         ScheduledServiceMngr.getInstance().start();
     }
 

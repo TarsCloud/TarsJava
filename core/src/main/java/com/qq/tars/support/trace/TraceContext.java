@@ -1,6 +1,6 @@
 package com.qq.tars.support.trace;
 
-import io.opentracing.Scope;
+import io.opentracing.Span;
 import io.opentracing.Tracer;
 
 import java.io.Closeable;
@@ -39,9 +39,9 @@ public class TraceContext implements Closeable {
 	public void tag(String key, String value) {
 		Tracer tracer = currentTracer.get();
 		if (tracer != null) {
-			Scope scope = tracer.scopeManager().active();
-			if (scope != null) {
-				scope.span().setTag(key, value);
+			Span span = tracer.activeSpan();
+			if (span != null) {
+				span.setTag(key, value);
 			}
 		}
 	}
@@ -49,9 +49,9 @@ public class TraceContext implements Closeable {
 	public void log(String event, long timestamp) {
 		Tracer tracer = currentTracer.get();
 		if (tracer != null) {
-			Scope scope = tracer.scopeManager().active();
-			if (scope != null) {
-				scope.span().log(timestamp, event);
+			Span span = tracer.activeSpan();
+			if (span != null) {
+				span.log(timestamp, event);
 			}
 		}
 	}
@@ -59,9 +59,9 @@ public class TraceContext implements Closeable {
 	public void  log(String event) {
 		Tracer tracer = currentTracer.get();
 		if (tracer != null) {
-			Scope scope = tracer.scopeManager().active();
-			if (scope != null) {
-				scope.span().log(event);
+			Span span = tracer.activeSpan();
+			if (span != null) {
+				span.log(event);
 			}
 		}
 	}

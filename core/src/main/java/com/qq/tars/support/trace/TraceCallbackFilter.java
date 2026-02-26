@@ -37,14 +37,16 @@ public class TraceCallbackFilter implements Filter {
         }
         Pair<Tracer, Span> entry = TraceManager.getInstance().getCurrentSpan(response.getRequestId());
         if (entry != null && entry.getFirst() != null && entry.getSecond() != null) {
-            try (Scope scope = entry.getFirst().scopeManager().activate(entry.getSecond(), true)) {
+            Span span = entry.getSecond();
+            try (Scope scope = entry.getFirst().activateSpan(span)) {
                 TarsServantResponse tarsServantResponse = (TarsServantResponse) response;
                 if (tarsServantResponse.getCause() instanceof TimeoutException) {
-                    scope.span().log(tarsServantResponse.getCause().getMessage());
+                    span.log(tarsServantResponse.getCause().getMessage());
                 } else {
-                    scope.span().setTag("tars.retcode", tarsServantResponse.getRet());
+                    span.setTag("tars.retcode", tarsServantResponse.getRet());
                 }
-
+            } finally {
+                span.finish();
             }
             TraceManager.getInstance().removeSpan(response.getRequestId());
         }

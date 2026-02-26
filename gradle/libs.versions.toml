@@ -31,6 +31,7 @@ brave = "6.3.0"
 brave-opentracing = "1.0.1"
 zipkin-reporter-kafka = "3.5.1"
 zipkin-reporter-urlconnection = "3.5.1"
+opentelemetry = "1.59.0"
 
 # Apache Commons
 commons-lang = "2.6"
@@ -96,6 +97,9 @@ spring-cloud-commons = { module = "org.springframework.cloud:spring-cloud-common
 zipkin-sender-kafka = { module = "io.zipkin.reporter2:zipkin-sender-kafka", version.ref = "zipkin-reporter-kafka" }
 zipkin-sender-urlconnection = { module = "io.zipkin.reporter2:zipkin-sender-urlconnection", version.ref = "zipkin-reporter-urlconnection" }
 brave-opentracing = { module = "io.opentracing.brave:brave-opentracing", version.ref = "brave-opentracing" }
+opentelemetry-sdk = { module = "io.opentelemetry:opentelemetry-sdk", version.ref = "opentelemetry" }
+opentelemetry-exporter-otlp = { module = "io.opentelemetry:opentelemetry-exporter-otlp", version.ref = "opentelemetry" }
+opentelemetry-opentracing-shim = { module = "io.opentelemetry:opentelemetry-opentracing-shim", version.ref = "opentelemetry" }
 
 # Apache Commons
 commons-lang = { module = "commons-lang:commons-lang", version.ref = "commons-lang" }
