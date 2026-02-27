@@ -1,0 +1,8 @@
+[
+  {
+    "interfaces": [
+      "com.qq.tars.example.native_client.HelloPrx",
+      "com.qq.tars.client.ServantProxy"
+    ]
+  }
+]

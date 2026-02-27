@@ -163,7 +163,6 @@ public class ParseTools {
         parameters.put(Constants.TARS_CLIENT_ENABLEAUTH, enableAuth);
         parameters.put(Constants.TARS_CLIENT_WEIGHT_TYPE, String.valueOf(weightType));
         parameters.put(Constants.TARS_CLIENT_WEIGHT, String.valueOf(weight));
-
         return new Url(conf.getProtocol(), host, port, objectName, parameters);
     }
 }

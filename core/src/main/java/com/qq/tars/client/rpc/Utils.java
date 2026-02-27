@@ -30,11 +30,6 @@ import java.util.regex.Pattern;
 
 public class Utils {
 
-    public static int getSelectorPoolSize() {
-        int processors = Runtime.getRuntime().availableProcessors();
-        return processors > 8 ? 4 + (processors * 5 / 8) : processors + 1;
-    }
-
     public static String getLocalIp() {
         try {
             Pattern pattern = Pattern.compile("(172|10)\\.[0-9]+\\.[0-9]+\\.[0-9]+");
@@ -60,7 +55,8 @@ public class Utils {
     }
 
     public static void setQosFlag(Socket socket) {
-        if (NETWORK_QOS_FLAG == null || socket == null) return;
+        if (NETWORK_QOS_FLAG == null || socket == null)
+            return;
 
         try {
             if ("B1_REAL_TIME_QOS".equals(NETWORK_QOS_FLAG)) {

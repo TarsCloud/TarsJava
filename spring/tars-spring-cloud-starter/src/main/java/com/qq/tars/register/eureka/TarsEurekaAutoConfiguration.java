@@ -18,40 +18,24 @@ package com.qq.tars.register.eureka;
 
 import com.qq.tars.spring.TarsConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration;
-import org.springframework.cloud.netflix.eureka.InstanceInfoFactory;
-import org.springframework.cloud.netflix.eureka.config.EurekaClientConfigServerAutoConfiguration;
-import org.springframework.cloud.netflix.eureka.config.EurekaDiscoveryClientConfigServiceAutoConfiguration;
-import org.springframework.cloud.netflix.ribbon.eureka.RibbonEurekaAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.netflix.appinfo.ApplicationInfoManager;
-import com.netflix.appinfo.EurekaInstanceConfig;
 import com.netflix.appinfo.HealthCheckHandler;
-import com.netflix.appinfo.InstanceInfo;
-import com.netflix.discovery.DiscoveryClient;
-import com.netflix.discovery.DiscoveryClient.DiscoveryClientOptionalArgs;
 import com.netflix.discovery.EurekaClient;
 import com.qq.tars.register.RegisterHandler;
 
 @Configuration
 @EnableConfigurationProperties({ TarsEurekaClientConfig.class, TarsEurekaInstance.class })
 @ConditionalOnProperty(value = "eureka.client.enabled", matchIfMissing = true)
-@AutoConfigureAfter({ TarsConfiguration.class })
-@AutoConfigureBefore({ EurekaClientAutoConfiguration.class, EurekaClientConfigServerAutoConfiguration.class, RibbonEurekaAutoConfiguration.class, EurekaDiscoveryClientConfigServiceAutoConfiguration.class })
+@AutoConfigureAfter({ TarsConfiguration.class, EurekaClientAutoConfiguration.class })
 public class TarsEurekaAutoConfiguration {
-
-    @Bean
-    @ConditionalOnMissingBean(value = DiscoveryClientOptionalArgs.class, search = SearchStrategy.CURRENT)
-    public DiscoveryClientOptionalArgs discoveryClientOptionalArgs() {
-        return new DiscoveryClientOptionalArgs();
-    }
 
     @Bean
     @ConditionalOnMissingBean(value = HealthCheckHandler.class, search = SearchStrategy.CURRENT)
@@ -60,24 +44,10 @@ public class TarsEurekaAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(value = ApplicationInfoManager.class, search = SearchStrategy.CURRENT)
-    public ApplicationInfoManager applicationInfoManager(EurekaInstanceConfig config) {
-        InstanceInfo instanceInfo = new InstanceInfoFactory().create(config);
-        ApplicationInfoManager applicationInfoManager = new ApplicationInfoManager(config, instanceInfo);
-        applicationInfoManager.registerStatusChangeListener(new TarsStatusChangeListener());
-        return applicationInfoManager;
-    }
-
-    @Bean(destroyMethod = "shutdown")
-    public EurekaClient eurekaClient(ApplicationInfoManager applicationInfoManager, TarsEurekaClientConfig config,
-                                     DiscoveryClientOptionalArgs optionalArgs) {
-        return new DiscoveryClient(applicationInfoManager, config, optionalArgs);
-    }
-
-    @Bean
     public RegisterHandler registryHandler(EurekaClient client, TarsEurekaInstance instanceConfig,
                                            HealthCheckHandler healthCheckHandler,
                                            ApplicationInfoManager applicationInfoManager) {
+        applicationInfoManager.registerStatusChangeListener(new TarsStatusChangeListener());
         return new EurekaRegisterHandler(client, instanceConfig, healthCheckHandler, applicationInfoManager);
     }
 

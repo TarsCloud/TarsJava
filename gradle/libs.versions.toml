@@ -65,6 +65,9 @@ plexus-interpolation = "1.29"
 sysout-over-slf4j = "1.0.2"
 jsr305 = "3.0.2"
 
+# GraalVM
+graalvm-native = "0.10.6"
+
 [libraries]
 # Netty
 netty-all = { module = "io.netty:netty-all", version.ref = "netty" }
@@ -138,3 +141,4 @@ tracing = ["zipkin-sender-kafka", "zipkin-sender-urlconnection", "brave-opentrac
 commons = ["commons-lang", "commons-io", "commons-codec", "commons-cli", "commons-compress"]
 
 [plugins]
+graalvm-native = { id = "org.graalvm.buildtools.native", version.ref = "graalvm-native" }

@@ -1,0 +1,105 @@
+[
+  {
+    "name": "com.qq.tars.example.native_server.HelloServant",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "com.qq.tars.example.native_server.HelloServantImpl",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "com.qq.tars.example.native_server.NativeServerMain",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "com.qq.tars.example.native_server.NativeServerMain$SimpleProcessor",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.qq.tars.example.native_server.NativeServerMain$SimpleServerHandler",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+
+  {
+    "name": "com.qq.tars.rpc.netty.NettyServerHandler",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "com.qq.tars.rpc.netty.NettyClientHandler",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "com.qq.tars.rpc.netty.TarsDecoder",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "com.qq.tars.rpc.netty.TarsEncoder",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+
+  {
+    "name": "io.netty.channel.ChannelHandlerAdapter",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "io.netty.channel.ChannelInboundHandlerAdapter",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "io.netty.channel.ChannelOutboundHandlerAdapter",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "io.netty.channel.ChannelDuplexHandler",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "io.netty.handler.codec.ByteToMessageDecoder",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "io.netty.handler.codec.MessageToByteEncoder",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "io.netty.handler.timeout.IdleStateHandler",
+    "allDeclaredMethods": true
+  },
+
+  {
+    "name": "com.qq.tars.protocol.annotation.Servant",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "com.qq.tars.protocol.tars.annotation.TarsMethodParameter",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "com.qq.tars.protocol.tars.annotation.TarsMethod",
+    "allDeclaredMethods": true
+  },
+
+  {
+    "name": "com.qq.tars.rpc.protocol.tars.TarsServantRequest",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.qq.tars.rpc.protocol.tars.TarsServantResponse",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  }
+]
