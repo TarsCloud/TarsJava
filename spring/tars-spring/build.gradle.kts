@@ -8,8 +8,8 @@ dependencies {
     api(project(":tars-core"))
     api(project(":tars-netty"))
 
-    implementation(libs.spring.boot.starter.v1)
-    compileOnly(libs.spring.boot.configuration.processor.v1)
+    implementation(libs.spring.boot.starter)
+    compileOnly(libs.spring.boot.configuration.processor)
 
     testImplementation(libs.junit)
 }

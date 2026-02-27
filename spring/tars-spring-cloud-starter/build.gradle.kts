@@ -8,7 +8,7 @@ dependencies {
     api(project(":spring:tars-spring"))
     api(project(":tars-core"))
 
-    implementation(libs.spring.boot.starter.v2)
+    implementation(libs.spring.boot.starter)
     implementation(libs.eureka.client)
     implementation(libs.spring.cloud.netflix.eureka.client)
     implementation(libs.spring.cloud.commons)

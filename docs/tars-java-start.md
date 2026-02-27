@@ -17,7 +17,7 @@
 
   - JDK 1.8或以上版本
   - Maven 3.5或以上版本
-  - Spring Boot 2.1.3或以上版本
+  - Spring Boot 4.0或以上版本
 
 - 在项目根目录下执行maven打包：`mvn package`
 

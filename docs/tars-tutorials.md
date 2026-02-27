@@ -103,7 +103,7 @@ listener的配置与servant配置相同，也需要将你的Listener定义为bea
 
 ### 功能说明
 
-Tars支持使用通过spring boot的方式编写Tars服务，使用此功能需要依赖tars-spring-boot-starter.jar包，以及Spring Boot 2.0及以上版本。你可以将你的servant作为一个Spring bean，注解暴露spring bean即可。
+Tars支持使用通过spring boot的方式编写Tars服务，使用此功能需要依赖tars-spring-boot-starter.jar包，以及Spring Boot 4.0及以上版本。你可以将你的servant作为一个Spring bean，注解暴露spring bean即可。
 
 
 
@@ -119,7 +119,7 @@ Tars支持使用通过spring boot的方式编写Tars服务，使用此功能需�
 
 - JDK 1.8或以上版本
 - Maven 3.5或以上版本
-- Spring Boot 2.0或以上版本
+- Spring Boot 4.0或以上版本
 
 
 

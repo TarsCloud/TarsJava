@@ -99,7 +99,7 @@ If you need new functions like tars-spring, you need to upgrade the tars to the 
 
 ### Function Description
 
-Tars supports writing tars services using spring boot. To use this function, you need to rely on the tars-spring-boot-starter.jar package, and spring boot 2.0 or above. You can use your servant as a Spring bean, and the annotation exposes the spring bean.
+Tars supports writing tars services using spring boot. To use this function, you need to rely on the tars-spring-boot-starter.jar package, and Spring Boot 4.0 or above. You can use your servant as a Spring bean, and the annotation exposes the spring bean.
 
 
 
@@ -117,7 +117,7 @@ Tars supports writing tars services using spring boot. To use this function, you
 
 - Maven 3.5 or above
 
-- Spring Boot 2.0 or above
+- Spring Boot 4.0 or above
 
 
 

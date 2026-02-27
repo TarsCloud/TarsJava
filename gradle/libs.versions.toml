@@ -18,8 +18,7 @@ log4j2 = "2.25.3"
 
 # Spring
 spring = "7.0.5"
-spring-boot-1x = "4.0.3"
-spring-boot-2x = "4.0.3"
+spring-boot = "4.0.3"
 
 # Spring Cloud
 eureka-client = "2.0.5"
@@ -82,14 +81,10 @@ slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j2" }
 
-# Spring Boot 1.x (for tars-spring)
-spring-boot-starter-v1 = { module = "org.springframework.boot:spring-boot-starter", version.ref = "spring-boot-1x" }
-spring-boot-configuration-processor-v1 = { module = "org.springframework.boot:spring-boot-configuration-processor", version.ref = "spring-boot-1x" }
-
-# Spring Boot 2.x (for tars-spring-boot-starter, tars-http-extension)
-spring-boot-starter-v2 = { module = "org.springframework.boot:spring-boot-starter", version.ref = "spring-boot-2x" }
-spring-boot-configuration-processor-v2 = { module = "org.springframework.boot:spring-boot-configuration-processor", version.ref = "spring-boot-2x" }
-spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web", version.ref = "spring-boot-2x" }
+# Spring Boot
+spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter", version.ref = "spring-boot" }
+spring-boot-configuration-processor = { module = "org.springframework.boot:spring-boot-configuration-processor", version.ref = "spring-boot" }
+spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web", version.ref = "spring-boot" }
 
 # Spring Cloud
 eureka-client = { module = "com.netflix.eureka:eureka-client", version.ref = "eureka-client" }

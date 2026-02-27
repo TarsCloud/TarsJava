@@ -18,7 +18,7 @@ Directly copy tars-java-tools-1.0.0.jar in the jar folder to the project directo
   - JDK1.8 or above
   - Maven 3.5 or above
 
-  - Spring Boot 2.1.3 or above
+  - Spring Boot 4.0 or above
 
 - Execute maven packaging in the project root directory: `mvn package`
 
