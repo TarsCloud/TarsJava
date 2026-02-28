@@ -15,40 +15,33 @@
  */
 package com.qq.tars.common.util;
 
-import com.qq.tars.context.DistributedContext;
-import com.qq.tars.context.DistributedContextManager;
+import com.qq.tars.context.TarsContext;
 
 
 public class DyeingSwitch {
-	
-	public static final String BDYEING = "bDyeing";
-	public static final String DYEINGKEY = "dyeingKey";
-	public static final String SERVANT = "servantName";
-	public static final String FILENAME = "dyeFileName";
-	public static final String REQ = "request";
-	public static final String RES = "response";
+
 	public static final String STATUS_DYED_KEY = "STATUS_DYED_KEY";
 	public static final String STATUS_DYED_FILENAME = "STATUS_DYED_FILENAME";
-	
+
 	public static void enableActiveDyeing(final String servant) {
-		DistributedContext context = DistributedContextManager.getDistributedContext();
-		context.put(BDYEING, true);
-		context.put(DYEINGKEY, null);
-		context.put(FILENAME, servant == null ? "default" : servant);
+		TarsContext ctx = TarsContext.current();
+		ctx.set(TarsContext.DYEING, true);
+		ctx.set(TarsContext.DYEING_KEY, null);
+		ctx.set(TarsContext.DYEING_FILENAME, servant == null ? "default" : servant);
 	}
-	
+
 	public static void enableUnactiveDyeing(final String sDyeingKey, final String servant) {
-		DistributedContext context = DistributedContextManager.getDistributedContext();
-		context.put(BDYEING, true);
-		context.put(DYEINGKEY, sDyeingKey);
-		context.put(FILENAME, servant);
+		TarsContext ctx = TarsContext.current();
+		ctx.set(TarsContext.DYEING, true);
+		ctx.set(TarsContext.DYEING_KEY, sDyeingKey);
+		ctx.set(TarsContext.DYEING_FILENAME, servant);
 	}
-	
+
 	public static void closeActiveDyeing() {
-		DistributedContext context = DistributedContextManager.getDistributedContext();
-		context.put(BDYEING, false);
-		context.put(DYEINGKEY, null);
-		context.put(FILENAME, null);
+		TarsContext ctx = TarsContext.current();
+		ctx.set(TarsContext.DYEING, false);
+		ctx.set(TarsContext.DYEING_KEY, null);
+		ctx.set(TarsContext.DYEING_FILENAME, null);
 	}
 
 }

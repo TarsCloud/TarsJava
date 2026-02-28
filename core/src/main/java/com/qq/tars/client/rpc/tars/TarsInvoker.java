@@ -28,8 +28,7 @@ import com.qq.tars.common.FilterChain;
 import com.qq.tars.common.FilterKind;
 import com.qq.tars.common.util.Constants;
 import com.qq.tars.common.util.DyeingSwitch;
-import com.qq.tars.context.DistributedContext;
-import com.qq.tars.context.DistributedContextManager;
+import com.qq.tars.context.TarsContext;
 import com.qq.tars.protocol.tars.support.TarsMethodInfo;
 import com.qq.tars.protocol.util.TarsHelper;
 import com.qq.tars.rpc.common.Url;
@@ -119,13 +118,13 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
         request.setMethodParameters(args);
         request.setContext(context);
         request.setInvokeStatus(Request.InvokeStatus.SYNC_CALL);
-        DistributedContext distributedContext = DistributedContextManager.getDistributedContext();
-        Boolean bDyeing = distributedContext.get(DyeingSwitch.BDYEING);
+        TarsContext ctx = TarsContext.current();
+        Boolean bDyeing = ctx.get(TarsContext.DYEING);
         if (bDyeing != null && bDyeing == true) {
             request.setMessageType(request.getMessageType() | TarsHelper.MESSAGETYPEDYED);
             HashMap<String, String> status = new HashMap<>();
-            String routeKey = distributedContext.get(DyeingSwitch.DYEINGKEY);
-            String fileName = distributedContext.get(DyeingSwitch.FILENAME);
+            String routeKey = ctx.get(TarsContext.DYEING_KEY);
+            String fileName = ctx.get(TarsContext.DYEING_FILENAME);
             status.put(DyeingSwitch.STATUS_DYED_KEY, routeKey == null ? "" : routeKey);
             status.put(DyeingSwitch.STATUS_DYED_FILENAME, fileName == null ? "" : fileName);
             request.setStatus(status);
@@ -156,13 +155,13 @@ public class TarsInvoker<T> extends ServantInvoker<T> {
         request.setApi(super.getApi());
         request.setMethodInfo(methodInfo);
 
-        DistributedContext distributedContext = DistributedContextManager.getDistributedContext();
-        Boolean bDyeing = distributedContext.get(DyeingSwitch.BDYEING);
+        TarsContext ctx = TarsContext.current();
+        Boolean bDyeing = ctx.get(TarsContext.DYEING);
         if (bDyeing != null && bDyeing == true) {
             request.setMessageType(request.getMessageType() | TarsHelper.MESSAGETYPEDYED);
             HashMap<String, String> status = new HashMap<>();
-            String routeKey = distributedContext.get(DyeingSwitch.DYEINGKEY);
-            String fileName = distributedContext.get(DyeingSwitch.FILENAME);
+            String routeKey = ctx.get(TarsContext.DYEING_KEY);
+            String fileName = ctx.get(TarsContext.DYEING_FILENAME);
             status.put(DyeingSwitch.STATUS_DYED_KEY, routeKey == null ? "" : routeKey);
             status.put(DyeingSwitch.STATUS_DYED_FILENAME, fileName == null ? "" : fileName);
             request.setStatus(status);

@@ -26,8 +26,7 @@ import com.qq.tars.common.support.Endpoint;
 import com.qq.tars.common.util.Constants;
 import com.qq.tars.common.util.DyeingKeyCache;
 import com.qq.tars.common.util.DyeingSwitch;
-import com.qq.tars.context.DistributedContext;
-import com.qq.tars.context.DistributedContextManager;
+import com.qq.tars.context.TarsContext;
 import com.qq.tars.protocol.tars.support.TarsMethodInfo;
 import com.qq.tars.protocol.util.TarsHelper;
 import com.qq.tars.rpc.exc.ServerDecodeException;
@@ -41,7 +40,6 @@ import com.qq.tars.server.config.ServantAdapterConfig;
 import com.qq.tars.server.config.ServerConfig;
 import com.qq.tars.support.om.OmServiceMngr;
 import com.qq.tars.support.stat.InvokeStatHelper;
-import com.qq.tars.support.trace.TraceManager;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -146,10 +144,10 @@ public class TarsServantProcessor implements Processor {
             context.setAttribute(Context.INTERNAL_SERVICE_NAME, request.getServantName());
             context.setAttribute(Context.INTERNAL_METHOD_NAME, request.getFunctionName());
             context.setAttribute(Context.INTERNAL_SESSION_DATA, clientChannel);
-            DistributedContext distributedContext = DistributedContextManager.getDistributedContext();
-            distributedContext.put(DyeingSwitch.REQ, request);
-            distributedContext.put(DyeingSwitch.RES, response);
-            distributedContext.put(TraceManager.INTERNAL_SERVANT_NAME, request.getServantName());
+            TarsContext tarsContext = TarsContext.current();
+            tarsContext.set(TarsContext.REQUEST, request);
+            tarsContext.set(TarsContext.RESPONSE, response);
+            tarsContext.set(TarsContext.SERVANT_NAME, request.getServantName());
 
             appContext = AppContextManager.getInstance().getAppContext();
             if (appContext == null) {
@@ -260,8 +258,7 @@ public class TarsServantProcessor implements Processor {
     }
 
     public void preInvokeSkeleton() {
-        DistributedContext distributedContext = DistributedContextManager.getDistributedContext();
-        Request request = distributedContext.get(DyeingSwitch.REQ);
+        Request request = TarsContext.current().get(TarsContext.REQUEST);
         if (request instanceof TarsServantRequest) {
             TarsServantRequest tarsServantRequest = (TarsServantRequest) request;
             initDyeing(tarsServantRequest);
@@ -269,8 +266,7 @@ public class TarsServantProcessor implements Processor {
     }
 
     public void postInvokeSkeleton() {
-        DistributedContext distributedContext = DistributedContextManager.getDistributedContext();
-        distributedContext.clear();
+        TarsContext.release();
     }
 
     private void initDyeing(TarsServantRequest request) {

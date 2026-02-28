@@ -7,8 +7,7 @@ import com.qq.tars.common.ClientVersion;
 import com.qq.tars.common.Filter;
 import com.qq.tars.common.FilterChain;
 import com.qq.tars.common.util.Constants;
-import com.qq.tars.context.DistributedContext;
-import com.qq.tars.context.DistributedContextManager;
+import com.qq.tars.context.TarsContext;
 import com.qq.tars.rpc.protocol.tars.TarsServantRequest;
 import com.qq.tars.rpc.protocol.tars.TarsServantResponse;
 import com.qq.tars.server.config.ConfigurationManager;
@@ -43,8 +42,7 @@ public class TraceClientFilter implements Filter {
             return;
         }
         ServerConfig config = ConfigurationManager.getInstance().getServerConfig();
-        DistributedContext context = DistributedContextManager.getDistributedContext();
-        String servantName = context.get(TraceManager.INTERNAL_SERVANT_NAME);
+        String servantName = TarsContext.current().get(TarsContext.SERVANT_NAME);
         Tracer tracer = TraceContext.getInstance().getCurrentTracer();
 
         if (tracer == null) {
