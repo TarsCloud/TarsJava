@@ -11,8 +11,6 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 // Core modules
 include("tars-common-api")
-include("distributedContext")
-project(":distributedContext").name = "tars-context"
 include("tars-netty")
 include("core")
 project(":core").name = "tars-core"

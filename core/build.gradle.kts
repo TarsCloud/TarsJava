@@ -6,7 +6,6 @@ description = "Tars Core - Core RPC Framework"
 
 dependencies {
     api(project(":tars-common-api"))
-    api(project(":tars-context"))
     api(project(":tars-netty"))
 
     implementation(libs.slf4j.api)
