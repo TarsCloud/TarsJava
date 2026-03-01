@@ -13,7 +13,6 @@ application {
 dependencies {
     implementation(project(":tars-core"))
     implementation(project(":tars-netty"))
-    implementation(libs.logback.classic)
 
     testImplementation(libs.junit)
 }

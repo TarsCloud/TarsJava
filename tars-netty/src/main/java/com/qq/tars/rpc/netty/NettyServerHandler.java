@@ -26,8 +26,7 @@ import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import io.netty.handler.timeout.IdleStateEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.logging.Logger;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
@@ -35,7 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Sharable
 public class NettyServerHandler extends ChannelDuplexHandler {
-    private static final Logger logger = LoggerFactory.getLogger(NettyServerHandler.class);
+    private static final Logger logger = Logger.getLogger(NettyServerHandler.class.getName());
     private final Map<String, NettyServerChannel> channels = new ConcurrentHashMap<>();
     private static final Map<Channel, NettyServerChannel> CHANNEL_MAP = Maps.newConcurrentMap();
     private final ChannelHandler handler;

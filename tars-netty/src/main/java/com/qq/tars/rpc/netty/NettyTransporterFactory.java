@@ -9,7 +9,9 @@ import com.qq.tars.server.config.ServantAdapterConfig;
 import com.qq.tars.server.core.Processor;
 import com.qq.tars.support.log.LoggerFactory;
 import io.netty.channel.Channel;
-import org.slf4j.Logger;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The netty implementation of TransporterFactory.
@@ -78,8 +80,8 @@ public class NettyTransporterFactory implements TransporterFactory {
         @Override
         public void received(Channel channel, Object message) {
             TarsServantResponse response = (TarsServantResponse) message;
-            if (logger.isDebugEnabled()) {
-                logger.debug("[tars]netty receive message id is {}", response.getRequestId());
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, "[tars]netty receive message id is {0}", response.getRequestId());
             }
             TicketFeature.getFeature(response.getRequestId()).complete(response);
         }

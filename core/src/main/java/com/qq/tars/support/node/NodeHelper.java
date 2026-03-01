@@ -22,7 +22,8 @@ import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.support.log.LoggerFactory;
 import com.qq.tars.support.node.prx.ServerFPrx;
 import com.qq.tars.support.node.prx.ServerInfo;
-import org.slf4j.Logger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
@@ -58,7 +59,7 @@ public class NodeHelper {
             ServerFPrx nodePrx = communicator.stringToProxy(ServerFPrx.class, node);
             nodePrx.promise_keepAlive(si);
         } catch (Throwable t) {
-            omLogger.error("NodeHelper|keepAlive|error", t);
+            omLogger.log(Level.SEVERE, "NodeHelper|keepAlive|error", t);
         }
     }
 
@@ -74,7 +75,7 @@ public class NodeHelper {
             ServerFPrx nodePrx = communicator.stringToProxy(ServerFPrx.class, node);
             nodePrx.promise_reportVersion(si.application, si.serverName, version);
         } catch (Throwable t) {
-            omLogger.error("NodeHelper|reportVersion|error", t);
+            omLogger.log(Level.SEVERE, "NodeHelper|reportVersion|error", t);
         }
     }
 

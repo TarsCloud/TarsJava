@@ -26,7 +26,9 @@ import com.qq.tars.rpc.common.Url;
 import com.qq.tars.rpc.common.util.concurrent.ConcurrentHashSet;
 import com.qq.tars.rpc.exc.ClientException;
 import com.qq.tars.support.log.LoggerFactory;
-import org.slf4j.Logger;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -102,13 +104,13 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
             final List<Url> list = ParseTools.parse(servantProxyConfig);
             return createInvokers(list);
         } catch (Throwable t) {
-            logger.error("error occurred on init invoker|" + servantProxyConfig.getObjectName(), t);
+            logger.log(Level.SEVERE, "error occurred on init invoker|" + servantProxyConfig.getObjectName(), t);
         }
         return new ConcurrentHashSet<>();
     }
 
     private void addInvokers(Collection<Url> urls) {
-        logger.info("try to add invokers|url={}", urls.stream().map(Url::toIdentityString).collect(Collectors.toList()));
+        logger.log(Level.INFO, "try to add invokers|url={0}", urls.stream().map(Url::toIdentityString).collect(Collectors.toList()));
         ConcurrentHashSet<Invoker<T>> invokers = createInvokers(urls);
         if (!invokers.isEmpty()) {
             allInvoker.addAll(invokers);
@@ -121,13 +123,13 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
             try {
                 boolean active = url.getParameter(Constants.TARS_CLIENT_ACTIVE, false);
                 if (active) {
-                    logger.info("try to init invoker|active={} |{}", active, url.toIdentityString());
+                    logger.log(Level.INFO, "try to init invoker|active={0} |{1}", new Object[]{active, url.toIdentityString()});
                     invokers.add(create(api, url));
                 } else {
-                    logger.info("inactive invoker can't to init|active={}|{}", active, url.toIdentityString());
+                    logger.log(Level.INFO, "inactive invoker can't to init|active={0}|{1}", new Object[]{active, url.toIdentityString()});
                 }
             } catch (Throwable e) {
-                logger.error("error occurred on init invoker|" + url.toIdentityString(), e);
+                logger.log(Level.SEVERE, "error occurred on init invoker|" + url.toIdentityString(), e);
             }
         }
         return invokers;
@@ -141,7 +143,7 @@ public abstract class ServantProtocolInvoker<T> implements ProtocolInvoker<T> {
                     allInvoker.remove(invoker);
                     invoker.destroy();
                 } catch (Throwable t) {
-                    logger.error("error occurred on destroy invoker|" + invoker, t);
+                    logger.log(Level.SEVERE, "error occurred on destroy invoker|" + invoker, t);
                 }
             }
         }

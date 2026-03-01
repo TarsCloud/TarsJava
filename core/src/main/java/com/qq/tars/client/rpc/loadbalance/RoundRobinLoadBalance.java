@@ -27,7 +27,9 @@ import com.qq.tars.rpc.common.Invoker;
 import com.qq.tars.rpc.common.LoadBalance;
 import com.qq.tars.rpc.common.exc.NoInvokerException;
 import com.qq.tars.support.log.LoggerFactory;
-import org.slf4j.Logger;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -109,7 +111,7 @@ public class RoundRobinLoadBalance<T> implements LoadBalance<T> {
 
     @Override
     public void refresh(Collection<Invoker<T>> invokers) {
-        logger.info("{} try to refresh RoundRobinLoadBalance's invoker cache, size= {} ", config.getSimpleObjectName(), CollectionUtils.isEmpty(invokers) ? 0 : invokers.size());
+        logger.log(Level.INFO, "{0} try to refresh RoundRobinLoadBalance''s invoker cache, size= {1} ", new Object[]{config.getSimpleObjectName(), CollectionUtils.isEmpty(invokers) ? 0 : invokers.size()});
         if (CollectionUtils.isEmpty(invokers)) {
             sortedInvokersCache = null;
             staticWeightInvokersCache = null;
@@ -119,10 +121,10 @@ public class RoundRobinLoadBalance<T> implements LoadBalance<T> {
         Collections.sort(sortedInvokersTmp, comparator);
         sortedInvokersCache = sortedInvokersTmp;
         staticWeightInvokersCache = LoadBalanceHelper.buildStaticWeightList(sortedInvokersTmp, config);
-        logger.info("{} refresh RoundRobinLoadBalance's invoker cache done, staticWeightInvokersCache size= {}, sortedInvokersCache size={}",
-                config.getSimpleObjectName(),
+        logger.log(Level.INFO, "{0} refresh RoundRobinLoadBalance''s invoker cache done, staticWeightInvokersCache size= {1}, sortedInvokersCache size={2}",
+                new Object[]{config.getSimpleObjectName(),
                 (staticWeightInvokersCache == null || staticWeightInvokersCache.isEmpty() ? 0 : staticWeightInvokersCache.size()),
-                (sortedInvokersCache == null || sortedInvokersCache.isEmpty() ? 0 : sortedInvokersCache.size()))
+                (sortedInvokersCache == null || sortedInvokersCache.isEmpty() ? 0 : sortedInvokersCache.size())})
         ;
     }
 

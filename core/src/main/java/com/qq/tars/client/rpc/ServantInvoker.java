@@ -21,7 +21,9 @@ import com.qq.tars.rpc.common.InvokeContext;
 import com.qq.tars.rpc.common.Url;
 import com.qq.tars.rpc.common.support.AbstractInvoker;
 import com.qq.tars.support.log.LoggerFactory;
-import org.slf4j.Logger;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
@@ -65,7 +67,7 @@ public abstract class ServantInvoker<T> extends AbstractInvoker<T> {
                     client.close();
                     logger.info("closed client " + client);
                 } catch (Throwable t) {
-                    logger.error("error in close " + client, t);
+                    logger.log(Level.SEVERE, "error in close " + client, t);
                 }
             }
         } finally {

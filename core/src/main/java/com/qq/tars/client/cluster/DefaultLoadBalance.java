@@ -23,7 +23,9 @@ import com.qq.tars.rpc.common.InvokeContext;
 import com.qq.tars.rpc.common.Invoker;
 import com.qq.tars.rpc.common.exc.NoInvokerException;
 import com.qq.tars.support.log.LoggerFactory;
-import org.slf4j.Logger;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,9 +48,9 @@ public class DefaultLoadBalance {
     }
 
     public <T> Invoker<T> select(Collection<Invoker<T>> invokers, InvokeContext context) throws NoInvokerException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("{} try to select active invoker, size= {} ", config.getSimpleObjectName(),
-                    (invokers == null || invokers.isEmpty() ? 0 : invokers.size()));
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, "{0} try to select active invoker, size= {1} ", new Object[]{config.getSimpleObjectName(),
+                    (invokers == null || invokers.isEmpty() ? 0 : invokers.size())});
         }
         if (invokers == null || invokers.isEmpty()) {
             throw new NoInvokerException("no such active connection invoker");

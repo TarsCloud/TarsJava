@@ -40,8 +40,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -51,7 +51,7 @@ import java.util.List;
 import java.util.Map;
 
 public class TarsDecoder extends ByteToMessageDecoder implements Codec {
-    private static final Logger logger = LoggerFactory.getLogger(TarsDecoder.class);
+    private static final Logger logger = Logger.getLogger(TarsDecoder.class.getName());
     private boolean isServer = false;
 
     public TarsDecoder(Charset charsetName, boolean isServer) {
@@ -129,7 +129,7 @@ public class TarsDecoder extends ByteToMessageDecoder implements Codec {
             request.setStatus(status);
             request.setInputStream(jis);
             request.setCharsetName(charsetName.name());
-            logger.debug("[Decoder][server] decode request is {}", request);
+            logger.log(Level.FINE, "[Decoder][server] decode request is {0}", request);
             decodeRequestBody(request);
         } catch (Exception e) {
             e.printStackTrace();

@@ -28,7 +28,9 @@ import com.qq.tars.rpc.common.Invoker;
 import com.qq.tars.rpc.common.LoadBalance;
 import com.qq.tars.rpc.common.exc.NoInvokerException;
 import com.qq.tars.support.log.LoggerFactory;
-import org.slf4j.Logger;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -79,8 +81,8 @@ public class ConsistentHashLoadBalance<T> implements LoadBalance<T> {
             }
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug(config.getSimpleObjectName() + " can't find active invoker using consistent hash loadbalance. try to use normal hash");
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine(config.getSimpleObjectName() + " can't find active invoker using consistent hash loadbalance. try to use normal hash");
         }
 
         //use normal hash

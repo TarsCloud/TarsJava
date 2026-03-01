@@ -24,7 +24,8 @@ import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.support.config.prx.ConfigInfo;
 import com.qq.tars.support.config.prx.ConfigPrx;
 import com.qq.tars.support.log.LoggerFactory;
-import org.slf4j.Logger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.io.File;
 import java.util.Map;
@@ -88,10 +89,10 @@ public class ConfigHelper {
             }
             localRename(newFile, fullFileName);
         } catch (TarsException e) {
-            omLogger.error("Config|load config failed: " + fileName, e);
+            omLogger.log(Level.SEVERE, "Config|load config failed: " + fileName, e);
             throw e;
         } catch (Exception e) {
-            omLogger.error("Config|load config failed: " + fileName, e);
+            omLogger.log(Level.SEVERE, "Config|load config failed: " + fileName, e);
             throw new TarsException("Config|load config failed: " + fileName, e);
         }
 

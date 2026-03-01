@@ -29,7 +29,9 @@ import com.qq.tars.rpc.common.Invoker;
 import com.qq.tars.rpc.common.LoadBalance;
 import com.qq.tars.rpc.common.exc.NoInvokerException;
 import com.qq.tars.support.log.LoggerFactory;
-import org.slf4j.Logger;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -100,7 +102,7 @@ public class HashLoadBalance<T> implements LoadBalance<T> {
 
     @Override
     public void refresh(Collection<Invoker<T>> invokers) {
-        logger.info("{} try to refresh RoundRobinLoadBalance's invoker cache, size= {} ", config.getSimpleObjectName(), CollectionUtils.isEmpty(invokers) ? 0 : invokers.size());
+        logger.log(Level.INFO, "{0} try to refresh RoundRobinLoadBalance''s invoker cache, size= {1} ", new Object[]{config.getSimpleObjectName(), CollectionUtils.isEmpty(invokers) ? 0 : invokers.size()});
         if (invokers == null || invokers.isEmpty()) {
             sortedInvokersCache = null;
             staticWeightInvokersCache = null;

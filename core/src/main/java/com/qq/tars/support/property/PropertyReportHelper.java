@@ -26,7 +26,8 @@ import com.qq.tars.support.property.prx.PropertyFPrx;
 import com.qq.tars.support.property.prx.StatPropInfo;
 import com.qq.tars.support.property.prx.StatPropMsgBody;
 import com.qq.tars.support.property.prx.StatPropMsgHead;
-import org.slf4j.Logger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -149,7 +150,7 @@ public class PropertyReportHelper {
 
     public synchronized void init(Communicator comm, String moduleName) {
         if (initialized) {
-            omLogger.warn("PropertyReporter|setPropertyInfo method should be called once at most");
+            omLogger.warning("PropertyReporter|setPropertyInfo method should be called once at most");
             return;
         }
 
@@ -205,7 +206,7 @@ public class PropertyReportHelper {
                 propertyFPrx.promise_reportPropMsg(sendData);
             }
         } catch (Throwable t) {
-            omLogger.error("PropertyReporter|ReportThread error", t);
+            omLogger.log(Level.SEVERE, "PropertyReporter|ReportThread error", t);
         }
     }
 }

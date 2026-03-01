@@ -20,14 +20,13 @@ import com.qq.tars.client.CommunicatorConfig;
 import com.qq.tars.client.CommunicatorFactory;
 import com.qq.tars.quickstart.client.testapp.HelloPrx;
 import com.qq.tars.quickstart.client.testapp.HelloPrxCallback;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Main {
 
-    private static final Logger logger = LoggerFactory.getLogger(Main.class);
+    private static final Logger logger = Logger.getLogger(Main.class.getName());
 
     public static void main(String[] args) throws InterruptedException {
         // Start configuration locally
@@ -57,13 +56,13 @@ public class Main {
 
             @Override
             public void callback_hello(String ret) {
-                Main.logger.info("invoke use async {}", ret);
+                Main.logger.log(Level.INFO, "invoke use async {0}", ret);
 
             }
         }, 1000, "Hello World");
 
         proxy.promise_hello(1000, "hello world").thenCompose(x -> {
-            logger.info("invoke use promise {}", x);
+            logger.log(Level.INFO, "invoke use promise {0}", x);
             return CompletableFuture.completedFuture(0);
         });
 

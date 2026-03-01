@@ -22,7 +22,8 @@ import com.qq.tars.server.config.ServantAdapterConfig;
 import com.qq.tars.server.config.ServerConfig;
 import com.qq.tars.support.log.LoggerFactory;
 import com.qq.tars.support.stat.InvokeStatHelper;
-import org.slf4j.Logger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.util.LinkedHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -65,7 +66,7 @@ public class ServerStatHelper {
                 communicator.getStatHelper().report(InvokeStatHelper.getInstance().getProxyStat(servantCfg.getServant()), false);
             }
         } catch (Exception e) {
-            omLogger.error("ServerStatHelper|ReportThread error", e);
+            omLogger.log(Level.SEVERE, "ServerStatHelper|ReportThread error", e);
         }
     }
 }

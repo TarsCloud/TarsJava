@@ -2,8 +2,8 @@ package com.qq.tars.support.trace.spi;
 
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.server.config.ServerConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,7 +12,7 @@ import java.util.ServiceLoader;
 
 public class TraceInitializerManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(TraceInitializerManager.class);
+    private static final Logger logger = Logger.getLogger(TraceInitializerManager.class.getName());
 
     private static final TraceInitializerManager INSTANCE = new TraceInitializerManager(loadInitializers());
 
@@ -33,7 +33,7 @@ public class TraceInitializerManager {
     public void init() {
         ServerConfig serverConfig = ConfigurationManager.getInstance().getServerConfig();
         if (serverConfig == null) {
-            logger.warn("Skip trace initialization because server config is null");
+            logger.warning("Skip trace initialization because server config is null");
             return;
         }
         init(serverConfig);
@@ -50,15 +50,15 @@ public class TraceInitializerManager {
             }
             try {
                 traceInitializer.init(serverConfig);
-                logger.info("Initialized trace provider: {}", traceInitializer.name());
+                logger.log(Level.INFO, "Initialized trace provider: {0}", traceInitializer.name());
                 return true;
             } catch (Exception e) {
-                logger.error("Failed to initialize trace provider: {}", traceInitializer.name(), e);
+                logger.log(Level.SEVERE, "Failed to initialize trace provider: " + traceInitializer.name(), e);
                 return false;
             }
         }
 
-        logger.warn("No trace initializer supports sampleType={}.", serverConfig.getSampleType());
+        logger.log(Level.WARNING, "No trace initializer supports sampleType={0}.", serverConfig.getSampleType());
         return false;
     }
 

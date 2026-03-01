@@ -22,7 +22,9 @@ import com.qq.tars.common.util.concurrent.TaskQueue;
 import com.qq.tars.common.util.concurrent.TaskThreadFactory;
 import com.qq.tars.common.util.concurrent.TaskThreadPoolExecutor;
 import com.qq.tars.support.log.LoggerFactory;
-import org.slf4j.Logger;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -53,7 +55,7 @@ public class ClientPoolManager {
         int queueSize = communicatorConfig.getQueueSize();
         TaskQueue taskqueue = new TaskQueue(queueSize);
         String namePrefix = "tars-client-executor-";
-        logger.info("create client thread pool, communicator config is {}", communicatorConfig.toString());
+        logger.log(Level.INFO, "create client thread pool, communicator config is {0}", communicatorConfig.toString());
         TaskThreadPoolExecutor executor = new TaskThreadPoolExecutor(corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS, taskqueue, new TaskThreadFactory(namePrefix));
         taskqueue.setParent(executor);
         return executor;

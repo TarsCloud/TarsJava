@@ -110,7 +110,7 @@ subprojects {
 }
 
 // Skip publishing for parent/aggregation modules
-listOf("tars-parent", "tars-spring-parent", "tars-tools", "tars-examples", "tars-logger").forEach { moduleName ->
+listOf("tars-parent", "tars-spring-parent", "tars-tools", "tars-examples").forEach { moduleName ->
     project.subprojects.find { it.name == moduleName }?.afterEvaluate {
         tasks.withType<PublishToMavenRepository> {
             enabled = false

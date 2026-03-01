@@ -19,7 +19,9 @@ package com.qq.tars.client.cluster;
 import com.qq.tars.client.ServantProxyConfig;
 import com.qq.tars.common.util.Constants;
 import com.qq.tars.support.log.LoggerFactory;
-import org.slf4j.Logger;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -101,7 +103,7 @@ public class ServantInvokerAliveStat {
                 if (frequencyFailInvoke >= config.getFrequenceFailInvoke() && (frequencyFailInvoke_startTime + 5000) > System.currentTimeMillis()) {
                     alive = false;
                     lastRetryTime = System.currentTimeMillis();
-                    logger.info("{}|alive=false|frequenceFailInvoke={}|{}", identity, frequencyFailInvoke, toString());
+                    logger.log(Level.INFO, "{0}|alive=false|frequenceFailInvoke={1}|{2}", new Object[]{identity, frequencyFailInvoke, toString()});
                 }
             }
 
@@ -109,7 +111,7 @@ public class ServantInvokerAliveStat {
                 if (netConnectTimeout) {
                     alive = false;
                     lastRetryTime = System.currentTimeMillis();
-                    logger.info("{}|alive=false|netConnectTimeout|{}", identity, toString());
+                    logger.log(Level.INFO, "{0}|alive=false|netConnectTimeout|{1}", new Object[]{identity, toString()});
                 }
             }
         } else {

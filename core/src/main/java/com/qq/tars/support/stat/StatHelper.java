@@ -22,7 +22,8 @@ import com.qq.tars.support.log.LoggerFactory;
 import com.qq.tars.support.stat.prx.StatFPrx;
 import com.qq.tars.support.stat.prx.StatMicMsgBody;
 import com.qq.tars.support.stat.prx.StatMicMsgHead;
-import org.slf4j.Logger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -84,7 +85,7 @@ public final class StatHelper {
                     try {
                         statFProxy.promise_reportMicMsg(reportMap, bFromClient);
                     } catch (Exception e) {
-                        logger.error("error occurred on report proxy stat", e);
+                        logger.log(Level.SEVERE, "error occurred on report proxy stat", e);
                         ++errorCount;
                     }
                     reportMap = new HashMap<>();
@@ -96,11 +97,11 @@ public final class StatHelper {
                     successCount++;
                 } catch (Exception e) {
                     errorCount++;
-                    logger.error("error occurred on report proxy stat", e);
+                    logger.log(Level.SEVERE, "error occurred on report proxy stat", e);
                 }
             }
         } catch (Exception e) {
-            logger.error("error occurred on report proxy stat", e);
+            logger.log(Level.SEVERE, "error occurred on report proxy stat", e);
         } finally {
             logger.info("report success:" + successCount + " fail:" + errorCount + " costTime:" + (System.currentTimeMillis() - start));
         }

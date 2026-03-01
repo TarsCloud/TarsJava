@@ -16,12 +16,6 @@ include("core")
 project(":core").name = "tars-core"
 include("tars-plugins")
 
-// Logger modules
-include("tars-logger")
-include("tars-logger:tars-logger-logback")
-include("tars-logger:tars-logger-log4j")
-include("tars-logger:tars-logger-log4j2")
-
 // Spring modules
 include("spring")
 project(":spring").name = "tars-spring-parent"

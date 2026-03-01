@@ -18,7 +18,6 @@ package com.qq.tars.support.admin.impl;
 
 import com.qq.tars.client.CommunicatorConfig;
 import com.qq.tars.common.ClientVersion;
-import com.qq.tars.common.logger.LoggerFactoryManager;
 import com.qq.tars.common.util.DyeingKeyCache;
 import com.qq.tars.common.util.StringUtils;
 import com.qq.tars.server.config.ConfigurationManager;
@@ -32,10 +31,10 @@ import com.qq.tars.support.log.LoggerFactory;
 import com.qq.tars.support.node.NodeHelper;
 import com.qq.tars.support.notify.NotifyHelper;
 import com.qq.tars.support.om.OmConstants;
-import org.slf4j.Logger;
-import org.slf4j.event.Level;
 
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AdminFServantImpl implements AdminFServant {
     private static final Logger omLogger = LoggerFactory.getOmLogger();
@@ -62,7 +61,7 @@ public class AdminFServantImpl implements AdminFServant {
             System.out.println(ConfigurationManager.getInstance().getServerConfig().getApplication() + "." + ConfigurationManager.getInstance().getServerConfig().getServerName() + " is stopped.");
             NotifyHelper.getInstance().syncReport("[alarm] server is stopped.");
         } catch (Exception e) {
-            omLogger.error("shutdown error", e);
+            omLogger.log(Level.SEVERE, "shutdown error", e);
         }
 
         System.exit(0);
@@ -139,20 +138,29 @@ public class AdminFServantImpl implements AdminFServant {
             result = "set log level failed, level is empty";
         } else {
             level = level.trim().toUpperCase();
-            LoggerFactoryManager.getInstance().getHandler().setLoggerLevel(Logger.ROOT_LOGGER_NAME, getLevelFromName(level));
+            Level julLevel = parseLevel(level);
+            Logger.getLogger("").setLevel(julLevel);
             result = "set log level [" + level + "] ok";
         }
 
         return result;
     }
 
-    public static Level getLevelFromName(String name) {
-        for (Level level : Level.values()) {
-            if (name.equals(level.name())) {
-                return level;
-            }
+    private static Level parseLevel(String name) {
+        switch (name) {
+            case "TRACE":
+            case "DEBUG":
+                return Level.FINE;
+            case "INFO":
+                return Level.INFO;
+            case "WARN":
+                return Level.WARNING;
+            case "ERROR":
+            case "FATAL":
+                return Level.SEVERE;
+            default:
+                return Level.SEVERE;
         }
-        return Level.ERROR;
     }
 
     private String viewConn() {
@@ -277,7 +285,7 @@ public class AdminFServantImpl implements AdminFServant {
             result = "execute success.";
             omLogger.info("Reload locator success.");
         } catch (Exception e) {
-            omLogger.error("Reload locator failed.", e);
+            omLogger.log(Level.SEVERE, "Reload locator failed.", e);
             result = "execute exception: " + e.getMessage();
         }
 

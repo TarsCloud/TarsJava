@@ -16,43 +16,33 @@
 
 package com.qq.tars.support.log;
 
-import com.qq.tars.common.logger.LoggerFactoryManager;
-import org.slf4j.Logger;
-import org.slf4j.event.Level;
+import java.util.logging.Logger;
 
-public class LoggerFactory {
+public final class LoggerFactory {
     private static final String CLIENT_LOG_NAME = "TARS_CLIENT_LOGGER";
     private static final String OM_LOG_NAME = "OM_LOGGER";
     private static final String TRANSPORTER_LOG_NAME = "TARS_TRANSPORTER_LOGGER";
 
-
-    public static int resetLogBack() {
-        return LoggerFactoryManager.getInstance().getHandler().reloadConfig();
+    private LoggerFactory() {
     }
 
-    public static void resetLogLevel(Level level) {
-        LoggerFactoryManager.getInstance().getHandler().setLoggerLevel(Logger.ROOT_LOGGER_NAME, level);
+    public static Logger getLogger(String name) {
+        return Logger.getLogger(name);
     }
 
-    public static Logger getLogger() {
-        return org.slf4j.LoggerFactory.getLogger("");
-    }
-
-
-    public static Logger getLogger(String logName) {
-        return org.slf4j.LoggerFactory.getLogger(logName);
+    public static Logger getLogger(Class<?> clazz) {
+        return Logger.getLogger(clazz.getName());
     }
 
     public static Logger getOmLogger() {
-        return org.slf4j.LoggerFactory.getLogger(OM_LOG_NAME);
+        return Logger.getLogger(OM_LOG_NAME);
     }
 
-
     public static Logger getClientLogger() {
-        return org.slf4j.LoggerFactory.getLogger(CLIENT_LOG_NAME);
+        return Logger.getLogger(CLIENT_LOG_NAME);
     }
 
     public static Logger getTransporterLogger() {
-        return org.slf4j.LoggerFactory.getLogger(TRANSPORTER_LOG_NAME);
+        return Logger.getLogger(TRANSPORTER_LOG_NAME);
     }
 }

@@ -19,7 +19,6 @@ package com.qq.tars.server.core;
 import com.qq.tars.client.Communicator;
 import com.qq.tars.client.CommunicatorConfig;
 import com.qq.tars.client.CommunicatorFactory;
-import com.qq.tars.common.logger.LoggerFactoryManager;
 import com.qq.tars.common.util.BeanAccessor;
 import com.qq.tars.server.config.ConfigurationManager;
 import com.qq.tars.server.config.ServerConfig;
@@ -46,16 +45,11 @@ public class Server {
         if (!INITIALIZED.getAndSet(true)) {
             System.out.println("[TARS] start server initializing");
             loadServerConfig();
-            initLogger();
             initCommunicator();
             startManagerService();
         } else {
             throw new IllegalStateException("Server has already been initialized");
         }
-    }
-
-    private void initLogger() {
-        LoggerFactoryManager.getInstance().getHandler().start();
     }
 
     public static Server getInstance() {

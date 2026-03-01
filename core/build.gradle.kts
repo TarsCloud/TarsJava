@@ -8,7 +8,6 @@ dependencies {
     api(project(":tars-common-api"))
     api(project(":tars-netty"))
 
-    implementation(libs.slf4j.api)
     implementation(libs.servlet.api)
     implementation(libs.httpcore)
     implementation(libs.gson)
@@ -22,5 +21,4 @@ dependencies {
     implementation(libs.opentelemetry.opentracing.shim)
 
     testImplementation(libs.junit)
-    testImplementation(libs.logback.classic)
 }

@@ -39,8 +39,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
@@ -52,7 +52,7 @@ import java.util.concurrent.ThreadFactory;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class NettyTransporterServer implements TransporterServer {
-    private static final Logger logger = LoggerFactory.getLogger(NettyTransporterServer.class);
+    private static final Logger logger = Logger.getLogger(NettyTransporterServer.class.getName());
     private Map<String, NettyServerChannel> remoteChannels;
     private ServerBootstrap bootstrap;
     private io.netty.channel.Channel serverChannel;
@@ -77,10 +77,10 @@ public class NettyTransporterServer implements TransporterServer {
         final ThreadFactory threadFactoryBoss = new DefaultThreadFactory("NettyServerBoss", true);
         final ThreadFactory threadFactoryWorker = new DefaultThreadFactory("NettyServerWorker", true);
         NettyNativeTransportSelector.Transport transport = NettyNativeTransportSelector.current();
-        if (logger.isInfoEnabled()) {
-            logger.info("[tars] server transport={}", transport);
+        if (logger.isLoggable(Level.INFO)) {
+            logger.log(Level.INFO, "[tars] server transport={0}", transport);
             if (transport == NettyNativeTransportSelector.Transport.NIO) {
-                logger.info("[tars] fallback to NIO, {}", NettyNativeTransportSelector.unavailableCause());
+                logger.log(Level.INFO, "[tars] fallback to NIO, {0}", NettyNativeTransportSelector.unavailableCause());
             }
             if (VirtualThreadSupport.isServerVirtualThreadEnabled()) {
                 logger.info("[tars] server virtual thread mode enabled");
@@ -131,7 +131,7 @@ public class NettyTransporterServer implements TransporterServer {
                 serverChannel.close();
             }
         } catch (Throwable e) {
-            logger.warn(e.getMessage(), e);
+            logger.log(Level.WARNING, e.getMessage(), e);
         }
         try {
             Collection<NettyServerChannel> channels = getChannels();
@@ -140,12 +140,12 @@ public class NettyTransporterServer implements TransporterServer {
                     try {
                         channel.getChannel().close();
                     } catch (Throwable e) {
-                        logger.warn(e.getMessage(), e);
+                        logger.log(Level.WARNING, e.getMessage(), e);
                     }
                 }
             }
         } catch (Throwable e) {
-            logger.warn(e.getMessage(), e);
+            logger.log(Level.WARNING, e.getMessage(), e);
         }
         try {
             if (bootstrap != null) {
@@ -153,7 +153,7 @@ public class NettyTransporterServer implements TransporterServer {
                 workerGroup.shutdownGracefully().syncUninterruptibly();
             }
         } catch (Throwable e) {
-            logger.warn(e.getMessage(), e);
+            logger.log(Level.WARNING, e.getMessage(), e);
         }
     }
 

@@ -19,8 +19,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class NettyServantClient implements RPCClient {
-    private static final Logger logger = LoggerFactory.getLogger(NettyServantClient.class);
+    private static final Logger logger = Logger.getLogger(NettyServantClient.class.getName());
     private volatile Channel channel;
     private final ServantProxyConfig servantProxyConfig;
     private final Url url;
@@ -66,10 +66,10 @@ public class NettyServantClient implements RPCClient {
     public void init() {
         bootstrap = new Bootstrap();
         bootstrap.group(EVENT_LOOP_GROUP);
-        if (logger.isInfoEnabled()) {
-            logger.info("[tars] client transport={}", TRANSPORT);
+        if (logger.isLoggable(Level.INFO)) {
+            logger.log(Level.INFO, "[tars] client transport={0}", TRANSPORT);
             if (TRANSPORT == NettyNativeTransportSelector.Transport.NIO) {
-                logger.info("[tars] fallback to NIO, {}", NettyNativeTransportSelector.unavailableCause());
+                logger.log(Level.INFO, "[tars] fallback to NIO, {0}", NettyNativeTransportSelector.unavailableCause());
             }
         }
         switch (TRANSPORT) {
@@ -114,7 +114,7 @@ public class NettyServantClient implements RPCClient {
                     final Channel oldChannel = NettyServantClient.this.channel;
                     if (oldChannel != null) {
                         try {
-                            if (logger.isInfoEnabled()) {
+                            if (logger.isLoggable(Level.INFO)) {
                                 logger.info("[Tars] reconnect new channel");
                             }
                             oldChannel.close();
@@ -125,7 +125,7 @@ public class NettyServantClient implements RPCClient {
                 } finally {
                     if (NettyServantClient.this.isClosed.get()) {
                         try {
-                            if (logger.isInfoEnabled()) {
+                            if (logger.isLoggable(Level.INFO)) {
                                 logger.info("[tars]close channel");
                             }
                             newChannel.close();

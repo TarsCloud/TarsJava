@@ -20,7 +20,9 @@ import com.qq.tars.common.util.Constants;
 import com.qq.tars.common.util.Loader;
 import com.qq.tars.common.util.StringUtils;
 import com.qq.tars.support.log.LoggerFactory;
-import org.slf4j.Logger;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -71,7 +73,7 @@ public final class ServantCacheManager {
             props.put(makeKey(CommunicatorId, objName), endpointList);
             saveToLocal(dataPath);
         } catch (Throwable e) {
-            LOGGER.error("", e);
+            LOGGER.log(Level.SEVERE, "", e);
         }
     }
 
@@ -108,7 +110,7 @@ public final class ServantCacheManager {
             props.store(out, (new Date()).toString());
             LOGGER.info("save " + file.getAbsolutePath());
         } catch (Exception e) {
-            LOGGER.error("save " + Constants.SERVER_NODE_CACHE_FILENAME + " failed", e);
+            LOGGER.log(Level.SEVERE, "save " + Constants.SERVER_NODE_CACHE_FILENAME + " failed", e);
         } finally {
             if (null != out) {
                 try {
@@ -142,9 +144,9 @@ public final class ServantCacheManager {
                 for (String key : removeKey) {
                     props.remove(key);
                 }
-                LOGGER.info("load  {}", Constants.SERVER_NODE_CACHE_FILENAME);
+                LOGGER.log(Level.INFO, "load  {0}", Constants.SERVER_NODE_CACHE_FILENAME);
             } catch (Throwable e) {
-                LOGGER.error("read file " + Constants.SERVER_NODE_CACHE_FILENAME + " error.", e);
+                LOGGER.log(Level.SEVERE, "read file " + Constants.SERVER_NODE_CACHE_FILENAME + " error.", e);
             } finally {
                 if (null != in) {
                     try {

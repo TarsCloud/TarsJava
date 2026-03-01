@@ -10,14 +10,14 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.util.Map;
 
 @Sharable
 public class NettyClientHandler extends ChannelDuplexHandler {
-    private static final Logger logger = LoggerFactory.getLogger(NettyClientHandler.class);
+    private static final Logger logger = Logger.getLogger(NettyClientHandler.class.getName());
     private static final Map<Channel, NettyChannel> CHANNEL_MAP = Maps.newConcurrentMap();
 
     public static NettyChannel getOrAddChannel(Channel ioChannel, ServantProxyConfig config) {
@@ -73,9 +73,9 @@ public class NettyClientHandler extends ChannelDuplexHandler {
         try {
             NettyChannel nettyChannel = getOrAddChannel(ctx.channel(), servantProxyConfig);
             TarsServantResponse response = (TarsServantResponse) msg;
-            if (logger.isDebugEnabled()) {
+            if (logger.isLoggable(Level.FINE)) {
                 System.out.println();
-                logger.debug("[tars]netty receive message id is " + response.getRequestId());
+                logger.fine("[tars]netty receive message id is " + response.getRequestId());
             }
             TicketFeature.getFeature(response.getRequestId()).complete(msg);
             channelHeader.received(nettyChannel.getChannel(), msg);

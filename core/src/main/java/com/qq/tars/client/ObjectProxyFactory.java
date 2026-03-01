@@ -31,7 +31,9 @@ import com.qq.tars.rpc.exc.CommunicatorConfigException;
 import com.qq.tars.rpc.protocol.Codec;
 import com.qq.tars.rpc.protocol.tars.TarsClientCodec;
 import com.qq.tars.support.log.LoggerFactory;
-import org.slf4j.Logger;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.lang.reflect.Constructor;
 
@@ -154,7 +156,7 @@ class ObjectProxyFactory {
             } catch (CommunicatorConfigException e) {
                 /** If it fails, pull it from the local cache  file */
                 endpoints = ServantCacheManager.getInstance().get(communicator.getId(), cfg.getSimpleObjectName(), communicatorConfig.getDataPath());
-                logger.error(cfg.getSimpleObjectName() + " error occurred on get by registry, use by local cache=" + endpoints + "|" + e.getLocalizedMessage(), e);
+                logger.log(Level.SEVERE, cfg.getSimpleObjectName() + " error occurred on get by registry, use by local cache=" + endpoints + "|" + e.getLocalizedMessage(), e);
             }
 
             if (StringUtils.isEmpty(endpoints)) {

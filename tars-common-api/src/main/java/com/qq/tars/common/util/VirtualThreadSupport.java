@@ -1,15 +1,14 @@
 package com.qq.tars.common.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class VirtualThreadSupport {
-    private static final Logger logger = LoggerFactory.getLogger(VirtualThreadSupport.class);
+    private static final Logger logger = Logger.getLogger(VirtualThreadSupport.class.getName());
 
     public static final String VTHREAD_ENABLED_KEY = "tars.virtual.threads.enabled";
     public static final String SERVER_VTHREAD_ENABLED_KEY = "tars.virtual.threads.server.enabled";
@@ -55,7 +54,7 @@ public final class VirtualThreadSupport {
             executor.execute(task);
             return true;
         } catch (RejectedExecutionException e) {
-            logger.warn("[tars] submit virtual thread task failed, {}", e.getMessage());
+            logger.log(Level.WARNING, "[tars] submit virtual thread task failed, {0}", e.getMessage());
             return false;
         }
     }
@@ -88,7 +87,7 @@ public final class VirtualThreadSupport {
             Method method = java.util.concurrent.Executors.class.getMethod("newVirtualThreadPerTaskExecutor");
             return (ExecutorService) method.invoke(null);
         } catch (Throwable e) {
-            logger.warn("[tars] create virtual thread executor failed, {}", e.getMessage());
+            logger.log(Level.WARNING, "[tars] create virtual thread executor failed, {0}", e.getMessage());
             return null;
         }
     }
@@ -102,7 +101,7 @@ public final class VirtualThreadSupport {
                 return;
             }
             unsupportedLogged = true;
-            logger.warn("[tars] virtual threads are enabled but current JDK does not support them");
+            logger.warning("[tars] virtual threads are enabled but current JDK does not support them");
         }
     }
 }

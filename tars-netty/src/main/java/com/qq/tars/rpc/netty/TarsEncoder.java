@@ -37,15 +37,15 @@ import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import io.netty.util.ReferenceCountUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
 public class TarsEncoder extends MessageToByteEncoder<Object> {
-    private static final Logger logger = LoggerFactory.getLogger(TarsEncoder.class);
+    private static final Logger logger = Logger.getLogger(TarsEncoder.class.getName());
     protected Charset charset = Constants.DEFAULT_CHARSET;
 
     public TarsEncoder(Charset charset) {
@@ -59,8 +59,8 @@ public class TarsEncoder extends MessageToByteEncoder<Object> {
             if (o instanceof Request) {
                 try {
                     ioBuffer = encodeRequest(channelHandlerContext.alloc(), (TarsServantRequest) o);
-                    if (logger.isDebugEnabled())
-                        logger.debug("[tars] write data size is  " + ioBuffer.duplicate().getInt(0));
+                    if (logger.isLoggable(Level.FINE))
+                        logger.fine("[tars] write data size is  " + ioBuffer.duplicate().getInt(0));
 
                     int length = ioBuffer.getInt(0);
                     if (length > ioBuffer.readableBytes()) {
@@ -69,12 +69,12 @@ public class TarsEncoder extends MessageToByteEncoder<Object> {
                     out.ensureWritable(ioBuffer.readableBytes());
                     out.writeBytes(ioBuffer);
                 } catch (Exception e) {
-                    logger.warn(e.getMessage(), e);
+                    logger.log(Level.WARNING, e.getMessage(), e);
                 }
             } else if (o instanceof Response) {
                 ioBuffer = encodeResponse(channelHandlerContext.alloc(), (Response) o);
-                if (logger.isDebugEnabled())
-                    logger.debug("[tars] write data size is  " + ioBuffer.duplicate().getInt(0));
+                if (logger.isLoggable(Level.FINE))
+                    logger.fine("[tars] write data size is  " + ioBuffer.duplicate().getInt(0));
                 int length = ioBuffer.getInt(0);
                 if (length > ioBuffer.readableBytes()) {
                     throw new IndexOutOfBoundsException();

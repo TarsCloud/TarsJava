@@ -21,7 +21,9 @@ import com.qq.tars.client.util.Pair;
 import com.qq.tars.common.util.Constants;
 import com.qq.tars.rpc.common.Invoker;
 import com.qq.tars.support.log.LoggerFactory;
-import org.slf4j.Logger;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -54,8 +56,8 @@ public class LoadBalanceHelper {
             return null;
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("[buildStaticWeightList]: weightInvokers size: " + weightInvokers.size());
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("[buildStaticWeightList]: weightInvokers size: " + weightInvokers.size());
         }
 
         int minWeight = Integer.MAX_VALUE;
@@ -84,8 +86,8 @@ public class LoadBalanceHelper {
             totalWeight += weight;
             weightToInvoker.add(new Pair<Integer, Invoker<T>>(weight, invoker));
             invokerToWeight.put(invoker, weight);
-            if (logger.isDebugEnabled()) {
-                logger.debug("[buildStaticWeightList]: invoker: " + invoker.hashCode() + ", weight: " + weight + ", host: " + invoker.getUrl().getHost() + ", port: " + invoker.getUrl().getPort());
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("[buildStaticWeightList]: invoker: " + invoker.hashCode() + ", weight: " + weight + ", host: " + invoker.getUrl().getHost() + ", port: " + invoker.getUrl().getPort());
             }
         }
 
@@ -161,7 +163,7 @@ public class LoadBalanceHelper {
 //                logger.debug(sb.toString());
 //            }
         } catch (Exception e) {
-            logger.error("build consistent hash circle err. ", e);
+            logger.log(Level.SEVERE, "build consistent hash circle err. ", e);
             return null;
         }
         return result;
